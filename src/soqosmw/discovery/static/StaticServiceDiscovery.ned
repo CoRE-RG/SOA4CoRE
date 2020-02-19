@@ -34,6 +34,6 @@ simple StaticServiceDiscovery like IServiceDiscovery
         //Style:
         //<service name="servicename" address="ip or node (if autoconfig)">
         //</service>
-        xml services = default(xmldoc("services.xml"));
+        xml services;
         @display("i=block/table2");
 }
