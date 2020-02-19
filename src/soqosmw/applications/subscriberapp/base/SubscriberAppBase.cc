@@ -15,13 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <soqosmw/messages/qosnegotiationprotocol/QoSNegotiationProtocol_m.h>
 #include "soqosmw/applications/subscriberapp/base/SubscriberAppBase.h"
 #include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 //AUTO-GENERATED MESSAGES
-#include "soqosmw/messages/QoSNegotiationProtocol/QoSNegotiationProtocol_m.h"
-//CoRE4INET
 #include "core4inet/utilities/ConfigFunctions.h"
 #include "core4inet/base/avb/AVBDefs.h"
 //INET

@@ -15,13 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <soqosmw/messages/qosnegotiationprotocol/QoSNegotiationProtocol_m.h>
 #include "soqosmw/base/EndpointDescription.h"
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
 #include "soqosmw/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 //AUTO-GENERATED MESSAGES
-#include "soqosmw/messages/QoSNegotiationProtocol/QoSNegotiationProtocol_m.h"
-//INET
 #include "inet/networklayer/common/L3AddressResolver.h"
 //STD
 #include <cstring>

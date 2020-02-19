@@ -19,6 +19,7 @@
 #define __SOQOSMW_SERVICEMANAGER_LOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
+#include <soqosmw/messages/qosnegotiationprotocol/ConnectionSpecificInformation_m.h>
 
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
 #include "soqosmw/qospolicy/base/qospolicy.h"
@@ -30,9 +31,6 @@
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
 #include "soqosmw/discovery/static/StaticServiceDiscovery.h"
-#include "soqosmw/messages/QoSNegotiationProtocol/ConnectionSpecificInformation_m.h"
-
-//STD
 #include <atomic>
 #include <string>
 #include <map>

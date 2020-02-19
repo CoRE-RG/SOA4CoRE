@@ -19,13 +19,13 @@
 #define __SOQOSMW_ENDPOINTBASE_H_
 
 #include <omnetpp.h>
+#include <soqosmw/messages/qosnegotiationprotocol/ConnectionSpecificInformation_m.h>
+#include <soqosmw/messages/qosnegotiationprotocol/QoSNegotiationProtocol_m.h>
 #include <string>
 
 #include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/utility/processing/ProcessingTimeSimulation.h"
 //AUTO-GENERATED MESSAGES
-#include "soqosmw/messages/QoSNegotiationProtocol/ConnectionSpecificInformation_m.h"
-#include "soqosmw/messages/QoSNegotiationProtocol/QoSNegotiationProtocol_m.h"
 
 using namespace omnetpp;
 

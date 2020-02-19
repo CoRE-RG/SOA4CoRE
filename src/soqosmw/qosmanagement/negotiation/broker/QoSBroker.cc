@@ -15,6 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <soqosmw/messages/qosnegotiationprotocol/ConnectionSpecificInformation_m.h>
+#include <soqosmw/messages/qosnegotiationprotocol/QoSNegotiationProtocol_m.h>
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
 
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
@@ -23,9 +25,6 @@
 #include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
 //AUTO-GENERATED Messages
-#include "soqosmw/messages/QoSNegotiationProtocol/ConnectionSpecificInformation_m.h"
-#include "soqosmw/messages/QoSNegotiationProtocol/QoSNegotiationProtocol_m.h"
-//INET
 #include <inet/networklayer/common/L3Address.h>
 #include <inet/transportlayer/contract/udp/UDPSocket.h>
 //STD
