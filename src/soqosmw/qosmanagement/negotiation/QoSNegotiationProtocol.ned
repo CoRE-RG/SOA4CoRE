@@ -50,7 +50,7 @@ simple QoSNegotiationProtocol extends ProcessingTimeSimulation like IUDPApp
         string localAddress = default("");
         string lsmmoduleName = default("lsm");
 
-        processingTime = default(0);
+        processingTime = default(0s);
         allowParallelProcessing = default(true);
 
         @display("i=block/classifier");

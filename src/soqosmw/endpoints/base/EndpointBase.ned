@@ -37,7 +37,7 @@ simple EndpointBase extends ProcessingTimeSimulation like IEndpoint
      	//The name of the endpoint as a path (e.g. "Reifendruck/links").
     	string endpointPath = default("");
     	
-    	processingTime = default(0);
+    	processingTime = default(0s);
         allowParallelProcessing = default(true);
         
         // Signal emitted when connector will be created
