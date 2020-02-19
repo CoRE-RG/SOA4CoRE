@@ -23,6 +23,7 @@
 //INET
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/transportlayer/contract/udp/UDPSocket.h"
+#include "inet/common/InitStages.h"
 //STD
 #include <vector>
 
@@ -39,8 +40,6 @@ class QoSNegotiationResponse;
 using namespace omnetpp;
 
 namespace SOQoSMW {
-
-#define NO_OF_INIT_STAGES 15
 
 /**
  * @brief QoSNegotiationProtocol provides all functionality to negotiatiate the QoS Policies for a connection of to @class{IEndpoints}.
@@ -59,7 +58,7 @@ public:
 protected:
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override {
-        return NO_OF_INIT_STAGES;
+        return inet::NUM_INIT_STAGES;
     }
     virtual void handleParameterChange(const char* parname) override;
 

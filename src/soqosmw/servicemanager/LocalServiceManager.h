@@ -39,12 +39,11 @@
 #include <vector>
 //INET
 #include <inet/networklayer/common/L3Address.h>
+#include "inet/common/InitStages.h"
 
 using namespace omnetpp;
 
 namespace SOQoSMW {
-
-#define NO_OF_INIT_STAGES 15
 
 /**
  * @brief The LocalServiceManager is used to create, find and remove local Services.
@@ -95,7 +94,7 @@ protected:
      */
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override {
-        return NO_OF_INIT_STAGES;
+        return inet::NUM_INIT_STAGES;
     }
 
     /**

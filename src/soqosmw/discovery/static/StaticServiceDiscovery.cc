@@ -26,12 +26,13 @@
 namespace SOQoSMW{
 
 using namespace std;
+using namespace inet;
 
 Define_Module(StaticServiceDiscovery);
 
 void StaticServiceDiscovery::initialize(int stage)
 {
-    if(stage == MY_INIT_STAGE) {
+    if(stage == INITSTAGE_ROUTING_PROTOCOLS) {
         EV_DEBUG << "Initialising SD:";
         cXMLElement *config = par("services").xmlValue();
         EV_DEBUG << " read config: " << config->str();

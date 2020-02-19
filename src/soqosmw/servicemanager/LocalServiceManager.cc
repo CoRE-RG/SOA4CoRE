@@ -36,8 +36,6 @@ using namespace inet;
 using namespace CoRE4INET;
 
 namespace SOQoSMW {
-#define LSM_INIT_STAGE_1 1
-#define LSM_INIT_STAGE 14
 
 Define_Module(LocalServiceManager);
 
@@ -50,9 +48,7 @@ LocalServiceManager::~LocalServiceManager() {
 
 void LocalServiceManager::initialize(int stage) {
 
-    if(stage == LSM_INIT_STAGE_1) {
-    }
-    if (stage == LSM_INIT_STAGE) {
+    if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
         _sd = dynamic_cast<StaticServiceDiscovery*>(getParentModule()->getSubmodule(
                    par("sdmoduleName")));

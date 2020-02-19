@@ -31,7 +31,6 @@
 namespace SOQoSMW {
 using namespace std;
 using namespace inet;
-#define QOSNP_INIT_STAGE 14
 
 #define MSGKIND_CREATEBROKERREQUEST     1
 
@@ -46,12 +45,12 @@ QoSNegotiationProtocol::~QoSNegotiationProtocol() {
 
 void QoSNegotiationProtocol::initialize(int stage) {
 
-    if(stage == 1) {
+    if(stage == INITSTAGE_LOCAL) {
         this->_qosNt = registerSignal("qosNt");
         this->_rxPkSignal = registerSignal("rxPk");
         ProcessingTimeSimulation::initialize();
     }
-    if (stage == QOSNP_INIT_STAGE) {
+    if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
         _lsm = dynamic_cast<LocalServiceManager*>(getParentModule()->getSubmodule(
                                par("lsmmoduleName")));

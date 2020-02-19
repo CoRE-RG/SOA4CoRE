@@ -22,14 +22,12 @@
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
 //INET
 #include "inet/networklayer/common/L3Address.h"
+#include "inet/common/InitStages.h"
 //STD
 #include <string>
 #include <unordered_map>
 
 namespace SOQoSMW {
-
-#define NO_OF_INIT_STAGES 15
-#define MY_INIT_STAGE 13
 
 /**
  * @brief This class provides a static ServiceDiscovery Module via XML.
@@ -65,7 +63,7 @@ public:
 protected:
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override {
-        return NO_OF_INIT_STAGES;
+        return inet::NUM_INIT_STAGES;
     }
     virtual void handleMessage(cMessage *msg) override;
 

@@ -19,15 +19,13 @@
 #define __SOQOSMW_APPLICATIONS_PUBLISHERAPP_GATEWAY_GWSOURCEAPPBASE_H_
 
 #include "soqosmw/applications/publisherapp/base/PublisherAppBase.h"
+#include "inet/common/InitStages.h"
 //STD
 #include <vector>
 
 using namespace omnetpp;
 
 namespace SOQoSMW {
-
-#define NO_OF_INIT_STAGES 15
-
 /**
  * @brief A soqosmw gateway publisher application.
  *
@@ -55,7 +53,7 @@ protected:
      */
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override {
-        return NO_OF_INIT_STAGES;
+        return inet::NUM_INIT_STAGES;
     }
 
     /**

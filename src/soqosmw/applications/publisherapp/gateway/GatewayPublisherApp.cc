@@ -29,9 +29,6 @@ using namespace SignalsAndGateways;
 using namespace std;
 
 
-#define MY_INIT_STAGE_FIRST 1
-#define MY_INIT_STAGE_FINAL 14
-
 Define_Module(GatewayPublisherApp);
 
 GatewayPublisherApp::GatewayPublisherApp() {
@@ -42,12 +39,12 @@ GatewayPublisherApp::~GatewayPublisherApp() {
 
 void GatewayPublisherApp::initialize(int stage) {
     switch(stage){
-    case MY_INIT_STAGE_FIRST:
+    case INITSTAGE_LOCAL:
         PublisherAppBase::initialize();
         handleParameterChange(nullptr);
         break;
 
-    case MY_INIT_STAGE_FINAL:
+    case INITSTAGE_APPLICATION_LAYER:
         //get the EthernetGatewayApp to connect to it
         if(EthernetGatewayApplication* gwApp = dynamic_cast<EthernetGatewayApplication*>(this->getParentModule()->getSubmodule("gatewayApp"))) {
             //register CAN IDs to listen to
