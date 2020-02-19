@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soqosmw/messages/qosnegotiationprotocol/ConnectionSpecificInformation_m.h>
-#include <soqosmw/messages/qosnegotiationprotocol/QoSNegotiationProtocol_m.h>
+#include <soqosmw/messages/qosnegotiation/ConnectionSpecificInformation_m.h>
+#include <soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h>
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
 
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"

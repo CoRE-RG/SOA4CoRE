@@ -19,8 +19,8 @@
 #define __SOQOSMW_ENDPOINTBASE_H_
 
 #include <omnetpp.h>
-#include <soqosmw/messages/qosnegotiationprotocol/ConnectionSpecificInformation_m.h>
-#include <soqosmw/messages/qosnegotiationprotocol/QoSNegotiationProtocol_m.h>
+#include <soqosmw/messages/qosnegotiation/ConnectionSpecificInformation_m.h>
+#include <soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h>
 #include <string>
 
 #include "soqosmw/connector/base/ConnectorBase.h"

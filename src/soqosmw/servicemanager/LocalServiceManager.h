@@ -19,8 +19,7 @@
 #define __SOQOSMW_SERVICEMANAGER_LOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
-#include <soqosmw/messages/qosnegotiationprotocol/ConnectionSpecificInformation_m.h>
-
+#include <soqosmw/messages/qosnegotiation/ConnectionSpecificInformation_m.h>
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
 #include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/connector/pubsub/reader/SubscriberConnector.h"
