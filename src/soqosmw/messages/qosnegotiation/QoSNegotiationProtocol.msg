@@ -25,7 +25,7 @@
 
 cplusplus {{
 #include "soqosmw/messages/Envelope_m.h"
-#include "soqosmw/messages/QoSNegotiationProtocol/ConnectionSpecificInformation_m.h"
+#include "soqosmw/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
 }}
 packet SOQoSMW::Envelope;
 enum SOQoSMWProtocols;
