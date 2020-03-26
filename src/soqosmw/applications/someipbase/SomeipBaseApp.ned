@@ -20,6 +20,6 @@ import inet.applications.udpapp.UDPBasicApp;
 simple SomeipBaseApp extends UDPBasicApp
 {
     parameters:
-        @class(SomeipBaseApp);
+        @class(SOQoSMW::SomeipBaseApp);
         bool initialMsg = default(false);
 }

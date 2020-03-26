@@ -13,7 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+namespace SOQoSMW;
+
 packet SomeIpHeader {
+    byteLength = 16;
     uint32_t messageID;
     uint32_t length;
     uint32_t requestID;
@@ -21,4 +24,18 @@ packet SomeIpHeader {
     uint8_t  interfaceVersion;
     uint8_t  messageType;
     uint8_t  returnCode;
+}
+
+//Type of message 
+enum MessageType{
+    REQUEST              = 0;
+    REQUEST_NO_RETURN    = 1;
+    NOTIFICATION         = 2;
+    RESPONSE             = 3;
+    ERROR                = 4;
+    TP_REQUEST           = 5;
+    TP_REQUEST_NO_RETURN = 6;
+    TP_NOTIFICATION      = 7;
+    TP_RESPONSE          = 8;
+    TP_ERROR             = 9;
 }

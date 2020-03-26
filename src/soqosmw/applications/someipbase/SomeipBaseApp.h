@@ -18,28 +18,93 @@
 
 #include "inet/applications/udpapp/UDPBasicApp.h"
 
+namespace SOQoSMW {
 
+/**
+ * @brief Base class for a soqosmw publisher application.
+ *
+ * @ingroup soqosmw/applications
+ *
+ * @author Mehmet Cakir for HAW Hamburg
+ */
 class SomeipBaseApp: public inet::UDPBasicApp {
 public:
     SomeipBaseApp();
     virtual ~SomeipBaseApp();
 protected:
+    /**
+     * Initializes parameters and schedules a selfmsg
+     *
+     * @param stage indicates the initialization stage
+     */
     virtual void initialize(int stage) override;
+
+    /**
+     * Method how incoming messages will be handled
+     *
+     * @param msg is the incoming message
+     */
     virtual void handleMessage(omnetpp::cMessage *msg) override;
+
+    //TODO Unclear when this method will be called
+    /**
+     *
+     * @param msg
+     */
     virtual void handleMessageWhenUp(cMessage *msg) override;
+
+    /**
+     * Will be called after the simulation finishes
+     */
     virtual void finish() override;
+
+    /**
+     * Will be called while the graphical simulation is running.
+     * Additional visualization updates can be implemented.
+     */
     virtual void refreshDisplay() const override;
 
-    virtual void sendPacket();
-    virtual void processPacket(cPacket *msg);
+    /**
+     * Sends a SOME/IP packet
+     */
+    virtual void sendPacket() override;
 
-    virtual void processStart();
-    virtual void processSend();
+    //TODO Unclear when this method will be called
+    /**
+     *
+     * @param msg
+     */
+    virtual void processPacket(cPacket *msg) override;
 
+    /**
+     * Setups network connection
+     */
+    virtual void processStart() override;
+
+    //TODO Unclear when this method will be called
+    /**
+     *
+     */
+    virtual void processSend() override;
+
+    //TODO Unclear when this method will be called
+    /**
+     *
+     * @param doneCallback
+     * @return
+     */
     virtual bool handleNodeStart(inet::IDoneCallback *doneCallback) override;
 private:
+    /**
+     * Schedules a self message
+     * @param scheduleTime the time a self message will be scheduled for
+     */
     void scheduleSelfMsg(omnetpp::simtime_t scheduleTime);
+
+    /**
+     * Caches if the node sends the initial message
+     */
     bool initialMsg;
 };
-
+}
 #endif /* SOQOSMW_APPLICATIONS_SOMEIPBASE_SOMEIPBASEAPP_H_ */

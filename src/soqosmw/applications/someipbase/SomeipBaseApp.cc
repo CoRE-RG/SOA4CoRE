@@ -21,6 +21,7 @@
 #include "inet/transportlayer/contract/udp/UDPControlInfo_m.h"
 #include "soqosmw/messages/someip/SomeIpHeader_m.h"
 
+namespace SOQoSMW {
 Define_Module(SomeipBaseApp);
 
 SomeipBaseApp::SomeipBaseApp() {
@@ -51,11 +52,11 @@ void SomeipBaseApp:: initialize(int stage) {
 void SomeipBaseApp::handleMessage(omnetpp::cMessage *msg) {
     if (msg->isSelfMessage()) {
         EV << "Sending initial someip message" << std::endl;
-        sendPacket();
     } else {
         EV << "Sending someip message" << std::endl;
-        sendPacket();
     }
+    sendPacket();
+    delete msg;
 }
 
 void SomeipBaseApp::handleMessageWhenUp(cMessage *msg)
@@ -122,4 +123,5 @@ bool SomeipBaseApp::handleNodeStart(inet::IDoneCallback *doneCallback) {
 void SomeipBaseApp::scheduleSelfMsg(omnetpp::simtime_t scheduleTime) {
     omnetpp::cMessage *msg = new omnetpp::cMessage("selfMsg");
     scheduleAt(simTime() + scheduleTime, msg);
+}
 }
