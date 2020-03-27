@@ -21,11 +21,11 @@
 namespace SOQoSMW {
 
 /**
- * @brief Base class for a soqosmw publisher application.
+ * @brief Base class for a SOME/IP application.
  *
  * @ingroup soqosmw/applications
  *
- * @author Mehmet Cakir for HAW Hamburg
+ * @author Mehmet Cakir
  */
 class SomeipBaseApp: public inet::UDPBasicApp {
 public:
@@ -40,14 +40,7 @@ protected:
     virtual void initialize(int stage) override;
 
     /**
-     * Method how incoming messages will be handled
-     *
-     * @param msg is the incoming message
-     */
-    virtual void handleMessage(omnetpp::cMessage *msg) override;
-
-    //TODO Unclear when this method will be called
-    /**
+     * Handles incoming message as soon as node is up
      *
      * @param msg
      */
@@ -69,8 +62,8 @@ protected:
      */
     virtual void sendPacket() override;
 
-    //TODO Unclear when this method will be called
     /**
+     * Processes a packet
      *
      * @param msg
      */
@@ -81,14 +74,14 @@ protected:
      */
     virtual void processStart() override;
 
-    //TODO Unclear when this method will be called
     /**
-     *
+     * Processes the sending of a packet
      */
     virtual void processSend() override;
 
-    //TODO Unclear when this method will be called
     /**
+     * Will be called after initialize method for additional preparations
+     * before the node starts.
      *
      * @param doneCallback
      * @return

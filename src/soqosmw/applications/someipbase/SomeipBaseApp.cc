@@ -49,19 +49,14 @@ void SomeipBaseApp:: initialize(int stage) {
        }
 }
 
-void SomeipBaseApp::handleMessage(omnetpp::cMessage *msg) {
+void SomeipBaseApp::handleMessageWhenUp(cMessage *msg)
+{
     if (msg->isSelfMessage()) {
         EV << "Sending initial someip message" << std::endl;
     } else {
         EV << "Sending someip message" << std::endl;
     }
-    sendPacket();
-    delete msg;
-}
-
-void SomeipBaseApp::handleMessageWhenUp(cMessage *msg)
-{
-    throw cRuntimeError("Unrecognized message (%s)%s", msg->getClassName(), msg->getName());
+    processSend();
     delete msg;
 }
 
