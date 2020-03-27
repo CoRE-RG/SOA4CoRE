@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOQOSMW_APPLICATIONS_SOMEIPBASE_SOMEIPBASEAPP_H_
-#define SOQOSMW_APPLICATIONS_SOMEIPBASE_SOMEIPBASEAPP_H_
+#ifndef SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_SOMEIPAPPBASE_H_
+#define SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_SOMEIPAPPBASE_H_
 
 #include "inet/applications/udpapp/UDPBasicApp.h"
 
@@ -27,13 +27,13 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeipBaseApp: public inet::UDPBasicApp {
+class SomeipAppBase: public virtual inet::UDPBasicApp {
 public:
-    SomeipBaseApp();
-    virtual ~SomeipBaseApp();
+    SomeipAppBase();
+    virtual ~SomeipAppBase();
 protected:
     /**
-     * Initializes parameters and schedules a selfmsg
+     * Initializes parameters
      *
      * @param stage indicates the initialization stage
      */
@@ -87,7 +87,7 @@ protected:
      * @return
      */
     virtual bool handleNodeStart(inet::IDoneCallback *doneCallback) override;
-private:
+protected:
     /**
      * Schedules a self message
      * @param scheduleTime the time a self message will be scheduled for
@@ -99,5 +99,5 @@ private:
      */
     bool initialMsg;
 };
-}
-#endif /* SOQOSMW_APPLICATIONS_SOMEIPBASE_SOMEIPBASEAPP_H_ */
+} /* end namespace SOQoSMW */
+#endif /* SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_SOMEIPAPPBASE_H_ */

@@ -13,13 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipbase;
+package soqosmw.applications.someipapp.tictoc;
 
-import inet.applications.udpapp.UDPBasicApp;
+import soqosmw.applications.someipapp.base.SomeipBaseApp;
 
-simple SomeipBaseApp extends UDPBasicApp
+simple TicTocApp extends SomeipBaseApp
 {
     parameters:
-        @class(SOQoSMW::SomeipBaseApp);
-        bool initialMsg = default(false);
+        @class(SOQoSMW::TicTocApp);
 }
