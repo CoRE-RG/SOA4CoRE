@@ -39,3 +39,22 @@ enum MessageType{
     TP_RESPONSE          = 8;
     TP_ERROR             = 9;
 }
+
+//Return code
+enum ReturnCode{
+    E_OK                      = 0;
+    E_NOT_OK                  = 1;
+    E_UNKNOWN_SERVICE         = 2;
+    E_UNKNOWN_METHOD          = 3;
+    E_NOT_READY               = 4;
+    E_NOT_REACHABLE           = 5;
+    E_TIMEOUT                 = 6;
+    E_WRONG_PROTOCOL_VERSION  = 7;
+    E_WRONG_INTERFACE_VERSION = 8;
+    E_MALFORMED_MESSAGE       = 9;
+    E_WRONG_MESSAGE_TYPE      = 10;
+}
+
+enum ProtocolVersion{
+    V_1 = 1;
+}
