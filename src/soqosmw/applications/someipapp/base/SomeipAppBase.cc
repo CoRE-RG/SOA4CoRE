@@ -19,7 +19,6 @@
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/NodeOperations.h"
 #include "inet/transportlayer/contract/udp/UDPControlInfo_m.h"
-#include "soqosmw/messages/someip/SomeIpHeader_m.h"
 
 namespace SOQoSMW {
 Define_Module(SomeipAppBase);
@@ -60,15 +59,33 @@ void SomeipAppBase::refreshDisplay() const {
 
 }
 
-void SomeipAppBase::sendPacket() {
+void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t methodID, uint32_t length, uint16_t clientID, uint16_t sessionID,
+        uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode) {
     SomeIpHeader *someipheader = new SomeIpHeader("someip");
-    someipheader->setMessageID(42);
-    someipheader->setLength(16);
-    someipheader->setRequestID(24);
-    someipheader->setProtcolVersion(1);
-    someipheader->setInterfaceVersion(1);
-    someipheader->setMessageType(255);
-    someipheader->setReturnCode(0);
+    //Message ID ("Service ID" 16 Bit | "0" 1 Bit | "Method ID" 15 Bit)
+    uint32_t messageID = 0;
+    uint32_t messageIDCorrectionPattern = 0xFFFF7FFF;
+    messageID = serviceID;
+    messageID = messageID << 16;
+    messageID = messageID | methodID;
+    messageID = messageID & messageIDCorrectionPattern;
+    someipheader->setMessageID(messageID);
+    // Length of whole SOME/IP Packet
+    someipheader->setLength(length);
+    // Request ID ("Client ID" 16 Bit | "Session ID" 16 Bit)
+    uint32_t requestID = 0;
+    requestID = clientID;
+    requestID = requestID << 16;
+    requestID = requestID | sessionID;
+    someipheader->setRequestID(requestID);
+    //Version of SOME/IP Protocol
+    someipheader->setProtcolVersion(protocolVersion);
+    //Major version of the service interface
+    someipheader->setInterfaceVersion(interfaceVersion);
+    //The message type
+    someipheader->setMessageType(messageType);
+    //The return code
+    someipheader->setReturnCode(returnCode);
     for (inet::L3Address destAddr : destAddresses) {
         socket.sendTo(someipheader, destAddr, destPort);
     }
@@ -100,7 +117,7 @@ void SomeipAppBase::processStart() {
 }
 
 void SomeipAppBase::processSend() {
-    sendPacket();
+
 }
 
 void SomeipAppBase::finish() {

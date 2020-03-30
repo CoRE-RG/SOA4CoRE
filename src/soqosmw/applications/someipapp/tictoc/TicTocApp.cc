@@ -44,6 +44,7 @@ void TicTocApp::handleMessageWhenUp(cMessage *msg)
         EV << "Sending someip message" << std::endl;
     }
     delete msg;
-    SomeipAppBase::processSend();
+    SomeipAppBase::sendPacket(0b1000000000000001, 0b1111111111111111, 42, 0b1010101010100010, 0b0000000011111111,
+            SOQoSMW::ProtocolVersion::V_1, 42, 42, SOQoSMW::ReturnCode::E_OK);
 }
 } /* end namespace SOQoSMW */

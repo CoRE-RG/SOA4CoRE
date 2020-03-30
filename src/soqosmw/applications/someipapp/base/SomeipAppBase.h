@@ -17,6 +17,7 @@
 #define SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_SOMEIPAPPBASE_H_
 
 #include "inet/applications/udpapp/UDPBasicApp.h"
+#include "soqosmw/messages/someip/SomeIpHeader_m.h"
 
 namespace SOQoSMW {
 
@@ -60,7 +61,8 @@ protected:
     /**
      * Sends a SOME/IP packet
      */
-    virtual void sendPacket() override;
+    virtual void sendPacket(uint16_t serviceID, uint16_t methodID, uint32_t length, uint16_t clientID, uint16_t sessionID,
+            uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode);
 
     /**
      * Processes a packet
