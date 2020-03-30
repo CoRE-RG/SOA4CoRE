@@ -40,11 +40,26 @@ void TicTocApp::handleMessageWhenUp(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         EV << "Sending initial someip message" << std::endl;
+        delete msg;
     } else {
+        cPacket *packet = dynamic_cast<cPacket*>(msg);
+        processPacket(packet);
         EV << "Sending someip message" << std::endl;
     }
-    delete msg;
-    SomeipAppBase::sendPacket(0b1000000000000001, 0b1111111111111111, 42, 0b1010101010100010, 0b0000000011111111,
-            SOQoSMW::ProtocolVersion::V_1, 42, 42, SOQoSMW::ReturnCode::E_OK);
+    cPacket *payload = new cPacket("payload");
+    payload->setByteLength(8);
+    SomeipAppBase::sendPacket(0b1000000000000001, 0b1111111111111111, 0b1010101010100010, 0b0000000011111111,
+            SOQoSMW::ProtocolVersion::V_1, 42, 42, SOQoSMW::ReturnCode::E_OK, payload);
 }
+
+void TicTocApp::processPacket(cPacket *msg) {
+    cPacket *payload = msg->getEncapsulatedPacket();
+    EV_INFO << "Received packet: " << msg->getName() << "    Length: " << msg->getByteLength() << endl;
+    EV_INFO << "SOME/IP covered length: " << dynamic_cast<SomeIpHeader*>(msg)->getLength() << endl;
+    EV_INFO << "Received payload: " << payload->getName() << "    Length: " << payload->getByteLength() << endl;
+    msg->decapsulate();
+    delete payload;
+    delete msg;
+}
+
 } /* end namespace SOQoSMW */

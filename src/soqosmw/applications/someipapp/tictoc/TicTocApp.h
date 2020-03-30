@@ -46,6 +46,13 @@ protected:
      * @param msg
      */
     virtual void handleMessageWhenUp(cMessage *msg) override;
+
+    /**
+     * Processes a packet
+     *
+     * @param msg
+     */
+    virtual void processPacket(cPacket *msg) override;
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_ */

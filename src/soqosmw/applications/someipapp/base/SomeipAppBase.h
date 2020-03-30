@@ -61,8 +61,8 @@ protected:
     /**
      * Sends a SOME/IP packet
      */
-    virtual void sendPacket(uint16_t serviceID, uint16_t methodID, uint32_t length, uint16_t clientID, uint16_t sessionID,
-            uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode);
+    virtual void sendPacket(uint16_t serviceID, uint16_t methodID, uint16_t clientID, uint16_t sessionID,
+            uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
 
     /**
      * Processes a packet

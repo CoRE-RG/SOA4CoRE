@@ -59,8 +59,8 @@ void SomeipAppBase::refreshDisplay() const {
 
 }
 
-void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t methodID, uint32_t length, uint16_t clientID, uint16_t sessionID,
-        uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode) {
+void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t methodID, uint16_t clientID, uint16_t sessionID,
+        uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode,cPacket *payload) {
     SomeIpHeader *someipheader = new SomeIpHeader("someip");
     //Message ID ("Service ID" 16 Bit | "0" 1 Bit | "Method ID" 15 Bit)
     uint32_t messageID = 0;
@@ -71,7 +71,7 @@ void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t methodID, uint32_t l
     messageID = messageID & messageIDCorrectionPattern;
     someipheader->setMessageID(messageID);
     // Length of whole SOME/IP Packet
-    someipheader->setLength(length);
+    someipheader->setLength(8+payload->getByteLength());
     // Request ID ("Client ID" 16 Bit | "Session ID" 16 Bit)
     uint32_t requestID = 0;
     requestID = clientID;
@@ -86,6 +86,7 @@ void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t methodID, uint32_t l
     someipheader->setMessageType(messageType);
     //The return code
     someipheader->setReturnCode(returnCode);
+    someipheader->encapsulate(payload);
     for (inet::L3Address destAddr : destAddresses) {
         socket.sendTo(someipheader, destAddr, destPort);
     }
@@ -129,7 +130,8 @@ bool SomeipAppBase::handleNodeStart(inet::IDoneCallback *doneCallback) {
 }
 
 void SomeipAppBase::scheduleSelfMsg(omnetpp::simtime_t scheduleTime) {
-    omnetpp::cMessage *msg = new omnetpp::cMessage("selfMsg");
+    omnetpp::cPacket *msg = new omnetpp::cPacket("selfMsg");
+    msg->setByteLength(8);
     scheduleAt(simTime() + scheduleTime, msg);
 }
 } /* end namespace SOQoSMW */
