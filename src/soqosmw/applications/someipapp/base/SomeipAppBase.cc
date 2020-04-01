@@ -23,6 +23,9 @@
 namespace SOQoSMW {
 Define_Module(SomeipAppBase);
 
+#define MESSAGEIDMETHODPATTERN 0xFFFF7FFF
+#define MESSAGEIDEVENTPATTERN 0xFFFFFFFF
+
 SomeipAppBase::SomeipAppBase() {
     // TODO Auto-generated constructor stub
 
@@ -59,16 +62,15 @@ void SomeipAppBase::refreshDisplay() const {
 
 }
 
-void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t methodID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
         uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode,cPacket *payload) {
     SomeIpHeader *someipheader = new SomeIpHeader("someip");
-    //Message ID ("Service ID" 16 Bit | "0" 1 Bit | "Method ID" 15 Bit)
+    //Message ID ("Service ID" 16 Bit | "0" 1 Bit | "Method ID" 15 Bit) or
+    //Message ID ("Service ID" 16 Bit | "1" 1 Bit | "Event ID" 15 Bit) or
     uint32_t messageID = 0;
-    uint32_t messageIDCorrectionPattern = 0xFFFF7FFF;
     messageID = serviceID;
     messageID = messageID << 16;
-    messageID = messageID | methodID;
-    messageID = messageID & messageIDCorrectionPattern;
+    messageID = messageID | method_EventID;
     someipheader->setMessageID(messageID);
     // Length of whole SOME/IP Packet
     someipheader->setLength(8+payload->getByteLength());
