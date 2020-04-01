@@ -14,17 +14,9 @@
 //
 
 namespace SOQoSMW;
-
-packet SomeIpHeader {
-    byteLength = 16;
-    uint32_t messageID;
-    uint32_t length;
-    uint32_t requestID;
-    uint8_t  protcolVersion;
-    uint8_t  interfaceVersion;
-    uint8_t  messageType;
-    uint8_t  returnCode;
-}
+cplusplus {{
+#define HEADER_COVERED_BY_PAYLOADLENGTH 8
+}}
 
 //Type of message 
 enum MessageType{
@@ -57,4 +49,15 @@ enum ReturnCode{
 
 enum ProtocolVersion{
     V_1 = 1;
+}
+
+packet SomeIpHeader {
+    byteLength = 16;
+    uint32_t messageID;
+    uint32_t length;
+    uint32_t requestID;
+    uint8_t  protcolVersion @enum(ProtocolVersion);
+    uint8_t  interfaceVersion;
+    uint8_t  messageType @enum(MessageType);
+    uint8_t  returnCode @enum(ReturnCode);
 }

@@ -38,6 +38,7 @@ enum QoSGroups {
     STD_TCP = 1; // Standard Requirements --> TCP IP
     STD_UDP = 2; // Standard Requirements --> UDP IP
     WEB = 3; // Web Requirements --> HTTP
+    SOMEIP = 4; // Use SOMEIP --> UDP IP
 }
 
 //Type of Negotiation message for @see QoSNegotiationProtocol

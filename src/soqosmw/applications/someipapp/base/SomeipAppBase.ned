@@ -21,5 +21,4 @@ simple SomeipBaseApp extends UDPBasicApp
 {
     parameters:
         @class(SOQoSMW::SomeipBaseApp);
-        bool initialMsg = default(false);
 }

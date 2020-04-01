@@ -27,23 +27,15 @@ Define_Module(SomeipAppBase);
 #define MESSAGEIDEVENTPATTERN 0xFFFFFFFF
 
 SomeipAppBase::SomeipAppBase() {
-    // TODO Auto-generated constructor stub
-
 }
 
 SomeipAppBase::~SomeipAppBase() {
-    // TODO Auto-generated destructor stub
 }
 
 void SomeipAppBase:: initialize(int stage) {
-    ApplicationBase::initialize(stage);
+    UDPBasicApp::initialize(stage);
+
     if (stage == inet::INITSTAGE_LOCAL) {
-        localPort = par("localPort");
-        destPort = par("destPort");
-        startTime = par("startTime").doubleValue();
-        stopTime = par("stopTime").doubleValue();
-        packetName = par("packetName");
-        initialMsg = par("initialMsg");
         processStart();
     }
 }
@@ -72,8 +64,8 @@ void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t method_EventID, uint
     messageID = messageID << 16;
     messageID = messageID | method_EventID;
     someipheader->setMessageID(messageID);
-    // Length of whole SOME/IP Packet
-    someipheader->setLength(8+payload->getByteLength());
+    // Length of whole SOME/IP Payload + header length in Payload.
+    someipheader->setLength(HEADER_COVERED_BY_PAYLOADLENGTH + payload->getByteLength());
     // Request ID ("Client ID Prefix" 8 Bit | "Client ID" 8 Bit | "Session ID" 16 Bit)
     uint32_t requestID = 0;
     requestID = clientIDPrefix;
@@ -95,11 +87,6 @@ void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t method_EventID, uint
     for (inet::L3Address destAddr : destAddresses) {
         socket.sendTo(someipheader, destAddr, destPort);
     }
-}
-
-void SomeipAppBase::processPacket(cPacket *pk) {
-    EV_INFO << "Received packet: " << inet::UDPSocket::getReceivedPacketInfo(pk) << endl;
-    delete pk;
 }
 
 void SomeipAppBase::processStart() {
@@ -124,10 +111,6 @@ void SomeipAppBase::processStart() {
 
 void SomeipAppBase::processSend() {
 
-}
-
-void SomeipAppBase::finish() {
-    ApplicationBase::finish();
 }
 
 bool SomeipAppBase::handleNodeStart(inet::IDoneCallback *doneCallback) {

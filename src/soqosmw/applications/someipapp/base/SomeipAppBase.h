@@ -48,11 +48,6 @@ protected:
     virtual void handleMessageWhenUp(cMessage *msg) override;
 
     /**
-     * Will be called after the simulation finishes
-     */
-    virtual void finish() override;
-
-    /**
      * Will be called while the graphical simulation is running.
      * Additional visualization updates can be implemented.
      */
@@ -63,13 +58,6 @@ protected:
      */
     virtual void sendPacket(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
             uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
-
-    /**
-     * Processes a packet
-     *
-     * @param msg
-     */
-    virtual void processPacket(cPacket *msg) override;
 
     /**
      * Setups network connection

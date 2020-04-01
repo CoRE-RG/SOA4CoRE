@@ -30,6 +30,7 @@ TicTocApp::~TicTocApp() {
 void TicTocApp:: initialize(int stage) {
     SomeipAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {
+        initialMsg = par("initialMsg");
         if (initialMsg){
             SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
         }
@@ -53,11 +54,10 @@ void TicTocApp::handleMessageWhenUp(cMessage *msg)
 }
 
 void TicTocApp::processPacket(cPacket *msg) {
-    cPacket *payload = msg->getEncapsulatedPacket();
+    cPacket *payload = msg->decapsulate();
     EV_INFO << "Received packet: " << msg->getName() << "    Length: " << msg->getByteLength() << endl;
     EV_INFO << "SOME/IP covered length: " << dynamic_cast<SomeIpHeader*>(msg)->getLength() << endl;
     EV_INFO << "Received payload: " << payload->getName() << "    Length: " << payload->getByteLength() << endl;
-    msg->decapsulate();
     delete payload;
     delete msg;
 }

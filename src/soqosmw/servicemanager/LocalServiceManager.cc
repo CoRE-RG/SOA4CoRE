@@ -219,6 +219,7 @@ PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
             case QoSGroups::WEB:
                 throw cRuntimeError("The web QoS Group is not yet available");
                 break;
+            //TODO SOMEIP case QoSGroups::SOMEIP
             default:
                 throw cRuntimeError("Unknown connection type.");
                 break;
@@ -258,6 +259,7 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
             case ConnectionType::ct_udp:
                 sub = createUDPSubscriberEndpoint(publisherPath, csi, connector);
                 break;
+            //TODO SOMEIP case ConnectionType::SOMEIP
             case ConnectionType::ct_http:
                 throw cRuntimeError("The HTTP connection is not yet available");
                 break;
