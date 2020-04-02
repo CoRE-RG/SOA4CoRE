@@ -21,7 +21,7 @@ import soqosmw.endpoints.publisher.standard.base.STDPublisherEndpointBase;
 
 //
 // The UDPPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
-// It realizes a UDp specific publishing endpoint.
+// It realizes a UDP specific publishing endpoint.
 // Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a publishing endpoint for a service. 
 // Publishers are connected to a specific transport and a publisher connector module (@see~PublisherConnector)

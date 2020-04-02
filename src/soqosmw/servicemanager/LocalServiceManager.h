@@ -225,10 +225,12 @@ private:
     SubscriberEndpointBase* createAVBSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
     SubscriberEndpointBase* createTCPSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
     SubscriberEndpointBase* createUDPSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+    SubscriberEndpointBase* createSOMEIPSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
 
     PublisherEndpointBase* createAVBPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
     PublisherEndpointBase* createTCPPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
     PublisherEndpointBase* createUDPPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
+    PublisherEndpointBase* createSOMEIPPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
 };
 
 } /* end namespace  */

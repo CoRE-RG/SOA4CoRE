@@ -1,4 +1,4 @@
-//
+ //
 // c Timo Haeckel for HAW Hamburg
 //
 // This program is free software: you can redistribute it and/or modify
@@ -220,6 +220,9 @@ PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
                 throw cRuntimeError("The web QoS Group is not yet available");
                 break;
             //TODO SOMEIP case QoSGroups::SOMEIP
+            case QoSGroups::SOMEIP:
+                pub = createSOMEIPPublisherEndpoint(publisherPath, qos, connector);
+                break;
             default:
                 throw cRuntimeError("Unknown connection type.");
                 break;
@@ -259,9 +262,12 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
             case ConnectionType::ct_udp:
                 sub = createUDPSubscriberEndpoint(publisherPath, csi, connector);
                 break;
-            //TODO SOMEIP case ConnectionType::SOMEIP
             case ConnectionType::ct_http:
                 throw cRuntimeError("The HTTP connection is not yet available");
+                break;
+            //TODO SOMEIP case ConnectionType::SOMEIP
+            case ConnectionType::ct_someip:
+                sub = createSOMEIPSubscriberEndpoint(publisherPath, csi, connector);
                 break;
             default:
                 throw cRuntimeError("Unknown connection type.");
@@ -293,6 +299,10 @@ int LocalServiceManager::getQoSGroupForConnectionType(int type){
         break;
     case ConnectionType::ct_http:
         return QoSGroups::WEB;
+        break;
+    //TODO SOMEIP
+    case ConnectionType::ct_someip:
+        return QoSGroups::SOMEIP;
         break;
     default:
         throw cRuntimeError("Unknown connection type.");
@@ -550,6 +560,42 @@ PublisherEndpointBase* LocalServiceManager::createUDPPublisherEndpoint(
         udpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
+        //connect endpoint to the reader
+        ret->setConnector(connector);
+        connector->addEndpoint(ret);
+    }
+
+    return ret;
+}
+
+PublisherEndpointBase* LocalServiceManager::createSOMEIPPublisherEndpoint(
+        std::string& publisherPath, int qos,
+        PublisherConnector* connector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qos == QoSGroups::SOMEIP){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                //TODO change to someip
+                    "soqosmw.endpoints.publisher.standard.udp.UDPPublisherEndpoint");
+        // 2. Create the module;
+        //TODO change to someip
+        UDPPublisherEndpoint* udpEndpoint =
+                            dynamic_cast<UDPPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        //TODO change to someip
+        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        //TODO change to someip
+        udpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        //TODO change to someip
         ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
         //connect endpoint to the reader
         ret->setConnector(connector);
