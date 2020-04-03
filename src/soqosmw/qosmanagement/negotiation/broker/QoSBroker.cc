@@ -24,6 +24,7 @@
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 #include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
+#include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 //AUTO-GENERATED Messages
 #include <inet/networklayer/common/L3Address.h>
 #include <inet/transportlayer/contract/udp/UDPSocket.h>
@@ -192,13 +193,16 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
                 fillEnvelope(establish);
                 establish->setQosClass(response->getQosClass());
 
-                if (response->getQosClass() == QoSGroups::STD_UDP) {
-                    CSI_UDP* csi = new CSI_UDP();
-
+                ConnectionSpecificInformation* connectionlessCSI = nullptr;
+                switch (response->getQosClass()) {
+                case QoSGroups::STD_UDP:
+                    connectionlessCSI = new CSI_UDP();
+                case QoSGroups::SOMEIP: {
+                    connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP();
                     // create or find the subscriber
-                    SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getPath(),csi);
+                    SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getPath(),connectionlessCSI);
 
-                    delete csi;
+                    delete connectionlessCSI;
 
                     if(sub){
                         ConnectionSpecificInformation* info = sub->getConnectionSpecificInformation();
@@ -210,6 +214,10 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
                     } else {
                         throw cRuntimeError("No subscriber was created...");
                     }
+                    break;
+                }
+                default:
+                    break;
                 }
                 // set establish size
                 establish->setByteLength(getNegotiationMessageSize(establish));
@@ -257,14 +265,19 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
                     if(info){
                         finalise->encapsulate(info);
 
-                        if(info->getConnectionType() == ConnectionType::ct_udp) {
-                            // if UDP connect directly to subscriber now.
+                        switch (info->getConnectionType()) {
+                        case ConnectionType::ct_udp:
+                        case ConnectionType::ct_someip:
+                            // if connectionless protocol connect directly to subscriber now.
                             if(ConnectionSpecificInformation* subConnection = dynamic_cast<ConnectionSpecificInformation*>( establish->decapsulate())){
                                 if(UDPPublisherEndpoint* udpPublisher = dynamic_cast<UDPPublisherEndpoint*> (pub)){
                                     udpPublisher->addRemote(subConnection);
                                 }
                                 delete subConnection;
                             }
+                            break;
+                        default :
+                            break;
                         }
 
                         // successful negotiation
@@ -322,16 +335,21 @@ bool QoSBroker::handleFinalise(QoSNegotiationFinalise* finalise) {
                 ConnectionSpecificInformation* info = dynamic_cast<SOQoSMW::ConnectionSpecificInformation*>(finalise->decapsulate());
                 if(info){
 
-                    // do not create another udp subscriber!
-                    if (info->getConnectionType() != ConnectionType::ct_udp) {
-
+                    // do not create another connectionless subscriber!
+                    switch (info->getConnectionType()) {
+                    case ConnectionType::ct_udp:
+                    case ConnectionType::ct_someip:
+                        break;
+                    default:
                         // create or find the subscriber
                         SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getPath(),info);
 
                         if(!sub){
                             throw cRuntimeError("No subscriber was created...");
                         }
+                        break;
                     }
+
                     delete info;
                 }
 

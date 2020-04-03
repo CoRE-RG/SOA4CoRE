@@ -20,9 +20,13 @@
 #include "soqosmw/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
 #include "soqosmw/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
 #include "soqosmw/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
+#include "soqosmw/endpoints/subscriber/someip/tcp/SOMEIPTCPSubscriberEndpoint.h"
+#include "soqosmw/endpoints/subscriber/someip/udp/SOMEIPUDPSubscriberEndpoint.h"
 #include "soqosmw/endpoints/publisher/realtime/avb/AVBPublisherEndpoint.h"
 #include "soqosmw/endpoints/publisher/standard/tcp/TCPPublisherEndpoint.h"
 #include "soqosmw/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
+#include "soqosmw/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
+#include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 //INET
 #include "inet/networklayer/common/L3AddressResolver.h"
 //STD
@@ -460,6 +464,39 @@ SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
     return ret;
 }
 
+SubscriberEndpointBase* LocalServiceManager::createSOMEIPSubscriberEndpoint(
+        std::string& publisherPath, ConnectionSpecificInformation* csi,
+        SubscriberConnector* connector) {
+
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_SOMEIP* csi_someip = dynamic_cast<CSI_SOMEIP*>(csi);
+
+    if(csi_someip){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soqosmw.endpoints.subscriber.someip.udp.SOMEIPUDPSubscriberEndpoint");
+        // 2. Create the module;
+        SOMEIPUDPSubscriberEndpoint* someipUdpEndpoint =
+                            dynamic_cast<SOMEIPUDPSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        someipUdpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        someipUdpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(someipUdpEndpoint);
+        //connect endpoint to the reader
+        ret->setConnector(connector);
+        connector->addEndpoint(ret);
+    }
+
+    return ret;
+}
+
 PublisherEndpointBase* LocalServiceManager::createAVBPublisherEndpoint(
         std::string& publisherPath, int qos,
         PublisherConnector* connector) {
@@ -578,25 +615,20 @@ PublisherEndpointBase* LocalServiceManager::createSOMEIPPublisherEndpoint(
     if(qos == QoSGroups::SOMEIP){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
-                //TODO change to someip
-                    "soqosmw.endpoints.publisher.standard.udp.UDPPublisherEndpoint");
+                    "soqosmw.endpoints.publisher.someip.udp.SOMEIPUDPPublisherEndpoint");
         // 2. Create the module;
-        //TODO change to someip
-        UDPPublisherEndpoint* udpEndpoint =
-                            dynamic_cast<UDPPublisherEndpoint*>(
+        SOMEIPUDPPublisherEndpoint* someipUdpEndpoint =
+                            dynamic_cast<SOMEIPUDPPublisherEndpoint*>(
                                     moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
         _publisherEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
         string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
-        //TODO change to someip
-        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        someipUdpEndpoint->par("localAddress").setStringValue(localAddr);
         int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
-        //TODO change to someip
-        udpEndpoint->par("localPort").setIntValue(localPort);
+        someipUdpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.
-        //TODO change to someip
-        ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
+        ret = dynamic_cast<PublisherEndpointBase*>(someipUdpEndpoint);
         //connect endpoint to the reader
         ret->setConnector(connector);
         connector->addEndpoint(ret);
