@@ -24,5 +24,5 @@ simple SOMEIPTCPSubscriberEndpoint extends TCPSubscriberEndpoint
 {
     parameters:
         @class(SOQoSMW::SOMEIPTCPSubscriberEndpoint);
-        qos = "SOME/IP";
+        qos = "SOMEIP";
 }

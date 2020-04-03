@@ -33,7 +33,7 @@ simple UDPSubscriberEndpoint extends STDSubscriberEndpointBase
 {
     parameters:
         @class(SOQoSMW::UDPSubscriberEndpoint);
-    	qos = "STD_UDP"; // invalid...
+    	qos = default("STD_UDP"); // invalid...
     
         // Local IP address for TCP socket
         string localAddress;

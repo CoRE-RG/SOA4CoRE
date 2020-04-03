@@ -33,7 +33,7 @@ simple UDPPublisherEndpoint extends STDPublisherEndpointBase
 {
     parameters:
         @class(SOQoSMW::UDPPublisherEndpoint);
-    	qos = "STD_UDP";
+    	qos = default("STD_UDP");
     
         // Local ip address for TCP socket
         string localAddress;

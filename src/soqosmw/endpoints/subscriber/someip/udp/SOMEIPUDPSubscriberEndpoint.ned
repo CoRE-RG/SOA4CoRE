@@ -24,5 +24,5 @@ simple SOMEIPUDPSubscriberEndpoint extends UDPSubscriberEndpoint
 {
     parameters:
         @class(SOQoSMW::SOMEIPUDPSubscriberEndpoint);
-        qos = "SOME/IP";
+        qos = "SOMEIP";
 }

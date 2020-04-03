@@ -13,20 +13,22 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOQOSMW_SOMEIPTCPSUBSCRIBERENDPOINT_H_
-#define __SOQOSMW_SOMEIPTCPSUBSCRIBERENDPOINT_H_
+#ifndef __SOQOSMW_SOMEIPSUBSCRIBERAPPBASE_H_
+#define __SOQOSMW_SOMEIPSUBSCRIBERAPPBASE_H_
 
-#include "soqosmw/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
+#include "soqosmw/applications/subscriberapp/base/SubscriberAppBase.h"
 
 namespace SOQoSMW {
 
 /**
  * @author Mehmet Cakir
  */
-class SOMEIPTCPSubscriberEndpoint : public TCPSubscriberEndpoint
+class SomeipSubscriberAppBase : public virtual SubscriberAppBase
 {
+  protected:
+    //TODO override
+    //virtual void initialize();
+    //virtual void handleMessage(cMessage *msg);
 };
-
 } /* end namespace SOQoSMW */
-
 #endif

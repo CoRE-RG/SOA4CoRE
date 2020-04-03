@@ -13,20 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOQOSMW_SOMEIPTCPSUBSCRIBERENDPOINT_H_
-#define __SOQOSMW_SOMEIPTCPSUBSCRIBERENDPOINT_H_
+package soqosmw.applications.someipapp.publisher;
 
-#include "soqosmw/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
+import soqosmw.applications.publisherapp.base.PublisherAppBase;
 
-namespace SOQoSMW {
-
-/**
- * @author Mehmet Cakir
- */
-class SOMEIPTCPSubscriberEndpoint : public TCPSubscriberEndpoint
+//
+// @author Mehmet Cakir
+//
+simple SomeipPublisherAppBase extends PublisherAppBase
 {
-};
-
-} /* end namespace SOQoSMW */
-
-#endif
+    @class(SOQoSMW::SomeipPublisherAppBase);
+}

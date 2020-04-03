@@ -13,20 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOQOSMW_SOMEIPTCPSUBSCRIBERENDPOINT_H_
-#define __SOQOSMW_SOMEIPTCPSUBSCRIBERENDPOINT_H_
-
-#include "soqosmw/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
+#include "SomeipSubscriberAppBase.h"
 
 namespace SOQoSMW {
 
-/**
- * @author Mehmet Cakir
- */
-class SOMEIPTCPSubscriberEndpoint : public TCPSubscriberEndpoint
-{
-};
+Define_Module(SomeipSubscriberAppBase);
 
 } /* end namespace SOQoSMW */
-
-#endif
