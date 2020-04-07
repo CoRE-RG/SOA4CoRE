@@ -40,7 +40,7 @@ void SomeipPublisherAppBase::handleMessage(cMessage *msg) {
             payloadPacket->setTimestamp();
             payloadPacket->setByteLength(8);
             sendPacket(0b1000000000000001, 0b1111111111111111, 0b10101010, 0b10100010, 0b0000000011111111,
-                    SOQoSMW::ProtocolVersion::V_1, 42, 42, SOQoSMW::ReturnCode::E_OK, payloadPacket);
+                    SOQoSMW::ProtocolVersion::V_1, 42, SOQoSMW::MessageType::REQUEST, SOQoSMW::ReturnCode::E_OK, payloadPacket);
             EV_DEBUG << _publisherName << ": Message Published." << endl;
 
             //schedule next send event
