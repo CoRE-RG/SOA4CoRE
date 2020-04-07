@@ -17,6 +17,7 @@
 #define __SOQOSMW_SOMEIPPUBLISHERAPPBASE_H_
 
 #include "soqosmw/applications/publisherapp/base/PublisherAppBase.h"
+#include "soqosmw/messages/someip/SomeIpHeader_m.h"
 
 namespace SOQoSMW {
 
@@ -26,9 +27,14 @@ namespace SOQoSMW {
 class SomeipPublisherAppBase : public virtual PublisherAppBase
 {
   protected:
-    //TODO override
-    //virtual void initialize();
-    //virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cMessage *msg) override;
+
+    /**
+     * Sends a SOME/IP packet
+     */
+    virtual void sendPacket(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+            uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
+
 };
 } /* end namespace SOQoSMW */
 #endif
