@@ -25,6 +25,28 @@ namespace SOQoSMW {
  */
 class SOMEIPUDPPublisherEndpoint : public UDPPublisherEndpoint
 {
+public:
+    /**
+     * Creates a connection specific information for this endpoint.
+     * @return  the connection specific information.
+     */
+    virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
+
+protected:
+    /**
+     * Publish a payload to all subscribers. This needs to be implemented by all subclasses.
+     * The message will be deleted by the caller afterwards.
+     *
+     * @param payload   the payload to be published.
+     */
+    virtual void publish(cPacket* msg) override;
+
+private:
+    /**
+     * Sends a SOME/IP packet
+     */
+    virtual void sendPacket(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+            uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
 };
 } /* end namespace SOQoSMW */
 #endif

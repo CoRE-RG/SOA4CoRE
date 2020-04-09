@@ -223,7 +223,7 @@ PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
             case QoSGroups::WEB:
                 throw cRuntimeError("The web QoS Group is not yet available");
                 break;
-            //TODO SOMEIP case QoSGroups::SOMEIP
+            //TODO SOMEIP case QoSGroups::SOMEIP for TCP
             case QoSGroups::SOMEIP:
                 pub = createSOMEIPPublisherEndpoint(publisherPath, qos, connector);
                 break;
@@ -269,7 +269,7 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
             case ConnectionType::ct_http:
                 throw cRuntimeError("The HTTP connection is not yet available");
                 break;
-            //TODO SOMEIP case ConnectionType::SOMEIP
+            //TODO SOMEIP case ConnectionType::SOMEIP for TCP
             case ConnectionType::ct_someip:
                 sub = createSOMEIPSubscriberEndpoint(publisherPath, csi, connector);
                 break;
@@ -304,7 +304,7 @@ int LocalServiceManager::getQoSGroupForConnectionType(int type){
     case ConnectionType::ct_http:
         return QoSGroups::WEB;
         break;
-    //TODO SOMEIP
+    //TODO SOMEIP for TCP
     case ConnectionType::ct_someip:
         return QoSGroups::SOMEIP;
         break;

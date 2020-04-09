@@ -56,8 +56,6 @@ packet CSI_AVB extends ConnectionSpecificInformation {
     int vlanID;
 }
 
-packet CSI_SOMEIP extends ConnectionSpecificInformation {
+packet CSI_SOMEIP extends CSI_UDP {
     connectionType = ConnectionType::ct_someip;
-    string address;
-    int port;
 }
