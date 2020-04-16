@@ -15,9 +15,9 @@
 
 package soqosmw.applications.someipapp.tictoc;
 
-import soqosmw.applications.someipapp.base.SomeipBaseApp;
+import soqosmw.applications.someipapp.base.SomeipAppBase;
 
-simple TicTocApp extends SomeipBaseApp
+simple TicTocApp extends SomeipAppBase
 {
     parameters:
         @class(SOQoSMW::TicTocApp);

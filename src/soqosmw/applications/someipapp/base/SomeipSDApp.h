@@ -13,27 +13,25 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_
-#define SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_
+#ifndef __SOQOSMW_SOMEIPSDAPP_H_
+#define __SOQOSMW_SOMEIPSDAPP_H_
 
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 
 namespace SOQoSMW {
 
 /**
- * @brief A SOME/IP TicToc application.
+ * @brief Basic SomeipSDApp
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class TicTocApp: public virtual SomeipAppBase {
-public:
-    TicTocApp();
-    virtual ~TicTocApp();
-protected:
+class SomeipSDApp : public virtual SomeipAppBase
+{
+  protected:
     /**
-     * Schedules a self message
+     * Initializes module with stages
      *
      * @param stage indicates the initialization stage
      */
@@ -46,13 +44,6 @@ protected:
      * @param msg
      */
     virtual void handleMessageWhenUp(cMessage *msg) override;
-
-    /**
-     * Processes a packet
-     *
-     * @param packet
-     */
-    virtual void processPacket(cPacket *packet) override;
 };
 } /* end namespace SOQoSMW */
-#endif /* SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_ */
+#endif

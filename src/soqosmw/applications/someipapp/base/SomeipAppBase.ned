@@ -17,8 +17,8 @@ package soqosmw.applications.someipapp.base;
 
 import inet.applications.udpapp.UDPBasicApp;
 
-simple SomeipBaseApp extends UDPBasicApp
+simple SomeipAppBase extends UDPBasicApp
 {
     parameters:
-        @class(SOQoSMW::SomeipBaseApp);
+        @class(SOQoSMW::SomeipAppBase);
 }

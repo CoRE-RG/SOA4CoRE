@@ -54,10 +54,29 @@ protected:
     virtual void refreshDisplay() const override;
 
     /**
-     * Sends a SOME/IP packet
+     * Encapsulates packet into a SOME/IP Header
+     *
+     * @param serviceID - the service id
+     * @param method_EventID - the method id
+     * @param clientIDPrefix - configurable prefix or fixed value to have unique identifier in the overall vehicle
+     * @param clientID - ID of calling client
+     * @param sessionID - unique identifier that allows to distinguish sequential messages or requests
+     * @param protocolVersion - version of SOME/IP Protocol
+     * @param interfaceVersion - version of service method interface
+     * @param messageType - the message type
+     * @param returnCode - the return code
+     * @param payload - the payload
+     * @return Packet encapsulated in SOME/IP Header
      */
-    virtual void sendPacket(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+    virtual cPacket* encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
             uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
+
+    /**
+     * Sends given packet to all known receivers
+     *
+     * @param packet to be sent
+     */
+    virtual void sendPacket(cPacket* packet);
 
     /**
      * Setups network connection

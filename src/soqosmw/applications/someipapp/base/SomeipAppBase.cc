@@ -54,7 +54,7 @@ void SomeipAppBase::refreshDisplay() const {
 
 }
 
-void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+cPacket* SomeipAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
         uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode,cPacket *payload) {
     SomeIpHeader *someipheader = new SomeIpHeader("someip");
     //Message ID ("Service ID" 16 Bit | "0" 1 Bit | "Method ID" 15 Bit) or
@@ -84,8 +84,12 @@ void SomeipAppBase::sendPacket(uint16_t serviceID, uint16_t method_EventID, uint
     //The return code
     someipheader->setReturnCode(returnCode);
     someipheader->encapsulate(payload);
+    return someipheader;
+}
+
+void SomeipAppBase::sendPacket(cPacket* packet) {
     for (inet::L3Address destAddr : destAddresses) {
-        socket.sendTo(someipheader, destAddr, destPort);
+        socket.sendTo(packet, destAddr, destPort);
     }
 }
 

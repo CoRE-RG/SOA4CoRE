@@ -13,26 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-cplusplus {{
-#include "soqosmw/messages/someip/SomeIpHeader_m.h"
-#include "soqosmw/messages/someip/Entry_m.h"
-#include "soqosmw/messages/someip/Option_m.h"
-}}
+package soqosmw.applications.someipapp.base;
 
-namespace SOQoSMW;
-
-cplusplus {{
-#define MIN_SOMEIPSDHEADERBYTESIZE 12
-}}
-
-class SomeIpHeader;
-class Entry;
-class Option;
-
-packet SomeIpSDHeader extends SomeIpHeader {
-    uint32_t flags;
-    uint32_t entriesLength;
-    Entry entriesArray[];
-    uint32_t optionsLength;
-    Option optionsArray[];
+simple SomeipSDApp extends SomeipAppBase
+{
+    parameters:
+        @class(SOQoSMW::SomeipSDApp);
 }

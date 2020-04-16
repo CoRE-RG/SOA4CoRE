@@ -13,26 +13,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-cplusplus {{
-#include "soqosmw/messages/someip/SomeIpHeader_m.h"
-#include "soqosmw/messages/someip/Entry_m.h"
-#include "soqosmw/messages/someip/Option_m.h"
-}}
+#include "SomeipSDApp.h"
 
-namespace SOQoSMW;
+namespace SOQoSMW {
 
-cplusplus {{
-#define MIN_SOMEIPSDHEADERBYTESIZE 12
-}}
+Define_Module(SomeipSDApp);
 
-class SomeIpHeader;
-class Entry;
-class Option;
-
-packet SomeIpSDHeader extends SomeIpHeader {
-    uint32_t flags;
-    uint32_t entriesLength;
-    Entry entriesArray[];
-    uint32_t optionsLength;
-    Option optionsArray[];
+void SomeipSDApp::initialize(int stage)
+{
+    SomeipAppBase::initialize(stage);
 }
+
+void SomeipSDApp::handleMessageWhenUp(cMessage *msg)
+{
+    // TODO - Generated method body
+}
+
+} /* end namespace SOQoSMW */

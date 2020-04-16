@@ -13,7 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+
+cplusplus {{
+#include "inet/networklayer/common/IPProtocolId_m.h"
+#include "inet/networklayer/contract/ipv4/IPv4Address.h"
+#include "inet/networklayer/contract/ipv6/IPv6Address.h"
+using namespace inet;
+}}
+
+enum IPProtocolId;
+class IPv4Address;
+class IPv6Address;
+
 namespace SOQoSMW;
+
+cplusplus {{
+#define OPTIONLENGTH 4
+
+}}
 
 enum OptionType {
     CONFIGURATION  = 0x01;
@@ -27,8 +44,8 @@ enum OptionType {
 }
 
 enum L4Protocol {
-    TCP = 0;
-    UDP = 1;
+    TCP = 0x06;
+    UDP = 0x11;
 }
 
 packet Option {
@@ -57,7 +74,7 @@ packet IPv4EndpointOption extends Option {
     type = IPV4ENDPOINT;
     uint32_t ipv4Address;
     uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(L4Protocol);
+    uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
 
@@ -67,7 +84,7 @@ packet IPv6EndpointOption extends Option {
     type = IPV6ENDPOINT;
     char ipv6Address[16];
     uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(L4Protocol);
+    uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
 
@@ -77,7 +94,7 @@ packet IPv4MulticastOption extends Option {
     type = IPV4MULTICAST;
     uint32_t ipv4Address;
     uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(L4Protocol);
+    uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
 
@@ -87,7 +104,7 @@ packet IPv6MulticastOption extends Option {
     type = IPV6MULTICAST;
     char ipv6Address[16];
     uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(L4Protocol);
+    uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
 
@@ -97,7 +114,7 @@ packet IPv4SDEndpointOption extends Option {
     type = IPV4SDENDPOINT;
     uint32_t ipv4Address;
     uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(L4Protocol);
+    uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
 
@@ -107,6 +124,6 @@ packet IPv6SDEndpointOption extends Option {
     type = IPV6SDENDPOINT;
     char ipv6Address[16];
     uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(L4Protocol);
+    uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
