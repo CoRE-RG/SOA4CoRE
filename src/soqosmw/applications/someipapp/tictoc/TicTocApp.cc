@@ -18,6 +18,12 @@
 namespace SOQoSMW {
 Define_Module(TicTocApp);
 
+TicTocApp::TicTocApp(){
+}
+
+TicTocApp::~TicTocApp(){
+}
+
 void TicTocApp:: initialize(int stage) {
     SomeipAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {

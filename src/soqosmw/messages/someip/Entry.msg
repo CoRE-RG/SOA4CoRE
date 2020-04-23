@@ -16,8 +16,11 @@
 namespace SOQoSMW;
 
 enum EntryType{
-    FIND = 0x00;
-    OFFER = 0x01;
+    FIND                  = 0x00;
+    OFFER                 = 0x01;
+    SUBSCRIBEVENTGROUP    = 0x06;
+    SUBSCRIBEVENTGROUPACK = 0x07;
+    
 }
 
 packet Entry {

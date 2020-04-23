@@ -13,20 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "SomeipSDApp.h"
+package soqosmw.applications.someipapp.dummySD.subscriberapp;
 
-namespace SOQoSMW {
+import soqosmw.applications.someipapp.base.SomeipAppBase;
 
-Define_Module(SomeipSDApp);
-
-void SomeipSDApp::initialize(int stage)
+simple SomeipSubscriber extends SomeipAppBase
 {
-    SomeipAppBase::initialize(stage);
+    @class(SOQoSMW::SomeipSubscriber);
 }
-
-void SomeipSDApp::handleMessageWhenUp(cMessage *msg)
-{
-    // TODO - Generated method body
-}
-
-} /* end namespace SOQoSMW */

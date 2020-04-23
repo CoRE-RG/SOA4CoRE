@@ -13,25 +13,25 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOQOSMW_SOMEIPSDAPP_H_
-#define __SOQOSMW_SOMEIPSDAPP_H_
+#ifndef __SOQOSMW_SOMEIPPUBLISHER_H_
+#define __SOQOSMW_SOMEIPPUBLISHER_H_
 
+#include "soqosmw/applications/someipapp/base/SomeipSD.h"
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 
 namespace SOQoSMW {
 
 /**
- * @brief Basic SomeipSDApp
+ * @brief A simple dummy SOME/IP Publisher application.
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class SomeipSDApp : public virtual SomeipAppBase
-{
-  protected:
+class SomeipPublisher : public virtual SomeipAppBase  {
+protected:
     /**
-     * Initializes module with stages
+     * Initializes the module and waits for find
      *
      * @param stage indicates the initialization stage
      */
@@ -39,11 +39,22 @@ class SomeipSDApp : public virtual SomeipAppBase
 
     /**
      * Handles incoming message as soon as node is up and
-     * responds with a new message
+     * processes the packet
      *
      * @param msg
      */
     virtual void handleMessageWhenUp(cMessage *msg) override;
+
+    /**
+     * Processes a packet
+     *
+     * @param packet
+     */
+    virtual void processPacket(cPacket *packet) override;
+
+private:
+    SomeipSD* _someipSD;
 };
 } /* end namespace SOQoSMW */
 #endif
+

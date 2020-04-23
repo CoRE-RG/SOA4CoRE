@@ -13,10 +13,23 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.base;
+#include <soqosmw/applications/someipapp/dummySD/publisherapp/SomeipPublisher.h>
 
-simple SomeipSDApp extends SomeipAppBase
-{
-    parameters:
-        @class(SOQoSMW::SomeipSDApp);
+namespace SOQoSMW {
+
+Define_Module(SomeipPublisher);
+
+void SomeipPublisher::initialize(int stage) {
+    SomeipAppBase::initialize(stage);
+    cModule* module = getParentModule()->getParentModule()->getSubmodule("sd")->getSubmodule("udpApp", 0);
+    _someipSD = dynamic_cast<SomeipSD*>(module);
+    _someipSD->discover();
 }
+
+void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
+}
+
+void SomeipPublisher::processPacket(cPacket *packet) {
+
+}
+} /* end namespace SOQoSMW */

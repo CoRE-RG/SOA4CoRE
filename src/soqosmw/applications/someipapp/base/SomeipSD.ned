@@ -13,31 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-cplusplus {{
-#include "soqosmw/messages/someip/SomeIpHeader_m.h"
-#include "soqosmw/messages/someip/Entry_m.h"
-#include "soqosmw/messages/someip/Option_m.h"
-#include <vector>
-}}
+package soqosmw.applications.someipapp.base;
 
-namespace SOQoSMW;
-
-cplusplus {{
-typedef std::vector<Entry> EntryList;
-typedef std::vector<Option> OptionList;
-
-#define MIN_SOMEIPSDHEADERBYTESIZE 12
-}}
-
-class SomeIpHeader;
-class noncobject EntryList;
-class noncobject OptionList;
-
-packet SomeIpSDHeader extends SomeIpHeader {
-    messageID = 0xFFFF8100;
-    uint32_t flags;
-    uint32_t entriesLength;
-    EntryList entries;
-    uint32_t optionsLength;
-    OptionList options;
+simple SomeipSD extends SomeipAppBase
+{
+    parameters:
+        @class(SOQoSMW::SomeipSD);
 }
