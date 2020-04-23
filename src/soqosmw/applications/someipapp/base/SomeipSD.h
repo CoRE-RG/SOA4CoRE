@@ -16,9 +16,16 @@
 #ifndef __SOQOSMW_SOMEIPSDAPP_H_
 #define __SOQOSMW_SOMEIPSDAPP_H_
 
+#define UNCOVEREDBYTESBYLENGTH 8
+#define BROADCASTADDRESS "255.255.255.255"
+
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
+#include "soqosmw/messages/someip/SomeIpSDHeader_m.h"
 
 namespace SOQoSMW {
+
+class SomeipPublisher;
+class SomeipSubscriber;
 
 /**
  * @brief Basic SomeipSDApp
@@ -48,29 +55,36 @@ class SomeipSD : public virtual SomeipAppBase
     /**
      * Discovers a service
      */
-    void discover();
+    void find(uint16_t serviceID, uint16_t instanceID);
 
     /**
      * Registers a SomeipPublisher
      * @param someipPublisher
      */
-    //void registerPublisher(SomeipPublisher* someipPublisher);
+    void registerPublisher(SomeipPublisher* someipPublisher);
 
     /**
      * Registers a SomeipSubscriber
      * @param someipSubscriber
      */
-    //void registerSubscriber(SomeipSubscriber* someipSubscriber);
+    void registerSubscriber(SomeipSubscriber* someipSubscriber);
   private:
+    /**
+     * Processes a packet
+     *
+     * @param packet
+     */
+    void processPacket(SomeIpSDHeader* someipSDHeader);
+
     /**
      * The SomeipPublisher
      */
-    //SomeipPublisher* _someipPublisher;
+    SomeipPublisher* _someipPublisher;
 
     /**
      * The SomeipSubscriber
      */
-    //SomeipSubscriber* _someipSubscriber;
+    SomeipSubscriber* _someipSubscriber;
 };
 } /* end namespace SOQoSMW */
 #endif

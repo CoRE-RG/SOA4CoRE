@@ -35,9 +35,14 @@ class noncobject OptionList;
 
 packet SomeIpSDHeader extends SomeIpHeader {
     messageID = 0xFFFF8100;
+    requestID = 0x00000001;
+    protocolVersion = PV_1;
+    interfaceVersion = IV_1;
+    messageType = NOTIFICATION;
+    returnCode = E_OK;
     uint32_t flags;
-    uint32_t entriesLength;
+    uint32_t entriesLength = 0;
     EntryList entries;
-    uint32_t optionsLength;
+    uint32_t optionsLength = 0;
     OptionList options;
 }

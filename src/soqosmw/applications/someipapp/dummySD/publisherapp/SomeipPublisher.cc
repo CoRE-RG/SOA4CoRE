@@ -21,12 +21,15 @@ Define_Module(SomeipPublisher);
 
 void SomeipPublisher::initialize(int stage) {
     SomeipAppBase::initialize(stage);
-    cModule* module = getParentModule()->getParentModule()->getSubmodule("sd")->getSubmodule("udpApp", 0);
-    _someipSD = dynamic_cast<SomeipSD*>(module);
-    _someipSD->discover();
+    if (stage == inet::INITSTAGE_LOCAL) {
+        cModule* module = getParentModule()->getSubmodule("udpApp", 1);
+        _someipSD = dynamic_cast<SomeipSD*>(module);
+        _someipSD->registerPublisher(this);
+    }
 }
 
 void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
+    delete msg;
 }
 
 void SomeipPublisher::processPacket(cPacket *packet) {

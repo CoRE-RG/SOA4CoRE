@@ -16,6 +16,7 @@
 #ifndef __SOQOSMW_SOMEIPSUBSCRIBER_H_
 #define __SOQOSMW_SOMEIPSUBSCRIBER_H_
 
+#include "soqosmw/applications/someipapp/base/SomeipSD.h"
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 
 namespace SOQoSMW {
@@ -51,6 +52,9 @@ protected:
      * @param packet
      */
     virtual void processPacket(cPacket *packet) override;
+
+private:
+    SomeipSD* _someipSD;
 };
 } /* end namespace SOQoSMW */
 #endif

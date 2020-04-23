@@ -15,36 +15,41 @@
 
 package soqosmw.examples.SomeipSDDummy;
 
+import inet.node.inet.StandardHost;
 import soqosmw.applications.someipapp.dummySD.SomeipPublisherNode;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.ethernet.EtherSwitch;
 
-network SomeipSDDummy {
+network SomeipSDDummy
+{
     parameters:
     types:
-        channel ETH_100MBIT extends EtherLink {
+        channel ETH_100MBIT extends EtherLink
+        {
             datarate = 100Mbps;
             length = 5.0m;
         }
-        
+
     submodules:
-        pubnode: SomeipPublisherNode {
+        pubnode: StandardHost;
+
+        subnode: StandardHost {
+            @display("p=210,110");
         }
-        
-        pub2node: SomeipPublisherNode {
+
+        drittesRad: StandardHost {
+            @display("p=283,38");
         }
-        
+
         switch: EtherSwitch {
+            @display("p=133,62");
         }
-        
-        configurator: IPv4NetworkConfigurator {
-        }
-        
+
+        configurator: IPv4NetworkConfigurator;
+
     connections:
-        pubnode.ethg[0] <--> switch.ethg++;
-        pubnode.ethg[1] <--> switch.ethg++;
-        
-        pub2node.ethg[0] <--> switch.ethg++;
-        pub2node.ethg[1] <--> switch.ethg++;
+        pubnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        subnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        drittesRad.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
 }

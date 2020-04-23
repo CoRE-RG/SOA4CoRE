@@ -23,24 +23,28 @@ enum EntryType{
     
 }
 
-packet Entry {
-    byteLength = 12;
+cplusplus {{ #define ENTRYLENGTH 12 }}
+class Entry {
+    //byteLength = 12;
     uint8_t type @enum(EntryType);
     uint8_t index1stOptions;
-    uint8_t index2nsOptions;
+    uint8_t index2ndOptions;
     uint8_t num1stAnd2ndOptions;
     uint16_t serviceID;
     uint16_t instanceID;
+    // Major Version - 8Bit, TTL - 24Bit
     uint32_t majorVersion_TTL;
 }
 
-packet ServiceEntry extends Entry {
-    byteLength = 16;
+cplusplus {{ #define SERVICEENTRYLENGTH 16 }}
+class ServiceEntry extends Entry {
+    //byteLength = 16;
     uint32_t minorVersion;
 }
 
-packet EventgroupEntry extends Entry{
-    byteLength = 16;
+cplusplus {{ #define EVENTGROUPENTRYLENGTH 16 }}
+class EventgroupEntry extends Entry{
+    //byteLength = 16;
     uint8_t reserved = 0;
     uint8_t initialDataRequest_Counter;
     uint16_t eventgroupID;

@@ -20,11 +20,18 @@ namespace SOQoSMW {
 Define_Module(SomeipSubscriber);
 
 void SomeipSubscriber::initialize(int stage) {
-
+    SomeipAppBase::initialize(stage);
+    if (stage == inet::INITSTAGE_LOCAL) {
+        cModule* module = getParentModule()->getSubmodule("udpApp", 1);
+        _someipSD = dynamic_cast<SomeipSD*>(module);
+        _someipSD->registerSubscriber(this);
+        SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+    }
 }
 
 void SomeipSubscriber::handleMessageWhenUp(cMessage *msg) {
-
+    _someipSD->find(0x0042,0xFFFF);
+    delete msg;
 }
 
 void SomeipSubscriber::processPacket(cPacket *packet) {

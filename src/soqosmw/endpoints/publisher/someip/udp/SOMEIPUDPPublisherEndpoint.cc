@@ -30,7 +30,7 @@ ConnectionSpecificInformation* SOMEIPUDPPublisherEndpoint::getConnectionSpecific
 void SOMEIPUDPPublisherEndpoint::publish(cPacket* msg) {
     if(_isConnected) {
         sendPacket(0b1000000000000001, 0b1111111111111111, 0b10101010, 0b10100010, 0b0000000011111111,
-                SOQoSMW::ProtocolVersion::V_1, 42, SOQoSMW::MessageType::REQUEST, SOQoSMW::ReturnCode::E_OK, msg->dup());
+                SOQoSMW::ProtocolVersion::PV_1, 42, SOQoSMW::MessageType::REQUEST, SOQoSMW::ReturnCode::E_OK, msg->dup());
     }
 }
 
@@ -56,7 +56,7 @@ void SOMEIPUDPPublisherEndpoint::sendPacket(uint16_t serviceID, uint16_t method_
     requestID = requestID | sessionID;
     someipheader->setRequestID(requestID);
     //Version of SOME/IP Protocol
-    someipheader->setProtcolVersion(protocolVersion);
+    someipheader->setProtocolVersion(protocolVersion);
     //Major version of the service interface
     someipheader->setInterfaceVersion(interfaceVersion);
     //The message type

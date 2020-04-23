@@ -48,7 +48,11 @@ enum ReturnCode{
 }
 
 enum ProtocolVersion{
-    V_1 = 1;
+    PV_1 = 0x01;
+}
+
+enum InterfaceVersion{
+    IV_1 = 0x01;
 }
 
 packet SomeIpHeader {
@@ -56,8 +60,8 @@ packet SomeIpHeader {
     uint32_t messageID;
     uint32_t length;
     uint32_t requestID;
-    uint8_t  protcolVersion @enum(ProtocolVersion);
-    uint8_t  interfaceVersion;
+    uint8_t  protocolVersion @enum(ProtocolVersion);
+    uint8_t  interfaceVersion @enum(InterfaceVersion);
     uint8_t  messageType @enum(MessageType);
     uint8_t  returnCode @enum(ReturnCode);
 }

@@ -76,7 +76,7 @@ cPacket* SomeipAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_E
     requestID = requestID | sessionID;
     someipheader->setRequestID(requestID);
     //Version of SOME/IP Protocol
-    someipheader->setProtcolVersion(protocolVersion);
+    someipheader->setProtocolVersion(protocolVersion);
     //Major version of the service interface
     someipheader->setInterfaceVersion(interfaceVersion);
     //The message type
