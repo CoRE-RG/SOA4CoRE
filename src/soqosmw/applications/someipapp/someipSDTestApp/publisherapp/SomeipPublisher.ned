@@ -13,19 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.dummySD;
+package soqosmw.applications.someipapp.someipSDTestApp.publisherapp;
 
-import soqosmw.applications.someipapp.dummySD.subscriberapp.SomeipSubscriber;
-import soqosmw.applications.someipapp.base.SomeipSD;
+import soqosmw.applications.someipapp.base.SomeipAppBase;
 
-module SomeipSubscriberNode
+simple SomeipPublisher extends SomeipAppBase
 {
     parameters:
-    submodules:
-        subscriber: SomeipSubscriber {
-            @display("p=40,30");
-        }
-        sd: SomeipSD {
-            @display("p=112,30");
-        }
+        @class(SOQoSMW::SomeipPublisher);
+        int publishServiceID;
+        int instanceID;
+        
 }

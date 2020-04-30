@@ -43,32 +43,28 @@ enum L4Protocol {
     UDP = 0x11;
 }
 
-cplusplus {{ #define OPTIONLENGTH 4 }}
-class Option {
-    //byteLength = 4
+packet Option {
+    byteLength = 4;
     uint16_t length;
     uint8_t type @enum(OptionType);
     uint8_t reserved = 0;
 }
 
-cplusplus {{ #define CONFIGURATIONOPTIONLENGTH 4 }}
-class ConfigurationOption extends Option {
+packet ConfigurationOption extends Option {
     type = CONFIGURATION;
     string configurationString;
 }
 
-cplusplus {{ #define LOADBALANCINGOPTIONLENGTH 8 }}
-class LoadBalancingOption extends Option {
-    //byteLength = 8;
+packet LoadBalancingOption extends Option {
+    byteLength = 8;
     length = 0x0005;
     type = LOADBALANCING;
     uint16_t priority;
     uint16_t weight;
 }
 
-cplusplus {{ #define IPV4ENDPOINTOPTIONLENGTH 12 }}
-class IPv4EndpointOption extends Option {
-    //byteLength = 12;
+packet IPv4EndpointOption extends Option {
+    byteLength = 12;
     length = 0x0009;
     type = IPV4ENDPOINT;
     IPv4Address ipv4Address;
@@ -77,9 +73,8 @@ class IPv4EndpointOption extends Option {
     uint16_t port;
 }
 
-cplusplus {{ #define IPV6ENDPOINTOPTIONLENGTH 24 }}
-class IPv6EndpointOption extends Option {
-    //byteLength = 24;
+packet IPv6EndpointOption extends Option {
+    byteLength = 24;
     length = 0x0015;
     type = IPV6ENDPOINT;
     IPv6Address ipv6Address;
@@ -88,9 +83,8 @@ class IPv6EndpointOption extends Option {
     uint16_t port;
 }
 
-cplusplus {{ #define IPV4MULTICASTOPTIONLENGTH 12 }}
-class IPv4MulticastOption extends Option {
-    //byteLength = 12;
+packet IPv4MulticastOption extends Option {
+    byteLength = 12;
     length = 0x0009;
     type = IPV4MULTICAST;
     IPv4Address ipv4Address;
@@ -99,9 +93,8 @@ class IPv4MulticastOption extends Option {
     uint16_t port;
 }
 
-cplusplus {{ #define IPV6MULTICASTOPTIONLENGTH 24 }}
-class IPv6MulticastOption extends Option {
-    //byteLength = 24;
+packet IPv6MulticastOption extends Option {
+    byteLength = 24;
     length = 0x0015;
     type = IPV6MULTICAST;
     IPv6Address ipv6Address;
@@ -110,9 +103,8 @@ class IPv6MulticastOption extends Option {
     uint16_t port;
 }
 
-cplusplus {{ #define IPV4SDENDPOINTOPTIONLENGTH 12 }}
-class IPv4SDEndpointOption extends Option {
-    //byteLength = 12;
+packet IPv4SDEndpointOption extends Option {
+    byteLength = 12;
     length = 0x0009;
     type = IPV4SDENDPOINT;
     IPv4Address ipv4Address;
@@ -121,9 +113,8 @@ class IPv4SDEndpointOption extends Option {
     uint16_t port;
 }
 
-cplusplus {{ #define IPV6SDENDPOINTOPTIONLENGTH 24 }}
-class IPv6SDEndpointOption extends Option {
-    //byteLength = 24;
+packet IPv6SDEndpointOption extends Option {
+    byteLength = 24;
     length = 0x0015;
     type = IPV6SDENDPOINT;
     IPv6Address ipv6Address;

@@ -19,4 +19,6 @@ simple SomeipSD extends SomeipAppBase
 {
     parameters:
         @class(SOQoSMW::SomeipSD);
+        receiveBroadcast = default(true);
+        localPort = default(30490);
 }

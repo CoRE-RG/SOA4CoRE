@@ -13,11 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.dummySD.subscriberapp;
+package soqosmw.applications.someipapp.someipSDTestApp.subscriberapp;
 
 import soqosmw.applications.someipapp.base.SomeipAppBase;
 
 simple SomeipSubscriber extends SomeipAppBase
 {
-    @class(SOQoSMW::SomeipSubscriber);
+    parameters:
+        @class(SOQoSMW::SomeipSubscriber);
+        int subscribeServiceID;
+        int instanceID;
+        
 }

@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOQOSMW_SOMEIPPUBLISHER_H_
-#define __SOQOSMW_SOMEIPPUBLISHER_H_
+#ifndef __SOQOSMW_SOMEIPSUBSCRIBER_H_
+#define __SOQOSMW_SOMEIPSUBSCRIBER_H_
 
 #include "soqosmw/applications/someipapp/base/SomeipSD.h"
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
@@ -22,16 +22,17 @@
 namespace SOQoSMW {
 
 /**
- * @brief A simple dummy SOME/IP Publisher application.
+ * @brief A simple dummy SOME/IP Subscriber application.
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class SomeipPublisher : public virtual SomeipAppBase  {
+class SomeipSubscriber : public virtual SomeipAppBase {
 protected:
     /**
-     * Initializes the module and waits for find
+     * Schedules a self message and offers service with
+     * using the SOME/IP SD protocol.
      *
      * @param stage indicates the initialization stage
      */
@@ -54,7 +55,46 @@ protected:
 
 private:
     SomeipSD* _someipSD;
+
+    /**
+     * Service ID to subscribe
+     */
+    uint16_t _subscribeServiceID;
+
+    /**
+     * Instance ID of service id to subscribe
+     */
+    uint16_t _instanceID;
+
+public:
+    /**
+     * Returns the IP Address of this subscriber
+     *
+     * @param adressType
+     * @return local IP Address
+     */
+    inet::L3Address getIpAddress(inet::L3Address::AddressType adressType);
+
+    /**
+     * Returns the port of this subscriber
+     *
+     * @return local Port
+     */
+    int getPort();
+
+    /**
+     * Returns the ID of the service to subscribe
+     *
+     * @return service ID to subscribe
+     */
+    uint16_t getSubscribeServiceID();
+
+    /**
+     * Returns the ID of the instance of the service to subscribe
+     *
+     * @return instance ID to subscribe
+     */
+    uint16_t getInstanceID();
 };
 } /* end namespace SOQoSMW */
 #endif
-

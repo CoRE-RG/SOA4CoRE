@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/someipapp/dummySD/subscriberapp/SomeipSubscriber.h>
+#include <soqosmw/applications/someipapp/someipSDTestApp/subscriberapp/SomeipSubscriber.h>
 
 namespace SOQoSMW {
 
@@ -22,6 +22,8 @@ Define_Module(SomeipSubscriber);
 void SomeipSubscriber::initialize(int stage) {
     SomeipAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {
+        _subscribeServiceID = par("subscribeServiceID").intValue();
+        _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("udpApp", 1);
         _someipSD = dynamic_cast<SomeipSD*>(module);
         _someipSD->registerSubscriber(this);
@@ -30,12 +32,39 @@ void SomeipSubscriber::initialize(int stage) {
 }
 
 void SomeipSubscriber::handleMessageWhenUp(cMessage *msg) {
-    _someipSD->find(0x0042,0xFFFF);
+    if (msg->isSelfMessage()) {
+        _someipSD->find(getSubscribeServiceID(),getInstanceID());
+    } else {
+        EV << "Service message arrived" << std::endl;
+    }
     delete msg;
 }
 
 void SomeipSubscriber::processPacket(cPacket *packet) {
 
+}
+
+inet::L3Address SomeipSubscriber::getIpAddress(L3Address::AddressType addressType) {
+    switch (addressType) {
+        case L3Address::IPv4:
+            return inet::IPv4Address(par("localAddress").stringValue());
+            break;
+        default:
+            throw cRuntimeError("Unknown addresstype");
+            break;
+    }
+}
+
+int SomeipSubscriber::getPort() {
+    return localPort;
+}
+
+uint16_t SomeipSubscriber::getSubscribeServiceID() {
+    return _subscribeServiceID;
+}
+
+uint16_t SomeipSubscriber::getInstanceID() {
+    return _instanceID;
 }
 
 } /* end namespace SOQoSMW */

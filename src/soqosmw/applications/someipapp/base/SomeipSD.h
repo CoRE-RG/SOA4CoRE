@@ -20,7 +20,7 @@
 #define BROADCASTADDRESS "255.255.255.255"
 
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
-#include "soqosmw/messages/someip/SomeIpSDHeader_m.h"
+#include "soqosmw/messages/someip/SomeIpSDHeader.h"
 
 namespace SOQoSMW {
 
@@ -58,6 +58,21 @@ class SomeipSD : public virtual SomeipAppBase
     void find(uint16_t serviceID, uint16_t instanceID);
 
     /**
+     * Offers a service
+     */
+    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, int remotePort);
+
+    /**
+     * Subscribes a service
+     */
+    void subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, int remotePort);
+
+    /**
+     * Acknowledges a subscription
+     */
+    void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, int remotePort);
+
+    /**
      * Registers a SomeipPublisher
      * @param someipPublisher
      */
@@ -69,6 +84,11 @@ class SomeipSD : public virtual SomeipAppBase
      */
     void registerSubscriber(SomeipSubscriber* someipSubscriber);
   private:
+    /**
+     * The local ip address
+     */
+    const char* _localAddress;
+
     /**
      * Processes a packet
      *
@@ -85,6 +105,14 @@ class SomeipSD : public virtual SomeipAppBase
      * The SomeipSubscriber
      */
     SomeipSubscriber* _someipSubscriber;
+
+    void processFindEntry(Entry *findEntry, SomeIpSDHeader* someipSDHeader);
+
+    void processOfferEntry(Entry *offerEntry, SomeIpSDHeader* someipSDHeader);
+
+    void processSubscribeEventGroupEntry(Entry *subscribeEventGroupEntry, SomeIpSDHeader* someipSDHeader);
+
+    void processSubscribeEventGroupAckEntry(Entry *subscribeEventGroupAckEntry, SomeIpSDHeader* someipSDHeader);
 };
 } /* end namespace SOQoSMW */
 #endif

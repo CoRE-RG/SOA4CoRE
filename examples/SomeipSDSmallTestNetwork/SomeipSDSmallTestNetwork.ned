@@ -13,15 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.examples.SomeipSDDummy;
+package soqosmw.examples.SomeipSDSmallTestNetwork;
 
 import inet.node.inet.StandardHost;
-import soqosmw.applications.someipapp.dummySD.SomeipPublisherNode;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.ethernet.EtherSwitch;
 
-network SomeipSDDummy
+network SomeipSDSmallTestNetwork
 {
     parameters:
     types:

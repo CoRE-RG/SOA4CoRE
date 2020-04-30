@@ -16,16 +16,15 @@
 namespace SOQoSMW;
 
 enum EntryType{
-    FIND                  = 0x00;
-    OFFER                 = 0x01;
-    SUBSCRIBEVENTGROUP    = 0x06;
-    SUBSCRIBEVENTGROUPACK = 0x07;
+    FIND                  = 0x00; // A Service Entry
+    OFFER                 = 0x01; // A Service Entry
+    SUBSCRIBEVENTGROUP    = 0x06; // A Eventgroup Entry
+    SUBSCRIBEVENTGROUPACK = 0x07; // A Eventgroup Entry
     
 }
 
-cplusplus {{ #define ENTRYLENGTH 12 }}
-class Entry {
-    //byteLength = 12;
+packet Entry {
+    byteLength = 12;
     uint8_t type @enum(EntryType);
     uint8_t index1stOptions;
     uint8_t index2ndOptions;
@@ -36,15 +35,13 @@ class Entry {
     uint32_t majorVersion_TTL;
 }
 
-cplusplus {{ #define SERVICEENTRYLENGTH 16 }}
-class ServiceEntry extends Entry {
-    //byteLength = 16;
+packet ServiceEntry extends Entry {
+    byteLength = 16;
     uint32_t minorVersion;
 }
 
-cplusplus {{ #define EVENTGROUPENTRYLENGTH 16 }}
-class EventgroupEntry extends Entry{
-    //byteLength = 16;
+packet EventgroupEntry extends Entry{
+    byteLength = 16;
     uint8_t reserved = 0;
     uint8_t initialDataRequest_Counter;
     uint16_t eventgroupID;
