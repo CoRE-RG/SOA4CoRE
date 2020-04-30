@@ -16,7 +16,6 @@
 #ifndef __SOQOSMW_SOMEIPSDAPP_H_
 #define __SOQOSMW_SOMEIPSDAPP_H_
 
-#define UNCOVEREDBYTESBYLENGTH 8
 #define BROADCASTADDRESS "255.255.255.255"
 
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"

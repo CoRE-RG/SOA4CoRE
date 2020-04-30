@@ -29,6 +29,8 @@ void SomeIpSDHeader::copy(const SomeIpSDHeader& other){
 void SomeIpSDHeader::encapEntry(Entry* entry){
     take(entry);
     setByteLength(getByteLength() + entry->getByteLength());
+    setEntriesLength(getEntriesLength() + entry->getByteLength());
+    updateHeaderLength();
     entryList.push_back(entry);
 }
 
@@ -37,6 +39,8 @@ Entry* SomeIpSDHeader::decapEntry(){
     if(entryList.size() > 0){
         entry = entryList.front();
         setByteLength(getByteLength() - entry->getByteLength());
+        setEntriesLength(getEntriesLength() - entry->getByteLength());
+        updateHeaderLength();
         entryList.pop_front();
         drop(entry);
     }
@@ -54,6 +58,8 @@ size_t SomeIpSDHeader::getEntryCnt(){
 void SomeIpSDHeader::encapOption(Option* option){
     take(option);
     setByteLength(getByteLength() + option->getByteLength());
+    setOptionsLength(getOptionsLength() + option->getByteLength());
+    updateHeaderLength();
     optionList.push_back(option);
 }
 
@@ -62,6 +68,8 @@ Option* SomeIpSDHeader::decapOption(){
     if(optionList.size() > 0){
         option = optionList.front();
         setByteLength(getByteLength() - option->getByteLength());
+        setOptionsLength(getOptionsLength() - option->getByteLength());
+        updateHeaderLength();
         optionList.pop_front();
         drop(option);
     }
@@ -74,6 +82,10 @@ list<Option*> SomeIpSDHeader::getEncapOptions() const{
 
 size_t SomeIpSDHeader::getOptionCnt(){
     return optionList.size();
+}
+
+void SomeIpSDHeader::updateHeaderLength() {
+    setLength(getByteLength() - UNCOVEREDBYTESBYLENGTH);
 }
 
 } /* end namespace SOQoSMW */

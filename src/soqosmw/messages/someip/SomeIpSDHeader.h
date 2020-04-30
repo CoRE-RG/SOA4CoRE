@@ -8,6 +8,8 @@
 #ifndef SOQOSMW_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_
 #define SOQOSMW_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_
 
+#define UNCOVEREDBYTESBYLENGTH 8
+
 //Std
 #include <list>
 //SignalsAndGateways auto-generated messages
@@ -122,6 +124,12 @@ public:
      * @return number of encapsulated Options
      */
     virtual size_t getOptionCnt();
+
+private:
+    /**
+     * @brief Updates the header length of the SOME/IP Header
+     */
+    void updateHeaderLength();
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_ */
