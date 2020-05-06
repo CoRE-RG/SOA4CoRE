@@ -27,7 +27,7 @@ class noncobject IPv6Address;
 
 namespace SOQoSMW;
 
-enum OptionType {
+enum SomeIpSDOptionType {
     CONFIGURATION  = 0x01;
     LOADBALANCING  = 0x02;
     IPV4ENDPOINT   = 0x04;
@@ -38,24 +38,19 @@ enum OptionType {
     IPV6SDENDPOINT = 0x26;
 }
 
-enum L4Protocol {
-    TCP = 0x06;
-    UDP = 0x11;
-}
-
-packet Option {
+packet SomeIpSDOption {
     byteLength = 4;
     uint16_t length;
-    uint8_t type @enum(OptionType);
+    uint8_t type @enum(SomeIpSDOptionType);
     uint8_t reserved = 0;
 }
 
-packet ConfigurationOption extends Option {
+packet ConfigurationOption extends SomeIpSDOption {
     type = CONFIGURATION;
     string configurationString;
 }
 
-packet LoadBalancingOption extends Option {
+packet LoadBalancingOption extends SomeIpSDOption {
     byteLength = 8;
     length = 0x0005;
     type = LOADBALANCING;
@@ -63,7 +58,7 @@ packet LoadBalancingOption extends Option {
     uint16_t weight;
 }
 
-packet IPv4EndpointOption extends Option {
+packet IPv4EndpointOption extends SomeIpSDOption {
     byteLength = 12;
     length = 0x0009;
     type = IPV4ENDPOINT;
@@ -73,7 +68,7 @@ packet IPv4EndpointOption extends Option {
     uint16_t port;
 }
 
-packet IPv6EndpointOption extends Option {
+packet IPv6EndpointOption extends SomeIpSDOption {
     byteLength = 24;
     length = 0x0015;
     type = IPV6ENDPOINT;
@@ -83,7 +78,7 @@ packet IPv6EndpointOption extends Option {
     uint16_t port;
 }
 
-packet IPv4MulticastOption extends Option {
+packet IPv4MulticastOption extends SomeIpSDOption {
     byteLength = 12;
     length = 0x0009;
     type = IPV4MULTICAST;
@@ -93,7 +88,7 @@ packet IPv4MulticastOption extends Option {
     uint16_t port;
 }
 
-packet IPv6MulticastOption extends Option {
+packet IPv6MulticastOption extends SomeIpSDOption {
     byteLength = 24;
     length = 0x0015;
     type = IPV6MULTICAST;
@@ -103,7 +98,7 @@ packet IPv6MulticastOption extends Option {
     uint16_t port;
 }
 
-packet IPv4SDEndpointOption extends Option {
+packet IPv4SDEndpointOption extends SomeIpSDOption {
     byteLength = 12;
     length = 0x0009;
     type = IPV4SDENDPOINT;
@@ -113,7 +108,7 @@ packet IPv4SDEndpointOption extends Option {
     uint16_t port;
 }
 
-packet IPv6SDEndpointOption extends Option {
+packet IPv6SDEndpointOption extends SomeIpSDOption {
     byteLength = 24;
     length = 0x0015;
     type = IPV6SDENDPOINT;

@@ -15,17 +15,17 @@
 
 namespace SOQoSMW;
 
-enum EntryType{
-    FIND                  = 0x00; // A Service Entry
-    OFFER                 = 0x01; // A Service Entry
-    SUBSCRIBEVENTGROUP    = 0x06; // A Eventgroup Entry
-    SUBSCRIBEVENTGROUPACK = 0x07; // A Eventgroup Entry
+enum SomeIpSDEntryType{
+    FIND                  = 0x00; // A Service SomeIpSDEntry
+    OFFER                 = 0x01; // A Service SomeIpSDEntry
+    SUBSCRIBEVENTGROUP    = 0x06; // A Eventgroup SomeIpSDEntry
+    SUBSCRIBEVENTGROUPACK = 0x07; // A Eventgroup SomeIpSDEntry
     
 }
 
-packet Entry {
+packet SomeIpSDEntry {
     byteLength = 12;
-    uint8_t type @enum(EntryType);
+    uint8_t type @enum(SomeIpSDEntryType);
     uint8_t index1stOptions;
     uint8_t index2ndOptions;
     uint8_t num1stAnd2ndOptions;
@@ -35,12 +35,12 @@ packet Entry {
     uint32_t majorVersion_TTL;
 }
 
-packet ServiceEntry extends Entry {
+packet ServiceEntry extends SomeIpSDEntry {
     byteLength = 16;
     uint32_t minorVersion;
 }
 
-packet EventgroupEntry extends Entry{
+packet EventgroupEntry extends SomeIpSDEntry{
     byteLength = 16;
     uint8_t reserved = 0;
     uint8_t initialDataRequest_Counter;

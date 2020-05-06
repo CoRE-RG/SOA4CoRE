@@ -16,8 +16,6 @@
 #include <soqosmw/applications/someipapp/someipSDTestApp/publisherapp/SomeipPublisher.h>
 #include <soqosmw/applications/someipapp/someipSDTestApp/subscriberapp/SomeipSubscriber.h>
 #include "soqosmw/applications/someipapp/base/SomeipSD.h"
-#include "soqosmw/messages/someip/Entry_m.h"
-#include "soqosmw/messages/someip/Option_m.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/networklayer/contract/ipv4/IPv4Address.h"
 #include <list>
@@ -47,7 +45,7 @@ void SomeipSD::find(uint16_t serviceID, uint16_t instanceID) {
     SomeIpSDHeader *someipSDHeader = new SomeIpSDHeader("SOME/IP SD - FIND");
 
     ServiceEntry *findEntry = new ServiceEntry("ServiceEntry");
-    findEntry->setType(SOQoSMW::EntryType::FIND);
+    findEntry->setType(SOQoSMW::SomeIpSDEntryType::FIND);
     findEntry->setIndex1stOptions(0x00);
     findEntry->setIndex2ndOptions(0x00);
     findEntry->setNum1stAnd2ndOptions(0x10);
@@ -71,7 +69,7 @@ void SomeipSD::offer(uint16_t serviceID, uint16_t instanceID, L3Address remoteAd
     SomeIpSDHeader *someipSDHeader = new SomeIpSDHeader("SOME/IP SD - OFFER");
 
     ServiceEntry *offerEntry = new ServiceEntry("ServiceEntry");
-    offerEntry->setType(SOQoSMW::EntryType::OFFER);
+    offerEntry->setType(SOQoSMW::SomeIpSDEntryType::OFFER);
     offerEntry->setIndex1stOptions(0x00);
     offerEntry->setIndex2ndOptions(0x00);
     offerEntry->setNum1stAnd2ndOptions(0x10);
@@ -95,7 +93,7 @@ void SomeipSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, L3Ad
     SomeIpSDHeader *someipSDHeader = new SomeIpSDHeader("SOME/IP SD - SUBSCRIBEEVENTGROUP");
 
     EventgroupEntry *subscribeEventgroupEntry = new EventgroupEntry("EventgroupEntry");
-    subscribeEventgroupEntry->setType(SOQoSMW::EntryType::SUBSCRIBEVENTGROUP);
+    subscribeEventgroupEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUP);
     subscribeEventgroupEntry->setIndex1stOptions(0);
     subscribeEventgroupEntry->setIndex2ndOptions(1);
     subscribeEventgroupEntry->setNum1stAnd2ndOptions(0x11);
@@ -124,7 +122,7 @@ void SomeipSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, L
     SomeIpSDHeader *someipSDHeader = new SomeIpSDHeader("SOME/IP SD - SUBSCRIBEEVENTGROUPACK");
 
     EventgroupEntry *subscribeEventgroupAckEntry = new EventgroupEntry("EventgroupEntry");
-    subscribeEventgroupAckEntry->setType(SOQoSMW::EntryType::SUBSCRIBEVENTGROUPACK);
+    subscribeEventgroupAckEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUPACK);
     subscribeEventgroupAckEntry->setIndex1stOptions(0);
     subscribeEventgroupAckEntry->setIndex2ndOptions(0);
     subscribeEventgroupAckEntry->setNum1stAnd2ndOptions(0);
@@ -151,22 +149,22 @@ void SomeipSD::registerSubscriber(SomeipSubscriber* someipSubscriber) {
 }
 
 void SomeipSD::processPacket(SomeIpSDHeader* someipSDHeader) {
-    std::list<Entry*> entries = someipSDHeader->getEncapEntries();
-    for (std::list<Entry*>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
+    std::list<SomeIpSDEntry*> entries = someipSDHeader->getEncapEntries();
+    for (std::list<SomeIpSDEntry*>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
         switch ((*it)->getType()) {
-            case SOQoSMW::EntryType::FIND:
+            case SOQoSMW::SomeIpSDEntryType::FIND:
                 EV << "FIND ARRIVED" << endl;
                 processFindEntry(*it, someipSDHeader);
                 break;
-            case SOQoSMW::EntryType::OFFER:
+            case SOQoSMW::SomeIpSDEntryType::OFFER:
                 EV << "OFFER ARRIVED" << endl;
                 processOfferEntry(*it, someipSDHeader);
                 break;
-            case SOQoSMW::EntryType::SUBSCRIBEVENTGROUP:
+            case SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUP:
                 EV << "SUBSCRIBEVENTGROUP ARRIVED" << endl;
                 processSubscribeEventGroupEntry(*it, someipSDHeader);
                 break;
-            case SOQoSMW::EntryType::SUBSCRIBEVENTGROUPACK:
+            case SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUPACK:
                 EV << "SUBSCRIBEVENTGROUPACK ARRIVED" << endl;
                 processSubscribeEventGroupAckEntry(*it, someipSDHeader);
                 break;
@@ -177,7 +175,7 @@ void SomeipSD::processPacket(SomeIpSDHeader* someipSDHeader) {
 }
 
 
-void SomeipSD::processFindEntry(Entry* findEntry, SomeIpSDHeader* someipSDHeader) {
+void SomeipSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someipSDHeader) {
     if (_someipPublisher && findEntry->getServiceID() == _someipPublisher->getPublishServiceID()) {
         int num1stOption = (findEntry->getNum1stAnd2ndOptions() & 0xF0) >> 4;
         if (num1stOption > 0) {
@@ -188,7 +186,7 @@ void SomeipSD::processFindEntry(Entry* findEntry, SomeIpSDHeader* someipSDHeader
     }
 }
 
-void SomeipSD::processOfferEntry(Entry* offerEntry, SomeIpSDHeader* someipSDHeader) {
+void SomeipSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someipSDHeader) {
     if (offerEntry->getServiceID() == _someipSubscriber->getSubscribeServiceID()) {
         int num1stOption = (offerEntry->getNum1stAnd2ndOptions() & 0xF0) >> 4;
         if (num1stOption > 0) {
@@ -199,7 +197,7 @@ void SomeipSD::processOfferEntry(Entry* offerEntry, SomeIpSDHeader* someipSDHead
     }
 }
 
-void SomeipSD::processSubscribeEventGroupEntry(Entry* subscribeEventGroupEntry, SomeIpSDHeader* someipSDHeader) {
+void SomeipSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someipSDHeader) {
     if (subscribeEventGroupEntry->getServiceID() == _someipPublisher->getPublishServiceID()) {
         int num1stOption = (subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0xF0) >> 4;
         if (num1stOption > 0) {
@@ -218,7 +216,7 @@ void SomeipSD::processSubscribeEventGroupEntry(Entry* subscribeEventGroupEntry, 
     }
 }
 
-void SomeipSD::processSubscribeEventGroupAckEntry(Entry *subscribeEventGroupAckEntry, SomeIpSDHeader* someipSDHeader) {
+void SomeipSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someipSDHeader) {
     if (subscribeEventGroupAckEntry->getServiceID() == _someipSubscriber->getSubscribeServiceID()) {
         EV << "Good Acknowledge arrived" << std::endl;
     } else {

@@ -14,20 +14,20 @@
 #include <list>
 //SignalsAndGateways auto-generated messages
 #include "soqosmw/messages/someip/SomeIpSDHeader_m.h"
-#include "soqosmw/messages/someip/Entry_m.h"
-#include "soqosmw/messages/someip/Option_m.h"
+#include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
+#include "soqosmw/messages/someip/SomeIpSDOption_m.h"
 
 namespace SOQoSMW {
 
 /**
- * @brief Message for encapsulation of multiple Entry and Option messages
+ * @brief Message for encapsulation of multiple SomeIpSDEntry and SomeIpSDOption messages
  *
  * @author Mehmet Cakir (adapted from Philipp Meyer GatewayAggregationMessage in SignalsAndGateways)
  */
 class SomeIpSDHeader : public SomeIpSDHeader_Base {
 private:
-    std::list<Entry*> entryList;
-    std::list<Option*> optionList;
+    std::list<SomeIpSDEntry*> entryList;
+    std::list<SomeIpSDOption*> optionList;
 
     void copy(const SomeIpSDHeader& other);
 
@@ -70,25 +70,25 @@ public:
     }
 
     /**
-     * @brief encapsulates an Entry
+     * @brief encapsulates an SomeIpSDEntry
      *
-     * @param entry Entry pointer
+     * @param entry SomeIpSDEntry pointer
      */
-    virtual void encapEntry(Entry* entry);
+    virtual void encapEntry(SomeIpSDEntry* entry);
 
     /**
-     * @brief decapsulates an Entry
+     * @brief decapsulates an SomeIpSDEntry
      *
-     * @return Entry pointer
+     * @return SomeIpSDEntry pointer
      */
-    virtual Entry* decapEntry();
+    virtual SomeIpSDEntry* decapEntry();
 
     /**
      * @brief get encapsulated Entries
      *
-     * @return list of Entry pointers
+     * @return list of SomeIpSDEntry pointers
      */
-    virtual std::list<Entry*> getEncapEntries() const;
+    virtual std::list<SomeIpSDEntry*> getEncapEntries() const;
 
     /**
      * @brief Get number of encapsulated Entries
@@ -98,25 +98,25 @@ public:
     virtual size_t getEntryCnt();
 
     /**
-     * @brief encapsulates an Option
+     * @brief encapsulates an SomeIpSDOption
      *
-     * @param option Option pointer
+     * @param option SomeIpSDOption pointer
      */
-    virtual void encapOption(Option* option);
+    virtual void encapOption(SomeIpSDOption* option);
 
     /**
-     * @brief decapsulates an Option
+     * @brief decapsulates an SomeIpSDOption
      *
-     * @return Option pointer
+     * @return SomeIpSDOption pointer
      */
-    virtual Option* decapOption();
+    virtual SomeIpSDOption* decapOption();
 
     /**
      * @brief get encapsulated Options
      *
-     * @return list of Option pointers
+     * @return list of SomeIpSDOption pointers
      */
-    virtual std::list<Option*> getEncapOptions() const;
+    virtual std::list<SomeIpSDOption*> getEncapOptions() const;
 
     /**
      * @brief Get number of encapsulated Options

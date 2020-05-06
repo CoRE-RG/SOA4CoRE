@@ -14,19 +14,19 @@ namespace SOQoSMW {
 Register_Class(SomeIpSDHeader);
 
 void SomeIpSDHeader::copy(const SomeIpSDHeader& other){
-    for(list<Entry*>::const_iterator it = other.entryList.begin(); it != other.entryList.end(); ++it){
-        Entry* entry = (*it)->dup();
+    for(list<SomeIpSDEntry*>::const_iterator it = other.entryList.begin(); it != other.entryList.end(); ++it){
+        SomeIpSDEntry* entry = (*it)->dup();
         take(entry);
         this->entryList.push_back(entry);
     }
-    for(list<Option*>::const_iterator it = other.optionList.begin(); it != other.optionList.end(); ++it){
-        Option* option = (*it)->dup();
+    for(list<SomeIpSDOption*>::const_iterator it = other.optionList.begin(); it != other.optionList.end(); ++it){
+        SomeIpSDOption* option = (*it)->dup();
         take(option);
         this->optionList.push_back(option);
     }
 }
 
-void SomeIpSDHeader::encapEntry(Entry* entry){
+void SomeIpSDHeader::encapEntry(SomeIpSDEntry* entry){
     take(entry);
     setByteLength(getByteLength() + entry->getByteLength());
     setEntriesLength(getEntriesLength() + entry->getByteLength());
@@ -34,8 +34,8 @@ void SomeIpSDHeader::encapEntry(Entry* entry){
     entryList.push_back(entry);
 }
 
-Entry* SomeIpSDHeader::decapEntry(){
-    Entry* entry = nullptr;
+SomeIpSDEntry* SomeIpSDHeader::decapEntry(){
+    SomeIpSDEntry* entry = nullptr;
     if(entryList.size() > 0){
         entry = entryList.front();
         setByteLength(getByteLength() - entry->getByteLength());
@@ -47,7 +47,7 @@ Entry* SomeIpSDHeader::decapEntry(){
     return entry;
 }
 
-list<Entry*> SomeIpSDHeader::getEncapEntries() const{
+list<SomeIpSDEntry*> SomeIpSDHeader::getEncapEntries() const{
     return entryList;
 }
 
@@ -55,7 +55,7 @@ size_t SomeIpSDHeader::getEntryCnt(){
     return entryList.size();
 }
 
-void SomeIpSDHeader::encapOption(Option* option){
+void SomeIpSDHeader::encapOption(SomeIpSDOption* option){
     take(option);
     setByteLength(getByteLength() + option->getByteLength());
     setOptionsLength(getOptionsLength() + option->getByteLength());
@@ -63,8 +63,8 @@ void SomeIpSDHeader::encapOption(Option* option){
     optionList.push_back(option);
 }
 
-Option* SomeIpSDHeader::decapOption(){
-    Option* option = nullptr;
+SomeIpSDOption* SomeIpSDHeader::decapOption(){
+    SomeIpSDOption* option = nullptr;
     if(optionList.size() > 0){
         option = optionList.front();
         setByteLength(getByteLength() - option->getByteLength());
@@ -76,7 +76,7 @@ Option* SomeIpSDHeader::decapOption(){
     return option;
 }
 
-list<Option*> SomeIpSDHeader::getEncapOptions() const{
+list<SomeIpSDOption*> SomeIpSDHeader::getEncapOptions() const{
     return optionList;
 }
 

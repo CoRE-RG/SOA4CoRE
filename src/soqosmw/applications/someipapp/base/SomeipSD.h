@@ -105,13 +105,13 @@ class SomeipSD : public virtual SomeipAppBase
      */
     SomeipSubscriber* _someipSubscriber;
 
-    void processFindEntry(Entry *findEntry, SomeIpSDHeader* someipSDHeader);
+    void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someipSDHeader);
 
-    void processOfferEntry(Entry *offerEntry, SomeIpSDHeader* someipSDHeader);
+    void processOfferEntry(SomeIpSDEntry *offerEntry, SomeIpSDHeader* someipSDHeader);
 
-    void processSubscribeEventGroupEntry(Entry *subscribeEventGroupEntry, SomeIpSDHeader* someipSDHeader);
+    void processSubscribeEventGroupEntry(SomeIpSDEntry *subscribeEventGroupEntry, SomeIpSDHeader* someipSDHeader);
 
-    void processSubscribeEventGroupAckEntry(Entry *subscribeEventGroupAckEntry, SomeIpSDHeader* someipSDHeader);
+    void processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someipSDHeader);
 };
 } /* end namespace SOQoSMW */
 #endif

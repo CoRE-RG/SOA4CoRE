@@ -32,5 +32,7 @@ packet SomeIpSDHeader extends SomeIpHeader {
     returnCode = E_OK;
     uint32_t flags;
     uint32_t entriesLength = 0;
+    //std::list<SomeIpSDEntry*> entryList; will be created in SomeIpSDHeader.h
     uint32_t optionsLength = 0;
+    //std::list<SomeIpSDOption*> optionList; will be created in SomeIpSDHeader.h
 }
