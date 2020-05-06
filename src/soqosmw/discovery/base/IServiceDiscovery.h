@@ -33,7 +33,7 @@ namespace SOQoSMW {
  */
 class IServiceDiscovery: public cSimpleModule {
 protected:
-    virtual void initialize(){};
+    virtual void initialize() override{};
     virtual void handleMessage(cMessage *msg){};
 };
 
