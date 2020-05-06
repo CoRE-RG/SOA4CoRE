@@ -30,14 +30,10 @@ void SomeipSD::initialize(int stage) {
 }
 
 void SomeipSD::handleMessageWhenUp(cMessage *msg) {
-    SomeIpSDHeader *someipSDHeader = nullptr;
-    if ((someipSDHeader = dynamic_cast<SomeIpSDHeader*>(msg))) {
+    if (SomeIpSDHeader *someipSDHeader = dynamic_cast<SomeIpSDHeader*>(msg)) {
         processPacket(someipSDHeader);
-        delete someipSDHeader;
-    } else {
-        delete msg;
     }
-
+    delete msg;
 }
 
 void SomeipSD::find(uint16_t serviceID, uint16_t instanceID) {
@@ -48,18 +44,12 @@ void SomeipSD::find(uint16_t serviceID, uint16_t instanceID) {
     findEntry->setType(SOQoSMW::SomeIpSDEntryType::FIND);
     findEntry->setIndex1stOptions(0x00);
     findEntry->setIndex2ndOptions(0x00);
-    findEntry->setNum1stAnd2ndOptions(0x10);
+    findEntry->setNum1stAnd2ndOptions(0x00);
     findEntry->setServiceID(serviceID);
     findEntry->setInstanceID(instanceID);
     findEntry->setMajorVersion_TTL(0x01000003);
     findEntry->setMinorVersion(0xFFFFFFFF);
     someipSDHeader->encapEntry(findEntry);
-
-    IPv4SDEndpointOption *ipv4SDEndpointOption = new IPv4SDEndpointOption("IPv4SDEndpointOption");
-    ipv4SDEndpointOption->setIpv4Address(inet::IPv4Address(_localAddress));
-    ipv4SDEndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
-    ipv4SDEndpointOption->setPort(localPort);
-    someipSDHeader->encapOption(ipv4SDEndpointOption);
 
     socket.sendTo(someipSDHeader, inet::IPv4Address(BROADCASTADDRESS), destPort);
 }
@@ -72,18 +62,12 @@ void SomeipSD::offer(uint16_t serviceID, uint16_t instanceID, L3Address remoteAd
     offerEntry->setType(SOQoSMW::SomeIpSDEntryType::OFFER);
     offerEntry->setIndex1stOptions(0x00);
     offerEntry->setIndex2ndOptions(0x00);
-    offerEntry->setNum1stAnd2ndOptions(0x10);
+    offerEntry->setNum1stAnd2ndOptions(0x00);
     offerEntry->setServiceID(serviceID);
     offerEntry->setInstanceID(instanceID);
     offerEntry->setMajorVersion_TTL(0x01000003);
     offerEntry->setMinorVersion(0xFFFFFFFF);
     someipSDHeader->encapEntry(offerEntry);
-
-    IPv4SDEndpointOption *ipv4SDEndpointOption = new IPv4SDEndpointOption("IPv4SDEndpointOption");
-    ipv4SDEndpointOption->setIpv4Address(inet::IPv4Address(_localAddress));
-    ipv4SDEndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
-    ipv4SDEndpointOption->setPort(localPort);
-    someipSDHeader->encapOption(ipv4SDEndpointOption);
 
     socket.sendTo(someipSDHeader, remoteAddress, remotePort);
 }
@@ -95,8 +79,8 @@ void SomeipSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, L3Ad
     EventgroupEntry *subscribeEventgroupEntry = new EventgroupEntry("EventgroupEntry");
     subscribeEventgroupEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUP);
     subscribeEventgroupEntry->setIndex1stOptions(0);
-    subscribeEventgroupEntry->setIndex2ndOptions(1);
-    subscribeEventgroupEntry->setNum1stAnd2ndOptions(0x11);
+    subscribeEventgroupEntry->setIndex2ndOptions(0);
+    subscribeEventgroupEntry->setNum1stAnd2ndOptions(0x01);
     subscribeEventgroupEntry->setServiceID(serviceID);
     subscribeEventgroupEntry->setInstanceID(instanceID);
     subscribeEventgroupEntry->setMajorVersion_TTL(0x01000003);
@@ -107,12 +91,6 @@ void SomeipSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, L3Ad
     ipv4EndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
     ipv4EndpointOption->setPort(_someipSubscriber->getPort());
     someipSDHeader->encapOption(ipv4EndpointOption);
-
-    IPv4SDEndpointOption *ipv4SDEndpointOption = new IPv4SDEndpointOption("IPv4SDEndpointOption");
-    ipv4SDEndpointOption->setIpv4Address(inet::IPv4Address(_localAddress));
-    ipv4SDEndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
-    ipv4SDEndpointOption->setPort(localPort);
-    someipSDHeader->encapOption(ipv4SDEndpointOption);
 
     socket.sendTo(someipSDHeader, remoteAddress, remotePort);
 }
@@ -125,7 +103,7 @@ void SomeipSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, L
     subscribeEventgroupAckEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUPACK);
     subscribeEventgroupAckEntry->setIndex1stOptions(0);
     subscribeEventgroupAckEntry->setIndex2ndOptions(0);
-    subscribeEventgroupAckEntry->setNum1stAnd2ndOptions(0);
+    subscribeEventgroupAckEntry->setNum1stAnd2ndOptions(0x01);
     subscribeEventgroupAckEntry->setServiceID(serviceID);
     subscribeEventgroupAckEntry->setInstanceID(instanceID);
     subscribeEventgroupAckEntry->setMajorVersion_TTL(0x01000003);
@@ -183,6 +161,9 @@ void SomeipSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someip
             offer(findEntry->getServiceID(), findEntry->getInstanceID(), ipv4SDEndpointOption->getIpv4Address(), ipv4SDEndpointOption->getPort());
             delete ipv4SDEndpointOption;
         }
+        if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someipSDHeader->getControlInfo())) {
+            offer(findEntry->getServiceID(), findEntry->getInstanceID(), udpDataIndication->getSrcAddr(), udpDataIndication->getSrcPort());
+        }
     }
 }
 
@@ -194,23 +175,24 @@ void SomeipSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
             subscribeEventgroup(offerEntry->getServiceID(), offerEntry->getInstanceID(), ipv4SDEndpointOption->getIpv4Address(), ipv4SDEndpointOption->getPort());
             delete ipv4SDEndpointOption;
         }
+        if (inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someipSDHeader->getControlInfo())) {
+            subscribeEventgroup(offerEntry->getServiceID(), offerEntry->getInstanceID(), udpDataIndication->getSrcAddr(), udpDataIndication->getSrcPort());
+        }
     }
 }
 
 void SomeipSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someipSDHeader) {
     if (subscribeEventGroupEntry->getServiceID() == _someipPublisher->getPublishServiceID()) {
-        int num1stOption = (subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0xF0) >> 4;
-        if (num1stOption > 0) {
+        int num2ndOption = subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0x0F;
+        if (num2ndOption > 0) {
             IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someipSDHeader->decapOption());
             _someipPublisher->setSubscriberIpAddress(ipv4EndpointOption->getIpv4Address());
             _someipPublisher->setSubscriberPort(ipv4EndpointOption->getPort());
             delete ipv4EndpointOption;
-        }
-        int num2ndOption = subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0x0F;
-        if (num2ndOption > 0) {
-            IPv4SDEndpointOption* ipv4SDEndpointOption = dynamic_cast<IPv4SDEndpointOption*>(someipSDHeader->decapOption());
-            subscribeEventgroupAck(subscribeEventGroupEntry->getServiceID(), subscribeEventGroupEntry->getInstanceID(), ipv4SDEndpointOption->getIpv4Address(), ipv4SDEndpointOption->getPort());
-            delete ipv4SDEndpointOption;
+            if (inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someipSDHeader->getControlInfo())) {
+                subscribeEventgroupAck(subscribeEventGroupEntry->getServiceID(), subscribeEventGroupEntry->getInstanceID(), udpDataIndication->getSrcAddr(), udpDataIndication->getSrcPort());
+            }
+
         }
         _someipPublisher->startPublish();
     }

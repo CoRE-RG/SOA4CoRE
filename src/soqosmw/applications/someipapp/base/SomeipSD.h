@@ -35,6 +35,42 @@ class SomeipSubscriber;
  */
 class SomeipSD : public virtual SomeipAppBase
 {
+public:
+protected:
+private:
+    /**
+     * The local ip address
+     */
+    const char* _localAddress;
+
+    //TODO List of publishers
+    /**
+     * The SomeipPublisher
+     */
+    SomeipPublisher* _someipPublisher;
+
+    //TODO List of subscribers
+    /**
+     * The SomeipSubscriber
+     */
+    SomeipSubscriber* _someipSubscriber;
+public:
+    /**
+     * Discovers a service
+     */
+    void find(uint16_t serviceID, uint16_t instanceID);
+
+    /**
+     * Registers a SomeipPublisher
+     * @param someipPublisher
+     */
+    void registerPublisher(SomeipPublisher* someipPublisher);
+
+    /**
+     * Registers a SomeipSubscriber
+     * @param someipSubscriber
+     */
+    void registerSubscriber(SomeipSubscriber* someipSubscriber);
   protected:
     /**
      * Initializes module with stages
@@ -50,12 +86,8 @@ class SomeipSD : public virtual SomeipAppBase
      * @param msg
      */
     virtual void handleMessageWhenUp(cMessage *msg) override;
-  public:
-    /**
-     * Discovers a service
-     */
-    void find(uint16_t serviceID, uint16_t instanceID);
 
+  private:
     /**
      * Offers a service
      */
@@ -72,38 +104,11 @@ class SomeipSD : public virtual SomeipAppBase
     void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, int remotePort);
 
     /**
-     * Registers a SomeipPublisher
-     * @param someipPublisher
-     */
-    void registerPublisher(SomeipPublisher* someipPublisher);
-
-    /**
-     * Registers a SomeipSubscriber
-     * @param someipSubscriber
-     */
-    void registerSubscriber(SomeipSubscriber* someipSubscriber);
-  private:
-    /**
-     * The local ip address
-     */
-    const char* _localAddress;
-
-    /**
      * Processes a packet
      *
      * @param packet
      */
     void processPacket(SomeIpSDHeader* someipSDHeader);
-
-    /**
-     * The SomeipPublisher
-     */
-    SomeipPublisher* _someipPublisher;
-
-    /**
-     * The SomeipSubscriber
-     */
-    SomeipSubscriber* _someipSubscriber;
 
     void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someipSDHeader);
 
