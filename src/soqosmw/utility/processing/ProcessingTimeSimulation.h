@@ -38,7 +38,7 @@ public:
     virtual ~ProcessingTimeSimulation();
 
 protected:
-    virtual void initialize();
+    virtual void initialize() override;
     virtual void handleMessage(cMessage *msg);
     virtual void handleParameterChange(const char *parname);
 
