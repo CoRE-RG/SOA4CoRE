@@ -26,6 +26,7 @@ void SomeipPublisher::initialize(int stage) {
         _publishServiceID = par("publishServiceID").intValue();
         _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("udpApp", 1);
+        //cModule* module = getParentModule()->get
         _someipSD = dynamic_cast<SomeipSD*>(module);
         _someipSD->registerPublisher(this);
     }
