@@ -14,6 +14,8 @@
 // 
 
 #include <soqosmw/applications/someipapp/someipservicemanager/SomeipLocalServiceManager.h>
+#include <soqosmw/applications/someipapp/someipSDTestApp/publisherapp/SomeipPublisher.h>
+#include <soqosmw/applications/someipapp/someipSDTestApp/subscriberapp/SomeipSubscriber.h>
 
 namespace SOQoSMW {
 
@@ -26,6 +28,12 @@ void SomeipLocalServiceManager::initialize() {
         throw cRuntimeError("Submodule at index %d is no Someip SD app."
                 "Please place the SomeipServiceDiscovery at index %d", SOMEIPSDIDX);
     }
+    module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEREGISTRYIDX);
+    if(_someipLSR = dynamic_cast<SomeipLocalServiceRegistry*>(module)){
+    } else {
+        throw cRuntimeError("Submodule at index %d is no Someip LSR app."
+                "Please place the SomeipLocalServiceRegistry at index %d", SOMEIPLOCALSERVICEREGISTRYIDX);
+    }
 }
 
 void SomeipLocalServiceManager::handleMessage(cMessage *msg)
@@ -34,6 +42,7 @@ void SomeipLocalServiceManager::handleMessage(cMessage *msg)
 }
 
 void SomeipLocalServiceManager::registerPublisherService(SomeipPublisher *someipPublisher) {
+
 
 }
 

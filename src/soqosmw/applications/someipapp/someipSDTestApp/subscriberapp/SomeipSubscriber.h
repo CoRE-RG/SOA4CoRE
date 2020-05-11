@@ -36,7 +36,7 @@ private:
     /**
      * SOME/IP Local Service Manager reference
      */
-    SomeipLocalServiceManager* _someipLSM;
+    SomeipLocalServiceManager *_someipLSM;
 
     /**
      * Service ID to subscribe

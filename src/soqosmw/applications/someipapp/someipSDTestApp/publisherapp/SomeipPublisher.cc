@@ -26,7 +26,7 @@ void SomeipPublisher::initialize(int stage) {
         _publishServiceID = par("publishServiceID").intValue();
         _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
-        if(_someipLSM = dynamic_cast<SomeipSD*>(module)) {
+        if(_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module)) {
             _someipLSM->registerPublisherService(this);
         } else {
             throw cRuntimeError("Submodule at index %d is no Someip LSM app."

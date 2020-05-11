@@ -18,10 +18,14 @@
 
 #include <omnetpp.h>
 #include <soqosmw/applications/someipapp/someipservicediscovery/SomeipSD.h>
+#include <soqosmw/applications/someipapp/someiplocalserviceregistry/SomeipLocalServiceRegistry.h>
 #define SOMEIPLOCALSERVICEMANAGERIDX 1
 
 using namespace omnetpp;
 namespace SOQoSMW {
+
+class SomeipPublisher;
+class SomeipSubscriber;
 
 /**
  * @brief Base class for a SOME/IP Local service manager.
@@ -56,6 +60,11 @@ class SomeipLocalServiceManager : public cSimpleModule
      * SOME/IP Service Discovery reference
      */
     SomeipSD* _someipSD;
+
+    /**
+     * SOME/IP Local Service Registry reference
+     */
+    SomeipLocalServiceRegistry* _someipLSR;
 };
 }
 #endif

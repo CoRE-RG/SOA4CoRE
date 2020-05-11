@@ -25,7 +25,7 @@ void SomeipSubscriber::initialize(int stage) {
         _subscribeServiceID = par("subscribeServiceID").intValue();
         _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
-        if (_someipLSM = dynamic_cast<SomeipSD*>(module)) {
+        if (_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module)) {
             _someipLSM->registerSubscriberService(this);
             SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
         } else {

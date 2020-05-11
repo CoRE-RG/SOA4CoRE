@@ -19,11 +19,14 @@
 #include <omnetpp.h>
 #include <map>
 #include <list>
-#include "soqosmw/applications/someipapp/someipSDTestApp/publisherapp/SomeipPublisher.h"
-#include "soqosmw/applications/someipapp/someipSDTestApp/subscriberapp/SomeipSubscriber.h"
+
+#define SOMEIPLOCALSERVICEREGISTRYIDX 2
 
 using namespace omnetpp;
 namespace SOQoSMW {
+
+class SomeipPublisher;
+class SomeipSubscriber;
 
 /**
  * @brief Basic SomeipLocalServiceRegistry
@@ -51,8 +54,8 @@ class SomeipLocalServiceRegistry : public cSimpleModule
   public:
   protected:
   private:
-    std::map<int,std::list<SomeipPublisher*>> _serviceIDToPublisher;
-    std::map<int,std::list<SomeipSubscriber*>> _serviceIDToSubscriber;
+    std::map<uint16_t,std::list<SomeipPublisher*>*> *_serviceIDToPublisher;
+    std::map<uint16_t,std::list<SomeipSubscriber*>*> *_serviceIDToSubscriber;
 
 };
 }
