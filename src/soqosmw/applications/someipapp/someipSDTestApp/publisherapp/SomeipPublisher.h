@@ -16,7 +16,7 @@
 #ifndef __SOQOSMW_SOMEIPPUBLISHER_H_
 #define __SOQOSMW_SOMEIPPUBLISHER_H_
 
-#include "soqosmw/applications/someipapp/base/SomeipSD.h"
+#include "soqosmw/applications/someipapp/someipservicemanager/SomeipLocalServiceManager.h"
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 
 namespace SOQoSMW {
@@ -54,9 +54,9 @@ protected:
 
 private:
     /**
-     * SOME/IP Service Discovery reference
+     * SOME/IP Local Service Manager reference
      */
-    SomeipSD* _someipSD;
+    SomeipLocalServiceManager* _someipLSM;
 
     /**
      * IP Address of the subscriber

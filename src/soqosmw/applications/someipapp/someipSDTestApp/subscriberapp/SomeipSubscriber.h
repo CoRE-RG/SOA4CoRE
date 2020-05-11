@@ -16,7 +16,7 @@
 #ifndef __SOQOSMW_SOMEIPSUBSCRIBER_H_
 #define __SOQOSMW_SOMEIPSUBSCRIBER_H_
 
-#include "soqosmw/applications/someipapp/base/SomeipSD.h"
+#include "soqosmw/applications/someipapp/someipservicemanager/SomeipLocalServiceManager.h"
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 
 namespace SOQoSMW {
@@ -29,32 +29,14 @@ namespace SOQoSMW {
  * @author Mehmet Cakir
  */
 class SomeipSubscriber : public virtual SomeipAppBase {
-protected:
-    /**
-     * Schedules a self message and offers service with
-     * using the SOME/IP SD protocol.
-     *
-     * @param stage indicates the initialization stage
-     */
-    virtual void initialize(int stage) override;
-
-    /**
-     * Handles incoming message as soon as node is up and
-     * processes the packet
-     *
-     * @param msg
-     */
-    virtual void handleMessageWhenUp(cMessage *msg) override;
-
-    /**
-     * Processes a packet
-     *
-     * @param packet
-     */
-    virtual void processPacket(cPacket *packet) override;
-
+/**
+ * Member variables
+ */
 private:
-    SomeipSD* _someipSD;
+    /**
+     * SOME/IP Local Service Manager reference
+     */
+    SomeipLocalServiceManager* _someipLSM;
 
     /**
      * Service ID to subscribe
@@ -66,6 +48,9 @@ private:
      */
     uint16_t _instanceID;
 
+/**
+ * Methods
+ */
 public:
     /**
      * Returns the IP Address of this subscriber
@@ -95,6 +80,29 @@ public:
      * @return instance ID to subscribe
      */
     uint16_t getInstanceID();
+protected:
+    /**
+     * Schedules a self message and offers service with
+     * using the SOME/IP SD protocol.
+     *
+     * @param stage indicates the initialization stage
+     */
+    virtual void initialize(int stage) override;
+
+    /**
+     * Handles incoming message as soon as node is up and
+     * processes the packet
+     *
+     * @param msg
+     */
+    virtual void handleMessageWhenUp(cMessage *msg) override;
+
+    /**
+     * Processes a packet
+     *
+     * @param packet
+     */
+    virtual void processPacket(cPacket *packet) override;
 };
 } /* end namespace SOQoSMW */
 #endif

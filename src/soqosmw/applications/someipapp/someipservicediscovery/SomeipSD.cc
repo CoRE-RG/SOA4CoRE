@@ -13,9 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soqosmw/applications/someipapp/someipservicediscovery/SomeipSD.h>
 #include <soqosmw/applications/someipapp/someipSDTestApp/publisherapp/SomeipPublisher.h>
 #include <soqosmw/applications/someipapp/someipSDTestApp/subscriberapp/SomeipSubscriber.h>
-#include "soqosmw/applications/someipapp/base/SomeipSD.h"
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/networklayer/contract/ipv4/IPv4Address.h"
 #include <list>

@@ -13,18 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "SomeipLocalServiceManager.h"
+package soqosmw.applications.someipapp.someipservicemanager;
 
-namespace SOQoSMW {
-
-Define_Module(SomeipLocalServiceManager);
-
-void SomeipLocalServiceManager::initialize() {
-    cModule* module = getParentModule()->getSubmodule("udpApp", 1);
-}
-
-void SomeipLocalServiceManager::handleMessage(cMessage *msg)
+//
+// TODO auto-generated module
+//
+simple SomeipLocalServiceManager
 {
-    // TODO - Generated method body
-}
+    parameters:
+        @class(SOQoSMW::SomeipLocalServiceManager);
 }

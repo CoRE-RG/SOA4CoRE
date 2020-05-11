@@ -17,6 +17,7 @@
 #define __SOQOSMW_SOMEIPSDAPP_H_
 
 #define BROADCASTADDRESS "255.255.255.255"
+#define SOMEIPSDIDX 0
 
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 #include "soqosmw/messages/someip/SomeIpSDHeader.h"

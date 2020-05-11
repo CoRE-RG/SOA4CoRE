@@ -25,10 +25,13 @@ void SomeipPublisher::initialize(int stage) {
     if (stage == inet::INITSTAGE_LOCAL) {
         _publishServiceID = par("publishServiceID").intValue();
         _instanceID = par("instanceID").intValue();
-        cModule* module = getParentModule()->getSubmodule("udpApp", 1);
-        //cModule* module = getParentModule()->get
-        _someipSD = dynamic_cast<SomeipSD*>(module);
-        _someipSD->registerPublisher(this);
+        cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
+        if(_someipLSM = dynamic_cast<SomeipSD*>(module)) {
+            _someipLSM->registerPublisherService(this);
+        } else {
+            throw cRuntimeError("Submodule at index %d is no Someip LSM app."
+                    "Please place the SomeipLocalServiceManager at index %d", SOMEIPLOCALSERVICEMANAGERIDX);
+        }
     }
 }
 

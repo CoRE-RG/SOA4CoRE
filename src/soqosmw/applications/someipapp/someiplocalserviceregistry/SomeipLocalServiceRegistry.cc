@@ -13,13 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.servicemanager;
+#include <soqosmw/applications/someipapp/someiplocalserviceregistry/SomeipLocalServiceRegistry.h>
 
-//
-// TODO auto-generated module
-//
-simple SomeipLocalServiceManager
+namespace SOQoSMW {
+Define_Module(SomeipLocalServiceRegistry);
+
+void SomeipLocalServiceRegistry::initialize()
 {
-    parameters:
-        @class(SOQoSMW::SomeipLocalServiceManager);
+    // TODO - Generated method body
+}
+
+void SomeipLocalServiceRegistry::handleMessage(cMessage *msg)
+{
+    // TODO - Generated method body
+}
 }

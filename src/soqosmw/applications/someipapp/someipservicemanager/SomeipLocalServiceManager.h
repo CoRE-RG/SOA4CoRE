@@ -17,6 +17,8 @@
 #define __SOQOSMW_SOMEIPLOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
+#include <soqosmw/applications/someipapp/someipservicediscovery/SomeipSD.h>
+#define SOMEIPLOCALSERVICEMANAGERIDX 1
 
 using namespace omnetpp;
 namespace SOQoSMW {
@@ -30,9 +32,30 @@ namespace SOQoSMW {
  */
 class SomeipLocalServiceManager : public cSimpleModule
 {
+  public:
+    /**
+     * Registers a Someip Publisher
+     * @param someipPublisher
+     */
+    void registerPublisherService(SomeipPublisher *someipPublisher);
+
+    /**
+     * Registers a Someip Subscriber
+     * @param someipSubscriber
+     */
+    void registerSubscriberService(SomeipSubscriber *someipSubscriber);
+    void discoverService(uint16_t serviceID, uint16_t instanceID);
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+  private:
+  public:
+  protected:
+  private:
+    /**
+     * SOME/IP Service Discovery reference
+     */
+    SomeipSD* _someipSD;
 };
 }
 #endif

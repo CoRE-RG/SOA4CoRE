@@ -24,16 +24,20 @@ void SomeipSubscriber::initialize(int stage) {
     if (stage == inet::INITSTAGE_LOCAL) {
         _subscribeServiceID = par("subscribeServiceID").intValue();
         _instanceID = par("instanceID").intValue();
-        cModule* module = getParentModule()->getSubmodule("udpApp", 1);
-        _someipSD = dynamic_cast<SomeipSD*>(module);
-        _someipSD->registerSubscriber(this);
-        SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+        cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
+        if (_someipLSM = dynamic_cast<SomeipSD*>(module)) {
+            _someipLSM->registerSubscriberService(this);
+            SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+        } else {
+            throw cRuntimeError("Submodule at index %d is no Someip LSM app."
+                                "Please place the SomeipLocalServiceManager at index %d", SOMEIPLOCALSERVICEMANAGERIDX);
+        }
     }
 }
 
 void SomeipSubscriber::handleMessageWhenUp(cMessage *msg) {
     if (msg->isSelfMessage()) {
-        _someipSD->find(getSubscribeServiceID(),getInstanceID());
+        _someipLSM->discoverService(_subscribeServiceID,_instanceID);
     } else {
         EV << "Service message arrived" << std::endl;
     }

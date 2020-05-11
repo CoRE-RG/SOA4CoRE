@@ -13,12 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.base;
+package soqosmw.applications.someipapp.someiplocalserviceregistry;
 
-simple SomeipSD extends SomeipAppBase
+simple SomeipLocalServiceRegistry
 {
     parameters:
-        @class(SOQoSMW::SomeipSD);
-        receiveBroadcast = default(true);
-        localPort = default(30490);
+        @class(SOQoSMW::SomeipLocalServiceRegistry);
 }
