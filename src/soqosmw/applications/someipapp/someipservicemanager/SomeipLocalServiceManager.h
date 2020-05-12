@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include <soqosmw/applications/someipapp/someipservicediscovery/SomeipSD.h>
 #include <soqosmw/applications/someipapp/someiplocalserviceregistry/SomeipLocalServiceRegistry.h>
+#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 #define SOMEIPLOCALSERVICEMANAGERIDX 1
 
 using namespace omnetpp;
@@ -34,7 +35,7 @@ class SomeipSubscriber;
  *
  * @author Mehmet Cakir
  */
-class SomeipLocalServiceManager : public cSimpleModule
+class SomeipLocalServiceManager : public virtual SomeipAppBase
 {
   public:
     /**
@@ -48,10 +49,22 @@ class SomeipLocalServiceManager : public cSimpleModule
      * @param someipSubscriber
      */
     void registerSubscriberService(SomeipSubscriber *someipSubscriber);
-    void discoverService(uint16_t serviceID, uint16_t instanceID);
+    void discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort);
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    /**
+     * Initializes the module and waits for find
+     *
+     * @param stage indicates the initialization stage
+     */
+    virtual void initialize(int stage) override;
+
+    /**
+     * Handles incoming message as soon as node is up and
+     * processes the packet
+     *
+     * @param msg
+     */
+    virtual void handleMessageWhenUp(cMessage *msg) override;
   private:
   public:
   protected:

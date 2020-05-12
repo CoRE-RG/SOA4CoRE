@@ -15,7 +15,9 @@
 
 package soqosmw.applications.someipapp.someiplocalserviceregistry;
 
-simple SomeipLocalServiceRegistry
+import soqosmw.applications.someipapp.base.SomeipAppBase;
+
+simple SomeipLocalServiceRegistry extends SomeipAppBase
 {
     parameters:
         @class(SOQoSMW::SomeipLocalServiceRegistry);

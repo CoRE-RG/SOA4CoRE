@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include <map>
 #include <list>
+#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 
 #define SOMEIPLOCALSERVICEREGISTRYIDX 2
 
@@ -35,7 +36,7 @@ class SomeipSubscriber;
  *
  * @author Mehmet Cakir
  */
-class SomeipLocalServiceRegistry : public cSimpleModule
+class SomeipLocalServiceRegistry : public virtual SomeipAppBase
 {
   /**
    * Methods
@@ -43,9 +44,23 @@ class SomeipLocalServiceRegistry : public cSimpleModule
   public:
     void registerPublisherService(SomeipPublisher *someipPublisher);
     void registerSubscriberService(SomeipSubscriber *someipSubscriber);
+    std::list<SomeipPublisher*> getPublisherService(uint16_t serviceID);
+    std::list<SomeipSubscriber*> getSubscriberService(uint16_t serviceID);
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    /**
+     * Initializes the module and waits for find
+     *
+     * @param stage indicates the initialization stage
+     */
+    virtual void initialize(int stage) override;
+
+    /**
+     * Handles incoming message as soon as node is up and
+     * processes the packet
+     *
+     * @param msg
+     */
+    virtual void handleMessageWhenUp(cMessage *msg) override;
   private:
 
   /**
@@ -54,8 +69,8 @@ class SomeipLocalServiceRegistry : public cSimpleModule
   public:
   protected:
   private:
-    std::map<uint16_t,std::list<SomeipPublisher*>*> *_serviceIDToPublisher;
-    std::map<uint16_t,std::list<SomeipSubscriber*>*> *_serviceIDToSubscriber;
+    std::map<uint16_t,std::list<SomeipPublisher*>> _serviceIDToPublisher;
+    std::map<uint16_t,std::list<SomeipSubscriber*>> _serviceIDToSubscriber;
 
 };
 }

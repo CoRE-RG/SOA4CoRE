@@ -21,37 +21,45 @@ namespace SOQoSMW {
 
 Define_Module(SomeipLocalServiceManager);
 
-void SomeipLocalServiceManager::initialize() {
-    cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPSDIDX);
-    if(_someipSD = dynamic_cast<SomeipSD*>(module)){
-    } else {
-        throw cRuntimeError("Submodule at index %d is no Someip SD app."
-                "Please place the SomeipServiceDiscovery at index %d", SOMEIPSDIDX);
-    }
-    module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEREGISTRYIDX);
-    if(_someipLSR = dynamic_cast<SomeipLocalServiceRegistry*>(module)){
-    } else {
-        throw cRuntimeError("Submodule at index %d is no Someip LSR app."
-                "Please place the SomeipLocalServiceRegistry at index %d", SOMEIPLOCALSERVICEREGISTRYIDX);
+void SomeipLocalServiceManager::initialize(int stage) {
+    SomeipAppBase::initialize(stage);
+    if (stage == inet::INITSTAGE_LOCAL) {
+        cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPSDIDX);
+        if((_someipSD = dynamic_cast<SomeipSD*>(module))){
+        } else {
+            throw cRuntimeError("Submodule at index %d is no Someip SD app."
+                    "Please place the SomeipServiceDiscovery at index %d", SOMEIPSDIDX);
+        }
+        module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEREGISTRYIDX);
+        if((_someipLSR = dynamic_cast<SomeipLocalServiceRegistry*>(module))){
+        } else {
+            throw cRuntimeError("Submodule at index %d is no Someip LSR app."
+                    "Please place the SomeipLocalServiceRegistry at index %d", SOMEIPLOCALSERVICEREGISTRYIDX);
+        }
     }
 }
 
-void SomeipLocalServiceManager::handleMessage(cMessage *msg)
-{
-    // TODO - Generated method body
+void SomeipLocalServiceManager::handleMessageWhenUp(cMessage *msg) {
+    // Does nothing here
 }
 
 void SomeipLocalServiceManager::registerPublisherService(SomeipPublisher *someipPublisher) {
-
-
+    _someipLSR->registerPublisherService(someipPublisher);
 }
 
 void SomeipLocalServiceManager::registerSubscriberService(SomeipSubscriber *someipSubscriber) {
-
+    _someipLSR->registerSubscriberService(someipSubscriber);
 }
 
-void SomeipLocalServiceManager::discoverService(uint16_t serviceID, uint16_t instanceID) {
-
+void SomeipLocalServiceManager::discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
+    std::list<SomeipPublisher*> publisherList = _someipLSR->getPublisherService(serviceID);
+    if (!publisherList.empty()) {
+        for (SomeipPublisher *someipPublisher : publisherList) {
+            someipPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
+        }
+    } else {
+        // TODO Someip SD
+    }
 }
 
 }

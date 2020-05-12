@@ -20,36 +20,56 @@
 namespace SOQoSMW {
 Define_Module(SomeipLocalServiceRegistry);
 
-void SomeipLocalServiceRegistry::initialize() {
-    _serviceIDToPublisher = new std::map<uint16_t,std::list<SomeipPublisher*>*>();
-    _serviceIDToSubscriber = new std::map<uint16_t,std::list<SomeipSubscriber*>*>();
+void SomeipLocalServiceRegistry::initialize(int stage) {
+    SomeipAppBase::initialize(stage);
+    if (stage == inet::INITSTAGE_LOCAL) {
+    }
 }
 
-void SomeipLocalServiceRegistry::handleMessage(cMessage *msg) {
+void SomeipLocalServiceRegistry::handleMessageWhenUp(cMessage *msg) {
+    //Does nothing here
 }
 
 void SomeipLocalServiceRegistry::registerPublisherService(SomeipPublisher *someipPublisher) {
-    auto it = _serviceIDToPublisher->find(someipPublisher->getPublishServiceID());
-    if (it != _serviceIDToPublisher->end()) {
-        std::list<SomeipPublisher*> *publishers = it->second;
-        publishers->push_back(someipPublisher);
+    auto it = _serviceIDToPublisher.find(someipPublisher->getPublishServiceID());
+    if (it != _serviceIDToPublisher.end()) {
+        std::list<SomeipPublisher*> publishers = it->second;
+        publishers.push_back(someipPublisher);
     } else {
-        std::list<SomeipPublisher*> *publisherList = new std::list<SomeipPublisher*>();
-        publisherList->push_back(someipPublisher);
-        (*_serviceIDToPublisher)[someipPublisher->getPublishServiceID()] = publisherList;
+        std::list<SomeipPublisher*> publisherList;
+        publisherList.push_back(someipPublisher);
+        _serviceIDToPublisher[someipPublisher->getPublishServiceID()] = publisherList;
     }
 }
 
 void SomeipLocalServiceRegistry::registerSubscriberService(SomeipSubscriber *someipSubscriber) {
-    auto it = _serviceIDToSubscriber->find(someipSubscriber->getSubscribeServiceID());
-    if (it != _serviceIDToSubscriber->end()) {
-        std::list<SomeipSubscriber*> *subscribers = it->second;
-        subscribers->push_back(someipSubscriber);
+    auto it = _serviceIDToSubscriber.find(someipSubscriber->getSubscribeServiceID());
+    if (it != _serviceIDToSubscriber.end()) {
+        std::list<SomeipSubscriber*> subscribers = it->second;
+        subscribers.push_back(someipSubscriber);
     } else {
-        std::list<SomeipSubscriber*> *subscriberList = new std::list<SomeipSubscriber*>();
-        subscriberList->push_back(someipSubscriber);
-        (*_serviceIDToSubscriber)[someipSubscriber->getSubscribeServiceID()] = subscriberList;
+        std::list<SomeipSubscriber*> subscriberList;
+        subscriberList.push_back(someipSubscriber);
+        _serviceIDToSubscriber[someipSubscriber->getSubscribeServiceID()] = subscriberList;
     }
+}
+
+std::list<SomeipPublisher*> SomeipLocalServiceRegistry::getPublisherService(uint16_t serviceID) {
+    std::list<SomeipPublisher*> publisherList;
+    auto it = _serviceIDToPublisher.find(serviceID);
+    if (it != _serviceIDToPublisher.end()) {
+        publisherList = it->second;
+    }
+    return publisherList ;
+}
+
+std::list<SomeipSubscriber*> SomeipLocalServiceRegistry::getSubscriberService(uint16_t serviceID) {
+    std::list<SomeipSubscriber*> subscriberList;
+    auto it = _serviceIDToSubscriber.find(serviceID);
+    if (it != _serviceIDToSubscriber.end()) {
+        subscriberList = it->second;
+    }
+    return subscriberList ;
 }
 
 }

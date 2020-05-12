@@ -26,25 +26,30 @@ void SomeipPublisher::initialize(int stage) {
         _publishServiceID = par("publishServiceID").intValue();
         _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
-        if(_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module)) {
+        if((_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module))) {
             _someipLSM->registerPublisherService(this);
         } else {
             throw cRuntimeError("Submodule at index %d is no Someip LSM app."
                     "Please place the SomeipLocalServiceManager at index %d", SOMEIPLOCALSERVICEMANAGERIDX);
         }
     }
+    SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
 }
 
 void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
-    SomeIpHeader* someipHeader = new SomeIpHeader("SOME/IP - RESPONSE");
-    someipHeader->setMessageID(0x00000042);
-    someipHeader->setLength(someipHeader->getByteLength()-UNCOVEREDBYTESBYLENGTH);
-    someipHeader->setRequestID(0x00000042);
-    someipHeader->setProtocolVersion(SOQoSMW::ProtocolVersion::PV_1);
-    someipHeader->setInterfaceVersion(SOQoSMW::InterfaceVersion::IV_1);
-    someipHeader->setMessageType(SOQoSMW::MessageType::RESPONSE);
-    someipHeader->setReturnCode(SOQoSMW::ReturnCode::E_OK);
-    socket.sendTo(someipHeader, _subscriberIpAddress, _subscriberPort);
+    if (!_destinations.empty()) {
+        SomeIpHeader* someipHeader = new SomeIpHeader("SOME/IP - RESPONSE");
+        someipHeader->setMessageID(0x00000042);
+        someipHeader->setLength(someipHeader->getByteLength()-UNCOVEREDBYTESBYLENGTH);
+        someipHeader->setRequestID(0x00000042);
+        someipHeader->setProtocolVersion(SOQoSMW::ProtocolVersion::PV_1);
+        someipHeader->setInterfaceVersion(SOQoSMW::InterfaceVersion::IV_1);
+        someipHeader->setMessageType(SOQoSMW::MessageType::RESPONSE);
+        someipHeader->setReturnCode(SOQoSMW::ReturnCode::E_OK);
+        for (std::pair<inet::L3Address,uint16_t> destination : _destinations) {
+            socket.sendTo(someipHeader, destination.first, destination.second);
+        }
+    }
     delete msg;
     SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
 }
@@ -77,16 +82,20 @@ uint16_t SomeipPublisher::getInstanceID() {
 }
 
 void SomeipPublisher::setSubscriberIpAddress(L3Address subscriberIpAddress) {
-    _subscriberIpAddress = subscriberIpAddress;
+    //_subscriberIpAddress = subscriberIpAddress;
 }
 
 void SomeipPublisher::setSubscriberPort(uint16_t port) {
-    _subscriberPort = port;
+    //_subscriberPort = port;
 }
 
 void SomeipPublisher::startPublish() {
-    Enter_Method("SomeipPublisher::startPublish");
-    SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+    //Enter_Method("SomeipPublisher::startPublish");
+    //SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+}
+
+void SomeipPublisher::addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
+    _destinations.push_back(std::make_pair(ipAddress,port));
 }
 
 } /* end namespace SOQoSMW */

@@ -25,7 +25,7 @@ void SomeipSubscriber::initialize(int stage) {
         _subscribeServiceID = par("subscribeServiceID").intValue();
         _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
-        if (_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module)) {
+        if ((_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module))) {
             _someipLSM->registerSubscriberService(this);
             SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
         } else {
@@ -37,7 +37,7 @@ void SomeipSubscriber::initialize(int stage) {
 
 void SomeipSubscriber::handleMessageWhenUp(cMessage *msg) {
     if (msg->isSelfMessage()) {
-        _someipLSM->discoverService(_subscribeServiceID,_instanceID);
+        _someipLSM->discoverService(_subscribeServiceID,_instanceID, getIpAddress(L3Address::IPv4), localPort);
     } else {
         EV << "Service message arrived" << std::endl;
     }

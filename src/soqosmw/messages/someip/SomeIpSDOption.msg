@@ -27,6 +27,8 @@ class noncobject IPv6Address;
 
 namespace SOQoSMW;
 
+enum SomeIpSDOptionType;
+
 enum SomeIpSDOptionType {
     CONFIGURATION  = 0x01;
     LOADBALANCING  = 0x02;

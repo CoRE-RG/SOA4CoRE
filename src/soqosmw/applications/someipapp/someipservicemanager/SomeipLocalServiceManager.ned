@@ -15,10 +15,10 @@
 
 package soqosmw.applications.someipapp.someipservicemanager;
 
-//
-// TODO auto-generated module
-//
-simple SomeipLocalServiceManager
+
+import soqosmw.applications.someipapp.base.SomeipAppBase;
+
+simple SomeipLocalServiceManager extends SomeipAppBase
 {
     parameters:
         @class(SOQoSMW::SomeipLocalServiceManager);

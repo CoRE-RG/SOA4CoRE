@@ -18,6 +18,7 @@
 
 #include "soqosmw/applications/someipapp/someipservicemanager/SomeipLocalServiceManager.h"
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
+#include <utility>
 
 namespace SOQoSMW {
 
@@ -29,6 +30,10 @@ namespace SOQoSMW {
  * @author Mehmet Cakir
  */
 class SomeipPublisher : public virtual SomeipAppBase  {
+    /**
+     * Methods
+     */
+private:
 protected:
     /**
      * Initializes the module and waits for find
@@ -51,33 +56,6 @@ protected:
      * @param packet
      */
     virtual void processPacket(cPacket *packet) override;
-
-private:
-    /**
-     * SOME/IP Local Service Manager reference
-     */
-    SomeipLocalServiceManager* _someipLSM;
-
-    /**
-     * IP Address of the subscriber
-     */
-    inet::L3Address _subscriberIpAddress;
-
-    /**
-     * Port of the subscriber
-     */
-    uint16_t _subscriberPort;
-
-    /**
-     * Service ID to publish
-     */
-    uint16_t _publishServiceID;
-
-    /**
-     * Instance ID of service id to publish
-     */
-    uint16_t _instanceID;
-
 public:
     /**
      * Returns the IP Address of this publisher
@@ -122,10 +100,56 @@ public:
      */
     void setSubscriberPort(uint16_t port);
 
+    //TODO will not be used, so delete
     /**
      * Starts the publish schedule
      */
     void startPublish();
+
+    /**
+     * Adds someip subscriber destination infromation
+     */
+    void addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port);
+
+    /**
+     * Member variables
+     */
+private:
+    /**
+     * SOME/IP Local Service Manager reference
+     */
+    SomeipLocalServiceManager* _someipLSM;
+
+    //TODO will not be used, so delete
+    /**
+     * IP Address of the subscriber
+     */
+    inet::L3Address _subscriberIpAddress;
+
+    //TODO will not be used, so delete
+    /**
+     * Port of the subscriber
+     */
+    uint16_t _subscriberPort;
+
+    /**
+     * Service ID to publish
+     */
+    uint16_t _publishServiceID;
+
+    /**
+     * Instance ID of service id to publish
+     */
+    uint16_t _instanceID;
+
+    /**
+     * List of destination addresses and ports
+     */
+    std::list<std::pair<inet::L3Address,uint16_t>> _destinations;
+protected:
+
+public:
+
 
 };
 } /* end namespace SOQoSMW */
