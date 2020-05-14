@@ -32,8 +32,8 @@ void SomeipPublisher::initialize(int stage) {
             throw cRuntimeError("Submodule at index %d is no Someip LSM app."
                     "Please place the SomeipLocalServiceManager at index %d", SOMEIPLOCALSERVICEMANAGERIDX);
         }
+        SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
     }
-    SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
 }
 
 void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
