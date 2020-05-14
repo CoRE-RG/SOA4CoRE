@@ -71,4 +71,14 @@ uint16_t SomeipSubscriber::getInstanceID() {
     return _instanceID;
 }
 
+bool SomeipSubscriber::operator==(SomeipSubscriber* other) {
+    return this->_subscribeServiceID == other->getSubscribeServiceID()
+            && this->getIpAddress(L3Address::IPv4) == other->getIpAddress(L3Address::IPv4)
+            && this->getPort() == other->getPort();
+}
+
+bool SomeipSubscriber::operator!=(SomeipSubscriber* other) {
+    return !(this == other);
+}
+
 } /* end namespace SOQoSMW */

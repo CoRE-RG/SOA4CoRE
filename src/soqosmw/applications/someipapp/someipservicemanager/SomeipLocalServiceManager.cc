@@ -58,8 +58,39 @@ void SomeipLocalServiceManager::discoverService(uint16_t serviceID, uint16_t ins
             someipPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
         }
     } else {
-        // TODO Someip SD
+        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfoList = _someipLSR->getRemotePublisherInfoList(serviceID);
+        if (!remotePublisherInfoList.empty()) {
+            for (std::pair<inet::L3Address,uint16_t> publisherInfo : remotePublisherInfoList) {
+                _someipSD->subscribeService(serviceID, instanceID, publisherInfo.first, subscriberIP, subscriberPort);
+            }
+        } else {
+            _someipSD->findService(serviceID, instanceID);
+        }
+        _pendingRequests[serviceID] = std::make_pair(subscriberIP, subscriberPort);
     }
+}
+
+std::list<SomeipPublisher*> SomeipLocalServiceManager::lookForPublisherService(uint16_t serviceID) {
+    return _someipLSR->getPublisherService(serviceID);
+}
+
+void SomeipLocalServiceManager::addRemotePublisher(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort) {
+    _someipLSR->registerRemotePublisherService(serviceID, publisherIP, publisherPort);
+    _someipSD->subscribeService(serviceID, 0xFFFF, publisherIP, _pendingRequests[serviceID].first, _pendingRequests[serviceID].second);
+}
+
+void SomeipLocalServiceManager::publishToSubscriber(uint16_t serviceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
+    std::list<SomeipPublisher*> publisherList = _someipLSR->getPublisherService(serviceID);
+    if (!publisherList.empty()) {
+        for (SomeipPublisher *someipPublisher : publisherList) {
+            someipPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
+        }
+    }
+    _someipSD->acknowledgeSubscription(serviceID, 0xFFFF, subscriberIP);
+}
+
+void SomeipLocalServiceManager::acknowledgeService(uint16_t serviceID) {
+    _pendingRequests.erase(serviceID);
 }
 
 }

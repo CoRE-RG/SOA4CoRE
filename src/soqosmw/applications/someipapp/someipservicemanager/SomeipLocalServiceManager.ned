@@ -22,4 +22,5 @@ simple SomeipLocalServiceManager extends SomeipAppBase
 {
     parameters:
         @class(SOQoSMW::SomeipLocalServiceManager);
+        destPort = default(-1);
 }

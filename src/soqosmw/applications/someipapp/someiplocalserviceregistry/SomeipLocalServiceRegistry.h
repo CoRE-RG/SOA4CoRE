@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include <map>
 #include <list>
+#include <utility>
 #include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
 
 #define SOMEIPLOCALSERVICEREGISTRYIDX 2
@@ -44,8 +45,10 @@ class SomeipLocalServiceRegistry : public virtual SomeipAppBase
   public:
     void registerPublisherService(SomeipPublisher *someipPublisher);
     void registerSubscriberService(SomeipSubscriber *someipSubscriber);
+    void registerRemotePublisherService(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort);
     std::list<SomeipPublisher*> getPublisherService(uint16_t serviceID);
     std::list<SomeipSubscriber*> getSubscriberService(uint16_t serviceID);
+    std::list<std::pair<inet::L3Address,uint16_t>> getRemotePublisherInfoList (uint16_t serviceID);
   protected:
     /**
      * Initializes the module and waits for find
@@ -71,6 +74,7 @@ class SomeipLocalServiceRegistry : public virtual SomeipAppBase
   private:
     std::map<uint16_t,std::list<SomeipPublisher*>> _serviceIDToPublisher;
     std::map<uint16_t,std::list<SomeipSubscriber*>> _serviceIDToSubscriber;
+    std::map<uint16_t,std::list<std::pair<inet::L3Address,uint16_t>>> _remoteServiceIDToPublisher;
 
 };
 }

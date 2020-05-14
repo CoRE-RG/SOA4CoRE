@@ -72,4 +72,25 @@ std::list<SomeipSubscriber*> SomeipLocalServiceRegistry::getSubscriberService(ui
     return subscriberList ;
 }
 
+void SomeipLocalServiceRegistry::registerRemotePublisherService(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort) {
+    auto it = _remoteServiceIDToPublisher.find(serviceID);
+    if (it != _remoteServiceIDToPublisher.end()) {
+        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfo = it->second;
+        remotePublisherInfo.push_back(std::make_pair(publisherIP,publisherPort));
+    } else {
+        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfo;
+        remotePublisherInfo.push_back(std::make_pair(publisherIP,publisherPort));
+        _remoteServiceIDToPublisher[serviceID] = remotePublisherInfo;
+    }
+}
+
+std::list<std::pair<inet::L3Address,uint16_t>> SomeipLocalServiceRegistry::getRemotePublisherInfoList(uint16_t serviceID) {
+    std::list<std::pair<inet::L3Address,uint16_t>> publisherInfoList;
+    auto it = _remoteServiceIDToPublisher.find(serviceID);
+    if (it != _remoteServiceIDToPublisher.end()) {
+        publisherInfoList = it->second;
+    }
+    return publisherInfoList;
+}
+
 }

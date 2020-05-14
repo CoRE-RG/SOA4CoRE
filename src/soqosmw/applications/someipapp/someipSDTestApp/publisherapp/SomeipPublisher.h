@@ -112,6 +112,20 @@ public:
     void addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port);
 
     /**
+     * Override == operator
+     * @param other
+     * @return true if equal
+     */
+    bool operator==(SomeipPublisher* other);
+
+    /**
+     * Override != operator
+     * @param other
+     * @return true if unequal
+     */
+    bool operator!=(SomeipPublisher* other);
+
+    /**
      * Member variables
      */
 private:

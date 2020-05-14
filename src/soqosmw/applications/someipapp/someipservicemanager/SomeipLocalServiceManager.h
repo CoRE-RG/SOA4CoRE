@@ -49,7 +49,44 @@ class SomeipLocalServiceManager : public virtual SomeipAppBase
      * @param someipSubscriber
      */
     void registerSubscriberService(SomeipSubscriber *someipSubscriber);
+
+    /**
+     * Discovers a service
+     * @param serviceID of service that need to be discovered
+     * @param instanceID of service that need to be discovered
+     * @param subscriberIP IP address of subscriber that wants to subscribe
+     * @param subscriberPort port of subscriber that wants to subscribe
+     */
     void discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort);
+
+    /**
+     * Looks for publisher with given service id
+     * @param serviceID service id of service to search
+     * @return list of publishers that publish service
+     */
+    std::list<SomeipPublisher*> lookForPublisherService(uint16_t serviceID);
+
+    /**
+     * Adds a remote publisher
+     * @param serviceID of remote publisher
+     * @param publisherIP IP address of remote publisher
+     * @param publisherPort port of remote publisher
+     */
+    void addRemotePublisher(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort);
+
+    /**
+     * Starts a publisher to publish his service
+     * @param serviceID
+     * @param subscriberIP
+     * @param subscriberPort
+     */
+    void publishToSubscriber(uint16_t serviceID, L3Address subscriberIP, uint16_t subscriberPort);
+
+    /**
+     * Acknowledges a service
+     * @param serviceID
+     */
+    void acknowledgeService(uint16_t serviceID);
   protected:
     /**
      * Initializes the module and waits for find
@@ -78,6 +115,11 @@ class SomeipLocalServiceManager : public virtual SomeipAppBase
      * SOME/IP Local Service Registry reference
      */
     SomeipLocalServiceRegistry* _someipLSR;
+
+    /**
+     * Map for saving discover request
+     */
+    std::map<uint16_t,std::pair<inet::L3Address,uint16_t>> _pendingRequests;
 };
 }
 #endif

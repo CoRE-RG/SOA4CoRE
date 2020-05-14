@@ -80,6 +80,20 @@ public:
      * @return instance ID to subscribe
      */
     uint16_t getInstanceID();
+
+    /**
+     * Override == operator
+     * @param other
+     * @return true if equal
+     */
+    bool operator==(SomeipSubscriber* other);
+
+    /**
+     * Override != operator
+     * @param other
+     * @return true if unequal
+     */
+    bool operator!=(SomeipSubscriber* other);
 protected:
     /**
      * Schedules a self message and offers service with

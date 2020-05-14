@@ -26,6 +26,7 @@ namespace SOQoSMW {
 
 class SomeipPublisher;
 class SomeipSubscriber;
+class SomeipLocalServiceManager;
 
 /**
  * @brief Basic SomeipSDApp
@@ -44,34 +45,47 @@ private:
      */
     const char* _localAddress;
 
-    //TODO List of publishers
+    //TODO will not be used, delete later
     /**
      * The SomeipPublisher
      */
     SomeipPublisher* _someipPublisher;
 
-    //TODO List of subscribers
+    //TODO will not be used, delete later
     /**
      * The SomeipSubscriber
      */
     SomeipSubscriber* _someipSubscriber;
+
+    /**
+     * The SOME/IP local service manager
+     */
+    SomeipLocalServiceManager *_someipLSM;
+
 public:
     /**
-     * Discovers a service
+     * Subscribes a service
+     * @param serviceID
+     * @param instanceID
+     * @param publisherIP
+     * @param subscriberIP
+     * @param subscriberPort
      */
-    void find(uint16_t serviceID, uint16_t instanceID);
+    void subscribeService(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, inet::L3Address subscriberIP, uint16_t subscriberPort);
 
     /**
-     * Registers a SomeipPublisher
-     * @param someipPublisher
+     * Searches a service in the network
      */
-    void registerPublisher(SomeipPublisher* someipPublisher);
+    void findService(uint16_t serviceID, uint16_t instanceID);
 
     /**
-     * Registers a SomeipSubscriber
-     * @param someipSubscriber
+     * Acknowledges subscription
+     * @param serviceID
+     * @param instanceID
+     * @param remoteAddress
+     * @param remotePort
      */
-    void registerSubscriber(SomeipSubscriber* someipSubscriber);
+    void acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, L3Address remoteAddress);
   protected:
     /**
      * Initializes module with stages
@@ -90,26 +104,31 @@ public:
 
   private:
     /**
+     * Discovers a service
+     */
+    void find(uint16_t serviceID, uint16_t instanceID);
+
+    /**
      * Offers a service
      */
-    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, int remotePort);
+    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, L3Address publisherIP, uint16_t publisherPort);
 
     /**
      * Subscribes a service
      */
-    void subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, int remotePort);
+    void subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, L3Address subscriberIP, uint16_t subscriberPort);
 
     /**
      * Acknowledges a subscription
      */
-    void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, int remotePort);
+    void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress);
 
     /**
      * Processes a packet
      *
      * @param packet
      */
-    void processPacket(SomeIpSDHeader* someipSDHeader);
+    void processSomeipSDHeader(SomeIpSDHeader* someipSDHeader);
 
     void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someipSDHeader);
 

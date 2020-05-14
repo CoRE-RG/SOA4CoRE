@@ -38,7 +38,7 @@ void SomeipPublisher::initialize(int stage) {
 
 void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
     if (!_destinations.empty()) {
-        SomeIpHeader* someipHeader = new SomeIpHeader("SOME/IP - RESPONSE");
+        SomeIpHeader* someipHeader = new SomeIpHeader("SOME/IP - RESPONSE - " + _publishServiceID);
         someipHeader->setMessageID(0x00000042);
         someipHeader->setLength(someipHeader->getByteLength()-UNCOVEREDBYTESBYLENGTH);
         someipHeader->setRequestID(0x00000042);
@@ -96,6 +96,16 @@ void SomeipPublisher::startPublish() {
 
 void SomeipPublisher::addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
     _destinations.push_back(std::make_pair(ipAddress,port));
+}
+
+bool SomeipPublisher::operator==(SomeipPublisher* other) {
+    return this->_publishServiceID == other->getPublishServiceID()
+            && this->getIpAddress(L3Address::IPv4) == other->getIpAddress(L3Address::IPv4)
+            && this->getPort() == other->getPort();
+}
+
+bool SomeipPublisher::operator!=(SomeipPublisher* other) {
+    return !(this == other);
 }
 
 } /* end namespace SOQoSMW */

@@ -21,4 +21,5 @@ simple SomeipLocalServiceRegistry extends SomeipAppBase
 {
     parameters:
         @class(SOQoSMW::SomeipLocalServiceRegistry);
+        destPort = default(-1);
 }
