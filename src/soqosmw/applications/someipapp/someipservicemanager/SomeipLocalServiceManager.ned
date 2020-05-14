@@ -16,11 +16,9 @@
 package soqosmw.applications.someipapp.someipservicemanager;
 
 
-import soqosmw.applications.someipapp.base.SomeipAppBase;
-
-simple SomeipLocalServiceManager extends SomeipAppBase
+simple SomeipLocalServiceManager
 {
     parameters:
         @class(SOQoSMW::SomeipLocalServiceManager);
-        destPort = default(-1);
+        @display("i=block/join");
 }

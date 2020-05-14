@@ -23,4 +23,6 @@ simple SomeipSD extends SomeipAppBase
         receiveBroadcast = default(true);
         localPort = default(30490);
         destPort = default(30490);
+        messageLength = default(16B);
+        sendInterval = default(0.001s);
 }
