@@ -38,7 +38,8 @@ void SomeipPublisher::initialize(int stage) {
 
 void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
     if (!_destinations.empty()) {
-        SomeIpHeader* someipHeader = new SomeIpHeader("SOME/IP - RESPONSE - " + _publishServiceID);
+        std::string headerName = "SOME/IP - RESPONSE - " + std::to_string(getPublishServiceID());
+        SomeIpHeader* someipHeader = new SomeIpHeader(headerName.c_str());
         someipHeader->setMessageID(0x00000042);
         someipHeader->setLength(someipHeader->getByteLength()-UNCOVEREDBYTESBYLENGTH);
         someipHeader->setRequestID(0x00000042);
