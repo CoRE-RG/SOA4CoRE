@@ -13,15 +13,29 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.someipSDTestApp.publisherapp;
+package soqosmw.applications.publisherapp.someippublisherapp;
 
-import soqosmw.applications.someipapp.base.SomeipAppBase;
+import soqosmw.applications.someipapp.base.SomeIpAppBase;
 
-simple SomeipPublisher extends SomeipAppBase
+//
+// The SomeipPublisher provides a publisher implementation of the SomeIpAppBase.
+// These module realizes a SOME/IP publisher service.
+//
+// @author Mehmet Cakir
+//
+simple SomeIpPublisher extends SomeIpAppBase
 {
     parameters:
-        @class(SOQoSMW::SomeipPublisher);
-        int publishServiceID;
-        int instanceID;
+        @class(SOQoSMW::SomeIpPublisher);
         
+        // The service id of the service that will be published
+        int publishServiceID;
+        // The instance id of the service that will be published
+        int instanceID;
+        // The destination port
+        destPort = default(-1);
+        // The messag length
+        messageLength = default(16B);
+        // The send interval
+        sendInterval = default(0.001s);
 }

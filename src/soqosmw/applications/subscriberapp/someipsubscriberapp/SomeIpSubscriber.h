@@ -16,19 +16,19 @@
 #ifndef __SOQOSMW_SOMEIPSUBSCRIBER_H_
 #define __SOQOSMW_SOMEIPSUBSCRIBER_H_
 
-#include "soqosmw/applications/someipapp/someipservicemanager/SomeipLocalServiceManager.h"
-#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
+#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
+#include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
 
 namespace SOQoSMW {
 
 /**
- * @brief A simple dummy SOME/IP Subscriber application.
+ * @brief A simple SOME/IP Subscriber application.
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class SomeipSubscriber : public virtual SomeipAppBase {
+class SomeIpSubscriber : public virtual SomeIpAppBase {
 /**
  * Member variables
  */
@@ -36,7 +36,7 @@ private:
     /**
      * SOME/IP Local Service Manager reference
      */
-    SomeipLocalServiceManager *_someipLSM;
+    SomeIpLocalServiceManager *_someIpLSM;
 
     /**
      * Service ID to subscribe
@@ -86,14 +86,14 @@ public:
      * @param other
      * @return true if equal
      */
-    bool operator==(SomeipSubscriber* other);
+    bool operator==(SomeIpSubscriber* other);
 
     /**
      * Override != operator
      * @param other
      * @return true if unequal
      */
-    bool operator!=(SomeipSubscriber* other);
+    bool operator!=(SomeIpSubscriber* other);
 protected:
     /**
      * Schedules a self message and offers service with

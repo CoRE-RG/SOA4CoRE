@@ -28,10 +28,10 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeipAppBase: public virtual inet::UDPBasicApp {
+class SomeIpAppBase: public virtual inet::UDPBasicApp {
 public:
-    SomeipAppBase();
-    virtual ~SomeipAppBase();
+    SomeIpAppBase();
+    virtual ~SomeIpAppBase();
 protected:
     /**
      * Initializes parameters

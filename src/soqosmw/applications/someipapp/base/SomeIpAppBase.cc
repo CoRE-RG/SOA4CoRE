@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/someipapp/base/SomeipAppBase.h>
+#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
 
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/common/ModuleAccess.h"
@@ -21,18 +21,18 @@
 #include "inet/transportlayer/contract/udp/UDPControlInfo_m.h"
 
 namespace SOQoSMW {
-Define_Module(SomeipAppBase);
+Define_Module(SomeIpAppBase);
 
 #define MESSAGEIDMETHODPATTERN 0xFFFF7FFF
 #define MESSAGEIDEVENTPATTERN 0xFFFFFFFF
 
-SomeipAppBase::SomeipAppBase() {
+SomeIpAppBase::SomeIpAppBase() {
 }
 
-SomeipAppBase::~SomeipAppBase() {
+SomeIpAppBase::~SomeIpAppBase() {
 }
 
-void SomeipAppBase:: initialize(int stage) {
+void SomeIpAppBase:: initialize(int stage) {
     UDPBasicApp::initialize(stage);
 
     if (stage == inet::INITSTAGE_LOCAL) {
@@ -40,7 +40,7 @@ void SomeipAppBase:: initialize(int stage) {
     }
 }
 
-void SomeipAppBase::handleMessageWhenUp(cMessage *msg)
+void SomeIpAppBase::handleMessageWhenUp(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         EV << "Self message arrived" << std::endl;
@@ -50,11 +50,11 @@ void SomeipAppBase::handleMessageWhenUp(cMessage *msg)
     delete msg;
 }
 
-void SomeipAppBase::refreshDisplay() const {
+void SomeIpAppBase::refreshDisplay() const {
 
 }
 
-cPacket* SomeipAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+cPacket* SomeIpAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
         uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode,cPacket *payload) {
     SomeIpHeader *someipheader = new SomeIpHeader("someip");
     //Message ID ("Service ID" 16 Bit | "0" 1 Bit | "Method ID" 15 Bit) or
@@ -87,13 +87,13 @@ cPacket* SomeipAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_E
     return someipheader;
 }
 
-void SomeipAppBase::sendPacket(cPacket* packet) {
+void SomeIpAppBase::sendPacket(cPacket* packet) {
     for (inet::L3Address destAddr : destAddresses) {
         socket.sendTo(packet, destAddr, destPort);
     }
 }
 
-void SomeipAppBase::processStart() {
+void SomeIpAppBase::processStart() {
     socket.setOutputGate(gate("udpOut"));
     const char *localAddress = par("localAddress");
     socket.bind(*localAddress ? inet::L3AddressResolver().resolve(localAddress) : inet::L3Address(), localPort);
@@ -113,15 +113,15 @@ void SomeipAppBase::processStart() {
     }
 }
 
-void SomeipAppBase::processSend() {
+void SomeIpAppBase::processSend() {
 
 }
 
-bool SomeipAppBase::handleNodeStart(inet::IDoneCallback *doneCallback) {
+bool SomeIpAppBase::handleNodeStart(inet::IDoneCallback *doneCallback) {
     return true;
 }
 
-void SomeipAppBase::scheduleSelfMsg(omnetpp::simtime_t scheduleTime) {
+void SomeIpAppBase::scheduleSelfMsg(omnetpp::simtime_t scheduleTime) {
     omnetpp::cPacket *msg = new omnetpp::cPacket("selfMsg");
     msg->setByteLength(8);
     scheduleAt(simTime() + scheduleTime, msg);

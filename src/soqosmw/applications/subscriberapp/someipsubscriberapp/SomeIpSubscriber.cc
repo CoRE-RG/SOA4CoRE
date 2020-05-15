@@ -13,42 +13,41 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/someipapp/someipSDTestApp/subscriberapp/SomeipSubscriber.h>
+#include <soqosmw/applications/subscriberapp/someipsubscriberapp/SomeIpSubscriber.h>
 
 namespace SOQoSMW {
 
-Define_Module(SomeipSubscriber);
+Define_Module(SomeIpSubscriber);
 
-void SomeipSubscriber::initialize(int stage) {
-    SomeipAppBase::initialize(stage);
+void SomeIpSubscriber::initialize(int stage) {
+    SomeIpAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {
         _subscribeServiceID = par("subscribeServiceID").intValue();
         _instanceID = par("instanceID").intValue();
-        cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
-        if ((_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module))) {
-            _someipLSM->registerSubscriberService(this);
-            SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+        cModule* module = getParentModule()->getSubmodule("lsm");
+        if ((_someIpLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
+            _someIpLSM->registerSubscriberService(this);
+            SomeIpAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
         } else {
-            throw cRuntimeError("Submodule at index %d is no Someip LSM app."
-                                "Please place the SomeipLocalServiceManager at index %d", SOMEIPLOCALSERVICEMANAGERIDX);
+            throw cRuntimeError("No SOME/IP local service manager found.");
         }
     }
 }
 
-void SomeipSubscriber::handleMessageWhenUp(cMessage *msg) {
+void SomeIpSubscriber::handleMessageWhenUp(cMessage *msg) {
     if (msg->isSelfMessage()) {
-        _someipLSM->discoverService(_subscribeServiceID,_instanceID, getIpAddress(L3Address::IPv4), localPort);
-    } else {
-        EV << "Service message arrived" << std::endl;
+        _someIpLSM->discoverService(_subscribeServiceID,_instanceID, getIpAddress(L3Address::IPv4), localPort);
+    } else if (SomeIpHeader *someIpheader = dynamic_cast<SomeIpHeader*>(msg)){
+        EV << "SomeIpHeader service message arrived" << std::endl;
     }
     delete msg;
 }
 
-void SomeipSubscriber::processPacket(cPacket *packet) {
+void SomeIpSubscriber::processPacket(cPacket *packet) {
 
 }
 
-inet::L3Address SomeipSubscriber::getIpAddress(L3Address::AddressType addressType) {
+inet::L3Address SomeIpSubscriber::getIpAddress(L3Address::AddressType addressType) {
     switch (addressType) {
         case L3Address::IPv4:
             return inet::IPv4Address(par("localAddress").stringValue());
@@ -59,25 +58,25 @@ inet::L3Address SomeipSubscriber::getIpAddress(L3Address::AddressType addressTyp
     }
 }
 
-int SomeipSubscriber::getPort() {
+int SomeIpSubscriber::getPort() {
     return localPort;
 }
 
-uint16_t SomeipSubscriber::getSubscribeServiceID() {
+uint16_t SomeIpSubscriber::getSubscribeServiceID() {
     return _subscribeServiceID;
 }
 
-uint16_t SomeipSubscriber::getInstanceID() {
+uint16_t SomeIpSubscriber::getInstanceID() {
     return _instanceID;
 }
 
-bool SomeipSubscriber::operator==(SomeipSubscriber* other) {
+bool SomeIpSubscriber::operator==(SomeIpSubscriber* other) {
     return this->_subscribeServiceID == other->getSubscribeServiceID()
             && this->getIpAddress(L3Address::IPv4) == other->getIpAddress(L3Address::IPv4)
             && this->getPort() == other->getPort();
 }
 
-bool SomeipSubscriber::operator!=(SomeipSubscriber* other) {
+bool SomeIpSubscriber::operator!=(SomeIpSubscriber* other) {
     return !(this == other);
 }
 

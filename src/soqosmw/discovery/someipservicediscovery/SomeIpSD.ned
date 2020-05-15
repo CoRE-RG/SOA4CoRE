@@ -13,19 +13,28 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.tictoc;
-
+package soqosmw.discovery.someipservicediscovery;
 import soqosmw.applications.someipapp.base.SomeIpAppBase;
 
 //
-// The TicTocApp provides a tic toc implementation of the SomeIpAppBase.
-// These module realizes a SOME/IP tic toc demo.
+// The SomeipSD provides a SOME/IP service discovery implementation of the SomeIpAppBase.
+// This module realizes the SOME/IP service discovery.
 //
 // @author Mehmet Cakir
 //
-simple TicTocApp extends SomeIpAppBase
+simple SomeIpSD extends SomeIpAppBase
 {
     parameters:
-        @class(SOQoSMW::SomeIpAppBase);
-        bool initialMsg = default(false);
+        @class(SOQoSMW::SomeIpSD);
+        
+        // Broadcasts will be received by default
+        receiveBroadcast = default(true);
+        // The local port of the SOME/IP service discovery module
+        localPort = default(30490);
+        // The destination port of the remote service discovery module
+        destPort = default(30490);
+        // The message length 
+        messageLength = default(16B);
+        // The send interval of a message
+        sendInterval = default(0.001s);
 }

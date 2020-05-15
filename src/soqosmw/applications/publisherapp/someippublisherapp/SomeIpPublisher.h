@@ -16,20 +16,20 @@
 #ifndef __SOQOSMW_SOMEIPPUBLISHER_H_
 #define __SOQOSMW_SOMEIPPUBLISHER_H_
 
-#include "soqosmw/applications/someipapp/someipservicemanager/SomeipLocalServiceManager.h"
-#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
+#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
+#include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
 #include <utility>
 
 namespace SOQoSMW {
 
 /**
- * @brief A simple dummy SOME/IP Publisher application.
+ * @brief A simple SOME/IP Publisher application that sends a dummy SOME/IP message.
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class SomeipPublisher : public virtual SomeipAppBase  {
+class SomeIpPublisher : public virtual SomeIpAppBase  {
     /**
      * Methods
      */
@@ -87,26 +87,6 @@ public:
     uint16_t getInstanceID();
 
     /**
-     * Sets the IP Address of the subscriber
-     *
-     * @param subscriberIpAddress
-     */
-    void setSubscriberIpAddress(inet::L3Address subscriberIpAddress);
-
-    /**
-     * Sets the port of the subscriber
-     *
-     * @param port
-     */
-    void setSubscriberPort(uint16_t port);
-
-    //TODO will not be used, so delete
-    /**
-     * Starts the publish schedule
-     */
-    void startPublish();
-
-    /**
      * Adds someip subscriber destination infromation
      */
     void addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port);
@@ -116,14 +96,14 @@ public:
      * @param other
      * @return true if equal
      */
-    bool operator==(SomeipPublisher* other);
+    bool operator==(SomeIpPublisher* other);
 
     /**
      * Override != operator
      * @param other
      * @return true if unequal
      */
-    bool operator!=(SomeipPublisher* other);
+    bool operator!=(SomeIpPublisher* other);
 
     /**
      * Member variables
@@ -132,19 +112,7 @@ private:
     /**
      * SOME/IP Local Service Manager reference
      */
-    SomeipLocalServiceManager* _someipLSM;
-
-    //TODO will not be used, so delete
-    /**
-     * IP Address of the subscriber
-     */
-    inet::L3Address _subscriberIpAddress;
-
-    //TODO will not be used, so delete
-    /**
-     * Port of the subscriber
-     */
-    uint16_t _subscriberPort;
+    SomeIpLocalServiceManager* _someipLSM;
 
     /**
      * Service ID to publish
@@ -161,9 +129,7 @@ private:
      */
     std::list<std::pair<inet::L3Address,uint16_t>> _destinations;
 protected:
-
 public:
-
 
 };
 } /* end namespace SOQoSMW */

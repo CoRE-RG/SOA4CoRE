@@ -16,7 +16,7 @@
 #ifndef SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_
 #define SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_
 
-#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
+#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
 
 namespace SOQoSMW {
 
@@ -27,7 +27,7 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class TicTocApp: public virtual SomeipAppBase {
+class TicTocApp: public virtual SomeIpAppBase {
 public:
     TicTocApp();
     virtual ~TicTocApp();

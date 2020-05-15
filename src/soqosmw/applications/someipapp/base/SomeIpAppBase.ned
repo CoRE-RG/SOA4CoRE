@@ -13,13 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.someiplocalserviceregistry;
+package soqosmw.applications.someipapp.base;
 
-import soqosmw.applications.someipapp.base.SomeipAppBase;
+import inet.applications.udpapp.UDPBasicApp;
 
-simple SomeipLocalServiceRegistry extends SomeipAppBase
+//
+// The SomeIpAppBase forms a base for SOME/IP applications.
+//
+// @author Mehmet Cakir
+//
+simple SomeIpAppBase extends UDPBasicApp
 {
     parameters:
-        @class(SOQoSMW::SomeipLocalServiceRegistry);
-        destPort = default(-1);
+        @class(SOQoSMW::SomeIpAppBase);
 }

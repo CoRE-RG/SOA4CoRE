@@ -20,34 +20,32 @@
 #include <map>
 #include <list>
 #include <utility>
-#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
-
-#define SOMEIPLOCALSERVICEREGISTRYIDX 2
 
 using namespace omnetpp;
 namespace SOQoSMW {
 
-class SomeipPublisher;
-class SomeipSubscriber;
+class SomeIpPublisher;
+class SomeIpSubscriber;
 
 /**
- * @brief Basic SomeipLocalServiceRegistry
+ * @brief Basic SomeIpLocalServiceRegistry
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class SomeipLocalServiceRegistry : public virtual SomeipAppBase
+class SomeIpLocalServiceRegistry : public cSimpleModule
 {
   /**
    * Methods
    */
   public:
-    void registerPublisherService(SomeipPublisher *someipPublisher);
-    void registerSubscriberService(SomeipSubscriber *someipSubscriber);
+    SomeIpLocalServiceRegistry();
+    void registerPublisherService(SomeIpPublisher *someIpPublisher);
+    void registerSubscriberService(SomeIpSubscriber *someIpSubscriber);
     void registerRemotePublisherService(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort);
-    std::list<SomeipPublisher*> getPublisherService(uint16_t serviceID);
-    std::list<SomeipSubscriber*> getSubscriberService(uint16_t serviceID);
+    std::list<SomeIpPublisher*>* getPublisherService(uint16_t serviceID);
+    std::list<SomeIpSubscriber*> getSubscriberService(uint16_t serviceID);
     std::list<std::pair<inet::L3Address,uint16_t>> getRemotePublisherInfoList (uint16_t serviceID);
   protected:
     /**
@@ -58,12 +56,11 @@ class SomeipLocalServiceRegistry : public virtual SomeipAppBase
     virtual void initialize(int stage) override;
 
     /**
-     * Handles incoming message as soon as node is up and
-     * processes the packet
+     * Handles incoming message
      *
      * @param msg
      */
-    virtual void handleMessageWhenUp(cMessage *msg) override;
+    virtual void handleMessage(cMessage *msg) override;
   private:
 
   /**
@@ -72,8 +69,8 @@ class SomeipLocalServiceRegistry : public virtual SomeipAppBase
   public:
   protected:
   private:
-    std::map<uint16_t,std::list<SomeipPublisher*>> _serviceIDToPublisher;
-    std::map<uint16_t,std::list<SomeipSubscriber*>> _serviceIDToSubscriber;
+    std::map<uint16_t,std::list<SomeIpPublisher*>*> *_serviceIDToPublisher;
+    std::map<uint16_t,std::list<SomeIpSubscriber*>> _serviceIDToSubscriber;
     std::map<uint16_t,std::list<std::pair<inet::L3Address,uint16_t>>> _remoteServiceIDToPublisher;
 
 };

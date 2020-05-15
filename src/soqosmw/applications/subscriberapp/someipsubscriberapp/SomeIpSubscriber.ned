@@ -13,16 +13,30 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.someipservicediscovery;
-import soqosmw.applications.someipapp.base.SomeipAppBase;
+package soqosmw.applications.subscriberapp.someipsubscriberapp;
 
-simple SomeipSD extends SomeipAppBase
+import soqosmw.applications.someipapp.base.SomeIpAppBase;
+
+//
+// The SomeIpSubscriber provides a subscriber implementation of the SomeIpAppBase.
+// These module realizes a SOME/IP subscriber service.
+//
+// @author Mehmet Cakir
+//
+simple SomeIpSubscriber extends SomeIpAppBase
 {
     parameters:
-        @class(SOQoSMW::SomeipSD);
-        receiveBroadcast = default(true);
-        localPort = default(30490);
-        destPort = default(30490);
+        @class(SOQoSMW::SomeIpSubscriber);
+        
+        // The service id of the service that will be subscribed
+        int subscribeServiceID;
+        // The instance id of the service that will be subscribed
+        int instanceID;
+        // The destination port
+        destPort = default(-1);
+        // The messag length
         messageLength = default(16B);
+        // The send interval
         sendInterval = default(0.001s);
+        
 }

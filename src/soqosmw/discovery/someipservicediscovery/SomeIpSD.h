@@ -17,25 +17,24 @@
 #define __SOQOSMW_SOMEIPSDAPP_H_
 
 #define BROADCASTADDRESS "255.255.255.255"
-#define SOMEIPSDIDX 0
 
-#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
+#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
 #include "soqosmw/messages/someip/SomeIpSDHeader.h"
 
 namespace SOQoSMW {
 
-class SomeipPublisher;
-class SomeipSubscriber;
-class SomeipLocalServiceManager;
+class SomeIpPublisher;
+class SomeIpSubscriber;
+class SomeIpLocalServiceManager;
 
 /**
- * @brief Basic SomeipSDApp
+ * @brief Basic SomeIpSDApp
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class SomeipSD : public virtual SomeipAppBase
+class SomeIpSD : public virtual SomeIpAppBase
 {
 public:
 protected:
@@ -45,22 +44,10 @@ private:
      */
     const char* _localAddress;
 
-    //TODO will not be used, delete later
-    /**
-     * The SomeipPublisher
-     */
-    SomeipPublisher* _someipPublisher;
-
-    //TODO will not be used, delete later
-    /**
-     * The SomeipSubscriber
-     */
-    SomeipSubscriber* _someipSubscriber;
-
     /**
      * The SOME/IP local service manager
      */
-    SomeipLocalServiceManager *_someipLSM;
+    SomeIpLocalServiceManager *_someIpLSM;
 
 public:
     /**
@@ -128,15 +115,15 @@ public:
      *
      * @param packet
      */
-    void processSomeipSDHeader(SomeIpSDHeader* someipSDHeader);
+    void processSomeipSDHeader(SomeIpSDHeader* someIpSDHeader);
 
-    void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someipSDHeader);
+    void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someIpSDHeader);
 
-    void processOfferEntry(SomeIpSDEntry *offerEntry, SomeIpSDHeader* someipSDHeader);
+    void processOfferEntry(SomeIpSDEntry *offerEntry, SomeIpSDHeader* someIpSDHeader);
 
-    void processSubscribeEventGroupEntry(SomeIpSDEntry *subscribeEventGroupEntry, SomeIpSDHeader* someipSDHeader);
+    void processSubscribeEventGroupEntry(SomeIpSDEntry *subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader);
 
-    void processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someipSDHeader);
+    void processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader);
 };
 } /* end namespace SOQoSMW */
 #endif

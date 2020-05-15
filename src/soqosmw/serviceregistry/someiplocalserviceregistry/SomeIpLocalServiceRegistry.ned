@@ -13,12 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.base;
+package soqosmw.serviceregistry.someiplocalserviceregistry;
 
-import inet.applications.udpapp.UDPBasicApp;
-
-simple SomeipAppBase extends UDPBasicApp
+//
+// The SomeipLocalServiceRegistry provides a SOME/IP local registry implementation of the SomeIpAppBase.
+// These module realizes a SOME/IP service registry.
+//
+// @author Mehmet Cakir
+//
+simple SomeIpLocalServiceRegistry
 {
     parameters:
-        @class(SOQoSMW::SomeipAppBase);
+        @class(SOQoSMW::SomeIpLocalServiceRegistry);
 }

@@ -13,30 +13,29 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soqosmw/applications/someipapp/someipSDTestApp/publisherapp/SomeipPublisher.h"
+#include <soqosmw/applications/publisherapp/someippublisherapp/SomeIpPublisher.h>
 #include "soqosmw/messages/someip/SomeIpHeader_m.h"
 
 namespace SOQoSMW {
 
-Define_Module(SomeipPublisher);
+Define_Module(SomeIpPublisher);
 
-void SomeipPublisher::initialize(int stage) {
-    SomeipAppBase::initialize(stage);
+void SomeIpPublisher::initialize(int stage) {
+    SomeIpAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {
         _publishServiceID = par("publishServiceID").intValue();
         _instanceID = par("instanceID").intValue();
-        cModule* module = getParentModule()->getSubmodule("udpApp", SOMEIPLOCALSERVICEMANAGERIDX);
-        if((_someipLSM = dynamic_cast<SomeipLocalServiceManager*>(module))) {
+        cModule* module = getParentModule()->getSubmodule("lsm");
+        if((_someipLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
             _someipLSM->registerPublisherService(this);
         } else {
-            throw cRuntimeError("Submodule at index %d is no Someip LSM app."
-                    "Please place the SomeipLocalServiceManager at index %d", SOMEIPLOCALSERVICEMANAGERIDX);
+            throw cRuntimeError("No SOME/IP local service manager found.");
         }
-        SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+        SomeIpAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
     }
 }
 
-void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
+void SomeIpPublisher::handleMessageWhenUp(cMessage *msg) {
     if (!_destinations.empty()) {
         std::string headerName = "SOME/IP - RESPONSE - " + std::to_string(getPublishServiceID());
         SomeIpHeader* someipHeader = new SomeIpHeader(headerName.c_str());
@@ -52,14 +51,14 @@ void SomeipPublisher::handleMessageWhenUp(cMessage *msg) {
         }
     }
     delete msg;
-    SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+    SomeIpAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
 }
 
-void SomeipPublisher::processPacket(cPacket *packet) {
+void SomeIpPublisher::processPacket(cPacket *packet) {
 
 }
 
-inet::L3Address SomeipPublisher::getIpAddress(inet::L3Address::AddressType addressType) {
+inet::L3Address SomeIpPublisher::getIpAddress(inet::L3Address::AddressType addressType) {
     switch (addressType) {
         case L3Address::IPv4:
             return inet::IPv4Address(par("localAddress").stringValue());
@@ -70,42 +69,29 @@ inet::L3Address SomeipPublisher::getIpAddress(inet::L3Address::AddressType addre
     }
 }
 
-int SomeipPublisher::getPort() {
+int SomeIpPublisher::getPort() {
     return localPort;
 }
 
-uint16_t SomeipPublisher::getPublishServiceID() {
+uint16_t SomeIpPublisher::getPublishServiceID() {
     return _publishServiceID;
 }
 
-uint16_t SomeipPublisher::getInstanceID() {
+uint16_t SomeIpPublisher::getInstanceID() {
     return _instanceID;
 }
 
-void SomeipPublisher::setSubscriberIpAddress(L3Address subscriberIpAddress) {
-    //_subscriberIpAddress = subscriberIpAddress;
-}
-
-void SomeipPublisher::setSubscriberPort(uint16_t port) {
-    //_subscriberPort = port;
-}
-
-void SomeipPublisher::startPublish() {
-    //Enter_Method("SomeipPublisher::startPublish");
-    //SomeipAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
-}
-
-void SomeipPublisher::addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
+void SomeIpPublisher::addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
     _destinations.push_back(std::make_pair(ipAddress,port));
 }
 
-bool SomeipPublisher::operator==(SomeipPublisher* other) {
+bool SomeIpPublisher::operator==(SomeIpPublisher* other) {
     return this->_publishServiceID == other->getPublishServiceID()
             && this->getIpAddress(L3Address::IPv4) == other->getIpAddress(L3Address::IPv4)
             && this->getPort() == other->getPort();
 }
 
-bool SomeipPublisher::operator!=(SomeipPublisher* other) {
+bool SomeIpPublisher::operator!=(SomeIpPublisher* other) {
     return !(this == other);
 }
 

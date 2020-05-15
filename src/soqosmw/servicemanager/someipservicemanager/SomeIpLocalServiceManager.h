@@ -17,38 +17,36 @@
 #define __SOQOSMW_SOMEIPLOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
-#include <soqosmw/applications/someipapp/someipservicediscovery/SomeipSD.h>
-#include <soqosmw/applications/someipapp/someiplocalserviceregistry/SomeipLocalServiceRegistry.h>
-#include "soqosmw/applications/someipapp/base/SomeipAppBase.h"
-#define SOMEIPLOCALSERVICEMANAGERIDX 1
+#include <soqosmw/discovery/someipservicediscovery/SomeIpSD.h>
+#include <soqosmw/serviceregistry/someiplocalserviceregistry/SomeIpLocalServiceRegistry.h>
 
 using namespace omnetpp;
 namespace SOQoSMW {
 
-class SomeipPublisher;
-class SomeipSubscriber;
+class SomeIpPublisher;
+class SomeIpSubscriber;
 
 /**
- * @brief Base class for a SOME/IP Local service manager.
+ * @brief Base class for a SOME/IP local service manager.
  *
  * @ingroup soqosmw/applications
  *
  * @author Mehmet Cakir
  */
-class SomeipLocalServiceManager : public virtual SomeipAppBase
+class SomeIpLocalServiceManager : public cSimpleModule
 {
   public:
     /**
-     * Registers a Someip Publisher
+     * Registers a SOME/IP Publisher
      * @param someipPublisher
      */
-    void registerPublisherService(SomeipPublisher *someipPublisher);
+    void registerPublisherService(SomeIpPublisher *someIpPublisher);
 
     /**
-     * Registers a Someip Subscriber
+     * Registers a SOME/IP Subscriber
      * @param someipSubscriber
      */
-    void registerSubscriberService(SomeipSubscriber *someipSubscriber);
+    void registerSubscriberService(SomeIpSubscriber *someIpSubscriber);
 
     /**
      * Discovers a service
@@ -64,7 +62,7 @@ class SomeipLocalServiceManager : public virtual SomeipAppBase
      * @param serviceID service id of service to search
      * @return list of publishers that publish service
      */
-    std::list<SomeipPublisher*> lookForPublisherService(uint16_t serviceID);
+    std::list<SomeIpPublisher*> lookForPublisherService(uint16_t serviceID);
 
     /**
      * Adds a remote publisher
@@ -96,12 +94,11 @@ class SomeipLocalServiceManager : public virtual SomeipAppBase
     virtual void initialize(int stage) override;
 
     /**
-     * Handles incoming message as soon as node is up and
-     * processes the packet
+     * Handles incoming message
      *
      * @param msg
      */
-    virtual void handleMessageWhenUp(cMessage *msg) override;
+    virtual void handleMessage(cMessage *msg) override;
   private:
   public:
   protected:
@@ -109,12 +106,12 @@ class SomeipLocalServiceManager : public virtual SomeipAppBase
     /**
      * SOME/IP Service Discovery reference
      */
-    SomeipSD* _someipSD;
+    SomeIpSD* _someIpSD;
 
     /**
      * SOME/IP Local Service Registry reference
      */
-    SomeipLocalServiceRegistry* _someipLSR;
+    SomeIpLocalServiceRegistry* _someIpLSR;
 
     /**
      * Map for saving discover request

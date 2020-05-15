@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.someipapp.someipservicemanager;
+package soqosmw.servicemanager.someipservicemanager;
 
 
-simple SomeipLocalServiceManager
+simple SomeIpLocalServiceManager
 {
     parameters:
-        @class(SOQoSMW::SomeipLocalServiceManager);
+        @class(SOQoSMW::SomeIpLocalServiceManager);
         @display("i=block/join");
 }

@@ -15,7 +15,7 @@
 
 package soqosmw.examples.SomeipSDSmallTestNetwork;
 
-import inet.node.inet.StandardHost;
+import soqosmw.nodes.SomeIpHost;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.ethernet.EtherSwitch;
@@ -31,22 +31,26 @@ network SomeipSDSmallTestNetwork
         }
 
     submodules:
-        pubnode: StandardHost;
+        pubnode: SomeIpHost {
 
-        subnode: StandardHost {
-            @display("p=210,110");
+            @display("p=30,30");
+        }
+        subnode: SomeIpHost {
+            @display("p=172,147");
         }
 
-        drittesRad: StandardHost {
-            @display("p=283,38");
+        drittesRad: SomeIpHost {
+            @display("p=315,30");
         }
 
         switch: EtherSwitch {
-            @display("p=133,62");
+            @display("p=172,62");
         }
 
-        configurator: IPv4NetworkConfigurator;
+        configurator: IPv4NetworkConfigurator {
 
+            @display("p=315,155");
+        }
     connections:
         pubnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
         subnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
