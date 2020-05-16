@@ -54,9 +54,9 @@ void SomeIpAppBase::refreshDisplay() const {
 
 }
 
-cPacket* SomeIpAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+SomeIpHeader* SomeIpAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
         uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode,cPacket *payload) {
-    SomeIpHeader *someipheader = new SomeIpHeader("someip");
+    SomeIpHeader *someipheader = new SomeIpHeader("SOME/IP");
     //Message ID ("Service ID" 16 Bit | "0" 1 Bit | "Method ID" 15 Bit) or
     //Message ID ("Service ID" 16 Bit | "1" 1 Bit | "Event ID" 15 Bit) or
     uint32_t messageID = 0;
@@ -87,7 +87,7 @@ cPacket* SomeIpAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_E
     return someipheader;
 }
 
-void SomeIpAppBase::sendPacket(cPacket* packet) {
+void SomeIpAppBase::sendSomeIpPacket(SomeIpHeader* packet) {
     for (inet::L3Address destAddr : destAddresses) {
         socket.sendTo(packet, destAddr, destPort);
     }
@@ -121,8 +121,8 @@ bool SomeIpAppBase::handleNodeStart(inet::IDoneCallback *doneCallback) {
     return true;
 }
 
-void SomeIpAppBase::scheduleSelfMsg(omnetpp::simtime_t scheduleTime) {
-    omnetpp::cPacket *msg = new omnetpp::cPacket("selfMsg");
+void SomeIpAppBase::scheduleSelfMsg(omnetpp::simtime_t scheduleTime, short int kind) {
+    omnetpp::cPacket *msg = new omnetpp::cPacket("selfMsg",kind);
     msg->setByteLength(8);
     scheduleAt(simTime() + scheduleTime, msg);
 }

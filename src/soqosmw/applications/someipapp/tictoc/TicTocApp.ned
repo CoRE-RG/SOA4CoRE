@@ -26,6 +26,6 @@ import soqosmw.applications.someipapp.base.SomeIpAppBase;
 simple TicTocApp extends SomeIpAppBase
 {
     parameters:
-        @class(SOQoSMW::SomeIpAppBase);
+        @class(SOQoSMW::TicTocApp);
         bool initialMsg = default(false);
 }

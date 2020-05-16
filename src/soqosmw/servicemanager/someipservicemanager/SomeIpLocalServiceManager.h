@@ -58,11 +58,11 @@ class SomeIpLocalServiceManager : public cSimpleModule
     void discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort);
 
     /**
-     * Looks for publisher with given service id
+     * Looks for publisher with given service id in local registry
      * @param serviceID service id of service to search
      * @return list of publishers that publish service
      */
-    std::list<SomeIpPublisher*> lookForPublisherService(uint16_t serviceID);
+    std::list<SomeIpPublisher*> lookLocalForPublisherService(uint16_t serviceID);
 
     /**
      * Adds a remote publisher
@@ -116,6 +116,7 @@ class SomeIpLocalServiceManager : public cSimpleModule
     /**
      * Map for saving discover request
      */
+    //TODO list over pairs to manage multiple subscribers who want to subscribe same service
     std::map<uint16_t,std::pair<inet::L3Address,uint16_t>> _pendingRequests;
 };
 }

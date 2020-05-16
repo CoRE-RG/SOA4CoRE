@@ -68,7 +68,7 @@ protected:
      * @param payload - the payload
      * @return Packet encapsulated in SOME/IP Header
      */
-    virtual cPacket* encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
+    virtual SomeIpHeader* encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
             uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
 
     /**
@@ -76,7 +76,7 @@ protected:
      *
      * @param packet to be sent
      */
-    virtual void sendPacket(cPacket* packet);
+    virtual void sendSomeIpPacket(SomeIpHeader* packet);
 
     /**
      * Setups network connection
@@ -100,8 +100,9 @@ protected:
     /**
      * Schedules a self message
      * @param scheduleTime the time a self message will be scheduled for
+     * @param kind the kind of message
      */
-    void scheduleSelfMsg(omnetpp::simtime_t scheduleTime);
+    void scheduleSelfMsg(omnetpp::simtime_t scheduleTime, short int kind = 0);
 
     /**
      * Caches if the node sends the initial message

@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/publisherapp/someippublisherapp/SomeIpPublisher.h>
-#include <soqosmw/applications/subscriberapp/someipsubscriberapp/SomeIpSubscriber.h>
+#include <soqosmw/applications/publisherapp/someip/SomeIpPublisher.h>
+#include <soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h>
 #include <soqosmw/discovery/someipservicediscovery/SomeIpSD.h>
 #include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
 
@@ -28,11 +28,13 @@ Define_Module(SomeIpSD);
 
 void SomeIpSD::initialize(int stage) {
     SomeIpAppBase::initialize(stage);
-    _localAddress = par("localAddress").stringValue();
-    cModule* module = getParentModule()->getSubmodule("lsm");
-    if((_someIpLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
-    } else {
-        throw cRuntimeError("No SOME/IP local service manager found.");
+    if (stage == inet::INITSTAGE_LOCAL) {
+        _localAddress = par("localAddress").stringValue();
+        cModule* module = getParentModule()->getSubmodule("lsm");
+        if((_someIpLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
+        } else {
+            throw cRuntimeError("No SOME/IP local service manager found.");
+        }
     }
 }
 
@@ -157,7 +159,7 @@ void SomeIpSD::processSomeipSDHeader(SomeIpSDHeader* someIpSDHeader) {
 
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
-    std::list<SomeIpPublisher*> publisherList = _someIpLSM->lookForPublisherService(findEntry->getServiceID());
+    std::list<SomeIpPublisher*> publisherList = _someIpLSM->lookLocalForPublisherService(findEntry->getServiceID());
     if (!publisherList.empty()) {
         inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
         for (SomeIpPublisher *someIpPublisher : publisherList) {
@@ -170,7 +172,6 @@ void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIp
 void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someIpSDHeader) {
     int num2ndOption = offerEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
-        //TODO if more than 1 publisher
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
         _someIpLSM->addRemotePublisher(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort());
         delete ipv4EndpointOption;

@@ -92,20 +92,6 @@ public:
     void addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port);
 
     /**
-     * Override == operator
-     * @param other
-     * @return true if equal
-     */
-    bool operator==(SomeIpPublisher* other);
-
-    /**
-     * Override != operator
-     * @param other
-     * @return true if unequal
-     */
-    bool operator!=(SomeIpPublisher* other);
-
-    /**
      * Member variables
      */
 private:
@@ -128,6 +114,12 @@ private:
      * List of destination addresses and ports
      */
     std::list<std::pair<inet::L3Address,uint16_t>> _destinations;
+
+    /**
+     * The send interval of (self) messages
+     */
+    simtime_t _sendInterval;
+
 protected:
 public:
 

@@ -19,8 +19,8 @@ import inet.node.inet.StandardHost;
 import soqosmw.discovery.someipservicediscovery.SomeIpSD;
 import soqosmw.servicemanager.someipservicemanager.SomeIpLocalServiceManager;
 import soqosmw.serviceregistry.someiplocalserviceregistry.SomeIpLocalServiceRegistry;
-import soqosmw.applications.publisherapp.someippublisherapp.SomeIpPublisher;
-import soqosmw.applications.subscriberapp.someipsubscriberapp.SomeIpSubscriber;
+import soqosmw.applications.publisherapp.someip.SomeIpPublisher;
+import soqosmw.applications.subscriberapp.someip.SomeIpSubscriber;
 
 //
 // The SomeIpHost provides a SOME/IP host.
@@ -47,29 +47,29 @@ module SomeIpHost extends StandardHost
 
             @display("p=455,28");
         }
-        
+
         // The SOME/IP subscribers
         subscriber[numSubscriber]: SomeIpSubscriber {
 
             @display("p=379,28");
         }
-        
+
         // The SOME/IP service discovery
         sd: SomeIpSD {
 
-            @display("p=628,28");
+            @display("p=628,28;i=block/routing");
         }
-        
+
         // The SOME/IP local service manager
         lsm: SomeIpLocalServiceManager {
 
             @display("p=681,28");
         }
-        
+
         // The SOME/IP local service registry
         lsr: SomeIpLocalServiceRegistry {
 
-            @display("p=732,28");
+            @display("p=732,28;i=block/table2");
         }
 
     connections:
@@ -77,14 +77,14 @@ module SomeIpHost extends StandardHost
         // with the udp gates of the StandardHost
         sd.udpOut --> udp.appIn++;
         sd.udpIn <-- udp.appOut++;
-        
+
         // Connect the udp gates of the publishers
         // with the udp gates of the StandardHost
         for i=0..numPublisher-1 {
             publisher[i].udpOut --> udp.appIn++;
             publisher[i].udpIn <-- udp.appOut++;
         }
-        
+
         // Connect the udp gates of the subscribers
         // with the udp gates of the StandardHost
         for i=0..numSubscriber-1 {

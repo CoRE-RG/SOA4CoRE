@@ -28,6 +28,9 @@ namespace SOQoSMW {
  * @author Mehmet Cakir
  */
 class TicTocApp: public virtual SomeIpAppBase {
+    /**
+     * Methods
+     */
 public:
     TicTocApp();
     virtual ~TicTocApp();
@@ -53,6 +56,15 @@ protected:
      * @param packet
      */
     virtual void processPacket(cPacket *packet) override;
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
+private:
+    simtime_t sendInterval;
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_ */

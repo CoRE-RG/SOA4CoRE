@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/publisherapp/someippublisherapp/SomeIpPublisher.h>
+#include <soqosmw/applications/publisherapp/someip/SomeIpPublisher.h>
 #include "soqosmw/messages/someip/SomeIpHeader_m.h"
 
 namespace SOQoSMW {
@@ -27,11 +27,13 @@ void SomeIpPublisher::initialize(int stage) {
         _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("lsm");
         if((_someipLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
-            _someipLSM->registerPublisherService(this);
         } else {
             throw cRuntimeError("No SOME/IP local service manager found.");
         }
-        SomeIpAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+    } else if (stage == inet::INITSTAGE_PHYSICAL_ENVIRONMENT) {
+        _someipLSM->registerPublisherService(this);
+        _sendInterval = par("sendInterval");
+        SomeIpAppBase::scheduleSelfMsg(_sendInterval);
     }
 }
 
@@ -51,7 +53,7 @@ void SomeIpPublisher::handleMessageWhenUp(cMessage *msg) {
         }
     }
     delete msg;
-    SomeIpAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+    SomeIpAppBase::scheduleSelfMsg(_sendInterval);
 }
 
 void SomeIpPublisher::processPacket(cPacket *packet) {
@@ -83,16 +85,6 @@ uint16_t SomeIpPublisher::getInstanceID() {
 
 void SomeIpPublisher::addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
     _destinations.push_back(std::make_pair(ipAddress,port));
-}
-
-bool SomeIpPublisher::operator==(SomeIpPublisher* other) {
-    return this->_publishServiceID == other->getPublishServiceID()
-            && this->getIpAddress(L3Address::IPv4) == other->getIpAddress(L3Address::IPv4)
-            && this->getPort() == other->getPort();
-}
-
-bool SomeIpPublisher::operator!=(SomeIpPublisher* other) {
-    return !(this == other);
 }
 
 } /* end namespace SOQoSMW */

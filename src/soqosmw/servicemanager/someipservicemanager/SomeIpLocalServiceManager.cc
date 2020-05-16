@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/publisherapp/someippublisherapp/SomeIpPublisher.h>
-#include <soqosmw/applications/subscriberapp/someipsubscriberapp/SomeIpSubscriber.h>
+#include <soqosmw/applications/publisherapp/someip/SomeIpPublisher.h>
+#include <soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h>
 #include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
 
 namespace SOQoSMW {
@@ -49,9 +49,9 @@ void SomeIpLocalServiceManager::registerSubscriberService(SomeIpSubscriber *some
 }
 
 void SomeIpLocalServiceManager::discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
-    std::list<SomeIpPublisher*> *publisherList = _someIpLSR->getPublisherService(serviceID);
-    if (!publisherList->empty()) {
-        for (SomeIpPublisher *someIpPublisher : *publisherList) {
+    std::list<SomeIpPublisher*> publisherList = _someIpLSR->getPublisherService(serviceID);
+    if (!publisherList.empty()) {
+        for (SomeIpPublisher *someIpPublisher : publisherList) {
             someIpPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
         }
     } else {
@@ -67,19 +67,20 @@ void SomeIpLocalServiceManager::discoverService(uint16_t serviceID, uint16_t ins
     }
 }
 
-std::list<SomeIpPublisher*> SomeIpLocalServiceManager::lookForPublisherService(uint16_t serviceID) {
-    return *(_someIpLSR->getPublisherService(serviceID));
+std::list<SomeIpPublisher*> SomeIpLocalServiceManager::lookLocalForPublisherService(uint16_t serviceID) {
+    return _someIpLSR->getPublisherService(serviceID);
 }
 
 void SomeIpLocalServiceManager::addRemotePublisher(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort) {
     _someIpLSR->registerRemotePublisherService(serviceID, publisherIP, publisherPort);
+    //TODO An already subscribed publisher will be subscribed again, if the serviceID from another publisher is as the one subscribed before
     _someIpSD->subscribeService(serviceID, 0xFFFF, publisherIP, _pendingRequests[serviceID].first, _pendingRequests[serviceID].second);
 }
 
 void SomeIpLocalServiceManager::publishToSubscriber(uint16_t serviceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
-    std::list<SomeIpPublisher*> *publisherList = _someIpLSR->getPublisherService(serviceID);
-    if (!publisherList->empty()) {
-        for (SomeIpPublisher *someIpPublisher : *publisherList) {
+    std::list<SomeIpPublisher*> publisherList = _someIpLSR->getPublisherService(serviceID);
+    if (!publisherList.empty()) {
+        for (SomeIpPublisher *someIpPublisher : publisherList) {
             someIpPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
         }
     }

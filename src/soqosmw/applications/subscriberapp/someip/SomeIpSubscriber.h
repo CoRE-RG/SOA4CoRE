@@ -48,6 +48,11 @@ private:
      */
     uint16_t _instanceID;
 
+    /**
+     * The send interval of (self) messages
+     */
+    simtime_t _sendInterval;
+
 /**
  * Methods
  */
@@ -80,20 +85,6 @@ public:
      * @return instance ID to subscribe
      */
     uint16_t getInstanceID();
-
-    /**
-     * Override == operator
-     * @param other
-     * @return true if equal
-     */
-    bool operator==(SomeIpSubscriber* other);
-
-    /**
-     * Override != operator
-     * @param other
-     * @return true if unequal
-     */
-    bool operator!=(SomeIpSubscriber* other);
 protected:
     /**
      * Schedules a self message and offers service with

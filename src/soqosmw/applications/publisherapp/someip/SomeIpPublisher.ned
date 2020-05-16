@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.publisherapp.someippublisherapp;
+package soqosmw.applications.publisherapp.someip;
 
 import soqosmw.applications.someipapp.base.SomeIpAppBase;
 
@@ -34,8 +34,10 @@ simple SomeIpPublisher extends SomeIpAppBase
         int instanceID;
         // The destination port
         destPort = default(-1);
-        // The messag length
+        // The message length
         messageLength = default(16B);
         // The send interval
         sendInterval = default(0.001s);
+        // The instance id of service that will be published
+        instanceID = 0xFFFF;
 }

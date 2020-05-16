@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.applications.subscriberapp.someipsubscriberapp;
+package soqosmw.applications.subscriberapp.someip;
 
 import soqosmw.applications.someipapp.base.SomeIpAppBase;
 
@@ -34,9 +34,11 @@ simple SomeIpSubscriber extends SomeIpAppBase
         int instanceID;
         // The destination port
         destPort = default(-1);
-        // The messag length
+        // The message length
         messageLength = default(16B);
         // The send interval
         sendInterval = default(0.001s);
+        // The instance id of service that will be subscribed
+        instanceID = 0xFFFF;
         
 }

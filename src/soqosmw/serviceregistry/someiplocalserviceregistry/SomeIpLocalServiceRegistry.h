@@ -44,7 +44,7 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
     void registerPublisherService(SomeIpPublisher *someIpPublisher);
     void registerSubscriberService(SomeIpSubscriber *someIpSubscriber);
     void registerRemotePublisherService(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort);
-    std::list<SomeIpPublisher*>* getPublisherService(uint16_t serviceID);
+    std::list<SomeIpPublisher*> getPublisherService(uint16_t serviceID);
     std::list<SomeIpSubscriber*> getSubscriberService(uint16_t serviceID);
     std::list<std::pair<inet::L3Address,uint16_t>> getRemotePublisherInfoList (uint16_t serviceID);
   protected:
@@ -69,7 +69,7 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
   public:
   protected:
   private:
-    std::map<uint16_t,std::list<SomeIpPublisher*>*> *_serviceIDToPublisher;
+    std::map<uint16_t,std::list<SomeIpPublisher*>> _serviceIDToPublisher;
     std::map<uint16_t,std::list<SomeIpSubscriber*>> _serviceIDToSubscriber;
     std::map<uint16_t,std::list<std::pair<inet::L3Address,uint16_t>>> _remoteServiceIDToPublisher;
 

@@ -28,8 +28,9 @@ void TicTocApp:: initialize(int stage) {
     SomeIpAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {
         initialMsg = par("initialMsg");
+        sendInterval = par("sendInterval");
         if (initialMsg){
-            SomeIpAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
+            SomeIpAppBase::scheduleSelfMsg(sendInterval);
         }
     }
 }
@@ -46,9 +47,9 @@ void TicTocApp::handleMessageWhenUp(cMessage *msg)
     }
     cPacket *payload = new cPacket("payload");
     payload->setByteLength(8);
-    cPacket* packet = SomeIpAppBase::encapsulatePayload(0b1000000000000001, 0b1111111111111111, 0b10101010, 0b10100010, 0b0000000011111111,
-            SOQoSMW::ProtocolVersion::PV_1, 42, SOQoSMW::MessageType::REQUEST, SOQoSMW::ReturnCode::E_OK, payload);
-    SomeIpAppBase::sendPacket(packet);
+    SomeIpHeader* packet = SomeIpAppBase::encapsulatePayload(0b1000000000000001, 0b1111111111111111, 0b10101010, 0b10100010, 0b0000000011111111,
+            SOQoSMW::ProtocolVersion::PV_1, SOQoSMW::InterfaceVersion::IV_1, SOQoSMW::MessageType::REQUEST, SOQoSMW::ReturnCode::E_OK, payload);
+    SomeIpAppBase::sendSomeIpPacket(packet);
 
 }
 

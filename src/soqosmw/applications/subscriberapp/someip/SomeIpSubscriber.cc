@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/subscriberapp/someipsubscriberapp/SomeIpSubscriber.h>
+#include <soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h>
 
 namespace SOQoSMW {
 
@@ -26,11 +26,13 @@ void SomeIpSubscriber::initialize(int stage) {
         _instanceID = par("instanceID").intValue();
         cModule* module = getParentModule()->getSubmodule("lsm");
         if ((_someIpLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
-            _someIpLSM->registerSubscriberService(this);
-            SomeIpAppBase::scheduleSelfMsg(omnetpp::SimTime(1,omnetpp::SIMTIME_MS));
         } else {
             throw cRuntimeError("No SOME/IP local service manager found.");
         }
+    } else if (stage == inet::INITSTAGE_PHYSICAL_ENVIRONMENT) {
+        _someIpLSM->registerSubscriberService(this);
+        _sendInterval = par("sendInterval");
+        SomeIpAppBase::scheduleSelfMsg(_sendInterval);
     }
 }
 
@@ -68,16 +70,6 @@ uint16_t SomeIpSubscriber::getSubscribeServiceID() {
 
 uint16_t SomeIpSubscriber::getInstanceID() {
     return _instanceID;
-}
-
-bool SomeIpSubscriber::operator==(SomeIpSubscriber* other) {
-    return this->_subscribeServiceID == other->getSubscribeServiceID()
-            && this->getIpAddress(L3Address::IPv4) == other->getIpAddress(L3Address::IPv4)
-            && this->getPort() == other->getPort();
-}
-
-bool SomeIpSubscriber::operator!=(SomeIpSubscriber* other) {
-    return !(this == other);
 }
 
 } /* end namespace SOQoSMW */
