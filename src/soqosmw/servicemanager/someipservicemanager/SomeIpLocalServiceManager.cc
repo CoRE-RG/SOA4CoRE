@@ -55,7 +55,7 @@ void SomeIpLocalServiceManager::discoverService(uint16_t serviceID, uint16_t ins
             someIpPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
         }
     } else {
-        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfoList = _someIpLSR->getRemotePublisherInfoList(serviceID);
+        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfoList = _someIpLSR->getRemotePublisherEndpoints(serviceID);
         if (!remotePublisherInfoList.empty()) {
             for (std::pair<inet::L3Address,uint16_t> publisherInfo : remotePublisherInfoList) {
                 _someIpSD->subscribeService(serviceID, instanceID, publisherInfo.first, subscriberIP, subscriberPort);

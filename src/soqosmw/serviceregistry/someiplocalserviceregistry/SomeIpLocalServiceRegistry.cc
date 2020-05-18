@@ -20,8 +20,6 @@
 namespace SOQoSMW {
 Define_Module(SomeIpLocalServiceRegistry);
 
-SomeIpLocalServiceRegistry::SomeIpLocalServiceRegistry() {
-}
 
 void SomeIpLocalServiceRegistry::initialize(int stage) {
     if (stage == inet::INITSTAGE_LOCAL) {
@@ -92,7 +90,7 @@ void SomeIpLocalServiceRegistry::registerRemotePublisherService(uint16_t service
     }
 }
 
-std::list<std::pair<inet::L3Address,uint16_t>> SomeIpLocalServiceRegistry::getRemotePublisherInfoList(uint16_t serviceID) {
+std::list<std::pair<inet::L3Address,uint16_t>> SomeIpLocalServiceRegistry::getRemotePublisherEndpoints(uint16_t serviceID) {
     std::list<std::pair<inet::L3Address,uint16_t>> publisherInfoList;
     auto it = _remoteServiceIDToPublisher.find(serviceID);
     if (it != _remoteServiceIDToPublisher.end()) {

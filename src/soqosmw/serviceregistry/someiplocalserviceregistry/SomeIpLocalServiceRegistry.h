@@ -40,13 +40,46 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
    * Methods
    */
   public:
-    SomeIpLocalServiceRegistry();
+    /**
+     * Registers a SomeIpPublisher
+     * @param someIpPublisher
+     */
     void registerPublisherService(SomeIpPublisher *someIpPublisher);
+
+    /**
+     * Registers a SomeIpSubscriber
+     * @param someIpSubscriber
+     */
     void registerSubscriberService(SomeIpSubscriber *someIpSubscriber);
+
+    /**
+     * Registers a remote publisher endpoint
+     * @param serviceID
+     * @param publisherIP
+     * @param publisherPort
+     */
     void registerRemotePublisherService(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort);
+
+    /**
+     * Returns all local publisher services
+     * @param serviceID
+     * @return list of all local publisher services
+     */
     std::list<SomeIpPublisher*> getPublisherService(uint16_t serviceID);
+
+    /**
+     * Returns all local subscriber services
+     * @param serviceID
+     * @return list of all local subscriber services
+     */
     std::list<SomeIpSubscriber*> getSubscriberService(uint16_t serviceID);
-    std::list<std::pair<inet::L3Address,uint16_t>> getRemotePublisherInfoList (uint16_t serviceID);
+
+    /**
+     * Returns all known remote publisher endpoints
+     * @param serviceID
+     * @return list of all known remote publisher endpoints
+     */
+    std::list<std::pair<inet::L3Address,uint16_t>> getRemotePublisherEndpoints(uint16_t serviceID);
   protected:
     /**
      * Initializes the module and waits for find
@@ -69,8 +102,19 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
   public:
   protected:
   private:
+    /**
+     * List of all local publishers
+     */
     std::map<uint16_t,std::list<SomeIpPublisher*>> _serviceIDToPublisher;
+
+    /**
+     * List of all local subscribers
+     */
     std::map<uint16_t,std::list<SomeIpSubscriber*>> _serviceIDToSubscriber;
+
+    /**
+     * List of all remote publisher endpoints
+     */
     std::map<uint16_t,std::list<std::pair<inet::L3Address,uint16_t>>> _remoteServiceIDToPublisher;
 
 };
