@@ -49,10 +49,10 @@ void SomeIpLocalServiceManager::registerSubscriberService(SomeIpSubscriber *some
 }
 
 void SomeIpLocalServiceManager::discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
-    std::list<SomeIpPublisher*> publisherList = _someIpLSR->getPublisherService(serviceID);
+    std::list<ISomeIpServiceApp*> publisherList = _someIpLSR->getPublisherService(serviceID);
     if (!publisherList.empty()) {
-        for (SomeIpPublisher *someIpPublisher : publisherList) {
-            someIpPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
+        for (ISomeIpServiceApp *someIpPublisher : publisherList) {
+            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
         }
     } else {
         std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfoList = _someIpLSR->getRemotePublisherEndpoints(serviceID);
@@ -67,7 +67,7 @@ void SomeIpLocalServiceManager::discoverService(uint16_t serviceID, uint16_t ins
     }
 }
 
-std::list<SomeIpPublisher*> SomeIpLocalServiceManager::lookLocalForPublisherService(uint16_t serviceID) {
+std::list<ISomeIpServiceApp*> SomeIpLocalServiceManager::lookLocalForPublisherService(uint16_t serviceID) {
     return _someIpLSR->getPublisherService(serviceID);
 }
 
@@ -78,10 +78,10 @@ void SomeIpLocalServiceManager::addRemotePublisher(uint16_t serviceID, inet::L3A
 }
 
 void SomeIpLocalServiceManager::publishToSubscriber(uint16_t serviceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
-    std::list<SomeIpPublisher*> publisherList = _someIpLSR->getPublisherService(serviceID);
+    std::list<ISomeIpServiceApp*> publisherList = _someIpLSR->getPublisherService(serviceID);
     if (!publisherList.empty()) {
-        for (SomeIpPublisher *someIpPublisher : publisherList) {
-            someIpPublisher->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
+        for (ISomeIpServiceApp *someIpPublisher : publisherList) {
+            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
         }
     }
     _someIpSD->acknowledgeSubscription(serviceID, 0xFFFF, subscriberIP);

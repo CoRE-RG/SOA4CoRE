@@ -15,6 +15,7 @@
 
 #include <soqosmw/applications/publisherapp/someip/SomeIpPublisher.h>
 #include <soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h>
+#include "soqosmw/applications/someipapp/base/ISomeIpServiceApp.h"
 #include <soqosmw/serviceregistry/someiplocalserviceregistry/SomeIpLocalServiceRegistry.h>
 
 namespace SOQoSMW {
@@ -30,52 +31,41 @@ void SomeIpLocalServiceRegistry::handleMessage(cMessage *msg) {
     //Does nothing here
 }
 
-void SomeIpLocalServiceRegistry::registerPublisherService(SomeIpPublisher *someIpPublisher) {
-    auto it = _serviceIDToPublisher.find(someIpPublisher->getPublishServiceID());
-    if (it != _serviceIDToPublisher.end()) {
-        std::list<SomeIpPublisher*> *publishers = &(it->second);
-
-        for (SomeIpPublisher *publisher : *publishers) {
-            bool result = someIpPublisher == publisher;
-            bool anotherResult = someIpPublisher != publisher;
-        }
-
-        publishers->push_back(someIpPublisher);
+void SomeIpLocalServiceRegistry::registerService(std::map<uint16_t,std::list<ISomeIpServiceApp*>>& someIpServiceMap, ISomeIpServiceApp* someIpService) {
+    auto it = someIpServiceMap.find(someIpService->getServiceID());
+    if (it != someIpServiceMap.end()) {
+        std::list<ISomeIpServiceApp*> &services = it->second;
+        services.push_back(someIpService);
     } else {
-        std::list<SomeIpPublisher*> publisherList;
-        publisherList.push_back(someIpPublisher);
-        _serviceIDToPublisher[someIpPublisher->getPublishServiceID()] = publisherList;
+        std::list<ISomeIpServiceApp*> serviceList;
+        serviceList.push_back(someIpService);
+        someIpServiceMap[someIpService->getServiceID()] = serviceList;
     }
 }
 
-void SomeIpLocalServiceRegistry::registerSubscriberService(SomeIpSubscriber *someIpSubscriber) {
-    auto it = _serviceIDToSubscriber.find(someIpSubscriber->getSubscribeServiceID());
-    if (it != _serviceIDToSubscriber.end()) {
-        std::list<SomeIpSubscriber*> *subscribers = &(it->second);
-        subscribers->push_back(someIpSubscriber);
-    } else {
-        std::list<SomeIpSubscriber*> subscriberList;
-        subscriberList.push_back(someIpSubscriber);
-        _serviceIDToSubscriber[someIpSubscriber->getSubscribeServiceID()] = subscriberList;
+std::list<ISomeIpServiceApp*> SomeIpLocalServiceRegistry::getServices(const std::map<uint16_t,std::list<ISomeIpServiceApp*>>& someIpServiceMap, uint16_t serviceID) {
+    std::list<ISomeIpServiceApp*> serviceList;
+    auto it = someIpServiceMap.find(serviceID);
+    if (it != someIpServiceMap.end()) {
+        serviceList = it->second;
     }
+    return serviceList;
 }
 
-std::list<SomeIpPublisher*> SomeIpLocalServiceRegistry::getPublisherService(uint16_t serviceID) {
-    std::list<SomeIpPublisher*> publisherList;
-    auto it = _serviceIDToPublisher.find(serviceID);
-    if (it != _serviceIDToPublisher.end()) {
-        publisherList = it->second;
-    }
-    return publisherList;
+void SomeIpLocalServiceRegistry::registerPublisherService(ISomeIpServiceApp *someIpPublisher) {
+    registerService(_serviceIDToPublisher, someIpPublisher);
 }
 
-std::list<SomeIpSubscriber*> SomeIpLocalServiceRegistry::getSubscriberService(uint16_t serviceID) {
-    std::list<SomeIpSubscriber*> subscriberList;
-    auto it = _serviceIDToSubscriber.find(serviceID);
-    if (it != _serviceIDToSubscriber.end()) {
-        subscriberList = it->second;
-    }
-    return subscriberList ;
+void SomeIpLocalServiceRegistry::registerSubscriberService(ISomeIpServiceApp *someIpSubscriber) {
+    registerService(_serviceIDToSubscriber, someIpSubscriber);
+}
+
+std::list<ISomeIpServiceApp*> SomeIpLocalServiceRegistry::getPublisherService(uint16_t serviceID) {
+    return getServices(_serviceIDToPublisher, serviceID);
+}
+
+std::list<ISomeIpServiceApp*> SomeIpLocalServiceRegistry::getSubscriberService(uint16_t serviceID) {
+    return getServices(_serviceIDToSubscriber, serviceID);
 }
 
 void SomeIpLocalServiceRegistry::registerRemotePublisherService(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort) {

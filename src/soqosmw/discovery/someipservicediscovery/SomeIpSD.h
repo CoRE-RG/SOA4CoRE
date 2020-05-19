@@ -23,8 +23,7 @@
 
 namespace SOQoSMW {
 
-class SomeIpPublisher;
-class SomeIpSubscriber;
+class ISomeIpServiceApp;
 class SomeIpLocalServiceManager;
 
 /**

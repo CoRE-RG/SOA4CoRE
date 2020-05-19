@@ -16,8 +16,9 @@
 #ifndef __SOQOSMW_SOMEIPPUBLISHER_H_
 #define __SOQOSMW_SOMEIPPUBLISHER_H_
 
-#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
-#include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
+#include "soqosmw/applications/someipapp/base/SomeIpAppBase.h"
+#include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
+#include "soqosmw/applications/someipapp/base/ISomeIpServiceApp.h"
 #include <utility>
 
 namespace SOQoSMW {
@@ -29,7 +30,7 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpPublisher : public virtual SomeIpAppBase  {
+class SomeIpPublisher : public virtual SomeIpAppBase, public ISomeIpServiceApp  {
     /**
      * Methods
      */
@@ -63,28 +64,28 @@ public:
      * @param adressType
      * @return local IP Address
      */
-    inet::L3Address getIpAddress(inet::L3Address::AddressType adressType);
+    inet::L3Address getIpAddress(inet::L3Address::AddressType adressType) override;
 
     /**
      * Returns the port of this publisher
      *
      * @return local Port
      */
-    int getPort();
+    uint16_t getPort() override;
 
     /**
      * Returns the ID of the service to publish
      *
      * @return service ID to subscribe
      */
-    uint16_t getPublishServiceID();
+    uint16_t getServiceID() override;
 
     /**
-     * Returns the ID of the instance of the service to publish
+     * Returns the ID of the service instance to publish
      *
      * @return instance ID to publish
      */
-    uint16_t getInstanceID();
+    uint16_t getInstanceID() override;
 
     /**
      * Adds someip subscriber destination infromation

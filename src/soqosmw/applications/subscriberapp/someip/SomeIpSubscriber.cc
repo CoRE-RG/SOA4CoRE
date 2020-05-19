@@ -60,11 +60,11 @@ inet::L3Address SomeIpSubscriber::getIpAddress(L3Address::AddressType addressTyp
     }
 }
 
-int SomeIpSubscriber::getPort() {
+uint16_t SomeIpSubscriber::getPort() {
     return localPort;
 }
 
-uint16_t SomeIpSubscriber::getSubscribeServiceID() {
+uint16_t SomeIpSubscriber::getServiceID() {
     return _subscribeServiceID;
 }
 

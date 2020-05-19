@@ -39,7 +39,7 @@ void SomeIpPublisher::initialize(int stage) {
 
 void SomeIpPublisher::handleMessageWhenUp(cMessage *msg) {
     if (!_destinations.empty()) {
-        std::string headerName = "SOME/IP - RESPONSE - " + std::to_string(getPublishServiceID());
+        std::string headerName = "SOME/IP - RESPONSE - " + std::to_string(getServiceID());
         SomeIpHeader* someipHeader = new SomeIpHeader(headerName.c_str());
         someipHeader->setMessageID(0x00000042);
         someipHeader->setLength(someipHeader->getByteLength()-UNCOVEREDBYTESBYLENGTH);
@@ -71,11 +71,11 @@ inet::L3Address SomeIpPublisher::getIpAddress(inet::L3Address::AddressType addre
     }
 }
 
-int SomeIpPublisher::getPort() {
+uint16_t SomeIpPublisher::getPort() {
     return localPort;
 }
 
-uint16_t SomeIpPublisher::getPublishServiceID() {
+uint16_t SomeIpPublisher::getServiceID() {
     return _publishServiceID;
 }
 

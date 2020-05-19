@@ -26,6 +26,7 @@ namespace SOQoSMW {
 
 class SomeIpPublisher;
 class SomeIpSubscriber;
+class ISomeIpServiceApp;
 
 /**
  * @brief Basic SomeIpLocalServiceRegistry
@@ -44,13 +45,13 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
      * Registers a SomeIpPublisher
      * @param someIpPublisher
      */
-    void registerPublisherService(SomeIpPublisher *someIpPublisher);
+    void registerPublisherService(ISomeIpServiceApp *someIpPublisher);
 
     /**
      * Registers a SomeIpSubscriber
      * @param someIpSubscriber
      */
-    void registerSubscriberService(SomeIpSubscriber *someIpSubscriber);
+    void registerSubscriberService(ISomeIpServiceApp *someIpSubscriber);
 
     /**
      * Registers a remote publisher endpoint
@@ -65,14 +66,14 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
      * @param serviceID
      * @return list of all local publisher services
      */
-    std::list<SomeIpPublisher*> getPublisherService(uint16_t serviceID);
+    std::list<ISomeIpServiceApp*> getPublisherService(uint16_t serviceID);
 
     /**
      * Returns all local subscriber services
      * @param serviceID
      * @return list of all local subscriber services
      */
-    std::list<SomeIpSubscriber*> getSubscriberService(uint16_t serviceID);
+    std::list<ISomeIpServiceApp*> getSubscriberService(uint16_t serviceID);
 
     /**
      * Returns all known remote publisher endpoints
@@ -105,17 +106,32 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
     /**
      * List of all local publishers
      */
-    std::map<uint16_t,std::list<SomeIpPublisher*>> _serviceIDToPublisher;
+    std::map<uint16_t,std::list<ISomeIpServiceApp*>> _serviceIDToPublisher;
 
     /**
      * List of all local subscribers
      */
-    std::map<uint16_t,std::list<SomeIpSubscriber*>> _serviceIDToSubscriber;
+    std::map<uint16_t,std::list<ISomeIpServiceApp*>> _serviceIDToSubscriber;
 
     /**
      * List of all remote publisher endpoints
      */
     std::map<uint16_t,std::list<std::pair<inet::L3Address,uint16_t>>> _remoteServiceIDToPublisher;
+
+    /**
+     * Registers a service
+     * @param someIpServiceList the list, where the service will be registered
+     * @param someIpService the service which will be registered
+     */
+    void registerService(std::map<uint16_t,std::list<ISomeIpServiceApp*>>& someIpServiceMap, ISomeIpServiceApp* someIpService);
+
+    /**
+     * Returns services from a map related to a service id
+     * @param someIpServiceList
+     * @param serviceId
+     * @return list over ISomeIpServiceApp
+     */
+    std::list<ISomeIpServiceApp*> getServices(const std::map<uint16_t,std::list<ISomeIpServiceApp*>>& someIpServiceMap, uint16_t serviceID);
 
 };
 }

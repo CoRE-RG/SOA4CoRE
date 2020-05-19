@@ -16,8 +16,9 @@
 #ifndef __SOQOSMW_SOMEIPSUBSCRIBER_H_
 #define __SOQOSMW_SOMEIPSUBSCRIBER_H_
 
-#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
-#include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
+#include "soqosmw/applications/someipapp/base/SomeIpAppBase.h"
+#include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
+#include "soqosmw/applications/someipapp/base/ISomeIpServiceApp.h"
 
 namespace SOQoSMW {
 
@@ -28,7 +29,7 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpSubscriber : public virtual SomeIpAppBase {
+class SomeIpSubscriber : public virtual SomeIpAppBase, public ISomeIpServiceApp {
 /**
  * Member variables
  */
@@ -63,28 +64,28 @@ public:
      * @param adressType
      * @return local IP Address
      */
-    inet::L3Address getIpAddress(inet::L3Address::AddressType adressType);
+    inet::L3Address getIpAddress(inet::L3Address::AddressType adressType) override;
 
     /**
      * Returns the port of this subscriber
      *
      * @return local Port
      */
-    int getPort();
+    uint16_t getPort() override;
 
     /**
      * Returns the ID of the service to subscribe
      *
      * @return service ID to subscribe
      */
-    uint16_t getSubscribeServiceID();
+    uint16_t getServiceID() override;
 
     /**
-     * Returns the ID of the instance of the service to subscribe
+     * Returns the ID of the service instance to subscribe
      *
      * @return instance ID to subscribe
      */
-    uint16_t getInstanceID();
+    uint16_t getInstanceID() override;
 protected:
     /**
      * Schedules a self message and offers service with

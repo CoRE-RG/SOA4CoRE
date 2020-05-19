@@ -62,7 +62,7 @@ class SomeIpLocalServiceManager : public cSimpleModule
      * @param serviceID service id of service to search
      * @return list of publishers that publish service
      */
-    std::list<SomeIpPublisher*> lookLocalForPublisherService(uint16_t serviceID);
+    std::list<ISomeIpServiceApp*> lookLocalForPublisherService(uint16_t serviceID);
 
     /**
      * Adds a remote publisher
