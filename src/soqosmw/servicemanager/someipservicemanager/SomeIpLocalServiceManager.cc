@@ -71,9 +71,6 @@ void SomeIpLocalServiceManager::discoverService(SomeIpSubscriber* someIpSubscrib
             _someIpSD->findService(someIpSubscriber->getServiceID(), someIpSubscriber->getInstanceID());
         }
     }
-    if(someIpSubscriber->getServiceID() == 0x0001 || someIpSubscriber->getServiceID() == 0x0005) {
-
-    }
     _subscriptionRelations[someIpSubscriber->getServiceID()].insert({someIpSubscriber, relations});
 }
 
