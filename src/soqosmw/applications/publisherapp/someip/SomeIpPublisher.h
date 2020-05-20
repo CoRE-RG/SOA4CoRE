@@ -90,7 +90,7 @@ public:
     /**
      * Adds someip subscriber destination infromation
      */
-    void addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port);
+    void addSomeIpSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port);
 
     /**
      * Member variables

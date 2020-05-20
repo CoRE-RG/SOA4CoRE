@@ -49,8 +49,9 @@ void SomeIpPublisher::handleMessageWhenUp(cMessage *msg) {
         someipHeader->setMessageType(SOQoSMW::MessageType::RESPONSE);
         someipHeader->setReturnCode(SOQoSMW::ReturnCode::E_OK);
         for (std::pair<inet::L3Address,uint16_t> destination : _destinations) {
-            socket.sendTo(someipHeader, destination.first, destination.second);
+            socket.sendTo(someipHeader->dup(), destination.first, destination.second);
         }
+        delete someipHeader;
     }
     delete msg;
     SomeIpAppBase::scheduleSelfMsg(_sendInterval);
@@ -83,7 +84,7 @@ uint16_t SomeIpPublisher::getInstanceID() {
     return _instanceID;
 }
 
-void SomeIpPublisher::addSomeipSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
+void SomeIpPublisher::addSomeIpSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
     _destinations.push_back(std::make_pair(ipAddress,port));
 }
 

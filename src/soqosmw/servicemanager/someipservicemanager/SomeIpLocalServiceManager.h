@@ -25,6 +25,7 @@ namespace SOQoSMW {
 
 class SomeIpPublisher;
 class SomeIpSubscriber;
+class SubscriptionRelations;
 
 /**
  * @brief Base class for a SOME/IP local service manager.
@@ -35,6 +36,9 @@ class SomeIpSubscriber;
  */
 class SomeIpLocalServiceManager : public cSimpleModule
 {
+    /**
+     * Methods
+     */
   public:
     /**
      * Registers a SOME/IP Publisher
@@ -55,7 +59,7 @@ class SomeIpLocalServiceManager : public cSimpleModule
      * @param subscriberIP IP address of subscriber that wants to subscribe
      * @param subscriberPort port of subscriber that wants to subscribe
      */
-    void discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort);
+    void discoverService(SomeIpSubscriber* someIpSubscriber);
 
     /**
      * Looks for publisher with given service id in local registry
@@ -80,11 +84,14 @@ class SomeIpLocalServiceManager : public cSimpleModule
      */
     void publishToSubscriber(uint16_t serviceID, L3Address subscriberIP, uint16_t subscriberPort);
 
+
     /**
      * Acknowledges a service
      * @param serviceID
+     * @param publisherIp
+     * @param port
      */
-    void acknowledgeService(uint16_t serviceID);
+    void acknowledgeService(uint16_t serviceID, inet::L3Address publisherIp, uint16_t publisherPort);
   protected:
     /**
      * Initializes the module and waits for find
@@ -100,6 +107,10 @@ class SomeIpLocalServiceManager : public cSimpleModule
      */
     virtual void handleMessage(cMessage *msg) override;
   private:
+
+    /**
+     * Member variables
+     */
   public:
   protected:
   private:
@@ -114,10 +125,9 @@ class SomeIpLocalServiceManager : public cSimpleModule
     SomeIpLocalServiceRegistry* _someIpLSR;
 
     /**
-     * Map for saving discover request
+     * Map for subscription relation
      */
-    //TODO list over pairs to manage multiple subscribers who want to subscribe same service
-    std::map<uint16_t,std::pair<inet::L3Address,uint16_t>> _pendingRequests;
+    std::map<uint16_t,std::map<SomeIpSubscriber*,SubscriptionRelations>> _subscriptionRelations;
 };
 }
 #endif

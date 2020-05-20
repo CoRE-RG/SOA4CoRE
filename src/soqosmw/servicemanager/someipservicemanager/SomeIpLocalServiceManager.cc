@@ -16,6 +16,7 @@
 #include <soqosmw/applications/publisherapp/someip/SomeIpPublisher.h>
 #include <soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h>
 #include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
+#include <soqosmw/servicemanager/someipservicemanager/SubscriptionRelations.h>
 
 namespace SOQoSMW {
 
@@ -48,23 +49,32 @@ void SomeIpLocalServiceManager::registerSubscriberService(SomeIpSubscriber *some
     _someIpLSR->registerSubscriberService(someIpSubscriber);
 }
 
-void SomeIpLocalServiceManager::discoverService(uint16_t serviceID, uint16_t instanceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
-    std::list<ISomeIpServiceApp*> publisherList = _someIpLSR->getPublisherService(serviceID);
+void SomeIpLocalServiceManager::discoverService(SomeIpSubscriber* someIpSubscriber) {
+    SubscriptionRelations relations = SubscriptionRelations();
+    // Look local for publisher service
+    std::list<ISomeIpServiceApp*> publisherList = _someIpLSR->getPublisherService(someIpSubscriber->getServiceID());
     if (!publisherList.empty()) {
         for (ISomeIpServiceApp *someIpPublisher : publisherList) {
-            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
+            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeIpSubscriberDestinationInformartion(someIpSubscriber->getIpAddress(inet::L3Address::IPv4), someIpSubscriber->getPort());
+            relations.addLocalSubscriptionRelation(dynamic_cast<SomeIpPublisher*>(someIpPublisher), SubscriptionState::SUBSCRIBED);
         }
     } else {
-        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfoList = _someIpLSR->getRemotePublisherEndpoints(serviceID);
+        // Look for already known remote publishers
+        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfoList = _someIpLSR->getRemotePublisherEndpoints(someIpSubscriber->getServiceID());
         if (!remotePublisherInfoList.empty()) {
             for (std::pair<inet::L3Address,uint16_t> publisherInfo : remotePublisherInfoList) {
-                _someIpSD->subscribeService(serviceID, instanceID, publisherInfo.first, subscriberIP, subscriberPort);
+                _someIpSD->subscribeService(someIpSubscriber->getServiceID(), someIpSubscriber->getInstanceID(), publisherInfo.first, someIpSubscriber->getIpAddress(inet::L3Address::IPv4), someIpSubscriber->getPort());
+                relations.addRemoteSubscriptionRelation(publisherInfo, SubscriptionState::SUBSCRIBING);
             }
         } else {
-            _someIpSD->findService(serviceID, instanceID);
+            // No publisher known locally or remotely
+            _someIpSD->findService(someIpSubscriber->getServiceID(), someIpSubscriber->getInstanceID());
         }
-        _pendingRequests[serviceID] = std::make_pair(subscriberIP, subscriberPort);
     }
+    if(someIpSubscriber->getServiceID() == 0x0001 || someIpSubscriber->getServiceID() == 0x0005) {
+
+    }
+    _subscriptionRelations[someIpSubscriber->getServiceID()].insert({someIpSubscriber, relations});
 }
 
 std::list<ISomeIpServiceApp*> SomeIpLocalServiceManager::lookLocalForPublisherService(uint16_t serviceID) {
@@ -73,22 +83,37 @@ std::list<ISomeIpServiceApp*> SomeIpLocalServiceManager::lookLocalForPublisherSe
 
 void SomeIpLocalServiceManager::addRemotePublisher(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort) {
     _someIpLSR->registerRemotePublisherService(serviceID, publisherIP, publisherPort);
-    //TODO An already subscribed publisher will be subscribed again, if the serviceID from another publisher is as the one subscribed before
-    _someIpSD->subscribeService(serviceID, 0xFFFF, publisherIP, _pendingRequests[serviceID].first, _pendingRequests[serviceID].second);
+    auto it = _subscriptionRelations.find(serviceID);
+    if (it != _subscriptionRelations.end()) {
+        for (auto &relations : it->second) {
+            SubscriptionState subscriptionState = relations.second.getRemoteRelation(std::make_pair(publisherIP, publisherPort));
+            if ( subscriptionState == SubscriptionState::NOT_SUBSCRIBED) {
+                _someIpSD->subscribeService(serviceID, relations.first->getInstanceID(), publisherIP, relations.first->getIpAddress(inet::L3Address::AddressType::IPv4), relations.first->getPort());
+                relations.second.addRemoteSubscriptionRelation(std::make_pair(publisherIP, publisherPort), SubscriptionState::SUBSCRIBING);
+            }
+        }
+    }
 }
 
 void SomeIpLocalServiceManager::publishToSubscriber(uint16_t serviceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
     std::list<ISomeIpServiceApp*> publisherList = _someIpLSR->getPublisherService(serviceID);
     if (!publisherList.empty()) {
         for (ISomeIpServiceApp *someIpPublisher : publisherList) {
-            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeipSubscriberDestinationInformartion(subscriberIP, subscriberPort);
+            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeIpSubscriberDestinationInformartion(subscriberIP, subscriberPort);
+            _someIpSD->acknowledgeSubscription(someIpPublisher, subscriberIP);
         }
     }
-    _someIpSD->acknowledgeSubscription(serviceID, 0xFFFF, subscriberIP);
 }
 
-void SomeIpLocalServiceManager::acknowledgeService(uint16_t serviceID) {
-    _pendingRequests.erase(serviceID);
+void SomeIpLocalServiceManager::acknowledgeService(uint16_t serviceID, inet::L3Address publisherIp, uint16_t publisherPort) {
+    auto it = _subscriptionRelations.find(serviceID);
+    if (it != _subscriptionRelations.end()) {
+        for (auto &relations : it->second) {
+            if (relations.second.getRemoteRelation(std::make_pair(publisherIp, publisherPort)) == SubscriptionState::SUBSCRIBING) {
+                relations.second.addRemoteSubscriptionRelation(std::make_pair(publisherIp, publisherPort), SubscriptionState::SUBSCRIBED);
+            }
+        }
+    }
 }
 
 }

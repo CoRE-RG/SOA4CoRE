@@ -71,7 +71,7 @@ public:
      * @param remoteAddress
      * @param remotePort
      */
-    void acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, L3Address remoteAddress);
+    void acknowledgeSubscription(ISomeIpServiceApp *publisher, L3Address remoteAddress);
   protected:
     /**
      * Initializes module with stages
@@ -107,7 +107,7 @@ public:
     /**
      * Acknowledges a subscription
      */
-    void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress);
+    void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress);
 
     /**
      * Processes a packet

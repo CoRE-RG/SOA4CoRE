@@ -38,7 +38,7 @@ void SomeIpSubscriber::initialize(int stage) {
 
 void SomeIpSubscriber::handleMessageWhenUp(cMessage *msg) {
     if (msg->isSelfMessage()) {
-        _someIpLSM->discoverService(_subscribeServiceID,_instanceID, getIpAddress(L3Address::IPv4), localPort);
+        _someIpLSM->discoverService(this);
     } else if (SomeIpHeader *someIpheader = dynamic_cast<SomeIpHeader*>(msg)){
         EV << "SomeIpHeader service message arrived" << std::endl;
     }
