@@ -41,7 +41,7 @@ void SomeIpSD::handleMessageWhenUp(cMessage *msg) {
     if (SomeIpSDHeader *someIpSDHeader = dynamic_cast<SomeIpSDHeader*>(msg)) {
         if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
             if (udpDataIndication->getSrcAddr() != inet::IPv4Address(_localAddress)) {
-                processSomeipSDHeader(someIpSDHeader);
+                processSomeIpSDHeader(someIpSDHeader);
             }
         }
     }
@@ -136,7 +136,7 @@ void SomeIpSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, i
     socket.sendTo(someIpSDHeader, remoteAddress, destPort);
 }
 
-void SomeIpSD::processSomeipSDHeader(SomeIpSDHeader* someIpSDHeader) {
+void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
     std::list<SomeIpSDEntry*> entries = someIpSDHeader->getEncapEntries();
     for (std::list<SomeIpSDEntry*>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
         switch ((*it)->getType()) {

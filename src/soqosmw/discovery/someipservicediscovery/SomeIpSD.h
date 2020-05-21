@@ -114,7 +114,7 @@ public:
      *
      * @param packet
      */
-    void processSomeipSDHeader(SomeIpSDHeader* someIpSDHeader);
+    void processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader);
 
     void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someIpSDHeader);
 
