@@ -28,7 +28,6 @@ Define_Module(SomeIpSD);
 void SomeIpSD::initialize(int stage) {
     SomeIpAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {
-        _localAddress = par("localAddress").stringValue();
         cModule* module = getParentModule()->getSubmodule("lsm");
         if((_someIpLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
         } else {
@@ -40,7 +39,7 @@ void SomeIpSD::initialize(int stage) {
 void SomeIpSD::handleMessageWhenUp(cMessage *msg) {
     if (SomeIpSDHeader *someIpSDHeader = dynamic_cast<SomeIpSDHeader*>(msg)) {
         if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
-            if (udpDataIndication->getSrcAddr() != inet::IPv4Address(_localAddress)) {
+            if (udpDataIndication->getSrcAddr() != localAddress) {
                 processSomeIpSDHeader(someIpSDHeader);
             }
         }

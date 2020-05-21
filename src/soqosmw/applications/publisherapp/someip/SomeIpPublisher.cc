@@ -15,6 +15,7 @@
 
 #include <soqosmw/applications/publisherapp/someip/SomeIpPublisher.h>
 #include "soqosmw/messages/someip/SomeIpHeader_m.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
 
 namespace SOQoSMW {
 
@@ -61,15 +62,8 @@ void SomeIpPublisher::processPacket(cPacket *packet) {
 
 }
 
-inet::L3Address SomeIpPublisher::getIpAddress(inet::L3Address::AddressType addressType) {
-    switch (addressType) {
-        case L3Address::IPv4:
-            return inet::IPv4Address(par("localAddress").stringValue());
-            break;
-        default:
-            throw cRuntimeError("Unknown addresstype");
-            break;
-    }
+inet::L3Address SomeIpPublisher::getIpAddress(inet::L3Address::AddressType adressType) {
+    return SomeIpAppBase::getIpAddress(adressType);
 }
 
 uint16_t SomeIpPublisher::getPort() {

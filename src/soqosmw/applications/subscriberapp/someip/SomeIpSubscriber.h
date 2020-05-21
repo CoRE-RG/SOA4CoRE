@@ -59,7 +59,7 @@ private:
  */
 public:
     /**
-     * Returns the IP Address of this subscriber
+     * Returns the IP Address of this SOME/IP subscriber
      *
      * @param adressType
      * @return local IP Address

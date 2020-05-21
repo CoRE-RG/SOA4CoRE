@@ -59,7 +59,7 @@ protected:
     virtual void processPacket(cPacket *packet) override;
 public:
     /**
-     * Returns the IP Address of this publisher
+     * Returns the IP Address of this SOME/IP publisher
      *
      * @param adressType
      * @return local IP Address

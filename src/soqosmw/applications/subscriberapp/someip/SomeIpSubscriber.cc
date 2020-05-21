@@ -49,15 +49,8 @@ void SomeIpSubscriber::processPacket(cPacket *packet) {
 
 }
 
-inet::L3Address SomeIpSubscriber::getIpAddress(L3Address::AddressType addressType) {
-    switch (addressType) {
-        case L3Address::IPv4:
-            return inet::IPv4Address(par("localAddress").stringValue());
-            break;
-        default:
-            throw cRuntimeError("Unknown addresstype");
-            break;
-    }
+inet::L3Address SomeIpSubscriber::getIpAddress(inet::L3Address::AddressType adressType) {
+    return SomeIpAppBase::getIpAddress(adressType);
 }
 
 uint16_t SomeIpSubscriber::getPort() {

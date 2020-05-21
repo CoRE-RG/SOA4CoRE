@@ -19,6 +19,7 @@ import soqosmw.nodes.SomeIpHost;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.ethernet.EtherSwitch;
+import inet.visualizer.integrated.IntegratedVisualizer;
 
 network SomeIpSDSmallTestNetwork
 {
@@ -48,9 +49,13 @@ network SomeIpSDSmallTestNetwork
         }
 
         configurator: IPv4NetworkConfigurator {
-
             @display("p=315,155");
         }
+
+//        visualizer: IntegratedVisualizer {
+//            parameters:
+//                @display("p=315,101");
+//        }
     connections:
         pubnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
         subnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;

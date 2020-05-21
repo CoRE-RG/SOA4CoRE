@@ -35,7 +35,7 @@ SomeIpAppBase::~SomeIpAppBase() {
 void SomeIpAppBase:: initialize(int stage) {
     UDPBasicApp::initialize(stage);
 
-    if (stage == inet::INITSTAGE_LOCAL) {
+    if (stage == inet::INITSTAGE_NETWORK_LAYER_2) {
         processStart();
     }
 }
@@ -95,8 +95,9 @@ void SomeIpAppBase::sendSomeIpPacket(SomeIpHeader* packet) {
 
 void SomeIpAppBase::processStart() {
     socket.setOutputGate(gate("udpOut"));
-    const char *localAddress = par("localAddress");
-    socket.bind(*localAddress ? inet::L3AddressResolver().resolve(localAddress) : inet::L3Address(), localPort);
+    inet::L3AddressResolver addressResolver = inet::L3AddressResolver();
+    localAddress = addressResolver.addressOf(getParentModule(), inet::L3Address::AddressType::IPv4);
+    socket.bind(localAddress, localPort);
     UDPBasicApp::setSocketOptions();
 
     const char *destAddrs = par("destAddresses");
@@ -126,4 +127,19 @@ void SomeIpAppBase::scheduleSelfMsg(omnetpp::simtime_t scheduleTime, short int k
     msg->setByteLength(8);
     scheduleAt(simTime() + scheduleTime, msg);
 }
+
+inet::L3Address SomeIpAppBase::getIpAddress(inet::L3Address::AddressType addressType) {
+    switch (addressType) {
+        case inet::L3Address::IPv4:
+            return localAddress.toIPv4();
+            break;
+        case inet::L3Address::IPv6:
+            return localAddress.toIPv6();
+            break;
+        default:
+            throw cRuntimeError("Unknown addresstype");
+            break;
+    }
+}
+
 } /* end namespace SOQoSMW */

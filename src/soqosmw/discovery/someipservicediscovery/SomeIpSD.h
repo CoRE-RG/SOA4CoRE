@@ -38,10 +38,6 @@ class SomeIpSD : public virtual SomeIpAppBase
 public:
 protected:
 private:
-    /**
-     * The local ip address
-     */
-    const char* _localAddress;
 
     /**
      * The SOME/IP local service manager
