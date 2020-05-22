@@ -27,10 +27,10 @@ TicTocApp::~TicTocApp(){
 void TicTocApp:: initialize(int stage) {
     SomeIpAppBase::initialize(stage);
     if (stage == inet::INITSTAGE_LOCAL) {
-        initialMsg = par("initialMsg");
-        sendInterval = par("sendInterval");
-        if (initialMsg){
-            SomeIpAppBase::scheduleSelfMsg(sendInterval);
+        _initialMsg = par("initialMsg");
+        _sendInterval = par("sendInterval");
+        if (_initialMsg){
+            SomeIpAppBase::scheduleSelfMsg(_sendInterval);
         }
     }
 }

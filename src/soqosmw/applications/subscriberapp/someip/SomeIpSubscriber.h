@@ -33,6 +33,8 @@ class SomeIpSubscriber : public virtual SomeIpAppBase, public ISomeIpServiceApp 
 /**
  * Member variables
  */
+public:
+protected:
 private:
     /**
      * SOME/IP Local Service Manager reference
@@ -109,6 +111,7 @@ protected:
      * @param packet
      */
     virtual void processPacket(cPacket *packet) override;
+private:
 };
 } /* end namespace SOQoSMW */
 #endif

@@ -22,15 +22,15 @@ namespace SOQoSMW {
 /**
  * @brief Message for encapsulation of multiple SomeIpSDEntry and SomeIpSDOption messages
  *
+ * @ingroup soqosmw/messages
+ *
  * @author Mehmet Cakir (adapted from Philipp Meyer GatewayAggregationMessage in SignalsAndGateways)
  */
 class SomeIpSDHeader : public SomeIpSDHeader_Base {
-private:
-    std::list<SomeIpSDEntry*> entryList;
-    std::list<SomeIpSDOption*> optionList;
 
-    void copy(const SomeIpSDHeader& other);
-
+    /**
+     * Methods
+     */
 public:
     /**
      * @brief Constructor
@@ -124,12 +124,23 @@ public:
      * @return number of encapsulated Options
      */
     virtual size_t getOptionCnt();
-
+protected:
 private:
     /**
      * @brief Updates the header length of the SOME/IP Header
      */
     void updateHeaderLength();
+
+    /**
+     * Member variables
+     */
+public:
+protected:
+private:
+    std::list<SomeIpSDEntry*> entryList;
+    std::list<SomeIpSDOption*> optionList;
+
+    void copy(const SomeIpSDHeader& other);
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_ */

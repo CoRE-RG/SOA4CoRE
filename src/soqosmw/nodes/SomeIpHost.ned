@@ -44,31 +44,26 @@ module SomeIpHost extends StandardHost
     submodules:
         // The SOME/IP publishers 
         publisher[numPublisher]: SomeIpPublisher {
-
             @display("p=455,28");
         }
 
         // The SOME/IP subscribers
         subscriber[numSubscriber]: SomeIpSubscriber {
-
             @display("p=379,28");
         }
 
         // The SOME/IP service discovery
         sd: SomeIpSD {
-
             @display("p=628,28;i=block/routing");
         }
 
         // The SOME/IP local service manager
         lsm: SomeIpLocalServiceManager {
-
             @display("p=681,28");
         }
 
         // The SOME/IP local service registry
         lsr: SomeIpLocalServiceRegistry {
-
             @display("p=732,28;i=block/table2");
         }
 

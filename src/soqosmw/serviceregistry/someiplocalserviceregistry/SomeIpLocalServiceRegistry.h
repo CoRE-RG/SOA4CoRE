@@ -29,9 +29,9 @@ class SomeIpSubscriber;
 class ISomeIpServiceApp;
 
 /**
- * @brief Basic SomeIpLocalServiceRegistry
+ * @brief This class manages all registered publishers and subscribers
  *
- * @ingroup soqosmw/applications
+ * @ingroup soqosmw/serviceregistry
  *
  * @author Mehmet Cakir
  */
@@ -134,5 +134,5 @@ class SomeIpLocalServiceRegistry : public cSimpleModule
     std::list<ISomeIpServiceApp*> getServices(const std::map<uint16_t,std::list<ISomeIpServiceApp*>>& someIpServiceMap, uint16_t serviceID);
 
 };
-}
+} /* end namespace SOQoSMW */
 #endif

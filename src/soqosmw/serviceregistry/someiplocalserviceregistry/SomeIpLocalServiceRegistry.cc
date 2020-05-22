@@ -89,4 +89,4 @@ std::list<std::pair<inet::L3Address,uint16_t>> SomeIpLocalServiceRegistry::getRe
     return publisherInfoList;
 }
 
-}
+} /* end namespace SOQoSMW */

@@ -32,7 +32,18 @@ class SomeIpAppBase: public virtual inet::UDPBasicApp {
     /**
      * Methods
      */
-private:
+public:
+    SomeIpAppBase();
+    virtual ~SomeIpAppBase();
+
+    /**
+     * Returns the IP Address of this SOME/IP app
+     *
+     * @param adressType
+     * @return local IP Address
+     */
+    virtual inet::L3Address getIpAddress(inet::L3Address::AddressType adressType);
+
 protected:
     /**
      * Initializes parameters
@@ -104,33 +115,19 @@ protected:
      * @param kind the kind of message
      */
     void scheduleSelfMsg(omnetpp::simtime_t scheduleTime, short int kind = 0);
-public:
-    SomeIpAppBase();
-    virtual ~SomeIpAppBase();
 
-    /**
-     * Returns the IP Address of this SOME/IP app
-     *
-     * @param adressType
-     * @return local IP Address
-     */
-    virtual inet::L3Address getIpAddress(inet::L3Address::AddressType adressType);
+private:
 
     /**
      * Member variables
      */
-private:
+public:
 protected:
-    /**
-     * Caches if the node sends the initial message
-     */
-    bool initialMsg;
-
     /**
      * The local ip address
      */
     inet::L3Address localAddress;
-public:
+private:
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_SOMEIPAPPBASE_H_ */

@@ -45,6 +45,6 @@ public:
     virtual uint16_t getInstanceID() = 0;
 };
 
-} /* namespace SOQoSMW */
+} /* end namespace SOQoSMW */
 
 #endif /* SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_ISOMEIPSERVICEAPP_H_ */

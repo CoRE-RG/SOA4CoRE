@@ -64,7 +64,15 @@ private:
 public:
 protected:
 private:
-    simtime_t sendInterval;
+    /**
+     * The send interval messages will be sent
+     */
+    simtime_t _sendInterval;
+
+    /**
+     * Caches if the node sends the initial message
+     */
+    bool _initialMsg;
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_APPLICATIONS_SOMEIPAPP_TICTOC_TICTOCAPP_H_ */

@@ -29,7 +29,7 @@ class SomeIpLocalServiceManager;
 /**
  * @brief Basic SomeIpSDApp
  *
- * @ingroup soqosmw/applications
+ * @ingroup soqosmw/discovery
  *
  * @author Mehmet Cakir
  */
@@ -106,18 +106,37 @@ public:
     void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress);
 
     /**
-     * Processes a packet
-     *
-     * @param packet
+     * Processes a SOME/IP SD Header
+     * @param someIpSDHeader
      */
     void processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader);
 
+    /**
+     * Processes a SOME/IP SD Find entry
+     * @param findEntry
+     * @param someIpSDHeader
+     */
     void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someIpSDHeader);
 
+    /**
+     * Processes a SOME/IP SD Offer entry
+     * @param offerEntry
+     * @param someIpSDHeader
+     */
     void processOfferEntry(SomeIpSDEntry *offerEntry, SomeIpSDHeader* someIpSDHeader);
 
+    /**
+     * Processes a SOME/IP SD Subscribe Eventgroup entry
+     * @param subscribeEventGroupEntry
+     * @param someIpSDHeader
+     */
     void processSubscribeEventGroupEntry(SomeIpSDEntry *subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader);
 
+    /**
+     * Processes a SOME/IP SD Subscribe Eventgroup Acknowledge entry
+     * @param subscribeEventGroupAckEntry
+     * @param someIpSDHeader
+     */
     void processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader);
 };
 } /* end namespace SOQoSMW */

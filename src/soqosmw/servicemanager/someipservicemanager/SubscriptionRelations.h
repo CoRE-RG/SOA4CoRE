@@ -14,11 +14,25 @@
 
 namespace SOQoSMW {
 
+/**
+ * @brief States of a subscription relation
+ *
+ * @ingroup soqosmw/servicemanager
+ *
+ * @author Mehmet Cakir
+ */
 enum class SubscriptionState {NOT_SUBSCRIBED, SUBSCRIBING, SUBSCRIBED};
 
 class SomeIpSubscriber;
 class SomeIpPublisher;
 
+/**
+ * @brief This class manages the subscription relation with publisher services
+ *
+ * @ingroup soqosmw/servicemanager
+ *
+ * @author Mehmet Cakir
+ */
 class SubscriptionRelations {
 
 /**

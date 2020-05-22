@@ -30,7 +30,7 @@ class SubscriptionRelations;
 /**
  * @brief Base class for a SOME/IP local service manager.
  *
- * @ingroup soqosmw/applications
+ * @ingroup soqosmw/servicemanager
  *
  * @author Mehmet Cakir
  */

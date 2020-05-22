@@ -34,29 +34,6 @@ class SomeIpPublisher : public virtual SomeIpAppBase, public ISomeIpServiceApp  
     /**
      * Methods
      */
-private:
-protected:
-    /**
-     * Initializes the module and waits for find
-     *
-     * @param stage indicates the initialization stage
-     */
-    virtual void initialize(int stage) override;
-
-    /**
-     * Handles incoming message as soon as node is up and
-     * processes the packet
-     *
-     * @param msg
-     */
-    virtual void handleMessageWhenUp(cMessage *msg) override;
-
-    /**
-     * Processes a packet
-     *
-     * @param packet
-     */
-    virtual void processPacket(cPacket *packet) override;
 public:
     /**
      * Returns the IP Address of this SOME/IP publisher
@@ -92,9 +69,35 @@ public:
      */
     void addSomeIpSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port);
 
+protected:
+    /**
+     * Initializes the module and waits for find
+     *
+     * @param stage indicates the initialization stage
+     */
+    virtual void initialize(int stage) override;
+
+    /**
+     * Handles incoming message as soon as node is up and
+     * processes the packet
+     *
+     * @param msg
+     */
+    virtual void handleMessageWhenUp(cMessage *msg) override;
+
+    /**
+     * Processes a packet
+     *
+     * @param packet
+     */
+    virtual void processPacket(cPacket *packet) override;
+
+private:
     /**
      * Member variables
      */
+public:
+protected:
 private:
     /**
      * SOME/IP Local Service Manager reference
@@ -120,9 +123,6 @@ private:
      * The send interval of (self) messages
      */
     simtime_t _sendInterval;
-
-protected:
-public:
 
 };
 } /* end namespace SOQoSMW */

@@ -33,4 +33,4 @@ SubscriptionState SubscriptionRelations::getRemoteRelation(std::pair<inet::L3Add
     return _subscriptionRelationsRemote[remotePublisherEndpoint];
 }
 
-} /* namespace SOQoSMW */
+} /* end namespace SOQoSMW */

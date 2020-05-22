@@ -27,5 +27,7 @@ simple TicTocApp extends SomeIpAppBase
 {
     parameters:
         @class(SOQoSMW::TicTocApp);
+        
+        // Determines if a initial message should be sent 
         bool initialMsg = default(false);
 }
