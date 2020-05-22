@@ -15,11 +15,8 @@
 
 package soqosmw.examples.SomeIpSDSmallTestNetwork;
 
-import soqosmw.nodes.SomeIpHost;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
-import inet.node.ethernet.EtherSwitch;
-import inet.visualizer.integrated.IntegratedVisualizer;
 
 network SomeIpSDSmallTestNetwork
 {
@@ -32,19 +29,19 @@ network SomeIpSDSmallTestNetwork
         }
 
     submodules:
-        pubnode: SomeIpHost {
+        node1: Node1 {
 
             @display("p=30,30");
         }
-        subnode: SomeIpHost {
+        node2: Node2 {
             @display("p=172,147");
         }
 
-        drittesRad: SomeIpHost {
+        node3: Node3 {
             @display("p=315,30");
         }
 
-        switch: EtherSwitch {
+        switch: Switch {
             @display("p=172,62");
         }
 
@@ -52,12 +49,8 @@ network SomeIpSDSmallTestNetwork
             @display("p=315,155");
         }
 
-//        visualizer: IntegratedVisualizer {
-//            parameters:
-//                @display("p=315,101");
-//        }
     connections:
-        pubnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
-        subnode.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
-        drittesRad.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        node1.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        node2.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        node3.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
 }

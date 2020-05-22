@@ -15,10 +15,8 @@
 
 package soqosmw.examples.SomeIpSDLargeTestNetwork;
 
-import soqosmw.nodes.SomeIpHost;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
-import inet.node.ethernet.EtherSwitch;
 
 network SomeIpSDLargeTestNetwork
 {
@@ -31,64 +29,66 @@ network SomeIpSDLargeTestNetwork
         }
 
     submodules:
-        HostNorth: SomeIpHost {
+        HostNorth: HostNorth {
             @display("p=493,50");
         }
-        HostSouth: SomeIpHost {
+        
+        HostSouth: HostSouth {
             @display("p=493,376");
         }
 
-        HostEast: SomeIpHost {
+        HostEast: HostEast {
             @display("p=935,213");
         }
 
-        HostWest: SomeIpHost {
-
+        HostWest: HostWest {
             @display("p=71,213");
         }
-        HostNorthWest: SomeIpHost {
-
+        
+        HostNorthWest: HostNorthWest {
             @display("p=253,50");
         }
-        HostNorthEast: SomeIpHost {
-
+        
+        HostNorthEast: HostNorthEast {
             @display("p=734,50");
         }
-        HostSouthWest: SomeIpHost {
-
+        
+        HostSouthWest: HostSouthWest {
             @display("p=253,376");
         }
-        HostSouthEast: SomeIpHost {
-
+        
+        HostSouthEast: HostSouthEast {
             @display("p=734,376");
         }
-        switchWest: EtherSwitch {
+        
+        SwitchWest: SwitchWest {
             @display("p=253,212");
         }
 
-        switchEast: EtherSwitch {
+        SwitchEast: SwitchEast {
             @display("p=734,212");
         }
 
-        switchCenter: EtherSwitch {
+        SwitchCenter: SwitchCenter {
             @display("p=493,212");
         }
 
         configurator: IPv4NetworkConfigurator {
             @display("p=1009,384");
         }
-    connections:
-        HostNorthWest.ethg++ <--> ETH_100MBIT <--> switchWest.ethg++;
-        HostWest.ethg++ <--> ETH_100MBIT <--> switchWest.ethg++;
-        HostSouthWest.ethg++ <--> ETH_100MBIT <--> switchWest.ethg++;
-
-        HostNorth.ethg++ <--> ETH_100MBIT <--> switchCenter.ethg++;
-        HostSouth.ethg++ <--> ETH_100MBIT <--> switchCenter.ethg++;
-
-        HostNorthEast.ethg++ <--> ETH_100MBIT <--> switchEast.ethg++;
-        HostEast.ethg++ <--> ETH_100MBIT <--> switchEast.ethg++;
-        HostSouthEast.ethg++ <--> ETH_100MBIT <--> switchEast.ethg++;
         
-        switchWest.ethg++ <--> ETH_100MBIT <--> switchCenter.ethg++;
-        switchEast.ethg++ <--> ETH_100MBIT <--> switchCenter.ethg++;
+    connections:
+        HostNorthWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostSouthWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
+
+        HostNorth.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
+        HostSouth.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
+
+        HostNorthEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostSouthEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        
+        SwitchWest.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
+        SwitchEast.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
 }

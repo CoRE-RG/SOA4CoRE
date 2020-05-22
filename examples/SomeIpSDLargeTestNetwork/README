@@ -1,0 +1,51 @@
+Demonstrates a large SOME/IP Service Discovery network.
+After the service discovery publishers send messages to their subscribers.
+
+- The large network contains the eight hosts:
+  HostWest, HostNorthWest, HostNorth, HostNorthEast,
+  HostEast, HostSouthEast, HostSouth, HostSouthWest
+
+- Next to that there are the three switches:
+  SwitchWest, SwitchCenter, SwitchEast
+  
+- All hosts are connected with their according switch:
+  -> Hosts on the west side are connected with SwitchWest
+  -> Hosts on the east side are connected with SwitchEast
+  -> HostNorth and HostSouth are connected with SwitchCenter
+  
+- SwitchCenter is connected with the switches SwitchWest and SwitchEast.
+  So all hosts can communicate with each other over the switches.
+
+- The publisher hosts are: HostWest, HostNorthWest, HostNorth, HostNorthEast
+- On every publisher host there are five services with a unique service id.
+
+- The subscriber hosts are: HostEast, HostSouthEast, HostSouth, HostSouthWest
+- On every subscriber host there are seven subscribers. 
+
+- The relation between the hosts are in the following manner:
+  
+  PublisherHost                               SubscriberHost
+  -------------                               --------------
+  HostWest      <---------------------------> HostEast
+  HostNorthWest <---------------------------> HostSouthWest
+  HostNorth     <---------------------------> HostSouth
+  HostNorthEast <---------------------------> HostSouthEast
+  
+  So all subscribers on the subscriber hosts subscribe publisher services
+  on the opposite publisher host.
+  
+- The subscribers on every host subscribe publisher services in this manner:
+
+  Publisher service                           Subscriber
+  -----------------                           ----------
+  service1          <-----------------------> subscriber1
+  service2          <-----------------------> subscriber2
+  service3          <-----------------------> subscriber3
+  service4          <-----------------------> subscriber4
+  service5          <-----------------------> subscriber5
+  service1          <-----------------------> subscriber6
+  service5          <-----------------------> subscriber7
+  
+  So three subscribers subscribe three different publisher services.
+  Each two of the other four subscribe the same publisher service. 
+  
