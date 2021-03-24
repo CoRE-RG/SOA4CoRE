@@ -1,0 +1,4 @@
+<services>
+	<service name="service1Subscriber" node="Subscriber"/>
+	<service name="service1Publisher" node="Publisher"/>
+</services>
