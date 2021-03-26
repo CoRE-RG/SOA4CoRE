@@ -18,6 +18,7 @@
 #include <soqosmw/messages/qosnegotiation/ConnectionSpecificInformation_m.h>
 #include <soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h>
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
+#include "soqosmw/qosmanagement/negotiation/broker/QoSBrokerSomeIp.h"
 
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
 #include "soqosmw/qospolicy/base/qospolicy.h"
@@ -41,6 +42,7 @@ QoSBroker::QoSBroker(UDPSocket* socket, LocalServiceManager* lsm, EndpointDescri
         EndpointDescription remote, Request* request) :
         _socket(socket), _lsm(lsm), _local(local), _remote(remote), _request(request), _startTimestamp(-1), _finishTimestamp(-1) {
     _negotiationFinished = false;
+    _qosBrokerSomeIp = new QoSBrokerSomeIp(this);
     if (request != nullptr) {
         _state = QoSBrokerStates_t::CLIENT_STARTUP;
     } else {
@@ -51,6 +53,9 @@ QoSBroker::QoSBroker(UDPSocket* socket, LocalServiceManager* lsm, EndpointDescri
 QoSBroker::~QoSBroker() {
     if (_request) {
         delete _request;
+    }
+    if(_qosBrokerSomeIp) {
+        delete _qosBrokerSomeIp;
     }
 }
 
@@ -79,12 +84,17 @@ bool QoSBroker::handleMessage(QoSNegotiationProtocolMsg *msg) {
                 handled = handleFinalise(
                         dynamic_cast<SOQoSMW::QoSNegotiationFinalise*>(msg));
                 break;
-            default:
-                EV_ERROR << "QoSBroker:" << " --> message received"
-                                << " --> ERROR: Message type not set correctly! --> ignore it!"
-                                << endl;
+            default:{
+                if (msg->getQosClass() == QoSGroups::SOMEIP) {
+                    handled = _qosBrokerSomeIp->processSomeIpSDHeader(msg);
+                } else {
+                    EV_ERROR << "QoSBroker:" << " --> message received"
+                                    << " --> ERROR: Message type not set correctly! --> ignore it!"
+                                    << endl;
+                }
                 break;
-            }
+            } // default
+            } // switch
         } else {
             // i am not responsible do nothing...
             EV_ERROR << "QoSBroker:" << " --> message received"
@@ -96,7 +106,10 @@ bool QoSBroker::handleMessage(QoSNegotiationProtocolMsg *msg) {
 
 bool QoSBroker::startNegotiation() {
     bool handled = false;
-    if (_state == QoSBrokerStates_t::CLIENT_STARTUP) {
+    if (isQoSGroup(QoSGroups::SOMEIP)) {
+        handled = _qosBrokerSomeIp->startSomeIpSD();
+    }
+    else if (_state == QoSBrokerStates_t::CLIENT_STARTUP) {
         this->_startTimestamp = simTime();
         // create QoS Request Message
         QoSNegotiationRequest* request = new QoSNegotiationRequest("QoSNegotiationRequest");
@@ -265,21 +278,22 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
                     if(info){
                         finalise->encapsulate(info);
 
-                        switch (info->getConnectionType()) {
-                        case ConnectionType::ct_udp:
-                        case ConnectionType::ct_someip:
-                            // if connectionless protocol connect directly to subscriber now.
+                        if (CSI_UDP* csiUdp = dynamic_cast<CSI_UDP*>(info)) {
                             if(ConnectionSpecificInformation* subConnection = dynamic_cast<ConnectionSpecificInformation*>( establish->decapsulate())){
-                                if(UDPPublisherEndpoint* udpPublisher = dynamic_cast<UDPPublisherEndpoint*> (pub)){
-                                    udpPublisher->addRemote(subConnection);
+                                if (UDPPublisherEndpoint* udpPublisher = dynamic_cast<UDPPublisherEndpoint*> (pub)) {
+                                    switch (info->getConnectionType()) {
+                                    case ConnectionType::ct_udp:
+                                        udpPublisher->addRemote(subConnection);
+                                        break;
+                                    case ConnectionType::ct_someip:
+                                        // SOME/IP SD
+                                        udpPublisher->addRemote(subConnection);
+                                        break;
+                                    }
                                 }
                                 delete subConnection;
                             }
-                            break;
-                        default :
-                            break;
                         }
-
                         // successful negotiation
                         finalise->setFinalStatus(QoSNegotiationStatus::Success);
                         EV_DEBUG << " --> finalise success" << endl;
@@ -464,6 +478,10 @@ size_t QoSBroker::getNegotiationMessageSize(QoSNegotiationProtocolMsg* msg) {
         default: break;
         }
     return result;
+}
+
+bool QoSBroker::isQoSGroup(int qosGroup) {
+    return (dynamic_cast<QoSGroup*>(((QoSPolicyMap)_request->getQosPolicies())[QoSPolicyNames::QoSGroup]))->getValue() == qosGroup;
 }
 
 } /* namespace SOQoSMW */

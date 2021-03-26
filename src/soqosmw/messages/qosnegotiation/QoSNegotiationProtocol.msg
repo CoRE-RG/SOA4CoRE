@@ -47,6 +47,11 @@ enum QoSNegotiationMsgType{
     QoS_Response 	= 1;
     QoS_Establish	= 2;
     QoS_Finalise	= 3;
+    
+    QoS_SomeIp_Find         = 4;
+    QoS_SomeIp_Offer        = 5;
+    QoS_SomeIp_Subscribe    = 6;
+    QoS_SomeIp_SubscribeAck = 7;
 }
 
 //Type of Negotiation response payload status @see QoSNegotiationResponsePayload
@@ -101,4 +106,20 @@ packet QoSNegotiationFinalise extends QoSNegotiationProtocolMsg {
     messageType = QoSNegotiationMsgType::QoS_Finalise; //inherited from QoSNegotiationProtocol
     //qosClass; inherited form QoSNegotiationProtocol
     int finalStatus @enum(QoSNegotiationStatus);
+}
+
+packet QoSNegotiationSomeIpFind extends QoSNegotiationProtocolMsg {
+    messageType = QoSNegotiationMsgType::QoS_SomeIp_Find;
+}
+
+packet QoSNegotiationSomeIpOffer extends QoSNegotiationProtocolMsg {
+    messageType = QoSNegotiationMsgType::QoS_SomeIp_Offer;
+}
+
+packet QoSNegotiationSomeIpSubscribe extends QoSNegotiationProtocolMsg {
+    messageType = QoSNegotiationMsgType::QoS_SomeIp_Subscribe;
+}
+
+packet QoSNegotiationSomeIpSubscribeAck extends QoSNegotiationProtocolMsg {
+    messageType = QoSNegotiationMsgType::QoS_SomeIp_SubscribeAck;
 }

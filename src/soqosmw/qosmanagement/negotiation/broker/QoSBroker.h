@@ -40,6 +40,7 @@ class QoSNegotiationFinalise;
 class QoSNegotiationProtocolMsg;
 class QoSNegotiationRequest;
 class QoSNegotiationResponse;
+class QoSBrokerSomeIp;
 } /* namespace SOQoSMW */
 
 using namespace omnetpp;
@@ -54,6 +55,7 @@ namespace SOQoSMW {
  * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
  */
 class QoSBroker {
+
 public:
     /**
      * Constructor.
@@ -121,6 +123,8 @@ protected:
     } QoSBrokerStates_t;
 
 private:
+    friend QoSBrokerSomeIp;
+
     /**
      * Handle the request, emits a response.
      * @param request The request to handle.
@@ -193,6 +197,13 @@ private:
     size_t getNegotiationMessageSize(QoSNegotiationProtocolMsg* request);
 
     /**
+     * Checks if the given qosGroup is the same as in the _request
+     * @param qosGroup
+     * @return true if given qosGroup is same as in the _request
+     */
+    bool isQoSGroup(int qosGroup);
+
+    /**
      * Holds the current state.
      */
     QoSBrokerStates_t _state;
@@ -236,6 +247,11 @@ private:
      * Finish timestamp
      */
     simtime_t _finishTimestamp;
+
+    /**
+     * QoS broker SOME/IP
+     */
+    QoSBrokerSomeIp* _qosBrokerSomeIp;
 };
 
 } /* namespace SOQoSMW */
