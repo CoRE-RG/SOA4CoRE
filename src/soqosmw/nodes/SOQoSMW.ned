@@ -53,9 +53,9 @@ module SOQoSMW
         input qosnpUDPIn;
         
         //output connection for the SOME/IP service discovery module
-        output someIpSdUDPOut;
+        //output someIpSdUDPOut;
         //input connection for the SOME/IP service discovery module
-        input someIpSdUDPIn;
+        //input someIpSdUDPIn;
 
     submodules:
 
@@ -71,9 +71,9 @@ module SOQoSMW
             @display("p=40,50");
         }
 
-        someIpSd: SomeIpSD {
-            @display("p=460,50");
-        }
+        //someIpSd: SomeIpSD {
+        //    @display("p=460,50");
+        //}
 
 		// placeholder for publisher connector modules created during runtime.
         publisherConnectors[0]: PublisherConnector {
@@ -99,7 +99,7 @@ module SOQoSMW
         qosnp.udpOut --> qosnpUDPOut;
         qosnp.udpIn <-- qosnpUDPIn;
         
-        someIpSd.udpOut --> someIpSdUDPOut;
-        someIpSd.udpIn <-- someIpSdUDPIn;
+        //someIpSd.udpOut --> someIpSdUDPOut;
+        //someIpSd.udpIn <-- someIpSdUDPIn;
 
 }
