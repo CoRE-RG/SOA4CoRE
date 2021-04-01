@@ -53,7 +53,6 @@ namespace SOQoSMW {
 class LocalServiceManager: public cSimpleModule {
     friend QoSNegotiationProtocol;
     friend QoSBroker;
-    friend QoSBrokerSomeIp;
 
 public:
     LocalServiceManager();

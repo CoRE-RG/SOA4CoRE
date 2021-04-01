@@ -18,7 +18,6 @@
 #include <soqosmw/messages/qosnegotiation/ConnectionSpecificInformation_m.h>
 #include <soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h>
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
-#include "soqosmw/qosmanagement/negotiation/broker/QoSBrokerSomeIp.h"
 
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
 #include "soqosmw/qospolicy/base/qospolicy.h"
@@ -42,7 +41,6 @@ QoSBroker::QoSBroker(UDPSocket* socket, LocalServiceManager* lsm, EndpointDescri
         EndpointDescription remote, Request* request) :
         _socket(socket), _lsm(lsm), _local(local), _remote(remote), _request(request), _startTimestamp(-1), _finishTimestamp(-1) {
     _negotiationFinished = false;
-    _qosBrokerSomeIp = new QoSBrokerSomeIp(this);
     if (request != nullptr) {
         _state = QoSBrokerStates_t::CLIENT_STARTUP;
     } else {
@@ -53,9 +51,6 @@ QoSBroker::QoSBroker(UDPSocket* socket, LocalServiceManager* lsm, EndpointDescri
 QoSBroker::~QoSBroker() {
     if (_request) {
         delete _request;
-    }
-    if(_qosBrokerSomeIp) {
-        delete _qosBrokerSomeIp;
     }
 }
 
@@ -85,13 +80,9 @@ bool QoSBroker::handleMessage(QoSNegotiationProtocolMsg *msg) {
                         dynamic_cast<SOQoSMW::QoSNegotiationFinalise*>(msg));
                 break;
             default:{
-                if (msg->getQosClass() == QoSGroups::SOMEIP) {
-                    handled = _qosBrokerSomeIp->processSomeIpSDHeader(msg);
-                } else {
-                    EV_ERROR << "QoSBroker:" << " --> message received"
-                                    << " --> ERROR: Message type not set correctly! --> ignore it!"
-                                    << endl;
-                }
+                EV_ERROR << "QoSBroker:" << " --> message received"
+                                << " --> ERROR: Message type not set correctly! --> ignore it!"
+                                << endl;
                 break;
             } // default
             } // switch
@@ -106,10 +97,7 @@ bool QoSBroker::handleMessage(QoSNegotiationProtocolMsg *msg) {
 
 bool QoSBroker::startNegotiation() {
     bool handled = false;
-    if (isQoSGroup(QoSGroups::SOMEIP)) {
-        handled = _qosBrokerSomeIp->startSomeIpSD();
-    }
-    else if (_state == QoSBrokerStates_t::CLIENT_STARTUP) {
+    if (_state == QoSBrokerStates_t::CLIENT_STARTUP) {
         this->_startTimestamp = simTime();
         // create QoS Request Message
         QoSNegotiationRequest* request = new QoSNegotiationRequest("QoSNegotiationRequest");

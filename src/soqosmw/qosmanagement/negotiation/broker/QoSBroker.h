@@ -40,7 +40,6 @@ class QoSNegotiationFinalise;
 class QoSNegotiationProtocolMsg;
 class QoSNegotiationRequest;
 class QoSNegotiationResponse;
-class QoSBrokerSomeIp;
 } /* namespace SOQoSMW */
 
 using namespace omnetpp;
@@ -123,7 +122,6 @@ protected:
     } QoSBrokerStates_t;
 
 private:
-    friend QoSBrokerSomeIp;
 
     /**
      * Handle the request, emits a response.
@@ -247,11 +245,6 @@ private:
      * Finish timestamp
      */
     simtime_t _finishTimestamp;
-
-    /**
-     * QoS broker SOME/IP
-     */
-    QoSBrokerSomeIp* _qosBrokerSomeIp;
 };
 
 } /* namespace SOQoSMW */
