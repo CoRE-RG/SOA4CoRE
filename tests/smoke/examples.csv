@@ -12,3 +12,7 @@
 /examples/negotiationTestNetwork/RT,                                     -f omnetpp.ini -c General -r 0
 /examples/negotiationTestNetwork/TCP,                                    -f omnetpp.ini -c General -r 0
 /examples/negotiationTestNetwork/UDP,                                    -f omnetpp.ini -c General -r 0
+/examples/SomeIpMinimal,                                                 -f omnetpp.ini -c General -r 0
+/examples/SomeIpSDLargeTestNetwork,                                      -f omnetpp.ini -c General -r 0
+/examples/SomeIpSDSmallTestNetwork,                                      -f omnetpp.ini -c General -r 0
+/examples/SomeIpTicToc,                                                  -f omnetpp.ini -c General -r 0
