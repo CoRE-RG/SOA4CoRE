@@ -56,7 +56,6 @@ void LocalServiceManager::initialize(int stage) {
         handleParameterChange(nullptr);
         _sd = dynamic_cast<StaticServiceDiscovery*>(getParentModule()->getSubmodule(
                    par("sdmoduleName")));
-
        _qosnp =
                dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
                        par("qosnpmoduleName")));
@@ -151,9 +150,11 @@ ConnectorBase* LocalServiceManager::registerSubscriberService(std::string& subsc
                 qosPolicies, nullptr);
 
         //create qos broker for the request
+        //TODO distinguish between SOME/IP
         _qosnp->createQoSBroker(request);
 
     } else {
+        //TODO SOME/IP SD
         throw cRuntimeError(
                 "The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }

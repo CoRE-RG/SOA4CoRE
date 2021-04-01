@@ -51,5 +51,8 @@ module SOQoSMWHost extends RTIPHost
 
         soqosmw.qosnpUDPOut --> udp.appIn++;
         soqosmw.qosnpUDPIn <-- udp.appOut++;
+        
+        soqosmw.someIpSdUDPOut --> udp.appIn++;
+        soqosmw.someIpSdUDPIn <-- udp.appOut++;
 
 }

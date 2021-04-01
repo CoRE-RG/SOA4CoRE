@@ -113,7 +113,7 @@ EndpointBase* ConnectorBase::removeEndpoint(EndpointBase* endpoint) {
 }
 
 bool ConnectorBase::addApplication(SOQoSMWApplicationBase* application) {
-    if(application && (_maxApplications < 0 || (int)_applications.size() < _maxApplications)){
+    if(application && (_maxApplications < 0 || (int)_applications.size() < _maxApplications)){ // maxApplications < 0 ?
         //check if not already in the list, then add.
         auto it = find(_applications.begin(), _applications.end(), application);
         if (it == _applications.end()){

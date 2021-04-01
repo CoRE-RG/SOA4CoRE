@@ -19,6 +19,7 @@ package soqosmw.nodes;
 
 import soqosmw.qosmanagement.negotiation.QoSNegotiationProtocol;
 import soqosmw.discovery.base.IServiceDiscovery;
+import soqosmw.discovery.someipservicediscovery.SomeIpSD;
 import soqosmw.servicemanager.LocalServiceManager;
 
 import soqosmw.connector.pubsub.writer.PublisherConnector;
@@ -50,6 +51,11 @@ module SOQoSMW
         output qosnpUDPOut;
         //connection for the quality of service negotiation module from udp
         input qosnpUDPIn;
+        
+        //output connection for the SOME/IP service discovery module
+        output someIpSdUDPOut;
+        //input connection for the SOME/IP service discovery module
+        input someIpSdUDPIn;
 
     submodules:
 
@@ -63,6 +69,10 @@ module SOQoSMW
 
         sd: <default("StaticServiceDiscovery")> like IServiceDiscovery {
             @display("p=40,50");
+        }
+
+        someIpSd: SomeIpSD {
+            @display("p=460,50");
         }
 
 		// placeholder for publisher connector modules created during runtime.
@@ -88,5 +98,8 @@ module SOQoSMW
     connections:
         qosnp.udpOut --> qosnpUDPOut;
         qosnp.udpIn <-- qosnpUDPIn;
+        
+        someIpSd.udpOut --> someIpSdUDPOut;
+        someIpSd.udpIn <-- someIpSdUDPIn;
 
 }

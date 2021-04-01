@@ -30,6 +30,7 @@
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
 #include "soqosmw/discovery/static/StaticServiceDiscovery.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include <atomic>
 #include <string>
 #include <map>
