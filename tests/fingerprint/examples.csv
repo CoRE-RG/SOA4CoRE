@@ -12,7 +12,7 @@
 /examples/negotiationTestNetwork/RT,                                     -f omnetpp.ini -c General -r 0,                100ms,           ad23-6e81
 /examples/negotiationTestNetwork/TCP,                                    -f omnetpp.ini -c General -r 0,                100ms,           8b3e-b570
 /examples/negotiationTestNetwork/UDP,                                    -f omnetpp.ini -c General -r 0,                100ms,           802c-bed3
-/examples/SomeIpMinimal,                                                 -f omnetpp.ini -c General -r 0,                100ms,           57e0-f62e
+/examples/SomeIpMinimal,                                                 -f omnetpp.ini -c General -r 0,                100ms,           f273-8dec
 /examples/SomeIpSDLargeTestNetwork,                                      -f omnetpp.ini -c General -r 0,                100ms,           eb83-0aba
 /examples/SomeIpSDSmallTestNetwork,                                      -f omnetpp.ini -c General -r 0,                100ms,           9818-aae7
 /examples/SomeIpTicToc,                                                  -f omnetpp.ini -c General -r 0,                100ms,           7900-a930
