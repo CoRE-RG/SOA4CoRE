@@ -36,7 +36,7 @@ namespace SOQoSMW {
  *
  * @author Timo Haeckel for HAW Hamburg
  */
-class StaticServiceDiscovery: public IServiceDiscovery {
+class StaticServiceDiscovery: public IServiceDiscovery, public cSimpleModule {
 public:
     /**
      * Find a Service in the Registry.
@@ -44,6 +44,8 @@ public:
      * @return The network address of the node running the service.
      */
     inet::L3Address& discover(std::string path);
+
+    void discoverService(IService service) override;
 
     /**
      * Get all registry entries as a map.

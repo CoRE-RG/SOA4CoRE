@@ -66,6 +66,10 @@ inet::L3Address& StaticServiceDiscovery::discover(string serviceName) {
     return _registry[serviceName];
 }
 
+void StaticServiceDiscovery::discoverService(IService service) {
+
+}
+
 bool StaticServiceDiscovery::contains(string path) {
     Enter_Method("SD::contains()");
     return _registry.count(path)>0;
