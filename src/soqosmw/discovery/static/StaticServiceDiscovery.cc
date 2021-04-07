@@ -67,7 +67,7 @@ inet::L3Address& StaticServiceDiscovery::discover(string serviceName) {
 }
 
 void StaticServiceDiscovery::discoverService(IService service) {
-
+  // Not needed since this implementation works on a xml file
 }
 
 bool StaticServiceDiscovery::contains(string path) {

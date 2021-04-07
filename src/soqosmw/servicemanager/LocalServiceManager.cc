@@ -78,22 +78,38 @@ void LocalServiceManager::handleParameterChange(const char* parname) {
 
 }
 
-ConnectorBase* LocalServiceManager::registerPublisherService(std::string& publisherPath,
+void LocalServiceManager::registerPublisherService(std::string& publisherPath,
         QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication) {
     Enter_Method("LSM:registerPublisherService()");
 
-    // check if the publisher already exists.
+    PublisherConnector* publisherConnector = hasPublisherConnector(publisherPath);
+    if (publisherConnector != nullptr) {
+        addPublisherServiceToConnector(publisherConnector, qosPolicies, executingApplication);
+    } else {
+        createPublisherConnector(publisherPath, qosPolicies, executingApplication);
+    }
+}
+
+
+PublisherConnector* LocalServiceManager::hasPublisherConnector(std::string& publisherPath) {
+    PublisherConnector* publisherConnector = nullptr;
     auto iter = _publisherConnectors.find(publisherPath);
     if(iter != _publisherConnectors.end()){
-        if(iter->second->addApplication(executingApplication)){
-            iter->second->setQos(qosPolicies);
-            return iter->second;
-        } else {
-            throw cRuntimeError("This Publisher Service already exists on this host...");
-        }
+        publisherConnector = iter->second;
     }
+    return publisherConnector;
+}
 
+void LocalServiceManager::addPublisherServiceToConnector(PublisherConnector* publisherConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
+    if(publisherConnector->addApplication(executingApplication)){
+        publisherConnector->setQos(qosPolicies);
+    } else {
+        throw cRuntimeError("This Publisher Service already exists on this host...");
+    }
+}
+
+void LocalServiceManager::createPublisherConnector(std::string& publisherPath, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
     // create a connector for the publisher
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soqosmw.connector.pubsub.writer.PublisherConnector");
@@ -112,9 +128,12 @@ ConnectorBase* LocalServiceManager::registerPublisherService(std::string& publis
 
     //save the writer so that new endpoints can be connected to the application.
     _publisherConnectors[publisherPath] = module;
-
-    return module;
 }
+
+PublisherConnector* LocalServiceManager::getPublisherConnector(std::string& publisherPath) {
+    return _publisherConnectors[publisherPath];
+}
+
 
 ConnectorBase* LocalServiceManager::registerSubscriberService(std::string& subscriberPath,
             std::string& publisherPath,
@@ -150,7 +169,6 @@ ConnectorBase* LocalServiceManager::registerSubscriberService(std::string& subsc
                 qosPolicies, nullptr);
 
         //create qos broker for the request
-        //TODO distinguish between SOME/IP
         _qosnp->createQoSBroker(request);
 
     } else {

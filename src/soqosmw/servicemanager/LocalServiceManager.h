@@ -64,10 +64,8 @@ public:
      * @param publisherPath Path of the Publisher Service (e.g. "reifendruck/links")
      * @param qosPolicies The QoS Policies for the Publisher.
      * @param executingModule The service executing the request.
-     *
-     * @return If a publisher could be created it returns a pointer to the PublisherWriter. Else nullptr.
      */
-    ConnectorBase* registerPublisherService(std::string& publisherPath,
+    void registerPublisherService(std::string& publisherPath,
             QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication);
 
@@ -85,6 +83,13 @@ public:
             std::string& publisherPath,
             QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication);
+
+    /**
+     * Returns the publisher connector for the given publisher
+     * @param publisherPath
+     * @return corresponding publisher connector
+     */
+    PublisherConnector* getPublisherConnector(std::string& publisherPath);
 
 protected:
     /**
@@ -216,6 +221,28 @@ protected:
     inet::L3Address _localAddress;
 
 private:
+    /**
+     * Checks if a publisher connector already exists for the given publisher
+     * @param publisherPath
+     * @return the publisher connector if it already exists else nullptr
+     */
+    PublisherConnector* hasPublisherConnector(std::string& publisherPath);
+
+    /**
+     * Adds publisher service to a given publisher connector
+     * @param publisherConnector
+     * @param qosPolicies
+     * @param executingApplication
+     */
+    void addPublisherServiceToConnector(PublisherConnector* publisherConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+
+    /**
+     * Creates a publisher connector
+     * @param qosPolicies
+     * @param executingApplication
+     */
+    void createPublisherConnector(std::string& publisherPath, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+
     /**
      * Matches the connection type to the qos group
      * @param type      connection type. @see~ConnectionType
