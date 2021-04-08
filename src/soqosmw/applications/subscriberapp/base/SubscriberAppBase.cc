@@ -61,7 +61,8 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
         setQoS();
         //create a subscriber
-        _connector = _localServiceManager->registerSubscriberService(this->_subscriberName, this->_publisherName, this->_qosPolicies, this);
+        _localServiceManager->registerSubscriberService(this->_subscriberName, this->_publisherName, this->_qosPolicies, this);
+        _connector = _localServiceManager->getSubscriberConnector(this->_publisherName);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }

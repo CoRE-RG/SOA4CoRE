@@ -132,7 +132,9 @@ void PublisherAppBase::createPublisherWithQoS() {
 
     //register this as new publisher app!
     _localServiceManager->registerPublisherService(this->_publisherName, this->_qosPolicies, this);
-    _connector = _localServiceManager->getPublisherConnector(this->_publisherName);
+    if ((_connector = _localServiceManager->getPublisherConnector(this->_publisherName)) == nullptr){
+        throw cRuntimeError("PublisherConnector is null. Call registerPublisherService before.");
+    }
 }
 
 void PublisherAppBase::scheduleNextMessage() {

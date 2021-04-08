@@ -76,20 +76,25 @@ public:
      * @param publisherPath Path of the Publisher Service (e.g. "reifendruck/links")
      * @param qosPolicies The QoS Policies for the Subscriber.
      * @param executingModule The service executing the request.
-     *
-     * @return If a subscriber could be created it returns a pointer to the SubscriptionReader. Else nullptr.
      */
-    ConnectorBase* registerSubscriberService(std::string& subscriberPath,
+    void registerSubscriberService(std::string& subscriberPath,
             std::string& publisherPath,
             QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication);
 
     /**
-     * Returns the publisher connector for the given publisher
+     * Returns the publisher connector for the given publisher service
      * @param publisherPath
      * @return corresponding publisher connector
      */
     PublisherConnector* getPublisherConnector(std::string& publisherPath);
+
+    /**
+     * Returns the subscriber connector for the given publisher service
+     * @param publisherPath
+     * @return corresponding subscriber connector
+     */
+    SubscriberConnector* getSubscriberConnector(std::string& publisherPath);
 
 protected:
     /**
@@ -221,12 +226,6 @@ protected:
     inet::L3Address _localAddress;
 
 private:
-    /**
-     * Checks if a publisher connector already exists for the given publisher
-     * @param publisherPath
-     * @return the publisher connector if it already exists else nullptr
-     */
-    PublisherConnector* hasPublisherConnector(std::string& publisherPath);
 
     /**
      * Adds publisher service to a given publisher connector
@@ -237,11 +236,37 @@ private:
     void addPublisherServiceToConnector(PublisherConnector* publisherConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
 
     /**
-     * Creates a publisher connector
+     * Adds subscriber service to a given subscriber connector
+     * @param subscriberConnector
      * @param qosPolicies
      * @param executingApplication
      */
-    void createPublisherConnector(std::string& publisherPath, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+    void addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+
+    /**
+     * Creates a negotiation request
+     * @param subscriberPath
+     * @param publisherPath
+     * @param qosPolicies
+     * @return the negotiation request
+     */
+    Request* createNegotiationRequest(std::string& subscriberPath, std::string& publisherPath, QoSPolicyMap& qosPolicies);
+
+    /**
+     * Creates a publisher connector
+     * @param qosPolicies
+     * @param executingApplication
+     * @return the publisher connector module
+     */
+    PublisherConnector* createPublisherConnector(QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+
+    /**
+     * Creates a subscriber connector
+     * @param qosPolicies
+     * @param executingApplication
+     * @return the subscriber connector module
+     */
+    SubscriberConnector* createSubscriberConnector(QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
 
     /**
      * Matches the connection type to the qos group
