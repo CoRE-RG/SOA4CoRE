@@ -16,10 +16,15 @@
 #ifndef SOQOSMW_SERVICE_BASE_ISERVICEIDENTIFIER_H_
 #define SOQOSMW_SERVICE_BASE_ISERVICEIDENTIFIER_H_
 
+#include <string>
+
 namespace SOQoSMW {
 
 class IServiceIdentifier {
 public:
+protected:
+    virtual std::string getServiceName() = 0;
+    virtual int getServiceId() = 0;
 };
 
 } /* namespace SOQoSMW */
