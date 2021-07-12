@@ -17,6 +17,9 @@
 #define SOQOSMW_SERVICEREGISTRY_LOCALSERVICEREGISTRY_H_
 
 #include <omnetpp.h>
+#include <soqosmw/service/serviceidentifier/ServiceIdentifier.h>
+#include <unordered_map>
+#include "inet/networklayer/common/L3Address.h"
 #include "soqosmw/serviceregistry/base/IServiceRegistry.h"
 
 using namespace omnetpp;
@@ -32,19 +35,30 @@ namespace SOQoSMW {
 class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
 {
   public:
+    ~LocalServiceRegistry();
+
     /**
      * Adds a published service
      */
-    virtual void addPublisherService(IService);
+    void addPublisherService(IService *service);
 
     /**
      * Returns a service for given serice identifier
      * @return IService
      */
-    virtual IService getService(IServiceIdentifier);
+    IService* getService(ServiceIdentifier serviceIdentifier);
+
+    /**
+     * Returns the service registry as a map
+     * @return registry map
+     */
+    std::unordered_map<ServiceIdentifier,IService*> getRegistry();
+
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+  private:
+    std::unordered_map<ServiceIdentifier,IService*> _serviceRegistry;
 };
 
 } /* namespace SOQoSMW */

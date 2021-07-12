@@ -102,6 +102,10 @@ void PublisherAppBase::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "serviceName")) {
         this->_publisherName = par("serviceName").stdstringValue();
     }
+    if (!parname || !strcmp(parname, "serviceId"))
+    {
+        this->_serviceId = par("serviceId").intValue();
+    }
     if (!parname || !strcmp(parname, "interval")) {
         this->_interval = CoRE4INET::parameterDoubleCheckRange(par("interval"),
                 0, SIMTIME_MAX.dbl());;

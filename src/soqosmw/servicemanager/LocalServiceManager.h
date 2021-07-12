@@ -30,7 +30,9 @@
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
 #include "soqosmw/discovery/static/StaticServiceDiscovery.h"
-#include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
+#include "soqosmw/serviceregistry/base/IServiceRegistry.h"
+#include "soqosmw/servicemanager/base/ILocalServiceManager.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 #include <atomic>
 #include <string>
 #include <map>
@@ -50,7 +52,7 @@ namespace SOQoSMW {
  *
  * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
  */
-class LocalServiceManager: public cSimpleModule {
+class LocalServiceManager: public ILocalServiceManager, public cSimpleModule {
     friend QoSNegotiationProtocol;
     friend QoSBroker;
 
@@ -81,6 +83,13 @@ public:
             std::string& publisherPath,
             QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication);
+
+    /**
+     * @brief Subscribes the given service
+     * @param subscriberServiceIdentifier
+     * @param publisherServiceIdentifier
+     */
+    void subscribeService(IServiceIdentifier& subscriberServiceIdentifier, IServiceIdentifier& publisherServiceIdentifier);
 
     /**
      * Returns the publisher connector for the given publisher service
@@ -206,6 +215,11 @@ protected:
     StaticServiceDiscovery* _sd;
 
     /**
+     * A pointer to the local service registry.
+     */
+    IServiceRegistry* _lsr;
+
+    /**
      * A pointer to the QoS Negotiation Protocol module.
      */
     QoSNegotiationProtocol* _qosnp;
@@ -245,12 +259,12 @@ private:
 
     /**
      * Creates a negotiation request
-     * @param subscriberPath
-     * @param publisherPath
+     * @param subscriberServiceIdentifier
+     * @param publisherService
      * @param qosPolicies
      * @return the negotiation request
      */
-    Request* createNegotiationRequest(std::string& subscriberPath, std::string& publisherPath, QoSPolicyMap& qosPolicies);
+    Request* createNegotiationRequest(ServiceIdentifier subscriberServiceIdentifier, QoSService& publisherService, QoSPolicyMap qosPolicies);
 
     /**
      * Creates a publisher connector

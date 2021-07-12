@@ -16,6 +16,8 @@
 //
 
 #include "soqosmw/discovery/static/StaticServiceDiscovery.h"
+#include "soqosmw/service/base/ServiceBase.h"
+#include "soqosmw/serviceregistry/localserviceregistry/LocalServiceRegistry.h"
 //INET
 #include "inet/networklayer/common/L3AddressResolver.h"
 //STD
@@ -29,6 +31,9 @@ using namespace std;
 using namespace inet;
 
 Define_Module(StaticServiceDiscovery);
+
+StaticServiceDiscovery::~StaticServiceDiscovery() {
+}
 
 void StaticServiceDiscovery::initialize(int stage)
 {
@@ -47,36 +52,48 @@ void StaticServiceDiscovery::initialize(int stage)
             cXMLElement* service = services[i];
             const char* name = service->getAttribute("name");
             const char* node = service->getAttribute("node");
+            int id = (int) *(service->getAttribute("id"));
+            int port = (int) *(service->getAttribute("port"));
 
             EV_DEBUG << name << " at " << node;
 
             //ressolve the address
             const inet::L3Address address = inet::L3AddressResolver().resolve(node);
 
+            cModule* module = getParentModule()->getSubmodule("lsr");
+            if((_lsr = dynamic_cast<LocalServiceRegistry*>(module))) {
+            } else {
+                throw cRuntimeError("No local service registry found.");
+            }
+
             //add entry to map
-            _registry[name] = address;
+            _lsr->addPublisherService(new ServiceBase(name, id, address, port));
+            //_servicesInNetwork[ServiceIdentifier(id,name)] = new ServiceBase(name, id, address, port);
         }
         EV_DEBUG << endl;
     }
 
 }
 
-inet::L3Address& StaticServiceDiscovery::discover(string serviceName) {
+void StaticServiceDiscovery::discover(ServiceIdentifier serviceIdentifier) {
     Enter_Method("SD::discover()");
-    return _registry[serviceName];
+    IService *service = _lsr->getService(serviceIdentifier);
+
+    if (!service) {
+        throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
+    }
+
+    // TODO send over gate to lsm
 }
 
-void StaticServiceDiscovery::discoverService(IService service) {
-  // Not needed since this implementation works on a xml file
-}
-
-bool StaticServiceDiscovery::contains(string path) {
+/*
+bool StaticServiceDiscovery::contains(ServiceIdentifier serviceIdentifier) {
     Enter_Method("SD::contains()");
-    return _registry.count(path)>0;
+    return _servicesInNetwork.count(serviceIdentifier)>0;
 }
+*/
 
-void StaticServiceDiscovery::handleMessage(cMessage *msg)
-{
+void StaticServiceDiscovery::handleMessage(cMessage *msg) {
     // TODO - Generated method body
 }
 

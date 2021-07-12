@@ -17,12 +17,14 @@
 
 package soqosmw.servicemanager;
 
+import soqosmw.servicemanager.base.ILocalServiceManager;
+
 //
 // The LocalServiceManager.
 //
 // @author Timo Haeckel for HAW Hamburg
 //
-simple LocalServiceManager
+simple LocalServiceManager like ILocalServiceManager
 {
     parameters:
         @class(SOQoSMW::LocalServiceManager);

@@ -20,6 +20,7 @@
 #include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
+#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
 //AUTO-GENERATED MESSAGES
 #include "core4inet/utilities/ConfigFunctions.h"
 #include "core4inet/base/avb/AVBDefs.h"
@@ -63,6 +64,12 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
         //create a subscriber
         _localServiceManager->registerSubscriberService(this->_subscriberName, this->_publisherName, this->_qosPolicies, this);
         _connector = _localServiceManager->getSubscriberConnector(this->_publisherName);
+
+        //TODO Fix polymorph passing to subscribeService
+
+        ServiceIdentifier subscriberServiceIdentifier = ServiceIdentifier(_serviceId,this->_subscriberName);
+        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(_serviceId,this->_publisherName);
+        _localServiceManager->subscribeService(subscriberServiceIdentifier, publisherServiceIdentifier);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }
@@ -104,6 +111,12 @@ void SubscriberAppBase::handleParameterChange(const char* parname)
     {
         this->_publisherName = par("publisherName").stdstringValue();
     }
+
+    if (!parname || !strcmp(parname, "serviceId"))
+    {
+        this->_serviceId = par("serviceId").intValue();
+    }
+
     if (!parname || !strcmp(parname, "startTime"))
     {
         this->_startTime = CoRE4INET::parameterDoubleCheckRange(par("startTime"), 0, SIMTIME_MAX.dbl());

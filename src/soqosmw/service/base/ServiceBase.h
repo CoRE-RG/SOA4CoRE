@@ -8,22 +8,29 @@
 #ifndef SOQOSMW_SERVICE_BASE_SERVICEBASE_H_
 #define SOQOSMW_SERVICE_BASE_SERVICEBASE_H_
 
+#include <soqosmw/service/serviceidentifier/ServiceIdentifier.h>
 #include <string>
 #include "soqosmw/service/base/IService.h"
-#include "soqosmw/service/base/ServiceIdentifierBase.h"
 
 namespace SOQoSMW {
 
-class ServiceBase: public IService{
+class ServiceBase: public virtual IService{
 public:
-    ServiceBase(std::string name, int id);
+    ServiceBase(std::string serviceName, int serviceId, inet::L3Address address, int port);
     virtual ~ServiceBase();
 
-    std::string getServiceName();
-    int getServiceId();
+    std::string getServiceName() const;
+    int getServiceId() const;
+    inet::L3Address getAddress() const;
+    int getPort() const;
 
-private:
-    ServiceIdentifierBase _serviceIdentifierBase;
+    virtual bool operator==(const ServiceBase& serviceBase) const;
+    virtual bool operator!=(const ServiceBase& serviceBase) const;
+
+protected:
+    ServiceIdentifier _serviceIdentifier;
+    inet::L3Address _address;
+    int _port;
 };
 
 } /* namespace SOQoSMW */

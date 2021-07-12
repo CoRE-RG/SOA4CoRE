@@ -19,7 +19,7 @@
 #define __SOQOSMW_TEST_DISCOVERY_STATIC_STATICSERVICEDISCOVERYTEST_H_
 
 #include <omnetpp.h>
-#include <soqosmw/discovery/static/StaticServiceDiscovery.h>
+#include <soqosmw/serviceregistry/base/IServiceRegistry.h>
 
 using namespace omnetpp;
 
@@ -39,7 +39,7 @@ class StaticServiceDiscoveryTest : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 
   private:
-    StaticServiceDiscovery* _sd;
+    IServiceRegistry* _sr;
 };
 
 } /*end namespace SOQoSMW*/

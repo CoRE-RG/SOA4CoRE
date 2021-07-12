@@ -49,5 +49,8 @@ simple SubscriberAppBase extends SOQoSMWApplicationBase
         
         string publisherName = default("PublisherService");
         
+        //Service ID
+    	int serviceId = default(0);
+        
         string qosGroup = default("STD_TCP"); //RT, WEB, STD ( " " seperated list of policies each policy with structure type::value)
 }

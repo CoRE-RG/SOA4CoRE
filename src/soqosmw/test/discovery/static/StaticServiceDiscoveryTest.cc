@@ -16,6 +16,7 @@
 //
 
 #include "StaticServiceDiscoveryTest.h"
+#include "soqosmw/serviceregistry/localserviceregistry/LocalServiceRegistry.h"
 #include <string>
 
 namespace SOQoSMW {
@@ -27,16 +28,16 @@ void StaticServiceDiscoveryTest::initialize() {
 
     scheduleAt(simTime() + 1, startSignal);
 
-    _sd = dynamic_cast<StaticServiceDiscovery*>(getParentModule()->getSubmodule(
-            par("sdmoduleName")));
+    _sr = dynamic_cast<LocalServiceRegistry*>(getParentModule()->getSubmodule(
+            par("lsr")));
 
 }
 
 void StaticServiceDiscoveryTest::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg->isName("sdTest")) {
         std::cout << "Printing Registry from Test Module:" << endl;
-        for (auto& service : _sd->getRegistry()) {
-            std::cout << service.first << ": " << service.second << std::endl;
+        for (auto& service : dynamic_cast<LocalServiceRegistry*>(_sr)->getRegistry()) {
+            std::cout << service.first.getServiceId() << ": " << service.second->getServiceName() << std::endl;
         }
     }
 }

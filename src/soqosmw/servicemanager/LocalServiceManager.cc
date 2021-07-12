@@ -59,6 +59,9 @@ void LocalServiceManager::initialize(int stage) {
        _qosnp =
                dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
                        par("qosnpmoduleName")));
+       _lsr =
+               dynamic_cast<IServiceRegistry*>(getParentModule()->getSubmodule(
+                       par("lsrmoduleName")));
        WATCH_MAP(_publisherConnectors);
        WATCH_MAP(_subscriberConnectors);
     }
@@ -137,20 +140,21 @@ void LocalServiceManager::registerSubscriberService(std::string& subscriberPath,
     if (subscriberConnector != nullptr && equalQoSMap(qosPolicies, subscriberConnector->getQos())) {
         addSubscriberServiceToConnector(subscriberConnector, qosPolicies, executingApplication);
     } else {
-        // otherwise we need a new negotiation!
-        //check if publisher exists in the network and start the negotiation with a request.
-        if (_sd->contains(publisherPath)) { //TODO service registry
-            Request * request = createNegotiationRequest(subscriberPath, publisherPath, qosPolicies);
-            //create qos broker for the request
-            _qosnp->createQoSBroker(request);
-        } else {
-            //TODO SOME/IP SD
-            throw cRuntimeError(
-                    "The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
-        }
         subscriberConnector = createSubscriberConnector(qosPolicies, executingApplication);
         // save the reader so that new endpoints can be connected to the application.
         _subscriberConnectors[publisherPath] = subscriberConnector;
+    }
+}
+
+void LocalServiceManager::subscribeService(IServiceIdentifier& subscriberServiceIdentifier, IServiceIdentifier& publisherServiceIdentifier) {
+    // otherwise we need a new negotiation!
+    //check if publisher exists in the network and start the negotiation with a request.
+    if (QoSService* service = dynamic_cast<QoSService*>(_lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier)))) {
+        Request* request = createNegotiationRequest(dynamic_cast<ServiceIdentifier&>(subscriberServiceIdentifier), *service, service->getQoSPolicyMap());
+        //create qos broker for the request
+        _qosnp->createQoSBroker(request);
+    } else {
+        //TODO start discovery
     }
 }
 
@@ -160,9 +164,9 @@ void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* s
     }
 }
 
-Request* LocalServiceManager::createNegotiationRequest(std::string& subscriberPath, std::string& publisherPath, QoSPolicyMap& qosPolicies) {
-    EndpointDescription local(subscriberPath, _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription remote(publisherPath, _sd->discover(publisherPath), _qosnp->getProtocolPort());
+Request* LocalServiceManager::createNegotiationRequest(ServiceIdentifier subscriberServiceIdentifier, QoSService& publisherService, QoSPolicyMap qosPolicies) {
+    EndpointDescription local(subscriberServiceIdentifier.getServiceName(), _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription remote(publisherService.getServiceName(), publisherService.getAddress(), _qosnp->getProtocolPort());
     Request *request = new Request(_requestID++, local, remote, qosPolicies, nullptr);
     return request;
 }

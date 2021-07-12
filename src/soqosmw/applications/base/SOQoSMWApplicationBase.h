@@ -105,6 +105,11 @@ protected:
      * Name of the service to publish.
      */
     std::string _publisherName;
+
+    /**
+      * Id of the publishing service to subscribe to.
+      */
+    int _serviceId;
 };
 
 } /* end namespace SOQoSMW */

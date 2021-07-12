@@ -20,7 +20,8 @@ package soqosmw.nodes;
 import soqosmw.qosmanagement.negotiation.QoSNegotiationProtocol;
 import soqosmw.discovery.base.IServiceDiscovery;
 import soqosmw.discovery.someipservicediscovery.SomeIpSD;
-import soqosmw.servicemanager.LocalServiceManager;
+import soqosmw.servicemanager.base.ILocalServiceManager;
+import soqosmw.serviceregistry.base.IServiceRegistry;
 
 import soqosmw.connector.pubsub.writer.PublisherConnector;
 import soqosmw.connector.pubsub.reader.SubscriberConnector;
@@ -31,7 +32,7 @@ import soqosmw.endpoints.base.IEndpoint;
 // This compound module groups all SOQoSMW Components into on module.
 // All modules created during runtime will be integrated to this compound module.
 //
-// @author Timo Haeckel for HAW Hamburg
+// @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
 //
 
 module SOQoSMW
@@ -44,6 +45,7 @@ module SOQoSMW
         *.lsmmoduleName = "lsm";
         *.sdmoduleName = "sd";
         *.qosnpmoduleName = "qosnp";
+        *.lsrmoduleName = "lsr";
 
         @display("i=block/layer");
     gates:
@@ -51,11 +53,6 @@ module SOQoSMW
         output qosnpUDPOut;
         //connection for the quality of service negotiation module from udp
         input qosnpUDPIn;
-        
-        //output connection for the SOME/IP service discovery module
-        //output someIpSdUDPOut;
-        //input connection for the SOME/IP service discovery module
-        //input someIpSdUDPIn;
 
     submodules:
 
@@ -63,17 +60,17 @@ module SOQoSMW
             @display("p=160,50");
         }
 
-        lsm: LocalServiceManager {
+        lsm: <default("LocalServiceManager")> like ILocalServiceManager {
             @display("p=100,50");
+        }
+
+        lsr: <default("LocalServiceRegistry")> like IServiceRegistry {
+            @display("p=239,50");
         }
 
         sd: <default("StaticServiceDiscovery")> like IServiceDiscovery {
             @display("p=40,50");
         }
-
-        //someIpSd: SomeIpSD {
-        //    @display("p=460,50");
-        //}
 
 		// placeholder for publisher connector modules created during runtime.
         publisherConnectors[0]: PublisherConnector {
@@ -98,8 +95,6 @@ module SOQoSMW
     connections:
         qosnp.udpOut --> qosnpUDPOut;
         qosnp.udpIn <-- qosnpUDPIn;
+        sd.discoveryOut --> lsm.gateIn;
         
-        //someIpSd.udpOut --> someIpSdUDPOut;
-        //someIpSd.udpIn <-- someIpSdUDPIn;
-
 }

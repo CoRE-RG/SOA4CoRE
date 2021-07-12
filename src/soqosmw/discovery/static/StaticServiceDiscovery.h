@@ -20,6 +20,9 @@
 
 //SOQOSMW
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
+#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
+#include "soqosmw/service/base/IService.h"
+#include "soqosmw/serviceregistry/base/IServiceRegistry.h"
 //INET
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/common/InitStages.h"
@@ -34,33 +37,24 @@ namespace SOQoSMW {
  *
  * @ingroup soqosmw/discovery
  *
- * @author Timo Haeckel for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
  */
 class StaticServiceDiscovery: public IServiceDiscovery, public cSimpleModule {
 public:
+    virtual ~StaticServiceDiscovery();
+
     /**
-     * Find a Service in the Registry.
-     * @param path The name/path of the service to find.
-     * @return The network address of the node running the service.
+     * Discovers a service in the network
+     * @param serviceIdentifier
      */
-    inet::L3Address& discover(std::string path);
-
-    void discoverService(IService service) override;
+    void discover(ServiceIdentifier serviceIdentifier) override;
 
     /**
-     * Get all registry entries as a map.
-     * @return the registry.
-     */
-    const std::unordered_map<std::string, inet::L3Address>& getRegistry() const {
-        return _registry;
-    }
-
-    /**
-     * Check if the registry contains a service with the given path.
-     * @param path The name/path of the service to find
+     * Check if the registry contains a service with the service identifier.
+     * @param serviceIdentifier The serviceIdentifier of the service to find
      * @return True if the registry contains the service, otherwise false.
      */
-    bool contains(std::string path);
+    //bool contains(ServiceIdentifier serviceIdentifier);
 
 protected:
     virtual void initialize(int stage) override;
@@ -71,9 +65,9 @@ protected:
 
 private:
     /**
-     * The static registry.
+     * The local service registry.
      */
-    std::unordered_map<std::string, inet::L3Address> _registry;
+    IServiceRegistry *_lsr;
 };
 
 } /*end namespace SOQoSMW*/

@@ -19,29 +19,34 @@ namespace SOQoSMW {
 
 Define_Module(LocalServiceRegistry);
 
+LocalServiceRegistry::~LocalServiceRegistry() {
+    for (auto it = _serviceRegistry.begin(); it != _serviceRegistry.end(); ++it) {
+        delete it->second;
+    }
+}
+
 void LocalServiceRegistry::initialize()
 {
-    // TODO - Generated method body
 }
 
 void LocalServiceRegistry::handleMessage(cMessage *msg)
 {
-    // Do nothing
 }
 
-/**
- * Adds a published service
- */
-void LocalServiceRegistry::addPublisherService(IService service) {
-    //TODO to implement
+void LocalServiceRegistry::addPublisherService(IService *service) {
+    _serviceRegistry[ServiceIdentifier(service->getServiceId(), service->getServiceName())] = service;
 }
 
-/**
- * Returns a service for given serice identifier
- * @return IService
- */
-IService LocalServiceRegistry::getService(IServiceIdentifier serviceIdentifier) {
-    //TODO to implement
+IService* LocalServiceRegistry::getService(ServiceIdentifier serviceIdentifier) {
+    IService *service = nullptr;
+    if (_serviceRegistry.count(serviceIdentifier)) {
+        service = _serviceRegistry[serviceIdentifier];
+    }
+    return service;
+}
+
+std::unordered_map<ServiceIdentifier,IService*> LocalServiceRegistry::getRegistry() {
+    return _serviceRegistry;
 }
 
 } /* end namespace SOQoSMW */

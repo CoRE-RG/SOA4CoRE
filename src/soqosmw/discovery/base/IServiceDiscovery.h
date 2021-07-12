@@ -18,12 +18,12 @@
 #ifndef __SOQOSMW_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 #define __SOQOSMW_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 
-#include <soqosmw/service/base/IService.h>
+#include <soqosmw/service/serviceidentifier/ServiceIdentifier.h>
 
 namespace SOQoSMW {
 
 /**
- * @brief Base class for the service discovery module of soqosmw to switch from dynamic to static service discovery.
+ * @brief Interface for the service discovery module of soqosmw to switch from dynamic to static service discovery.
  *
  * @ingroup soqosmw/discovery
  *
@@ -31,7 +31,7 @@ namespace SOQoSMW {
  */
 class IServiceDiscovery{
   public:
-    virtual void discoverService(IService service) = 0;
+    virtual void discover(ServiceIdentifier serviceIdentifier) = 0;
 };
 
 } /*end namespace SOQoSMW*/

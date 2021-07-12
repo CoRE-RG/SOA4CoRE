@@ -60,6 +60,9 @@ simple PublisherAppBase extends SOQoSMWApplicationBase
     	//Service Description
     	string serviceName = default("PublisherService");
     	
+    	//Service ID
+    	int serviceId = default(0);
+    	
     	//Connection type {connectionbased, connectionless}
     	string qosGroup = default("");
     

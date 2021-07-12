@@ -9,7 +9,7 @@
 #define SOQOSMW_SERVICEREGISTRY_BASE_ISERVICEREGISTRY_H_
 
 #include <soqosmw/service/base/IService.h>
-#include <soqosmw/service/base/IServiceIdentifier.h>
+#include <soqosmw/service/serviceidentifier/ServiceIdentifier.h>
 
 namespace SOQoSMW {
 
@@ -30,13 +30,13 @@ public:
     /**
      * Adds a published service
      */
-    virtual void addPublisherService(IService) = 0;
+    virtual void addPublisherService(IService *service) = 0;
 
     /**
-     * Returns a service for given serice identifier
+     * Returns a service for given service identifier
      * @return IService
      */
-    virtual IService getService(IServiceIdentifier) = 0;
+    virtual IService* getService(ServiceIdentifier serviceIdentifier) = 0;
 };
 
 } /* namespace SOQoSMW */

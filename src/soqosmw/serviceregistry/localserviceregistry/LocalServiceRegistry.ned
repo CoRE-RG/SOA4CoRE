@@ -23,4 +23,6 @@ import soqosmw.serviceregistry.base.IServiceRegistry;
 //
 simple LocalServiceRegistry like IServiceRegistry
 {
+    parameters:
+        @class(SOQoSMW::LocalServiceRegistry);
 }
