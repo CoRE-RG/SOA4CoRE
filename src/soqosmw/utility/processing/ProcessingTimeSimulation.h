@@ -39,8 +39,8 @@ public:
 
 protected:
     virtual void initialize() override;
-    virtual void handleMessage(cMessage *msg);
-    virtual void handleParameterChange(const char *parname);
+    virtual void handleMessage(cMessage *msg) override;
+    virtual void handleParameterChange(const char *parname) override;
 
     /**
      * Schedules the message at a later time according to _processingTime parameter.
