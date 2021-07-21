@@ -62,14 +62,10 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
         setQoS();
         //create a subscriber
-        _localServiceManager->registerSubscriberService(this->_subscriberName, this->_publisherName, this->_qosPolicies, this);
-        _connector = _localServiceManager->getSubscriberConnector(this->_publisherName);
-
-        //TODO Fix polymorph passing to subscribeService
-
-        ServiceIdentifier subscriberServiceIdentifier = ServiceIdentifier(_serviceId,this->_subscriberName);
-        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(_serviceId,this->_publisherName);
-        _localServiceManager->subscribeService(subscriberServiceIdentifier, publisherServiceIdentifier);
+        _localServiceManager->registerSubscriberService(this->_publisherServiceId, this->_qosPolicies, this);
+        _connector = _localServiceManager->getSubscriberConnector(this->_publisherServiceId);
+        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId);
+        _localServiceManager->subscribeQoSService(publisherServiceIdentifier, this->_qosPolicies);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }
@@ -102,19 +98,14 @@ void SubscriberAppBase::handleParameterChange(const char* parname)
 {
     SOQoSMWApplicationBase::handleParameterChange(parname);
 
+    if (!parname || !strcmp(parname, "publisherServiceId"))
+    {
+        this->_publisherServiceId = par("publisherServiceId").intValue();
+    }
+
     if (!parname || !strcmp(parname, "subscriberName"))
     {
         this->_subscriberName = par("subscriberName").stdstringValue();
-    }
-
-    if (!parname || !strcmp(parname, "publisherName"))
-    {
-        this->_publisherName = par("publisherName").stdstringValue();
-    }
-
-    if (!parname || !strcmp(parname, "serviceId"))
-    {
-        this->_serviceId = par("serviceId").intValue();
     }
 
     if (!parname || !strcmp(parname, "startTime"))

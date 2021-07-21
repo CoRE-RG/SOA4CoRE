@@ -22,6 +22,7 @@ namespace SOQoSMW {
  */
 
 class IServiceRegistry {
+
 public:
     /**
      * Methods
@@ -37,6 +38,8 @@ public:
      * @return IService
      */
     virtual IService* getService(ServiceIdentifier serviceIdentifier) = 0;
+
+    typedef uint32_t ServiceId;
 };
 
 } /* namespace SOQoSMW */

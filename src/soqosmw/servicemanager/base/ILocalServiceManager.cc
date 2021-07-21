@@ -17,4 +17,8 @@
 
 namespace SOQoSMW {
 
+ILocalServiceManager::~ILocalServiceManager() {
+
+}
+
 } /* namespace SOQoSMW */

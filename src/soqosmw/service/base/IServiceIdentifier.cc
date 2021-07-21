@@ -17,5 +17,9 @@
 
 namespace SOQoSMW {
 
+IServiceIdentifier::~IServiceIdentifier() {
+
+}
+
 } /* namespace SOQoSMW */
 

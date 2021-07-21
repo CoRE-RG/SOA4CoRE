@@ -95,6 +95,5 @@ module SOQoSMW
     connections:
         qosnp.udpOut --> qosnpUDPOut;
         qosnp.udpIn <-- qosnpUDPIn;
-        sd.discoveryOut --> lsm.gateIn;
         
 }

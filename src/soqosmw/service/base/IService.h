@@ -14,10 +14,9 @@
 
 namespace SOQoSMW {
 
-class IService {
+class IService : public cObject {
   public:
     virtual ~IService();
-    virtual std::string getServiceName() const = 0;
     virtual int getServiceId() const = 0;
     virtual inet::L3Address getAddress() const = 0;
     virtual int getPort() const = 0;

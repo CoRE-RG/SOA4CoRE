@@ -201,7 +201,7 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
                 case QoSGroups::SOMEIP: {
                     connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP();
                     // create or find the subscriber
-                    SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getPath(),connectionlessCSI);
+                    SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getServiceId(),connectionlessCSI);
 
                     delete connectionlessCSI;
 
@@ -258,7 +258,7 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
             if (isEstablishAcceptable(establish)) {
 
                 // create or find the publisher
-                PublisherEndpointBase* pub = _lsm->createOrFindPublisherFor(_local.getPath(),establish->getQosClass());
+                PublisherEndpointBase* pub = _lsm->createOrFindPublisherFor(_local.getServiceId(),establish->getQosClass());
 
                 if(pub){
                     // encapsulate the CSI into the packet.
@@ -344,7 +344,7 @@ bool QoSBroker::handleFinalise(QoSNegotiationFinalise* finalise) {
                         break;
                     default:
                         // create or find the subscriber
-                        SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getPath(),info);
+                        SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getServiceId(),info);
 
                         if(!sub){
                             throw cRuntimeError("No subscriber was created...");
@@ -453,7 +453,7 @@ size_t QoSBroker::getNegotiationMessageSize(QoSNegotiationProtocolMsg* msg) {
      *                        v             v             v               v             v
      **/
     size_t minimumSize = sizeof(int) + sizeof(int) + sizeof(int) + 2*sizeof(int) + 2*sizeof(int);
-    size_t pathsSize = msg->getSender().getPath().size() + msg->getReceiver().getPath().size();
+    size_t pathsSize = sizeof(msg->getSender().getServiceId()) + sizeof(msg->getReceiver().getServiceId());
     size_t result = 0;
     result = minimumSize + pathsSize;
     switch (msg->getMessageType()) {

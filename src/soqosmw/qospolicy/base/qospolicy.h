@@ -44,7 +44,7 @@
  *
  * @ingroup soqosmw/qospolicy
  *
- * @author Timo Haeckel for HAW Hamburg
+ * @author Timo Haeckel & Mehmet Cakir for HAW Hamburg
  */
 namespace SOQoSMW {
 typedef std::unordered_map<std::string, IQoSPolicy*> QoSPolicyMap;

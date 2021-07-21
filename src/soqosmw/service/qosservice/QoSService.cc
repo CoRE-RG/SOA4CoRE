@@ -9,8 +9,8 @@
 
 namespace SOQoSMW {
 
-QoSService::QoSService(std::string serviceName, int serviceId, inet::L3Address address, int port, QoSPolicyMap qosPolicyMap):
-        ServiceBase(serviceName,serviceId,address,port), _qosPolicyMap(qosPolicyMap) {
+QoSService::QoSService(int serviceId, inet::L3Address address, int port, QoSPolicyMap qosPolicyMap):
+        ServiceBase(serviceId,address,port), _qosPolicyMap(qosPolicyMap) {
     // TODO Auto-generated constructor stub
 
 }

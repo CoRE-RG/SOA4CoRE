@@ -65,9 +65,9 @@ protected:
 
 private:
     /**
-     * The local service registry.
+     * Map used to abstract discovery of services
      */
-    IServiceRegistry *_lsr;
+    std::unordered_map<IServiceRegistry::ServiceId,IService*> _discoveryAbstractionMap;
 };
 
 } /*end namespace SOQoSMW*/

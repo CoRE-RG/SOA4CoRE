@@ -15,7 +15,7 @@ namespace SOQoSMW {
 
 class QoSService: public virtual ServiceBase {
 public:
-    QoSService(std::string serviceName, int serviceId, inet::L3Address address, int port, QoSPolicyMap qosPolicyMap);
+    QoSService(int serviceId, inet::L3Address address, int port, QoSPolicyMap qosPolicyMap);
     virtual ~QoSService();
 
     QoSPolicyMap getQoSPolicyMap();

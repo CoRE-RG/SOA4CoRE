@@ -31,7 +31,7 @@ class ILocalServiceManager
 {
 public:
   virtual ~ILocalServiceManager();
-  virtual void subscribeService(IServiceIdentifier& subscriberServiceIdentifier, IServiceIdentifier& publisherServiceIdentifier) = 0;
+  virtual void subscribeService(IServiceIdentifier& publisherServiceIdentifier) = 0;
 
 };
 

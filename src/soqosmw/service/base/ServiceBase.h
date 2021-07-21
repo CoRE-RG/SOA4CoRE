@@ -16,10 +16,9 @@ namespace SOQoSMW {
 
 class ServiceBase: public virtual IService{
 public:
-    ServiceBase(std::string serviceName, int serviceId, inet::L3Address address, int port);
+    ServiceBase(int serviceId, inet::L3Address address, int port);
     virtual ~ServiceBase();
 
-    std::string getServiceName() const;
     int getServiceId() const;
     inet::L3Address getAddress() const;
     int getPort() const;

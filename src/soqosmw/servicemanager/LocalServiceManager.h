@@ -52,7 +52,7 @@ namespace SOQoSMW {
  *
  * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
  */
-class LocalServiceManager: public ILocalServiceManager, public cSimpleModule {
+class LocalServiceManager: public ILocalServiceManager, public cSimpleModule, public cListener {
     friend QoSNegotiationProtocol;
     friend QoSBroker;
 
@@ -63,11 +63,12 @@ public:
     /**
      * @brief This Method creates a new Publisher according to the QoSPolicies.
      *
-     * @param publisherPath Path of the Publisher Service (e.g. "reifendruck/links")
+     * @param serviceId Path of the Publisher Service (e.g. "reifendruck/links")
      * @param qosPolicies The QoS Policies for the Publisher.
      * @param executingModule The service executing the request.
      */
-    void registerPublisherService(std::string& publisherPath,
+    void registerPublisherService(
+            uint32_t serviceId,
             QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication);
 
@@ -79,31 +80,47 @@ public:
      * @param qosPolicies The QoS Policies for the Subscriber.
      * @param executingModule The service executing the request.
      */
-    void registerSubscriberService(std::string& subscriberPath,
-            std::string& publisherPath,
+    void registerSubscriberService(
+            uint32_t publisherServiceId,
             QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication);
 
     /**
      * @brief Subscribes the given service
-     * @param subscriberServiceIdentifier
      * @param publisherServiceIdentifier
      */
-    void subscribeService(IServiceIdentifier& subscriberServiceIdentifier, IServiceIdentifier& publisherServiceIdentifier);
+    void subscribeService(IServiceIdentifier& publisherServiceIdentifier) override;
+
+    /**
+     * @brief Subscribes the given service
+     * @param subscriberServiceIdentifier
+     * @param publisherServiceIdentifier
+     * @param qosPolicyMap
+     */
+    void subscribeQoSService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap);
+
+    /**
+     * @brief Receives discovery response
+     * @param source
+     * @param signalID
+     * @param obj
+     * @param details
+     */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 
     /**
      * Returns the publisher connector for the given publisher service
-     * @param publisherPath
+     * @param publisherServiceId
      * @return corresponding publisher connector
      */
-    PublisherConnector* getPublisherConnector(std::string& publisherPath);
+    PublisherConnector* getPublisherConnector(uint32_t publisherServiceId);
 
     /**
      * Returns the subscriber connector for the given publisher service
-     * @param publisherPath
+     * @param publisherServiceId
      * @return corresponding subscriber connector
      */
-    SubscriberConnector* getSubscriberConnector(std::string& publisherPath);
+    SubscriberConnector* getSubscriberConnector(uint32_t publisherServiceId);
 
 protected:
     /**
@@ -125,72 +142,72 @@ protected:
 
     /**
      * Finds the connector for the publisher
-     * @param publisherPath     the name of the publisher as a path
-     * @return                  the connector if found, else nullptr
+     * @param publisherServiceId     the service id of the publisher
+     * @return                       the connector if found, else nullptr
      */
-    PublisherConnector* getPublisherConnectorForName (std::string& publisherPath);
+    PublisherConnector* getPublisherConnectorForServiceId (uint32_t publisherServiceId);
 
     /**
      * Finds the connector for the subscriber
-     * @param publisherPath     the name of the publisher as a path
-     * @return                  the connector if found, else nullptr
+     * @param publisherServiceId     the service id of the publisher
+     * @return                       the connector if found, else nullptr
      */
-    SubscriberConnector* getSubscriberConnectorForName (std::string& publisherPath);
+    SubscriberConnector* getSubscriberConnectorForServiceId (uint32_t publisherServiceId);
 
     /**
      * Searches for a subscriber connector on this node for the given name and QoS.
      *
-     * @param publisherPath     the path of the publisher.
-     * @param qos               the QoS of the publisher.
-     * @return                  the subscriber if found, else nullptr.
+     * @param publisherServiceId     the service id of the publisher.
+     * @param qos                    the QoS of the publisher.
+     * @return                       the subscriber if found, else nullptr.
      */
-    SubscriberConnector* findSubscriberConnectorLike(std::string& publisherPath, int qos);
+    SubscriberConnector* findSubscriberConnectorLike(uint32_t publisherServiceId, int qos);
 
     /**
      * Tries to find a publisher on this node for the given name and QoS.
      * If it can't be found a new one is created.
      * The connector will be connected as well.
      *
-     * @param publisherPath     the path of the publisher.
-     * @param csi               the csi of the publisher.
-     * @return                  the corresponding publisher
+     * @param publisherServiceId     the service id of the publisher.
+     * @param csi                    the csi of the publisher.
+     * @return                       the corresponding publisher
      */
-    PublisherEndpointBase* createOrFindPublisherFor(std::string& publisherPath,  int qos);
+    PublisherEndpointBase* createOrFindPublisherFor(uint32_t publisherServiceId,  int qos);
 
     /**
      * Tries to find a subscriber on this node for the given publisher name and QoS.
      * If it can't be found a new one is created.
      * The connector will be connected as well.
      *
-     * @param publisherPath     the path of the publisher.
+     * @param publisherPath     the service id of the publisher.
      * @param csi               the csi of the publisher.
      * @return                  the corresponding publisher
      */
-    SubscriberEndpointBase* createOrFindSubscriberFor(std::string& publisherPath, ConnectionSpecificInformation* csi);
+    SubscriberEndpointBase* createOrFindSubscriberFor(uint32_t publisherServiceId, ConnectionSpecificInformation* csi);
 
     /**
      * Searches for a publisher on this node for the given name and QoS.
      *
-     * @param publisherPath     the path of the publisher.
-     * @param qos               the QoS of the publisher.
-     * @return                  the publisher if found, else nullptr.
+     * @param publisherServiceId     the service id of the publisher.
+     * @param qos                    the QoS of the publisher.
+     * @return                       the publisher if found, else nullptr.
      */
-    PublisherEndpointBase* findPublisherLike(std::string& publisherPath, int qos);
+    PublisherEndpointBase* findPublisherLike(uint32_t publisherServiceId, int qos);
 
     /**
      * Searches for a subscriber on this node for the given name and QoS.
      *
-     * @param publisherPath     the path of the publisher.
-     * @param qos               the QoS of the publisher.
-     * @return                  the corresponding publisher
+     * @param publisherServiceId     the service id of the publisher.
+     * @param qos                    the QoS of the publisher.
+     * @return                       the corresponding publisher
      */
-    SubscriberEndpointBase* findSubscriberLike(std::string& publisherPath, int qos);
+    SubscriberEndpointBase* findSubscriberLike(uint32_t publisherServiceId, int qos);
 
 
     /**
      * Contains pointers to the existing publisher connectors on a node.
      */
-    std::map<std::string, PublisherConnector*> _publisherConnectors;
+    std::map<IServiceRegistry::ServiceId, PublisherConnector*> _publisherConnectors;
 
     /**
      * Counter for publishing endpoints created.
@@ -199,10 +216,15 @@ protected:
 
     /**
      * contains pointers to the existing subscriber connectors on a node.
-     * TODO maybe we need to allow more than one subscriber connector per publisher for differen QoS?
+     * TODO maybe we need to allow more than one subscriber connector per publisher service for different QoS?
      * Or we take the best QoS needed on device?
      */
-    std::map<std::string, SubscriberConnector*> _subscriberConnectors;
+    std::map<IServiceRegistry::ServiceId, SubscriberConnector*> _subscriberConnectors;
+
+    /**
+     * Contains pending requests
+     */
+    std::map<IServiceRegistry::ServiceId, std::list<QoSService>> _pendingRequestsMap;
 
     /**
      * Counter for subscribing endpoints created.
@@ -212,7 +234,7 @@ protected:
     /**
      * A pointer to the service discovery.
      */
-    StaticServiceDiscovery* _sd;
+    IServiceDiscovery* _sd;
 
     /**
      * A pointer to the local service registry.
@@ -259,12 +281,11 @@ private:
 
     /**
      * Creates a negotiation request
-     * @param subscriberServiceIdentifier
      * @param publisherService
      * @param qosPolicies
      * @return the negotiation request
      */
-    Request* createNegotiationRequest(ServiceIdentifier subscriberServiceIdentifier, QoSService& publisherService, QoSPolicyMap qosPolicies);
+    Request* createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies);
 
     /**
      * Creates a publisher connector
@@ -289,15 +310,15 @@ private:
      */
     int getQoSGroupForConnectionType(int type);
 
-    SubscriberEndpointBase* createAVBSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createTCPSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createUDPSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createSOMEIPSubscriberEndpoint(std::string& publisherPath, ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+    SubscriberEndpointBase* createAVBSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+    SubscriberEndpointBase* createTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+    SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+    SubscriberEndpointBase* createSOMEIPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
 
-    PublisherEndpointBase* createAVBPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
-    PublisherEndpointBase* createTCPPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
-    PublisherEndpointBase* createUDPPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
-    PublisherEndpointBase* createSOMEIPPublisherEndpoint(std::string& publisherPath, int qos, PublisherConnector* connector);
+    PublisherEndpointBase* createAVBPublisherEndpoint(int qos, PublisherConnector* connector);
+    PublisherEndpointBase* createTCPPublisherEndpoint(int qos, PublisherConnector* connector);
+    PublisherEndpointBase* createUDPPublisherEndpoint(int qos, PublisherConnector* connector);
+    PublisherEndpointBase* createSOMEIPPublisherEndpoint(int qos, PublisherConnector* connector);
 };
 
 } /* end namespace  */

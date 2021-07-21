@@ -50,24 +50,17 @@ void StaticServiceDiscovery::initialize(int stage)
             //check each element and get the service name and the node
             EV_DEBUG << " --> element " << i << ": ";
             cXMLElement* service = services[i];
-            const char* name = service->getAttribute("name");
             const char* node = service->getAttribute("node");
-            int id = (int) *(service->getAttribute("id"));
-            int port = (int) *(service->getAttribute("port"));
+            int id = atoi(service->getAttribute("id"));
+            int port = atoi(service->getAttribute("port"));
 
-            EV_DEBUG << name << " at " << node;
+            EV_DEBUG << node;
 
             //ressolve the address
             const inet::L3Address address = inet::L3AddressResolver().resolve(node);
 
-            cModule* module = getParentModule()->getSubmodule("lsr");
-            if((_lsr = dynamic_cast<LocalServiceRegistry*>(module))) {
-            } else {
-                throw cRuntimeError("No local service registry found.");
-            }
-
             //add entry to map
-            _lsr->addPublisherService(new ServiceBase(name, id, address, port));
+            _discoveryAbstractionMap[id] = new ServiceBase(id, address, port);
             //_servicesInNetwork[ServiceIdentifier(id,name)] = new ServiceBase(name, id, address, port);
         }
         EV_DEBUG << endl;
@@ -77,13 +70,13 @@ void StaticServiceDiscovery::initialize(int stage)
 
 void StaticServiceDiscovery::discover(ServiceIdentifier serviceIdentifier) {
     Enter_Method("SD::discover()");
-    IService *service = _lsr->getService(serviceIdentifier);
+    IService *service = _discoveryAbstractionMap[serviceIdentifier.getServiceId()];
 
     if (!service) {
         throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }
 
-    // TODO send over gate to lsm
+    emit(serviceFoundSignal,service);
 }
 
 /*

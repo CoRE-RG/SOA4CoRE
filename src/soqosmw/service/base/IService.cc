@@ -9,4 +9,9 @@
 
 namespace SOQoSMW {
 
+IService::~IService() {
+
+}
+
+
 } /* namespace SOQoSMW */

@@ -109,7 +109,7 @@ protected:
     /**
       * Id of the publishing service to subscribe to.
       */
-    int _serviceId;
+    int _publisherServiceId;
 };
 
 } /* end namespace SOQoSMW */

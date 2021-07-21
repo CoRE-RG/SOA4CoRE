@@ -23,7 +23,6 @@ namespace SOQoSMW {
 class IServiceIdentifier {
 public:
     virtual ~IServiceIdentifier();
-    virtual std::string getServiceName() const = 0;
     virtual int getServiceId() const = 0;
 };
 

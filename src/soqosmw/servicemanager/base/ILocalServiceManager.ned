@@ -23,6 +23,5 @@ package soqosmw.servicemanager.base;
 
 moduleinterface ILocalServiceManager
 {
-    gates:
-        input gateIn;
+    
 }

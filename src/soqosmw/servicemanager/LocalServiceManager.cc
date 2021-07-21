@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <stdio.h>
 
 
 using namespace std;
@@ -54,12 +55,14 @@ void LocalServiceManager::initialize(int stage) {
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
-        _sd = dynamic_cast<StaticServiceDiscovery*>(getParentModule()->getSubmodule(
+        //TODO Make discoveries interchangeable
+        _sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(
                    par("sdmoduleName")));
-       _qosnp =
+        dynamic_cast<StaticServiceDiscovery*>(_sd)->subscribe("serviceFoundSignal",this);
+        _qosnp =
                dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
                        par("qosnpmoduleName")));
-       _lsr =
+        _lsr =
                dynamic_cast<IServiceRegistry*>(getParentModule()->getSubmodule(
                        par("lsrmoduleName")));
        WATCH_MAP(_publisherConnectors);
@@ -81,19 +84,24 @@ void LocalServiceManager::handleParameterChange(const char* parname) {
 
 }
 
-void LocalServiceManager::registerPublisherService(std::string& publisherPath,
+void LocalServiceManager::registerPublisherService(uint32_t publisherServiceId,
         QoSPolicyMap& qosPolicies,
         SOQoSMWApplicationBase* executingApplication) {
     Enter_Method("LSM:registerPublisherService()");
 
-    PublisherConnector* publisherConnector = getPublisherConnectorForName(publisherPath);
+    PublisherConnector* publisherConnector = getPublisherConnector(publisherServiceId);
     if (publisherConnector != nullptr) {
         addPublisherServiceToConnector(publisherConnector, qosPolicies, executingApplication);
     } else {
         publisherConnector = createPublisherConnector(qosPolicies, executingApplication);
         //save the writer so that new endpoints can be connected to the application.
-        _publisherConnectors[publisherPath] = publisherConnector;
+        _publisherConnectors[publisherServiceId] = publisherConnector;
     }
+    _lsr->addPublisherService(new QoSService(
+            publisherServiceId,
+            inet::L3Address(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalAddress])->getValue().c_str()),
+            dynamic_cast<LocalPortQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalPort])->getValue(),
+            qosPolicies));
 }
 
 void LocalServiceManager::addPublisherServiceToConnector(PublisherConnector* publisherConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
@@ -123,39 +131,66 @@ PublisherConnector* LocalServiceManager::createPublisherConnector(QoSPolicyMap& 
     return module;
 }
 
-PublisherConnector* LocalServiceManager::getPublisherConnector(std::string& publisherPath) {
+PublisherConnector* LocalServiceManager::getPublisherConnector(uint32_t publisherServiceId) {
     //TODO Maybe getPublisherConnectorForName should be made public ...
-    return getPublisherConnectorForName(publisherPath);
+    return getPublisherConnectorForServiceId(publisherServiceId);
 }
 
 
-void LocalServiceManager::registerSubscriberService(std::string& subscriberPath,
-            std::string& publisherPath,
+void LocalServiceManager::registerSubscriberService(
+            uint32_t publisherServiceId,
             QoSPolicyMap& qosPolicies,
             SOQoSMWApplicationBase* executingApplication)
 {
     Enter_Method("LSM:registerSubscriberService()");
 
-    SubscriberConnector* subscriberConnector = getSubscriberConnectorForName(subscriberPath);
+    SubscriberConnector* subscriberConnector = getSubscriberConnectorForServiceId(publisherServiceId);
     if (subscriberConnector != nullptr && equalQoSMap(qosPolicies, subscriberConnector->getQos())) {
         addSubscriberServiceToConnector(subscriberConnector, qosPolicies, executingApplication);
     } else {
         subscriberConnector = createSubscriberConnector(qosPolicies, executingApplication);
         // save the reader so that new endpoints can be connected to the application.
-        _subscriberConnectors[publisherPath] = subscriberConnector;
+        _subscriberConnectors[publisherServiceId] = subscriberConnector;
     }
 }
 
-void LocalServiceManager::subscribeService(IServiceIdentifier& subscriberServiceIdentifier, IServiceIdentifier& publisherServiceIdentifier) {
-    // otherwise we need a new negotiation!
+void LocalServiceManager::subscribeQoSService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap) {
     //check if publisher exists in the network and start the negotiation with a request.
-    if (QoSService* service = dynamic_cast<QoSService*>(_lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier)))) {
-        Request* request = createNegotiationRequest(dynamic_cast<ServiceIdentifier&>(subscriberServiceIdentifier), *service, service->getQoSPolicyMap());
+    if (IService* service = _lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier))) {
+        Request* request = createNegotiationRequest(service, qosPolicyMap);
         //create qos broker for the request
         _qosnp->createQoSBroker(request);
     } else {
-        //TODO start discovery
+        QoSService qosService = QoSService(
+                publisherServiceIdentifier.getServiceId(),
+                inet::L3Address(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalAddress])->getValue().c_str()),
+                dynamic_cast<LocalPortQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalPort])->getValue(),
+                qosPolicyMap);
+        if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
+            _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(qosService);
+        } else {
+            std::list<QoSService> qosServices;
+            qosServices.push_back(qosService);
+            _pendingRequestsMap[publisherServiceIdentifier.getServiceId()] = qosServices;
+        }
+        _sd->discover(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
     }
+}
+
+void LocalServiceManager::subscribeService(IServiceIdentifier& publisherServiceIdentifier) {
+    // not sufficient for QoS service subscribing
+    // TODO check if better method is possible
+}
+
+void LocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
+    IService *service = dynamic_cast<IService*>(obj);
+    for (auto &qosService : _pendingRequestsMap[service->getServiceId()]) {
+        Request* request = createNegotiationRequest(service, qosService.getQoSPolicyMap());
+        //create qos broker for the request
+        _qosnp->createQoSBroker(request);
+    }
+    _pendingRequestsMap.erase(service->getServiceId());
+    _lsr->addPublisherService(service);
 }
 
 void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
@@ -164,10 +199,10 @@ void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* s
     }
 }
 
-Request* LocalServiceManager::createNegotiationRequest(ServiceIdentifier subscriberServiceIdentifier, QoSService& publisherService, QoSPolicyMap qosPolicies) {
-    EndpointDescription local(subscriberServiceIdentifier.getServiceName(), _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription remote(publisherService.getServiceName(), publisherService.getAddress(), _qosnp->getProtocolPort());
-    Request *request = new Request(_requestID++, local, remote, qosPolicies, nullptr);
+Request* LocalServiceManager::createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies) {
+    EndpointDescription subscriber(publisherService->getServiceId(), _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription publisher(publisherService->getServiceId(), publisherService->getAddress(), _qosnp->getProtocolPort());
+    Request *request = new Request(_requestID++, subscriber, publisher, qosPolicies, nullptr);
     return request;
 }
 
@@ -187,15 +222,16 @@ SubscriberConnector* LocalServiceManager::createSubscriberConnector(QoSPolicyMap
     module->callInitialize();
     // 5. Schedule activation message(s) for the new simple module(s).
     module->scheduleStart(simTime());
+    return module;
 }
 
-SubscriberConnector* LocalServiceManager::getSubscriberConnector(std::string& publisherPath) {
-    return getSubscriberConnectorForName(publisherPath);
+SubscriberConnector* LocalServiceManager::getSubscriberConnector(uint32_t publisherServiceId) {
+    return getSubscriberConnectorForServiceId(publisherServiceId);
 }
 
-PublisherConnector* LocalServiceManager::getPublisherConnectorForName(
-        std::string& publisherPath) {
-    auto connector = _publisherConnectors.find(publisherPath);
+PublisherConnector* LocalServiceManager::getPublisherConnectorForServiceId(
+        uint32_t publisherServiceId) {
+    auto connector = _publisherConnectors.find(publisherServiceId);
     if(connector != _publisherConnectors.end()){
         return connector->second;
     }
@@ -203,9 +239,9 @@ PublisherConnector* LocalServiceManager::getPublisherConnectorForName(
 }
 
 
-SubscriberConnector* LocalServiceManager::getSubscriberConnectorForName(
-        std::string& publisherPath) {
-    auto connector = _subscriberConnectors.find(publisherPath);
+SubscriberConnector* LocalServiceManager::getSubscriberConnectorForServiceId(
+        uint32_t publisherServiceId) {
+    auto connector = _subscriberConnectors.find(publisherServiceId);
     if(connector != _subscriberConnectors.end()){
         return connector->second;
     }
@@ -213,32 +249,32 @@ SubscriberConnector* LocalServiceManager::getSubscriberConnectorForName(
 }
 
 PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
-        std::string& publisherPath, int qos) {
+        uint32_t publisherServiceId, int qos) {
 
     PublisherEndpointBase* pub = nullptr;
 
-    pub = findPublisherLike(publisherPath, qos);
+    pub = findPublisherLike(publisherServiceId, qos);
     if(!pub){
-        PublisherConnector* connector = getPublisherConnectorForName(publisherPath);
+        PublisherConnector* connector = getPublisherConnector(publisherServiceId);
 
         if(connector){
             //create according endpoint
             switch(qos){
             case QoSGroups::RT:
-                pub = createAVBPublisherEndpoint(publisherPath, qos, connector);
+                pub = createAVBPublisherEndpoint(qos, connector);
                 break;
             case QoSGroups::STD_TCP:
-                pub = createTCPPublisherEndpoint(publisherPath, qos, connector);
+                pub = createTCPPublisherEndpoint(qos, connector);
                 break;
             case QoSGroups::STD_UDP:
-                pub = createUDPPublisherEndpoint(publisherPath, qos, connector);
+                pub = createUDPPublisherEndpoint(qos, connector);
                 break;
             case QoSGroups::WEB:
                 throw cRuntimeError("The web QoS Group is not yet available");
                 break;
             //TODO SOMEIP case QoSGroups::SOMEIP for TCP
             case QoSGroups::SOMEIP:
-                pub = createSOMEIPPublisherEndpoint(publisherPath, qos, connector);
+                pub = createSOMEIPPublisherEndpoint(qos, connector);
                 break;
             default:
                 throw cRuntimeError("Unknown connection type.");
@@ -258,33 +294,33 @@ PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
 }
 
 SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
-        std::string& publisherPath, ConnectionSpecificInformation* csi) {
+        uint32_t publisherServiceId, ConnectionSpecificInformation* csi) {
 
     SubscriberEndpointBase* sub = nullptr;
     auto group = getQoSGroupForConnectionType(csi->getConnectionType());
 
-    sub = findSubscriberLike(publisherPath, group);
+    sub = findSubscriberLike(publisherServiceId, group);
     if(!sub){
-        SubscriberConnector* connector = findSubscriberConnectorLike(publisherPath, group);
+        SubscriberConnector* connector = findSubscriberConnectorLike(publisherServiceId, group);
 
         if(connector){
             //create according endpoint
             switch(csi->getConnectionType()){
             case ConnectionType::ct_avb:
-                sub = createAVBSubscriberEndpoint(publisherPath, csi, connector);
+                sub = createAVBSubscriberEndpoint(csi, connector);
                 break;
             case ConnectionType::ct_tcp:
-                sub = createTCPSubscriberEndpoint(publisherPath, csi, connector);
+                sub = createTCPSubscriberEndpoint(csi, connector);
                 break;
             case ConnectionType::ct_udp:
-                sub = createUDPSubscriberEndpoint(publisherPath, csi, connector);
+                sub = createUDPSubscriberEndpoint(csi, connector);
                 break;
             case ConnectionType::ct_http:
                 throw cRuntimeError("The HTTP connection is not yet available");
                 break;
             //TODO SOMEIP case ConnectionType::SOMEIP for TCP
             case ConnectionType::ct_someip:
-                sub = createSOMEIPSubscriberEndpoint(publisherPath, csi, connector);
+                sub = createSOMEIPSubscriberEndpoint(csi, connector);
                 break;
             default:
                 throw cRuntimeError("Unknown connection type.");
@@ -329,10 +365,10 @@ int LocalServiceManager::getQoSGroupForConnectionType(int type){
 }
 
 PublisherEndpointBase* LocalServiceManager::findPublisherLike(
-        std::string& publisherPath, int qos) {
+        uint32_t publisherServiceId, int qos) {
 
     // find fitting connectors
-    PublisherConnector* connector = getPublisherConnectorForName(publisherPath);
+    PublisherConnector* connector = getPublisherConnector(publisherServiceId);
     if(connector){
         for (auto endpoint: connector->getEndpoints()){
             if(endpoint->getQos() == qos){
@@ -345,10 +381,10 @@ PublisherEndpointBase* LocalServiceManager::findPublisherLike(
 }
 
 SubscriberConnector* LocalServiceManager::findSubscriberConnectorLike(
-        std::string& publisherPath, int qos) {
+        uint32_t publisherServiceId, int qos) {
 
     // find fitting connectors
-    SubscriberConnector* connector = getSubscriberConnectorForName(publisherPath);
+    SubscriberConnector* connector = getSubscriberConnector(publisherServiceId);
     if(connector){
         // we allready have a service subscribing to the data
         QoSGroup* conQoS = dynamic_cast<QoSGroup*>(connector->getQos()[QoSPolicyNames::QoSGroup]);
@@ -362,10 +398,10 @@ SubscriberConnector* LocalServiceManager::findSubscriberConnectorLike(
 }
 
 SubscriberEndpointBase* LocalServiceManager::findSubscriberLike(
-        std::string& publisherPath, int qos) {
+        uint32_t publisherServiceId, int qos) {
 
     // find fitting connectors
-    SubscriberConnector* connector = findSubscriberConnectorLike(publisherPath, qos);
+    SubscriberConnector* connector = findSubscriberConnectorLike(publisherServiceId, qos);
     if(connector){
         for (auto endpoint: connector->getEndpoints()){
             if(endpoint->getQos() == qos){
@@ -378,7 +414,7 @@ SubscriberEndpointBase* LocalServiceManager::findSubscriberLike(
 }
 
 SubscriberEndpointBase* LocalServiceManager::createAVBSubscriberEndpoint(
-        std::string& publisherPath, ConnectionSpecificInformation* csi,
+        ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
     SubscriberEndpointBase* ret = nullptr;
 
@@ -411,7 +447,7 @@ SubscriberEndpointBase* LocalServiceManager::createAVBSubscriberEndpoint(
 }
 
 SubscriberEndpointBase* LocalServiceManager::createTCPSubscriberEndpoint(
-        std::string& publisherPath, ConnectionSpecificInformation* csi,
+        ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
     SubscriberEndpointBase* ret = nullptr;
 
@@ -445,7 +481,7 @@ SubscriberEndpointBase* LocalServiceManager::createTCPSubscriberEndpoint(
 }
 
 SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
-        std::string& publisherPath, ConnectionSpecificInformation* csi,
+        ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
 
     SubscriberEndpointBase* ret = nullptr;
@@ -478,7 +514,7 @@ SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
 }
 
 SubscriberEndpointBase* LocalServiceManager::createSOMEIPSubscriberEndpoint(
-        std::string& publisherPath, ConnectionSpecificInformation* csi,
+        ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
 
     SubscriberEndpointBase* ret = nullptr;
@@ -511,7 +547,7 @@ SubscriberEndpointBase* LocalServiceManager::createSOMEIPSubscriberEndpoint(
 }
 
 PublisherEndpointBase* LocalServiceManager::createAVBPublisherEndpoint(
-        std::string& publisherPath, int qos,
+        int qos,
         PublisherConnector* connector) {
 
     PublisherEndpointBase* ret = nullptr;
@@ -558,7 +594,7 @@ PublisherEndpointBase* LocalServiceManager::createAVBPublisherEndpoint(
 }
 
 PublisherEndpointBase* LocalServiceManager::createTCPPublisherEndpoint(
-        std::string& publisherPath, int qos,
+        int qos,
         PublisherConnector* connector) {
 
     PublisherEndpointBase* ret = nullptr;
@@ -589,7 +625,7 @@ PublisherEndpointBase* LocalServiceManager::createTCPPublisherEndpoint(
 }
 
 PublisherEndpointBase* LocalServiceManager::createUDPPublisherEndpoint(
-        std::string& publisherPath, int qos,
+        int qos,
         PublisherConnector* connector) {
 
     PublisherEndpointBase* ret = nullptr;
@@ -620,7 +656,7 @@ PublisherEndpointBase* LocalServiceManager::createUDPPublisherEndpoint(
 }
 
 PublisherEndpointBase* LocalServiceManager::createSOMEIPPublisherEndpoint(
-        std::string& publisherPath, int qos,
+        int qos,
         PublisherConnector* connector) {
 
     PublisherEndpointBase* ret = nullptr;

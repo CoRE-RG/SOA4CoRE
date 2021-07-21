@@ -19,6 +19,7 @@
 #define __SOQOSMW_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 
 #include <soqosmw/service/serviceidentifier/ServiceIdentifier.h>
+#include <omnetpp.h>
 
 namespace SOQoSMW {
 
@@ -29,9 +30,12 @@ namespace SOQoSMW {
  *
  * @author Timo Haeckel and Mehmet Cakir
  */
-class IServiceDiscovery{
+class IServiceDiscovery {
   public:
     virtual void discover(ServiceIdentifier serviceIdentifier) = 0;
+
+  protected:
+    static omnetpp::simsignal_t serviceFoundSignal;
 };
 
 } /*end namespace SOQoSMW*/

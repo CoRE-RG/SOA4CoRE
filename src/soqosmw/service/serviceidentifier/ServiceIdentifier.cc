@@ -9,15 +9,11 @@
 
 namespace SOQoSMW {
 
-ServiceIdentifier::ServiceIdentifier(int serviceId, std::string serviceName):
-        _serviceId(serviceId), _serviceName(serviceName) {
+ServiceIdentifier::ServiceIdentifier(int serviceId):
+        _serviceId(serviceId) {
 }
 
 ServiceIdentifier::~ServiceIdentifier() {
-}
-
-std::string ServiceIdentifier::getServiceName() const {
-    return _serviceName;
 }
 
 int ServiceIdentifier::getServiceId() const {
@@ -25,8 +21,7 @@ int ServiceIdentifier::getServiceId() const {
 }
 
 bool ServiceIdentifier::operator==(const ServiceIdentifier& serviceIdentifier) const {
-    return this->_serviceName == serviceIdentifier.getServiceName()
-            && this->_serviceId ==  serviceIdentifier.getServiceId();
+    return this->_serviceId ==  serviceIdentifier.getServiceId();
 }
 
 bool ServiceIdentifier::operator!=(const ServiceIdentifier& serviceIdentifier) const {

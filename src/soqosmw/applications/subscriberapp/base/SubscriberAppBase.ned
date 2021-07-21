@@ -23,7 +23,7 @@ import soqosmw.applications.base.SOQoSMWApplicationBase;
 // The SubscriberAppBase provides a subscriber implementation of the soqosmw application base.
 // These modules realize a data subscriber service.
 //
-// @author Timo Haeckel for HAW Hamburg
+// @author Timo Haeckel & Mehmet Cakir for HAW Hamburg
 //
 simple SubscriberAppBase extends SOQoSMWApplicationBase
 {
@@ -45,12 +45,11 @@ simple SubscriberAppBase extends SOQoSMWApplicationBase
         // Start time
         double startTime @unit(s) = default(0s);  
         
-        string subscriberName = default("SubscriberService");//nicht benoetigt?
-        
-        string publisherName = default("PublisherService");
+        //Subscriber name
+        string subscriberName = default("SubscriberService");
         
         //Service ID
-    	int serviceId = default(0);
+    	int publisherServiceId = default(0);
         
         string qosGroup = default("STD_TCP"); //RT, WEB, STD ( " " seperated list of policies each policy with structure type::value)
 }

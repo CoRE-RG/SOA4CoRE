@@ -33,7 +33,7 @@ namespace SOQoSMW {
  */
 class EndpointDescription {
 public:
-    EndpointDescription(std::string path, inet::L3Address networkAddr, int networkPort) : _path(path), _networkAddr (networkAddr), _networkPort(networkPort){
+    EndpointDescription(int serviceId, inet::L3Address networkAddr, int networkPort) : _serviceId(serviceId), _networkAddr (networkAddr), _networkPort(networkPort){
 
     }
 
@@ -50,7 +50,7 @@ public:
         bool value = false;
         if (_networkAddr == other.getNetworkAddr()) {
             if (_networkPort == other.getNetworkPort()) {
-                if (_path == other.getPath()) {
+                if (_serviceId == other.getServiceId()) {
                     value = true;
                 }
             }
@@ -78,17 +78,17 @@ public:
         _networkPort = networkPort;
     }
 
-    std::string& getPath() {
-        return _path;
+    int getServiceId() {
+        return _serviceId;
     }
 
-    void setPath(std::string& path) {
-        _path = path;
+    void setServiceId(int serviceId) {
+        _serviceId = serviceId;
     }
 
     std::string toString(){
         std::string ret = "EndpointDescription[";
-        ret.append(" path:").append(_path);
+        ret.append(" serviceId:").append(std::to_string(_serviceId));
         ret.append(" networkAddr:").append(_networkAddr.str());
         ret.append(" networkPort").append(std::to_string(_networkPort));
         return ret.append(" ]");
@@ -96,9 +96,9 @@ public:
 
 private:
     /**
-     * The name of the Endpoint as a path.
+     * The service id this Endpoint provides.
      */
-    std::string _path;
+    int _serviceId;
 
     /**
      * The network address of the node running the Endpoint.

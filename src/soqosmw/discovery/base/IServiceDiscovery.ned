@@ -26,8 +26,6 @@ package soqosmw.discovery.base;
 moduleinterface IServiceDiscovery
 {       
     parameters:
+        @signal[serviceFoundSignal](type=cObject);
         @display("i=block/table2");
-        
-    gates:
-        output discoveryOut;
 }

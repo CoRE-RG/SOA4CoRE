@@ -10,16 +10,12 @@
 
 namespace SOQoSMW {
 
-ServiceBase::ServiceBase(std::string serviceName, int serviceId, inet::L3Address address, int port):
-        _serviceIdentifier(ServiceIdentifier(serviceId, serviceName)), _address(address), _port(port) {
+ServiceBase::ServiceBase(int serviceId, inet::L3Address address, int port):
+        _serviceIdentifier(ServiceIdentifier(serviceId)), _address(address), _port(port) {
 }
 
 ServiceBase::~ServiceBase() {
     // TODO Auto-generated destructor stub
-}
-
-std::string ServiceBase::getServiceName() const {
-    return _serviceIdentifier.getServiceName();
 }
 
 int ServiceBase::getServiceId() const {

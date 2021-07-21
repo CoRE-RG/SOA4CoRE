@@ -36,6 +36,7 @@ class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
 {
   public:
     ~LocalServiceRegistry();
+    LocalServiceRegistry();
 
     /**
      * Adds a published service
@@ -43,7 +44,7 @@ class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
     void addPublisherService(IService *service);
 
     /**
-     * Returns a service for given serice identifier
+     * Returns a service for given service identifier
      * @return IService
      */
     IService* getService(ServiceIdentifier serviceIdentifier);
@@ -52,13 +53,13 @@ class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
      * Returns the service registry as a map
      * @return registry map
      */
-    std::unordered_map<ServiceIdentifier,IService*> getRegistry();
+    std::unordered_map<ServiceId,IService*> getRegistry();
 
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
   private:
-    std::unordered_map<ServiceIdentifier,IService*> _serviceRegistry;
+    std::unordered_map<ServiceId,IService*> _serviceRegistry;
 };
 
 } /* namespace SOQoSMW */

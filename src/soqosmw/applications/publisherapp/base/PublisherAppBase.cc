@@ -104,7 +104,7 @@ void PublisherAppBase::handleParameterChange(const char* parname) {
     }
     if (!parname || !strcmp(parname, "serviceId"))
     {
-        this->_serviceId = par("serviceId").intValue();
+        this->_publisherServiceId = par("serviceId").intValue();
     }
     if (!parname || !strcmp(parname, "interval")) {
         this->_interval = CoRE4INET::parameterDoubleCheckRange(par("interval"),
@@ -135,8 +135,8 @@ void PublisherAppBase::createPublisherWithQoS() {
     //printQoS();
 
     //register this as new publisher app!
-    _localServiceManager->registerPublisherService(this->_publisherName, this->_qosPolicies, this);
-    if ((_connector = _localServiceManager->getPublisherConnector(this->_publisherName)) == nullptr){
+    _localServiceManager->registerPublisherService(this->_publisherServiceId, this->_qosPolicies, this);
+    if ((_connector = _localServiceManager->getPublisherConnector(this->_publisherServiceId)) == nullptr){
         throw cRuntimeError("PublisherConnector is null. Call registerPublisherService before.");
     }
 }

@@ -64,11 +64,6 @@ private:
 protected:
 
     /**
-     * Name of the publishing service to subscribe to.
-     */
-    std::string _publisherName;
-
-    /**
      * Caches QoS Policy parameters
      */
     QoSPolicyMap _qosPolicies;

@@ -65,8 +65,8 @@ void QoSNegotiationProtocol::processScheduledMessage(cMessage* msg) {
         // extract request from message
         Request* request = (Request*) msg->getContextPointer();
 
-        //create broker as requestet
-        QoSBroker* broker = new QoSBroker(&_socket, _lsm, request->getLocal(), request->getRemote(), request);
+        //create broker as requested
+        QoSBroker* broker = new QoSBroker(&_socket, _lsm, request->getSubscriberEndpointDescription(), request->getPublisherEndpointDescription(), request);
 
         //tell broker to start the request.
         bool handled = broker->startNegotiation();

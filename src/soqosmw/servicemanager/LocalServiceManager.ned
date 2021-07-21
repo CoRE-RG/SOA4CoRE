@@ -33,6 +33,7 @@ simple LocalServiceManager like ILocalServiceManager
         // paths to used modules.
         string sdmoduleName = default("sd");
         string qosnpmoduleName = default("qosnp");
+        string lsrmoduleName = default("lsr");
 
         string localAddress = default("");
 

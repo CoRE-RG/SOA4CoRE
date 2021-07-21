@@ -54,11 +54,11 @@ enum RequestStatus {
  */
 class Request {
 public:
-    Request(int id, EndpointDescription& local, EndpointDescription& remote,
+    Request(int serviceId, EndpointDescription& subscriberEndpointDescription, EndpointDescription& publisherEndpointDescription,
             QoSPolicyMap& qosPolicies,
             omnetpp::cGate *notificationGate) :
-            _id(id), _local(local), _remote(remote), _qosPolicies(qosPolicies), _notificationGate(
-                    notificationGate) {
+            _serviceId(serviceId), _subscriberEndpointDescription(subscriberEndpointDescription),
+            _publisherEndpointDescription(publisherEndpointDescription), _qosPolicies(qosPolicies), _notificationGate(notificationGate) {
         this->setStatus(CREATED);
     }
 
@@ -66,24 +66,24 @@ public:
 
     }
 
-    int getId() const {
-        return _id;
+    int getServiceId() const {
+        return _serviceId;
     }
 
     omnetpp::cGate* getNotificationGate() {
         return _notificationGate;
     }
 
-    const EndpointDescription& getRemote() const {
-        return _remote;
+    const EndpointDescription& getPublisherEndpointDescription() const {
+        return _publisherEndpointDescription;
     }
 
     const QoSPolicyMap& getQosPolicies() const {
         return _qosPolicies;
     }
 
-    const EndpointDescription& getLocal() const {
-        return _local;
+    const EndpointDescription& getSubscriberEndpointDescription() const {
+        return _subscriberEndpointDescription;
     }
 
     RequestStatus getStatus() const {
@@ -95,9 +95,9 @@ public:
     }
 
 private:
-    const int _id;
-    const EndpointDescription _local;
-    const EndpointDescription _remote;
+    const int _serviceId;
+    const EndpointDescription _subscriberEndpointDescription;
+    const EndpointDescription _publisherEndpointDescription;
     const QoSPolicyMap _qosPolicies;
     omnetpp::cGate *_notificationGate;
     RequestStatus _status;
