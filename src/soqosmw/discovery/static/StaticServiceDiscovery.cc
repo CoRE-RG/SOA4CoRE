@@ -38,6 +38,7 @@ StaticServiceDiscovery::~StaticServiceDiscovery() {
 void StaticServiceDiscovery::initialize(int stage)
 {
     if(stage == INITSTAGE_ROUTING_PROTOCOLS) {
+        IServiceDiscovery::serviceFoundSignal = omnetpp::cComponent::registerSignal("serviceFoundSignal");
         EV_DEBUG << "Initialising SD:";
         cXMLElement *config = par("services").xmlValue();
         EV_DEBUG << " read config: " << config->str();

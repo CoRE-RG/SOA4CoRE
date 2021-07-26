@@ -19,6 +19,4 @@
 
 namespace SOQoSMW{
 
-omnetpp::simsignal_t IServiceDiscovery::serviceFoundSignal = omnetpp::cComponent::registerSignal("serviceFoundSignal");
-
 } /*end namespace SOQoSMW*/

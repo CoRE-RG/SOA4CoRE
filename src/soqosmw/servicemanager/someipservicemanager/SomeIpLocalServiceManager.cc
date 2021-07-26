@@ -97,7 +97,7 @@ void SomeIpLocalServiceManager::publishToSubscriber(uint16_t serviceID, inet::L3
     if (!publisherList.empty()) {
         for (ISomeIpServiceApp *someIpPublisher : publisherList) {
             dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeIpSubscriberDestinationInformartion(subscriberIP, subscriberPort);
-            _someIpSD->acknowledgeSubscription(someIpPublisher, subscriberIP);
+            _someIpSD->acknowledgeSubscription(someIpPublisher->getServiceID(), someIpPublisher->getInstanceID(), someIpPublisher->getIpAddress(inet::L3Address::AddressType::IPv4), someIpPublisher->getPort(), subscriberIP);
         }
     }
 }

@@ -35,7 +35,7 @@ class IServiceDiscovery {
     virtual void discover(ServiceIdentifier serviceIdentifier) = 0;
 
   protected:
-    static omnetpp::simsignal_t serviceFoundSignal;
+    omnetpp::simsignal_t serviceFoundSignal;
 };
 
 } /*end namespace SOQoSMW*/

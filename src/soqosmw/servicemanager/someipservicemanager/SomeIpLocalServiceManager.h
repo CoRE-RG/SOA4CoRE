@@ -82,7 +82,7 @@ class SomeIpLocalServiceManager : public cSimpleModule
      * @param subscriberIP
      * @param subscriberPort
      */
-    void publishToSubscriber(uint16_t serviceID, L3Address subscriberIP, uint16_t subscriberPort);
+    void publishToSubscriber(uint16_t serviceID, inet::L3Address subscriberIP, uint16_t subscriberPort);
 
 
     /**

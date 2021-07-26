@@ -18,31 +18,24 @@
 
 #define BROADCASTADDRESS "255.255.255.255"
 
-#include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
+#include "inet/applications/udpapp/UDPBasicApp.h"
 #include "soqosmw/messages/someip/SomeIpSDHeader.h"
+#include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
 
 namespace SOQoSMW {
 
-class ISomeIpServiceApp;
-class SomeIpLocalServiceManager;
-
 /**
- * @brief Basic SomeIpSDApp
+ * @brief Basic SomeIpSD
  *
  * @ingroup soqosmw/discovery
  *
  * @author Mehmet Cakir
  */
-class SomeIpSD : public virtual SomeIpAppBase
+class SomeIpSD : public virtual inet::UDPBasicApp
 {
 public:
 protected:
 private:
-
-    /**
-     * The SOME/IP local service manager
-     */
-    SomeIpLocalServiceManager *_someIpLSM;
 
 public:
     /**
@@ -64,10 +57,11 @@ public:
      * Acknowledges subscription
      * @param serviceID
      * @param instanceID
+     * @param publisherIP
+     * @param publisherPort
      * @param remoteAddress
-     * @param remotePort
      */
-    void acknowledgeSubscription(ISomeIpServiceApp *publisher, L3Address remoteAddress);
+    void acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress);
   protected:
     /**
      * Initializes module with stages
@@ -93,12 +87,12 @@ public:
     /**
      * Offers a service
      */
-    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, L3Address publisherIP, uint16_t publisherPort);
+    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address publisherIP, uint16_t publisherPort);
 
     /**
      * Subscribes a service
      */
-    void subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, L3Address subscriberIP, uint16_t subscriberPort);
+    void subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address subscriberIP, uint16_t subscriberPort);
 
     /**
      * Acknowledges a subscription

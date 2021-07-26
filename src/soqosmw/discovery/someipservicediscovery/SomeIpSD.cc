@@ -26,14 +26,7 @@ namespace SOQoSMW {
 Define_Module(SomeIpSD);
 
 void SomeIpSD::initialize(int stage) {
-    SomeIpAppBase::initialize(stage);
-    if (stage == inet::INITSTAGE_LOCAL) {
-        cModule* module = getParentModule()->getSubmodule("lsm");
-        if((_someIpLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
-        } else {
-            throw cRuntimeError("No SOME/IP local service manager found.");
-        }
-    }
+    inet::UDPBasicApp::initialize(stage);
 }
 
 void SomeIpSD::handleMessageWhenUp(cMessage *msg) {
@@ -112,7 +105,7 @@ void SomeIpSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet
     socket.sendTo(someIpSDHeader, remoteAddress, destPort);
 }
 
-void SomeIpSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, L3Address remoteAddress) {
+void SomeIpSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress) {
     Enter_Method("SomeIpSD::subscribeEventgroupAck");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - SUBSCRIBEEVENTGROUPACK");
 
@@ -208,8 +201,8 @@ void SomeIpSD::findService(uint16_t serviceID, uint16_t instanceID) {
     find(serviceID, instanceID);
 }
 
-void SomeIpSD::acknowledgeSubscription(ISomeIpServiceApp *publisher, inet::L3Address remoteAddress) {
-    subscribeEventgroupAck(publisher->getServiceID(), publisher->getInstanceID(), publisher->getIpAddress(inet::L3Address::AddressType::IPv4), publisher->getPort(), remoteAddress);
+void SomeIpSD::acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress) {
+    subscribeEventgroupAck(serviceID, instanceID, publisherIP, publisherPort, remoteAddress);
 }
 
 } /* end namespace SOQoSMW */
