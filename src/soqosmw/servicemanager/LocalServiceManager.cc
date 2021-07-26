@@ -55,7 +55,6 @@ void LocalServiceManager::initialize(int stage) {
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
-        //TODO Make discoveries interchangeable
         _sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(
                    par("sdmoduleName")));
         dynamic_cast<StaticServiceDiscovery*>(_sd)->subscribe("serviceFoundSignal",this);
@@ -161,10 +160,14 @@ void LocalServiceManager::subscribeQoSService(IServiceIdentifier& publisherServi
         //create qos broker for the request
         _qosnp->createQoSBroker(request);
     } else {
+        int localPort = -1;
+        if (qosPolicyMap.count(QoSPolicyNames::LocalPort)) {
+            localPort = dynamic_cast<LocalPortQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalPort])->getValue();
+        }
         QoSService qosService = QoSService(
                 publisherServiceIdentifier.getServiceId(),
                 inet::L3Address(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalAddress])->getValue().c_str()),
-                dynamic_cast<LocalPortQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalPort])->getValue(),
+                localPort,
                 qosPolicyMap);
         if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
             _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(qosService);
