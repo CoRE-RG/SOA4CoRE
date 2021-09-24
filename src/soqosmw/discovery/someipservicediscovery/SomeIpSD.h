@@ -33,11 +33,11 @@ namespace SOQoSMW {
  */
 class SomeIpSD : public virtual inet::UDPBasicApp
 {
-public:
-protected:
-private:
 
-public:
+  /**
+   * Methods
+   */
+  public:
     /**
      * Subscribes a service
      * @param serviceID
@@ -132,6 +132,17 @@ public:
      * @param someIpSDHeader
      */
     void processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader);
+
+/**
+ * Member variables
+ */
+  public:
+  protected:
+  private:
+    /**
+     * The local ip address
+     */
+    inet::L3Address _localAddress;
 };
 } /* end namespace SOQoSMW */
 #endif

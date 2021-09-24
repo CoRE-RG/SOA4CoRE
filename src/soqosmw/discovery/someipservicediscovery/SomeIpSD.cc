@@ -27,12 +27,17 @@ Define_Module(SomeIpSD);
 
 void SomeIpSD::initialize(int stage) {
     inet::UDPBasicApp::initialize(stage);
+    if (stage == INITSTAGE_LOCAL) {
+        if (!par("localAddress")) {
+            throw cRuntimeError("Please define a local ip address");
+        }
+    }
 }
 
 void SomeIpSD::handleMessageWhenUp(cMessage *msg) {
     if (SomeIpSDHeader *someIpSDHeader = dynamic_cast<SomeIpSDHeader*>(msg)) {
         if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
-            if (udpDataIndication->getSrcAddr() != localAddress) {
+            if (udpDataIndication->getSrcAddr() != inet::L3AddressResolver().resolve(par("localAddress"))) {
                 processSomeIpSDHeader(someIpSDHeader);
             }
         }
