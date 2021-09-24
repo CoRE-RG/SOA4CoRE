@@ -161,6 +161,7 @@ void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
 
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
+    // TODO Setup signaling in Local Service Manager (LSM)
     std::list<ISomeIpServiceApp*> publisherList = _someIpLSM->lookLocalForPublisherService(findEntry->getServiceID());
     if (!publisherList.empty()) {
         inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
@@ -175,6 +176,7 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     int num2ndOption = offerEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
+        // TODO Setup signaling in Local Service Manager (LSM)
         _someIpLSM->addRemotePublisher(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort());
         delete ipv4EndpointOption;
     }
@@ -184,6 +186,7 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
     int num2ndOption = subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
+        // TODO Setup signaling in Local Service Manager (LSM)
         _someIpLSM->publishToSubscriber(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort());
         delete ipv4EndpointOption;
     }
@@ -193,6 +196,7 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
     int num2ndOption = subscribeEventGroupAckEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
+        // TODO Setup signaling in Local Service Manager (LSM)
         _someIpLSM->acknowledgeService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort());
         delete ipv4EndpointOption;
     }
