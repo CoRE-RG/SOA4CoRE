@@ -15,10 +15,19 @@
 
 package soqosmw.servicemanager.someipservicemanager;
 
+import soqosmw.servicemanager.LocalServiceManager;
 
-simple SomeIpLocalServiceManager
+
+simple SomeIpLocalServiceManager extends LocalServiceManager
 {
     parameters:
         @class(SOQoSMW::SomeIpLocalServiceManager);
         @display("i=block/join");
+        
+        // The signal which is emitted when a requested service is found
+        @signal[findResultSignal];
+        // The signal which is emitted when a service is subscribed
+        @signal[subscribeSignal];
+        // The signal which is emitted when a subscription has been acknowledged
+        @signal[subscribeAckSignal];
 }

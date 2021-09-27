@@ -21,23 +21,19 @@ namespace SOQoSMW {
 
 Define_Module(SomeIpPublisher);
 
-void SomeIpPublisher::initialize(int stage) {
-    SomeIpAppBase::initialize(stage);
-    if (stage == inet::INITSTAGE_LOCAL) {
-        _publishServiceID = par("publishServiceID").intValue();
-        _instanceID = par("instanceID").intValue();
-        cModule* module = getParentModule()->getSubmodule("lsm");
-        if((_someipLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
-        } else {
-            throw cRuntimeError("No SOME/IP local service manager found.");
-        }
-    } else if (stage == inet::INITSTAGE_PHYSICAL_ENVIRONMENT) {
-        _someipLSM->registerPublisherService(this);
-        _sendInterval = par("sendInterval");
-        SomeIpAppBase::scheduleSelfMsg(_sendInterval);
-    }
+void SomeIpPublisher::initialize() {
+    PublisherAppBase::initialize();
+    _instanceID = par("instanceID").intValue();
 }
 
+SomeIpPublisher::SomeIpPublisher() : PublisherAppBase(){
+}
+
+SomeIpPublisher::~SomeIpPublisher() {
+
+}
+
+/*
 void SomeIpPublisher::handleMessageWhenUp(cMessage *msg) {
     if (!_destinations.empty()) {
         std::string headerName = "RESPONSE - " + std::to_string(getServiceID());
@@ -57,29 +53,10 @@ void SomeIpPublisher::handleMessageWhenUp(cMessage *msg) {
     delete msg;
     SomeIpAppBase::scheduleSelfMsg(_sendInterval);
 }
+*/
 
-void SomeIpPublisher::processPacket(cPacket *packet) {
-
-}
-
-inet::L3Address SomeIpPublisher::getIpAddress(inet::L3Address::AddressType adressType) {
-    return SomeIpAppBase::getIpAddress(adressType);
-}
-
-uint16_t SomeIpPublisher::getPort() {
-    return localPort;
-}
-
-uint16_t SomeIpPublisher::getServiceID() {
-    return _publishServiceID;
-}
-
-uint16_t SomeIpPublisher::getInstanceID() {
+uint16_t SomeIpPublisher::getInstanceId() {
     return _instanceID;
-}
-
-void SomeIpPublisher::addSomeIpSubscriberDestinationInformartion(inet::L3Address ipAddress, uint16_t port) {
-    _destinations.push_back(std::make_pair(ipAddress,port));
 }
 
 } /* end namespace SOQoSMW */

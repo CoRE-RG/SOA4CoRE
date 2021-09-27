@@ -21,7 +21,7 @@ int ServiceIdentifier::getServiceId() const {
 }
 
 bool ServiceIdentifier::operator==(const ServiceIdentifier& serviceIdentifier) const {
-    return this->_serviceId ==  serviceIdentifier.getServiceId();
+    return this->_serviceId == serviceIdentifier.getServiceId();
 }
 
 bool ServiceIdentifier::operator!=(const ServiceIdentifier& serviceIdentifier) const {

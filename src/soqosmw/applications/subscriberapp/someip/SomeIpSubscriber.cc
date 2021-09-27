@@ -14,55 +14,53 @@
 // 
 
 #include <soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h>
-
+#include "soqosmw/service/someipserviceidentifier/SomeIpServiceIdentifier.h"
+#include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 namespace SOQoSMW {
+
+#define START_MSG_NAME "Start Message"
 
 Define_Module(SomeIpSubscriber);
 
-void SomeIpSubscriber::initialize(int stage) {
-    SomeIpAppBase::initialize(stage);
-    if (stage == inet::INITSTAGE_LOCAL) {
-        _subscribeServiceID = par("subscribeServiceID").intValue();
-        _instanceID = par("instanceID").intValue();
-        cModule* module = getParentModule()->getSubmodule("lsm");
-        if ((_someIpLSM = dynamic_cast<SomeIpLocalServiceManager*>(module))) {
-        } else {
-            throw cRuntimeError("No SOME/IP local service manager found.");
-        }
-    } else if (stage == inet::INITSTAGE_PHYSICAL_ENVIRONMENT) {
-        _someIpLSM->registerSubscriberService(this);
-        _sendInterval = par("sendInterval");
-        SomeIpAppBase::scheduleSelfMsg(_sendInterval);
-    }
+SomeIpSubscriber::SomeIpSubscriber() : SubscriberAppBase() {
+    _instanceId = par("instanceID").intValue();
 }
 
-void SomeIpSubscriber::handleMessageWhenUp(cMessage *msg) {
-    if (msg->isSelfMessage()) {
-        _someIpLSM->discoverService(this);
-    } else if (SomeIpHeader *someIpheader = dynamic_cast<SomeIpHeader*>(msg)){
-        EV << "SomeIpHeader service message arrived" << std::endl;
+SomeIpSubscriber::~SomeIpSubscriber() {
+
+}
+
+void SomeIpSubscriber::handleMessage(cMessage *msg)
+{
+    if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
+        setQoS();
+        //create a subscriber
+        SomeIpLocalServiceManager* localServiceManager = dynamic_cast<SomeIpLocalServiceManager*>(_localServiceManager);
+        localServiceManager->registerSubscriberService(this->_publisherServiceId, this->_qosPolicies, this);
+        _connector = localServiceManager->getSubscriberConnector(this->_publisherServiceId);
+        SomeIpServiceIdentifier publisherServiceIdentifier = SomeIpServiceIdentifier(this->_publisherServiceId,this->_instanceId);
+        localServiceManager->subscribeQoSService(publisherServiceIdentifier, this->_qosPolicies);
+        if (getEnvir()->isGUI()) {
+            getDisplayString().setTagArg("i2", 0, "status/active");
+        }
+
+    } else {
+        EV_DEBUG << "Subscriber " << _subscriberName << " received a message."  << endl;
+        //this is a subscription message so handle it.
+        if (omnetpp::cPacket *frame = dynamic_cast<omnetpp::cPacket*>(msg))
+        {
+            emit(_rxPkSignal, frame);
+        }
     }
     delete msg;
 }
 
-void SomeIpSubscriber::processPacket(cPacket *packet) {
-
+void SomeIpSubscriber::initialize() {
+    SubscriberAppBase::initialize();
 }
 
-inet::L3Address SomeIpSubscriber::getIpAddress(inet::L3Address::AddressType adressType) {
-    return SomeIpAppBase::getIpAddress(adressType);
-}
-
-uint16_t SomeIpSubscriber::getPort() {
-    return localPort;
-}
-
-uint16_t SomeIpSubscriber::getServiceID() {
-    return _subscribeServiceID;
-}
-
-uint16_t SomeIpSubscriber::getInstanceID() {
-    return _instanceID;
+uint16_t SomeIpSubscriber::getInstanceId() {
+    return _instanceId;
 }
 
 } /* end namespace SOQoSMW */

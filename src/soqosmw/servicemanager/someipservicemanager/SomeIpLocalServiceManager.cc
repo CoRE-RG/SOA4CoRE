@@ -13,27 +13,35 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/applications/publisherapp/someip/SomeIpPublisher.h>
-#include <soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h>
-#include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
-#include <soqosmw/servicemanager/someipservicemanager/SubscriptionRelations.h>
+#include "soqosmw/applications/publisherapp/someip/SomeIpPublisher.h"
+#include "soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h"
+#include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
+#include "soqosmw/servicemanager/someipservicemanager/SubscriptionRelations.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDHeaderContainer.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 
 namespace SOQoSMW {
 
 Define_Module(SomeIpLocalServiceManager);
 
 void SomeIpLocalServiceManager::initialize(int stage) {
-    if (stage == inet::INITSTAGE_LOCAL) {
-        cModule* module = getParentModule()->getSubmodule("sd");
-        if((_someIpSD = dynamic_cast<SomeIpSD*>(module))){
-        } else {
-            throw cRuntimeError("No SOME/IP service discovery found.");
+    LocalServiceManager::initialize(stage);
+    if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
+        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(
+                   par("sdmoduleName"))))) {
+            throw cRuntimeError("No IServiceDiscovery found.");
         }
-        module = getParentModule()->getSubmodule("lsr");
-        if((_someIpLSR = dynamic_cast<SomeIpLocalServiceRegistry*>(module))){
-        } else {
-            throw cRuntimeError("No SOME/IP local service registry found.");
+        if(SomeIpSD* sd = dynamic_cast<SomeIpSD*>(_sd)) {
+            sd->subscribe("serviceFoundSignal",this);
+            sd->subscribe("serviceFindSignal",this);
+            sd->subscribe("serviceOfferSignal",this);
+            sd->subscribe("subscribeEventGroupSignal",this);
+            sd->subscribe("subscribeEventGroupAckSignal",this);
         }
+
+        _findResultSignal = omnetpp::cComponent::registerSignal("findResultSignal");
+        _subscribeSignal = omnetpp::cComponent::registerSignal("subscribeSignal");
+        _subscribeAckSignal = omnetpp::cComponent::registerSignal("subscribeAckSignal");
     }
 }
 
@@ -41,76 +49,63 @@ void SomeIpLocalServiceManager::handleMessage(cMessage *msg) {
     // Does nothing here
 }
 
-void SomeIpLocalServiceManager::registerPublisherService(SomeIpPublisher *someIpPublisher) {
-    _someIpLSR->registerPublisherService(someIpPublisher);
+
+void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
+    SomeIpService& someIpService = *dynamic_cast<SomeIpService*>(obj);
+    _pendingOffersMap.erase(someIpService.getServiceId());
 }
 
-void SomeIpLocalServiceManager::registerSubscriberService(SomeIpSubscriber *someIpSubscriber) {
-    _someIpLSR->registerSubscriberService(someIpSubscriber);
-}
-
-void SomeIpLocalServiceManager::discoverService(SomeIpSubscriber* someIpSubscriber) {
-    SubscriptionRelations relations = SubscriptionRelations();
-    // Look local for publisher service
-    std::list<ISomeIpServiceApp*> publisherList = _someIpLSR->getPublisherService(someIpSubscriber->getServiceID());
-    if (!publisherList.empty()) {
-        for (ISomeIpServiceApp *someIpPublisher : publisherList) {
-            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeIpSubscriberDestinationInformartion(someIpSubscriber->getIpAddress(inet::L3Address::IPv4), someIpSubscriber->getPort());
-            relations.addLocalSubscriptionRelation(dynamic_cast<SomeIpPublisher*>(someIpPublisher), SubscriptionState::SUBSCRIBED);
-        }
+void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
+    if (!strcmp(getSignalName(signalID),"serviceFindSignal")) {
+        lookForService(obj);
+    } else if(!strcmp(getSignalName(signalID),"serviceOfferSignal")) {
+        addToPendingOffersAndSubscribe(obj);
+    } else if(!strcmp(getSignalName(signalID),"subscribeEventGroupSignal")){
+        acknowledgeSubscription(obj);
+    } else if (!strcmp(getSignalName(signalID),"subscribeEventGroupAckSignal")) {
+        processAcknowledgedSubscription(obj);
     } else {
-        // Look for already known remote publishers
-        std::list<std::pair<inet::L3Address,uint16_t>> remotePublisherInfoList = _someIpLSR->getRemotePublisherEndpoints(someIpSubscriber->getServiceID());
-        if (!remotePublisherInfoList.empty()) {
-            for (std::pair<inet::L3Address,uint16_t> publisherInfo : remotePublisherInfoList) {
-                _someIpSD->subscribeService(someIpSubscriber->getServiceID(), someIpSubscriber->getInstanceID(), publisherInfo.first, someIpSubscriber->getIpAddress(inet::L3Address::IPv4), someIpSubscriber->getPort());
-                relations.addRemoteSubscriptionRelation(publisherInfo, SubscriptionState::SUBSCRIBING);
-            }
-        } else {
-            // No publisher known locally or remotely
-            _someIpSD->findService(someIpSubscriber->getServiceID(), someIpSubscriber->getInstanceID());
-        }
-    }
-    _subscriptionRelations[someIpSubscriber->getServiceID()].insert({someIpSubscriber, relations});
-}
-
-std::list<ISomeIpServiceApp*> SomeIpLocalServiceManager::lookLocalForPublisherService(uint16_t serviceID) {
-    return _someIpLSR->getPublisherService(serviceID);
-}
-
-void SomeIpLocalServiceManager::addRemotePublisher(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort) {
-    _someIpLSR->registerRemotePublisherService(serviceID, publisherIP, publisherPort);
-    auto it = _subscriptionRelations.find(serviceID);
-    if (it != _subscriptionRelations.end()) {
-        for (auto &relations : it->second) {
-            SubscriptionState subscriptionState = relations.second.getRemoteRelation(std::make_pair(publisherIP, publisherPort));
-            if ( subscriptionState == SubscriptionState::NOT_SUBSCRIBED) {
-                _someIpSD->subscribeService(serviceID, relations.first->getInstanceID(), publisherIP, relations.first->getIpAddress(inet::L3Address::AddressType::IPv4), relations.first->getPort());
-                relations.second.addRemoteSubscriptionRelation(std::make_pair(publisherIP, publisherPort), SubscriptionState::SUBSCRIBING);
-            }
-        }
+        LocalServiceManager::receiveSignal(source, signalID, obj, details);
     }
 }
 
-void SomeIpLocalServiceManager::publishToSubscriber(uint16_t serviceID, inet::L3Address subscriberIP, uint16_t subscriberPort) {
-    std::list<ISomeIpServiceApp*> publisherList = _someIpLSR->getPublisherService(serviceID);
-    if (!publisherList.empty()) {
-        for (ISomeIpServiceApp *someIpPublisher : publisherList) {
-            dynamic_cast<SomeIpPublisher*>(someIpPublisher)->addSomeIpSubscriberDestinationInformartion(subscriberIP, subscriberPort);
-            _someIpSD->acknowledgeSubscription(someIpPublisher->getServiceID(), someIpPublisher->getInstanceID(), someIpPublisher->getIpAddress(inet::L3Address::AddressType::IPv4), someIpPublisher->getPort(), subscriberIP);
+void SomeIpLocalServiceManager::lookForService(cObject* obj) {
+    SomeIpSDHeaderContainer* someIpSDHeaderContainer = dynamic_cast<SomeIpSDHeaderContainer*>(obj);
+    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDHeaderContainer->getSomeIpSdEntry().getServiceID());
+    if (IService* service = _lsr->getService(serviceIdentifier)) {
+        someIpSDHeaderContainer->setService(service);
+        emit(_findResultSignal,someIpSDHeaderContainer);
+    }
+}
+
+void SomeIpLocalServiceManager::addToPendingOffersAndSubscribe(cObject* obj) {
+    SomeIpService& someIpService = *dynamic_cast<SomeIpService*>(obj);
+    if (_pendingOffersMap.count(someIpService.getServiceId())) {
+        _pendingOffersMap[someIpService.getServiceId()].push_back(someIpService);
+    } else {
+        std::list<SomeIpService> someIpservices;
+        someIpservices.push_back(someIpService);
+        _pendingOffersMap[someIpService.getServiceId()] = someIpservices;
+    }
+
+    if (_pendingRequestsMap.count(someIpService.getServiceId())) {
+        for(std::list<QoSService>::const_iterator it = _pendingRequestsMap[someIpService.getServiceId()].begin(); it != _pendingRequestsMap[someIpService.getServiceId()].end(); ++it){
+            SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
+                    someIpService.getServiceId(), someIpService.getInstanceId(), it->getAddress(), it->getPort(), someIpService.getAddress());
+            emit(_subscribeSignal,&someIpSDSubscriptionInformation);
         }
     }
 }
 
-void SomeIpLocalServiceManager::acknowledgeService(uint16_t serviceID, inet::L3Address publisherIp, uint16_t publisherPort) {
-    auto it = _subscriptionRelations.find(serviceID);
-    if (it != _subscriptionRelations.end()) {
-        for (auto &relations : it->second) {
-            if (relations.second.getRemoteRelation(std::make_pair(publisherIp, publisherPort)) == SubscriptionState::SUBSCRIBING) {
-                relations.second.addRemoteSubscriptionRelation(std::make_pair(publisherIp, publisherPort), SubscriptionState::SUBSCRIBED);
-            }
-        }
+void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
+    SomeIpService& someIpService = *dynamic_cast<SomeIpService*>(obj);
+    // Possible checks before final acknowledge ...
+    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpService.getServiceId());
+    if (IService* service = _lsr->getService(serviceIdentifier)) {
+        SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(someIpService.getServiceId(),someIpService.getInstanceId(),service->getAddress(),service->getPort(),someIpService.getAddress());
+        emit(_subscribeAckSignal,&someIpSDSubscriptionInformation);
     }
-}
 
 }
+
+} /* end namespace SOQoSMW */

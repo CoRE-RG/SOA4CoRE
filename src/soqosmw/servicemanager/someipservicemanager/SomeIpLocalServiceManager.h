@@ -17,15 +17,12 @@
 #define __SOQOSMW_SOMEIPLOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
-#include <soqosmw/discovery/someipservicediscovery/SomeIpSD.h>
-#include <soqosmw/serviceregistry/someiplocalserviceregistry/SomeIpLocalServiceRegistry.h>
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
+#include "soqosmw/servicemanager/LocalServiceManager.h"
+#include "soqosmw/service/someipservice/SomeIpService.h"
 
 using namespace omnetpp;
 namespace SOQoSMW {
-
-class SomeIpPublisher;
-class SomeIpSubscriber;
-class SubscriptionRelations;
 
 /**
  * @brief Base class for a SOME/IP local service manager.
@@ -34,64 +31,20 @@ class SubscriptionRelations;
  *
  * @author Mehmet Cakir
  */
-class SomeIpLocalServiceManager : public cSimpleModule
+class SomeIpLocalServiceManager : public LocalServiceManager
 {
     /**
      * Methods
      */
   public:
     /**
-     * Registers a SOME/IP Publisher
-     * @param someipPublisher
+     * @brief Receives discovery response
+     * @param source
+     * @param signalID
+     * @param obj
+     * @param details
      */
-    void registerPublisherService(SomeIpPublisher *someIpPublisher);
-
-    /**
-     * Registers a SOME/IP Subscriber
-     * @param someipSubscriber
-     */
-    void registerSubscriberService(SomeIpSubscriber *someIpSubscriber);
-
-    /**
-     * Discovers a service
-     * @param serviceID of service that need to be discovered
-     * @param instanceID of service that need to be discovered
-     * @param subscriberIP IP address of subscriber that wants to subscribe
-     * @param subscriberPort port of subscriber that wants to subscribe
-     */
-    void discoverService(SomeIpSubscriber* someIpSubscriber);
-
-    /**
-     * Looks for publisher with given service id in local registry
-     * @param serviceID service id of service to search
-     * @return list of publishers that publish service
-     */
-    std::list<ISomeIpServiceApp*> lookLocalForPublisherService(uint16_t serviceID);
-
-    /**
-     * Adds a remote publisher
-     * @param serviceID of remote publisher
-     * @param publisherIP IP address of remote publisher
-     * @param publisherPort port of remote publisher
-     */
-    void addRemotePublisher(uint16_t serviceID, inet::L3Address publisherIP, uint16_t publisherPort);
-
-    /**
-     * Starts a publisher to publish his service
-     * @param serviceID
-     * @param subscriberIP
-     * @param subscriberPort
-     */
-    void publishToSubscriber(uint16_t serviceID, inet::L3Address subscriberIP, uint16_t subscriberPort);
-
-
-    /**
-     * Acknowledges a service
-     * @param serviceID
-     * @param publisherIp
-     * @param port
-     */
-    void acknowledgeService(uint16_t serviceID, inet::L3Address publisherIp, uint16_t publisherPort);
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
   protected:
     /**
      * Initializes the module and waits for find
@@ -103,31 +56,59 @@ class SomeIpLocalServiceManager : public cSimpleModule
     /**
      * Handles incoming message
      *
-     * @param msg
+     * @param msg the received message
      */
     virtual void handleMessage(cMessage *msg) override;
   private:
+    /**
+     * Looks for a requested service
+     * @param obj the SOME/IP SD header container containing the SOME/IP SD header and its corresponding entry
+     */
+    void lookForService(cObject* obj);
+
+    /**
+     * Adds the offered service into the _pendingOffersMap and initiates the subscription
+     * @param obj the offered service
+     */
+    void addToPendingOffersAndSubscribe(cObject* obj);
+
+    /**
+     * Acknowledges the subscription
+     * @param obj the service to be subscribed to
+     */
+    void acknowledgeSubscription(cObject* obj);
+
+    /**
+     * Processes an acknowledged subscription
+     * @param obj the service to be subscribed to
+     */
+    void processAcknowledgedSubscription(cObject* obj);
 
     /**
      * Member variables
      */
   public:
   protected:
+    /**
+     * The signal which is emitted when a requested service is found
+     */
+    omnetpp::simsignal_t _findResultSignal;
+
+    /**
+     * The signal which is emitted when a service is subscribed
+     */
+    omnetpp::simsignal_t _subscribeSignal;
+
+    /**
+     * The signal which is emitted when a subscription has been acknowledged
+     */
+    omnetpp::simsignal_t _subscribeAckSignal;
   private:
     /**
-     * SOME/IP Service Discovery reference
+     * Contains received offers whose subscription has not yet been acknowledged
+     * TODO: Check if it is necessary. No real use at the moment
      */
-    SomeIpSD* _someIpSD;
-
-    /**
-     * SOME/IP Local Service Registry reference
-     */
-    SomeIpLocalServiceRegistry* _someIpLSR;
-
-    /**
-     * Map for subscription relation
-     */
-    std::map<uint16_t,std::map<SomeIpSubscriber*,SubscriptionRelations>> _subscriptionRelations;
+    std::map<IServiceRegistry::ServiceId, std::list<SomeIpService>> _pendingOffersMap;
 };
 }
 #endif

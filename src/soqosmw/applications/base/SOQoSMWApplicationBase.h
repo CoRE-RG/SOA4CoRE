@@ -20,19 +20,18 @@
 
 #include <omnetpp.h>
 #include <string>
+#include"soqosmw/servicemanager/base/ILocalServiceManager.h"
 
 /**
  * forward declarations
  */
 namespace SOQoSMW {
 class ConnectorBase;
-class LocalServiceManager;
 } /* namespace SOQoSMW */
 
 using namespace omnetpp;
 
 namespace SOQoSMW {
-class LocalServiceManager;
 
 /**
  * @brief Base class for a SOQoSMW-Application.
@@ -74,7 +73,7 @@ protected:
     /**
      * Reference to the LocalServiceManager.
      */
-    LocalServiceManager* _localServiceManager;
+    ILocalServiceManager* _localServiceManager;
 
     /**
      * Reference to the Connector module to the endpoints of this service.

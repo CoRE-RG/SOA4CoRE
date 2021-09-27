@@ -13,20 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOQOSMW_SERVICE_BASE_ISERVICEIDENTIFIER_H_
-#define SOQOSMW_SERVICE_BASE_ISERVICEIDENTIFIER_H_
+#ifndef SOQOSMW_SERVICE_SOMEIPSERVICEIDENTIFIER_SOMEIPSERVICEIDENTIFIER_H_
+#define SOQOSMW_SERVICE_SOMEIPSERVICEIDENTIFIER_SOMEIPSERVICEIDENTIFIER_H_
 
-#include <omnetpp.h>
-#include <string>
+#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
 
 namespace SOQoSMW {
 
-class IServiceIdentifier : public omnetpp::cObject {
+class SomeIpServiceIdentifier: public ServiceIdentifier {
 public:
-    virtual ~IServiceIdentifier();
-    virtual int getServiceId() const = 0;
-};
+    SomeIpServiceIdentifier(int serviceId, int instanceId);
+    virtual ~SomeIpServiceIdentifier();
+    virtual bool operator==(const SomeIpServiceIdentifier& someIpServiceIdentifier) const;
+    virtual bool operator!=(const SomeIpServiceIdentifier& someIpServiceIdentifier) const;
+    int getInstanceId() const;
 
+protected:
+    int _instanceId;
+};
 } /* namespace SOQoSMW */
 
-#endif /* SOQOSMW_SERVICE_BASE_ISERVICEIDENTIFIER_H_ */
+#endif /* SOQOSMW_SERVICE_SOMEIPSERVICEIDENTIFIER_SOMEIPSERVICEIDENTIFIER_H_ */

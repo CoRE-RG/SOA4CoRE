@@ -16,9 +16,8 @@
 #ifndef __SOQOSMW_SOMEIPSUBSCRIBER_H_
 #define __SOQOSMW_SOMEIPSUBSCRIBER_H_
 
-#include "soqosmw/applications/someipapp/base/SomeIpAppBase.h"
-#include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
-#include "soqosmw/applications/someipapp/base/ISomeIpServiceApp.h"
+#include "soqosmw/applications/someipapp/base/ISomeIpAppBase.h"
+#include "soqosmw/applications/subscriberapp/base/SubscriberAppBase.h"
 
 namespace SOQoSMW {
 
@@ -29,88 +28,34 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpSubscriber : public virtual SomeIpAppBase, public ISomeIpServiceApp {
+class SomeIpSubscriber : public virtual ISomeIpAppBase, public virtual SubscriberAppBase {
 /**
  * Member variables
  */
 public:
 protected:
 private:
-    /**
-     * SOME/IP Local Service Manager reference
-     */
-    SomeIpLocalServiceManager *_someIpLSM;
-
-    /**
-     * Service ID to subscribe
-     */
-    uint16_t _subscribeServiceID;
-
-    /**
-     * Instance ID of service id to subscribe
-     */
-    uint16_t _instanceID;
-
-    /**
-     * The send interval of (self) messages
-     */
-    simtime_t _sendInterval;
-
+    uint16_t _instanceId;
 /**
  * Methods
  */
 public:
-    /**
-     * Returns the IP Address of this SOME/IP subscriber
-     *
-     * @param adressType
-     * @return local IP Address
-     */
-    inet::L3Address getIpAddress(inet::L3Address::AddressType adressType) override;
+    SomeIpSubscriber();
+    ~SomeIpSubscriber();
 
-    /**
-     * Returns the port of this subscriber
-     *
-     * @return local Port
-     */
-    uint16_t getPort() override;
-
-    /**
-     * Returns the ID of the service to subscribe
-     *
-     * @return service ID to subscribe
-     */
-    uint16_t getServiceID() override;
-
-    /**
-     * Returns the ID of the service instance to subscribe
-     *
-     * @return instance ID to subscribe
-     */
-    uint16_t getInstanceID() override;
+    virtual uint16_t getInstanceId() override;
 protected:
     /**
-     * Schedules a self message and offers service with
-     * using the SOME/IP SD protocol.
-     *
-     * @param stage indicates the initialization stage
+     * Initializes the module.
      */
-    virtual void initialize(int stage) override;
+    virtual void initialize() override;
 
     /**
-     * Handles incoming message as soon as node is up and
-     * processes the packet
+     * Handles incoming messages
      *
-     * @param msg
+     * @param msg the message
      */
-    virtual void handleMessageWhenUp(cMessage *msg) override;
-
-    /**
-     * Processes a packet
-     *
-     * @param packet
-     */
-    virtual void processPacket(cPacket *packet) override;
+    virtual void handleMessage(cMessage *msg) override;
 private:
 };
 } /* end namespace SOQoSMW */

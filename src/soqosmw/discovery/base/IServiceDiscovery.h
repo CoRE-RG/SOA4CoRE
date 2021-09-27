@@ -32,10 +32,10 @@ namespace SOQoSMW {
  */
 class IServiceDiscovery {
   public:
-    virtual void discover(ServiceIdentifier serviceIdentifier) = 0;
+    virtual void discover(IServiceIdentifier& serviceIdentifier) = 0;
 
   protected:
-    omnetpp::simsignal_t serviceFoundSignal;
+    omnetpp::simsignal_t _serviceFoundSignal;
 };
 
 } /*end namespace SOQoSMW*/

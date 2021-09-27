@@ -15,7 +15,7 @@
 
 package soqosmw.applications.subscriberapp.someip;
 
-import soqosmw.applications.someipapp.base.SomeIpAppBase;
+import soqosmw.applications.subscriberapp.base.SubscriberAppBase;
 
 //
 // The SomeIpSubscriber provides a subscriber implementation of the SomeIpAppBase.
@@ -23,21 +23,13 @@ import soqosmw.applications.someipapp.base.SomeIpAppBase;
 //
 // @author Mehmet Cakir
 //
-simple SomeIpSubscriber extends SomeIpAppBase
+simple SomeIpSubscriber extends SubscriberAppBase
 {
     parameters:
         @class(SOQoSMW::SomeIpSubscriber);
         
-        // The service id of the service that will be subscribed
-        int subscribeServiceID;
         // The instance id of the service that will be subscribed
         int instanceID;
-        // The destination port
-        destPort = default(-1);
-        // The message length
-        messageLength = default(16B);
-        // The send interval
-        sendInterval = default(0.001s);
         // The instance id of service that will be subscribed
         instanceID = 0xFFFF;
         

@@ -14,7 +14,9 @@
 // 
 
 package soqosmw.discovery.someipservicediscovery;
-import soqosmw.applications.someipapp.base.SomeIpAppBase;
+
+import inet.applications.udpapp.UDPBasicApp;
+import soqosmw.discovery.base.IServiceDiscovery;
 
 //
 // The SomeipSD provides a SOME/IP service discovery implementation of the SomeIpAppBase.
@@ -22,10 +24,18 @@ import soqosmw.applications.someipapp.base.SomeIpAppBase;
 //
 // @author Mehmet Cakir
 //
-simple SomeIpSD extends SomeIpAppBase
+simple SomeIpSD extends UDPBasicApp like IServiceDiscovery 
 {
     parameters:
         @class(SOQoSMW::SomeIpSD);
+        // The signal which is emitted when a find is received
+        @signal[serviceFindSignal];
+        // The signal which is emitted when a offer is received
+        @signal[serviceOfferSignal];
+        //The signal which is emitted when a subscribeEventGroup is received
+        @signal[subscribeEventGroupSignal];
+        // The signal which is emitted when a subscribeEventGroupAck is received
+        @signal[subscribeEventGroupAckSignal];
         
         // Broadcasts will be received by default
         receiveBroadcast = default(true);

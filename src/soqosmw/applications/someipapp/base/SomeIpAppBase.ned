@@ -15,14 +15,12 @@
 
 package soqosmw.applications.someipapp.base;
 
-import inet.applications.udpapp.UDPBasicApp;
-
 //
 // The SomeIpAppBase forms a base for SOME/IP applications.
 //
 // @author Mehmet Cakir
 //
-simple SomeIpAppBase extends UDPBasicApp
+simple SomeIpAppBase
 {
     parameters:
         @class(SOQoSMW::SomeIpAppBase);

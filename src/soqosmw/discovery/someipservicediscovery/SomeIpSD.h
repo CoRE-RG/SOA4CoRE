@@ -20,7 +20,9 @@
 
 #include "inet/applications/udpapp/UDPBasicApp.h"
 #include "soqosmw/messages/someip/SomeIpSDHeader.h"
+#include "soqosmw/discovery/base/IServiceDiscovery.h"
 #include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDHeaderContainer.h"
 
 namespace SOQoSMW {
 
@@ -31,13 +33,19 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpSD : public virtual inet::UDPBasicApp
+class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, public cListener
 {
 
   /**
    * Methods
    */
   public:
+    /**
+     * Initiates a service discovery
+     * @param serviceIdentifier
+     */
+    void discover(IServiceIdentifier& serviceIdentifier) override;
+
     /**
      * Subscribes a service
      * @param serviceID
@@ -49,11 +57,6 @@ class SomeIpSD : public virtual inet::UDPBasicApp
     void subscribeService(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, inet::L3Address subscriberIP, uint16_t subscriberPort);
 
     /**
-     * Searches a service in the network
-     */
-    void findService(uint16_t serviceID, uint16_t instanceID);
-
-    /**
      * Acknowledges subscription
      * @param serviceID
      * @param instanceID
@@ -62,6 +65,15 @@ class SomeIpSD : public virtual inet::UDPBasicApp
      * @param remoteAddress
      */
     void acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress);
+
+    /**
+     * @brief Receives discovery response
+     * @param source
+     * @param signalID
+     * @param obj
+     * @param details
+     */
+    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
   protected:
     /**
      * Initializes module with stages
@@ -113,11 +125,29 @@ class SomeIpSD : public virtual inet::UDPBasicApp
     void processFindEntry(SomeIpSDEntry *findEntry, SomeIpSDHeader* someIpSDHeader);
 
     /**
+     * Processes
+     * @param obj the SOME/IP SD header container
+     */
+    void processFindResult(cObject* obj);
+
+    /**
      * Processes a SOME/IP SD Offer entry
      * @param offerEntry
      * @param someIpSDHeader
      */
     void processOfferEntry(SomeIpSDEntry *offerEntry, SomeIpSDHeader* someIpSDHeader);
+
+    /**
+     * Processes a subscription
+     * @param obj the subscription information
+     */
+    void processSubscription(cObject* obj);
+
+    /**
+     * Processes the acknowledgment of a subscription
+     * @param obj the service about to acknowledged
+     */
+    void processAcknowledgment(cObject *obj);
 
     /**
      * Processes a SOME/IP SD Subscribe Eventgroup entry
@@ -138,6 +168,26 @@ class SomeIpSD : public virtual inet::UDPBasicApp
  */
   public:
   protected:
+    /**
+     * The signal which is emitted when a find is received
+     */
+    omnetpp::simsignal_t _serviceFindSignal;
+
+    /**
+     * The signal which is emitted when a offer is received
+     */
+    omnetpp::simsignal_t _serviceOfferSignal;
+
+    /**
+     * The signal which is emitted when a subscribeEventGroup is received
+     */
+    omnetpp::simsignal_t _subscribeEventGroupSignal;
+
+    /**
+     * The signal which is emitted when a subscribeEventGroupAck is received
+     */
+    omnetpp::simsignal_t _subscribeEventGroupAckSignal;
+
   private:
     /**
      * The local ip address

@@ -21,6 +21,7 @@
 #include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 #include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
+#include "soqosmw/servicemanager/LocalServiceManager.h"
 //AUTO-GENERATED MESSAGES
 #include "core4inet/utilities/ConfigFunctions.h"
 #include "core4inet/base/avb/AVBDefs.h"
@@ -62,10 +63,11 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
         setQoS();
         //create a subscriber
-        _localServiceManager->registerSubscriberService(this->_publisherServiceId, this->_qosPolicies, this);
-        _connector = _localServiceManager->getSubscriberConnector(this->_publisherServiceId);
+        LocalServiceManager* localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager);
+        localServiceManager->registerSubscriberService(this->_publisherServiceId, this->_qosPolicies, this);
+        _connector = localServiceManager->getSubscriberConnector(this->_publisherServiceId);
         ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId);
-        _localServiceManager->subscribeQoSService(publisherServiceIdentifier, this->_qosPolicies);
+        localServiceManager->subscribeQoSService(publisherServiceIdentifier, this->_qosPolicies);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }

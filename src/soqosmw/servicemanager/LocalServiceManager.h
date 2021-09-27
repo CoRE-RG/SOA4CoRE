@@ -87,12 +87,6 @@ public:
 
     /**
      * @brief Subscribes the given service
-     * @param publisherServiceIdentifier
-     */
-    void subscribeService(IServiceIdentifier& publisherServiceIdentifier) override;
-
-    /**
-     * @brief Subscribes the given service
      * @param subscriberServiceIdentifier
      * @param publisherServiceIdentifier
      * @param qosPolicyMap
@@ -107,6 +101,12 @@ public:
      * @param details
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
+
+    /**
+     * @brief Subscribes the given service
+     * @param obj
+     */
+    void subscribeService(cObject* obj) override;
 
     /**
      * Returns the publisher connector for the given publisher service

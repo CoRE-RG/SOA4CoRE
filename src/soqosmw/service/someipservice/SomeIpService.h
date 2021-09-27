@@ -13,29 +13,39 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOQOSMW_ILOCALSERVICEMANAGER_H_
-#define __SOQOSMW_ILOCALSERVICEMANAGER_H_
+#ifndef SOQOSMW_SERVICE_SOMEIPSERVICE_SOMEIPSERVICE_H_
+#define SOQOSMW_SERVICE_SOMEIPSERVICE_SOMEIPSERVICE_H_
 
-#include "soqosmw/service/base/IServiceIdentifier.h"
-#include <omnetpp.h>
+#include "soqosmw/service/base/ServiceBase.h"
 
 namespace SOQoSMW {
 
 /**
- * @brief Interface for the local service manager module
+ * @brief This class provides an abstraction of a service and its endpoint information.
  *
- * @ingroup soqosmw/servicemanager
+ * @ingroup soqosmw/service/someipservice/
  *
  * @author Mehmet Cakir
  */
-class ILocalServiceManager
-{
+class SomeIpService : public virtual ServiceBase {
+/**
+ * Methods
+ */
 public:
-  virtual ~ILocalServiceManager();
-  virtual void subscribeService(omnetpp::cObject* obj) = 0;
+    SomeIpService(int serviceId, inet::L3Address address, int port, uint16_t instanceId);
+    virtual ~SomeIpService();
 
+    uint16_t getInstanceId() const;
+protected:
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
+    uint16_t _instanceId;
+private:
 };
-
-} /*end namespace SOQoSMW*/
-
-#endif
+} /* end namespace SOQoSMW */
+#endif /* SOQOSMW_SERVICE_SOMEIPSERVICE_SOMEIPSERVICE_H_ */

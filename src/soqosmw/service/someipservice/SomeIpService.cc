@@ -13,16 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.serviceregistry.someiplocalserviceregistry;
+#include "soqosmw/service/someipservice/SomeIpService.h"
 
-//
-// The SomeipLocalServiceRegistry provides a SOME/IP local registry implementation of the SomeIpAppBase.
-// These module realizes a SOME/IP service registry.
-//
-// @author Mehmet Cakir
-//
-simple SomeIpLocalServiceRegistry
-{
-    parameters:
-        @class(SOQoSMW::SomeIpLocalServiceRegistry);
+namespace SOQoSMW {
+
+SomeIpService::SomeIpService(int serviceId, inet::L3Address address, int port, uint16_t instanceId) :
+        ServiceBase(serviceId,address,port), _instanceId(instanceId) {
 }
+
+SomeIpService::~SomeIpService() {
+}
+
+uint16_t SomeIpService::getInstanceId() const{
+    return _instanceId;
+}
+} /* end namespace SOQoSMW */

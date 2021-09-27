@@ -47,7 +47,7 @@ public:
      * Discovers a service in the network
      * @param serviceIdentifier
      */
-    void discover(ServiceIdentifier serviceIdentifier) override;
+    void discover(IServiceIdentifier& serviceIdentifier) override;
 
     /**
      * Check if the registry contains a service with the service identifier.

@@ -13,10 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soqosmw/applications/someipapp/base/ISomeIpServiceApp.h"
-#include <soqosmw/discovery/someipservicediscovery/SomeIpSD.h>
-#include <soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h>
-
+#include "soqosmw/applications/someipapp/base/ISomeIpAppBase.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
+#include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
+#include "soqosmw/service/someipservice/SomeIpService.h"
+#include "soqosmw/service/someipserviceidentifier/SomeIpServiceIdentifier.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/networklayer/contract/ipv4/IPv4Address.h>
 #include <list>
@@ -27,9 +29,23 @@ Define_Module(SomeIpSD);
 
 void SomeIpSD::initialize(int stage) {
     inet::UDPBasicApp::initialize(stage);
-    if (stage == INITSTAGE_LOCAL) {
+    if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
         if (!par("localAddress")) {
             throw cRuntimeError("Please define a local ip address");
+        }
+        IServiceDiscovery::_serviceFoundSignal = omnetpp::cComponent::registerSignal("serviceFoundSignal");
+        _serviceFindSignal = omnetpp::cComponent::registerSignal("serviceFindSignal");
+        _serviceOfferSignal = omnetpp::cComponent::registerSignal("serviceOfferSignal");
+        _subscribeEventGroupSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupSignal");
+        _subscribeEventGroupAckSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupAckSignal");
+
+        if (SomeIpLocalServiceManager* someIplocalServiceManager = dynamic_cast<SomeIpLocalServiceManager*>(getParentModule()->getSubmodule(
+                par("lsmmoduleName")))) {
+            someIplocalServiceManager->subscribe("findResultSignal",this);
+            someIplocalServiceManager->subscribe("subscribeSignal",this);
+            someIplocalServiceManager->subscribe("subscribeAckSignal",this);
+        } else {
+            throw cRuntimeError("SomeIpLocalServiceManager is needed for SOME/IP Discovery.");
         }
     }
 }
@@ -161,23 +177,26 @@ void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
 
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
-    // TODO Setup signaling in Local Service Manager (LSM)
-    std::list<ISomeIpServiceApp*> publisherList = _someIpLSM->lookLocalForPublisherService(findEntry->getServiceID());
-    if (!publisherList.empty()) {
-        inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
-        for (ISomeIpServiceApp *someIpPublisher : publisherList) {
-            offer(findEntry->getServiceID(), findEntry->getInstanceID(), udpDataIndication->getSrcAddr(),
-                    someIpPublisher->getIpAddress(inet::L3Address::AddressType::IPv4), someIpPublisher->getPort());
-        }
-    }
+    SomeIpSDHeaderContainer someIpSDHeaderContainer = SomeIpSDHeaderContainer(*findEntry, *someIpSDHeader);
+    emit(_serviceFindSignal, &someIpSDHeaderContainer);
+}
+
+void SomeIpSD::processFindResult(cObject* obj) {
+    SomeIpSDHeaderContainer* someIpSDHeaderContainer = dynamic_cast<SomeIpSDHeaderContainer*>(obj);
+    SomeIpSDEntry findEntry = someIpSDHeaderContainer->getSomeIpSdEntry();
+    SomeIpSDHeader someIpSDHeader = someIpSDHeaderContainer->getSomeIpSdHeader();
+    IService* service = someIpSDHeaderContainer->getService();
+    inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader.getControlInfo());
+    offer(findEntry.getServiceID(), findEntry.getInstanceID(), udpDataIndication->getSrcAddr(),
+            service->getAddress(), service->getPort());
 }
 
 void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someIpSDHeader) {
     int num2ndOption = offerEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        // TODO Setup signaling in Local Service Manager (LSM)
-        _someIpLSM->addRemotePublisher(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort());
+        SomeIpService service = SomeIpService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID());
+        emit(_serviceOfferSignal,&service);
         delete ipv4EndpointOption;
     }
 }
@@ -186,8 +205,8 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
     int num2ndOption = subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        // TODO Setup signaling in Local Service Manager (LSM)
-        _someIpLSM->publishToSubscriber(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort());
+        SomeIpService service = SomeIpService(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), subscribeEventGroupEntry->getInstanceID());
+        emit(_subscribeEventGroupSignal,&service);
         delete ipv4EndpointOption;
     }
 }
@@ -196,22 +215,49 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
     int num2ndOption = subscribeEventGroupAckEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        // TODO Setup signaling in Local Service Manager (LSM)
-        _someIpLSM->acknowledgeService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort());
+        SomeIpService someIpService = SomeIpService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+                ipv4EndpointOption->getPort(), subscribeEventGroupAckEntry->getInstanceID());
+        emit(_subscribeEventGroupAckSignal,&someIpService);
+        emit(_serviceFoundSignal,&someIpService);
         delete ipv4EndpointOption;
     }
+}
+
+void SomeIpSD::discover(IServiceIdentifier& serviceIdentifier) {
+    SomeIpServiceIdentifier& someIpServiceIdentifier = dynamic_cast<SomeIpServiceIdentifier&>(serviceIdentifier);
+    find(someIpServiceIdentifier.getServiceId(),someIpServiceIdentifier.getInstanceId());
+}
+
+void SomeIpSD::processSubscription(cObject* obj) {
+    SomeIpSDSubscriptionInformation& someIpSDSubscriptionInformation = *dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
+    subscribeService(someIpSDSubscriptionInformation.getServiceId(), someIpSDSubscriptionInformation.getInstanceId(), someIpSDSubscriptionInformation.getRemoteAddress(),
+            someIpSDSubscriptionInformation.getLocalAddress(), someIpSDSubscriptionInformation.getLocalPort());
+}
+
+void SomeIpSD::processAcknowledgment(cObject *obj) {
+    SomeIpSDSubscriptionInformation& someIpSDSubscriptionInformation = *dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
+    acknowledgeSubscription(someIpSDSubscriptionInformation.getServiceId(), someIpSDSubscriptionInformation.getInstanceId(), someIpSDSubscriptionInformation.getLocalAddress(),
+            someIpSDSubscriptionInformation.getLocalPort(), someIpSDSubscriptionInformation.getRemoteAddress());
 }
 
 void SomeIpSD::subscribeService(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, inet::L3Address subscriberIP, uint16_t subscriberPort) {
     subscribeEventgroup(serviceID, instanceID, publisherIP, subscriberIP, subscriberPort);
 }
 
-void SomeIpSD::findService(uint16_t serviceID, uint16_t instanceID) {
-    find(serviceID, instanceID);
-}
-
 void SomeIpSD::acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress) {
     subscribeEventgroupAck(serviceID, instanceID, publisherIP, publisherPort, remoteAddress);
+}
+
+void SomeIpSD::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
+    if (!strcmp(getSignalName(signalID),"findResultSignal")) {
+        processFindResult(obj);
+    } else if(!strcmp(getSignalName(signalID),"subscribeSignal")) {
+        processSubscription(obj);
+    } else if(!strcmp(getSignalName(signalID),"subscribeAckSignal")){
+        processAcknowledgment(obj);
+    } else {
+        throw cRuntimeError("Unknown signal.");
+    }
 }
 
 } /* end namespace SOQoSMW */

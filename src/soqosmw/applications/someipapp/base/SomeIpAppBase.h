@@ -16,8 +16,8 @@
 #ifndef SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_SOMEIPAPPBASE_H_
 #define SOQOSMW_APPLICATIONS_SOMEIPAPP_BASE_SOMEIPAPPBASE_H_
 
-#include "inet/applications/udpapp/UDPBasicApp.h"
-#include "soqosmw/messages/someip/SomeIpHeader_m.h"
+//#include "soqosmw/messages/someip/SomeIpHeader_m.h"
+#include "soqosmw/applications/someipapp/base/ISomeIpAppBase.h"
 
 namespace SOQoSMW {
 
@@ -28,42 +28,14 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpAppBase: public virtual inet::UDPBasicApp {
+class SomeIpAppBase{
     /**
      * Methods
      */
 public:
     SomeIpAppBase();
     virtual ~SomeIpAppBase();
-
-    /**
-     * Returns the IP Address of this SOME/IP app
-     *
-     * @param adressType
-     * @return local IP Address
-     */
-    virtual inet::L3Address getIpAddress(inet::L3Address::AddressType adressType);
-
 protected:
-    /**
-     * Initializes parameters
-     *
-     * @param stage indicates the initialization stage
-     */
-    virtual void initialize(int stage) override;
-
-    /**
-     * Handles incoming message as soon as node is up
-     *
-     * @param msg
-     */
-    virtual void handleMessageWhenUp(cMessage *msg) override;
-
-    /**
-     * Will be called while the graphical simulation is running.
-     * Additional visualization updates can be implemented.
-     */
-    virtual void refreshDisplay() const override;
 
     /**
      * Encapsulates packet into a SOME/IP Header
@@ -80,53 +52,16 @@ protected:
      * @param payload - the payload
      * @return Packet encapsulated in SOME/IP Header
      */
+    /*
     virtual SomeIpHeader* encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
             uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
-
-    /**
-     * Sends given packet to all known receivers
-     *
-     * @param packet to be sent
-     */
-    virtual void sendSomeIpPacket(SomeIpHeader* packet);
-
-    /**
-     * Setups network connection
-     */
-    virtual void processStart() override;
-
-    /**
-     * Processes the sending of a packet
-     */
-    virtual void processSend() override;
-
-    /**
-     * Will be called after initialize method for additional preparations
-     * before the node starts.
-     *
-     * @param doneCallback
-     * @return
-     */
-    virtual bool handleNodeStart(inet::IDoneCallback *doneCallback) override;
-
-    /**
-     * Schedules a self message
-     * @param scheduleTime the time a self message will be scheduled for
-     * @param kind the kind of message
-     */
-    void scheduleSelfMsg(omnetpp::simtime_t scheduleTime, short int kind = 0);
-
+    */
 private:
-
     /**
      * Member variables
      */
 public:
 protected:
-    /**
-     * The local ip address
-     */
-    inet::L3Address localAddress;
 private:
 };
 } /* end namespace SOQoSMW */

@@ -56,11 +56,6 @@ private:
      */
     double _startTime;
 
-    /**
-     * Signal that is emitted every time a frame was sent.
-     */
-     simsignal_t _rxPkSignal;
-
 protected:
 
     /**
@@ -91,12 +86,19 @@ protected:
      */
     virtual void handleParameterChange(const char* parname) override;
 
+    /**
+     * Signal that is emitted every time a frame was sent.
+     */
+     simsignal_t _rxPkSignal;
+
+     void setQoS();
+
 public:
     SubscriberAppBase();
     virtual ~SubscriberAppBase();
 
 private:
-    void setQoS();
+
 };
 
 }/* end namespace SOQoSMW */

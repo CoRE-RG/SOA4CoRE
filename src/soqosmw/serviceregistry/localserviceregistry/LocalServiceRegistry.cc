@@ -24,9 +24,11 @@ LocalServiceRegistry::LocalServiceRegistry() {
 }
 
 LocalServiceRegistry::~LocalServiceRegistry() {
+    /* TODO Seems no real use
     for (auto it = _serviceRegistry.begin(); it != _serviceRegistry.end(); ++it) {
         delete it->second;
     }
+    */
 }
 
 void LocalServiceRegistry::initialize()

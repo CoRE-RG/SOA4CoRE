@@ -15,13 +15,7 @@
 
 #include <soqosmw/applications/someipapp/base/SomeIpAppBase.h>
 
-#include "inet/networklayer/common/L3AddressResolver.h"
-#include "inet/common/ModuleAccess.h"
-#include "inet/common/lifecycle/NodeOperations.h"
-#include "inet/transportlayer/contract/udp/UDPControlInfo_m.h"
-
 namespace SOQoSMW {
-Define_Module(SomeIpAppBase);
 
 #define MESSAGEIDMETHODPATTERN 0xFFFF7FFF
 #define MESSAGEIDEVENTPATTERN 0xFFFFFFFF
@@ -32,28 +26,7 @@ SomeIpAppBase::SomeIpAppBase() {
 SomeIpAppBase::~SomeIpAppBase() {
 }
 
-void SomeIpAppBase:: initialize(int stage) {
-    UDPBasicApp::initialize(stage);
-
-    if (stage == inet::INITSTAGE_NETWORK_LAYER_2) {
-        processStart();
-    }
-}
-
-void SomeIpAppBase::handleMessageWhenUp(cMessage *msg)
-{
-    if (msg->isSelfMessage()) {
-        EV << "Self message arrived" << std::endl;
-    } else {
-        EV << "Message arrived" << std::endl;
-    }
-    delete msg;
-}
-
-void SomeIpAppBase::refreshDisplay() const {
-
-}
-
+/*
 SomeIpHeader* SomeIpAppBase::encapsulatePayload(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
         uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode,cPacket *payload) {
     SomeIpHeader *someipheader = new SomeIpHeader("SOME/IP");
@@ -86,60 +59,6 @@ SomeIpHeader* SomeIpAppBase::encapsulatePayload(uint16_t serviceID, uint16_t met
     someipheader->encapsulate(payload);
     return someipheader;
 }
-
-void SomeIpAppBase::sendSomeIpPacket(SomeIpHeader* packet) {
-    for (inet::L3Address destAddr : destAddresses) {
-        socket.sendTo(packet, destAddr, destPort);
-    }
-}
-
-void SomeIpAppBase::processStart() {
-    socket.setOutputGate(gate("udpOut"));
-    inet::L3AddressResolver addressResolver = inet::L3AddressResolver();
-    localAddress = addressResolver.addressOf(getParentModule(), inet::L3Address::AddressType::IPv4);
-    socket.bind(localAddress, localPort);
-    UDPBasicApp::setSocketOptions();
-
-    const char *destAddrs = par("destAddresses");
-    cStringTokenizer tokenizer(destAddrs);
-    const char *token;
-
-    while ((token = tokenizer.nextToken()) != nullptr) {
-        inet::L3Address result;
-        inet::L3AddressResolver().tryResolve(token, result);
-        if (result.isUnspecified())
-            EV_ERROR << "cannot resolve destination address: " << token << endl;
-        else
-            destAddresses.push_back(result);
-    }
-}
-
-void SomeIpAppBase::processSend() {
-
-}
-
-bool SomeIpAppBase::handleNodeStart(inet::IDoneCallback *doneCallback) {
-    return true;
-}
-
-void SomeIpAppBase::scheduleSelfMsg(omnetpp::simtime_t scheduleTime, short int kind) {
-    omnetpp::cPacket *msg = new omnetpp::cPacket("selfMsg",kind);
-    msg->setByteLength(8);
-    scheduleAt(simTime() + scheduleTime, msg);
-}
-
-inet::L3Address SomeIpAppBase::getIpAddress(inet::L3Address::AddressType addressType) {
-    switch (addressType) {
-        case inet::L3Address::IPv4:
-            return localAddress.toIPv4();
-            break;
-        case inet::L3Address::IPv6:
-            return localAddress.toIPv6();
-            break;
-        default:
-            throw cRuntimeError("Unknown addresstype");
-            break;
-    }
-}
+*/
 
 } /* end namespace SOQoSMW */
