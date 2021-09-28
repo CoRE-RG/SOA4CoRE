@@ -36,9 +36,9 @@ network SomeIpSDSmallTestNetwork
             @display("p=172,147");
         }
 
-//        Node3: Node3 {
-//            @display("p=315,30");
-//        }
+        Node3: Node3 {
+            @display("p=315,30");
+        }
 
         switch: switch {
             @display("p=172,62");
@@ -51,5 +51,5 @@ network SomeIpSDSmallTestNetwork
     connections:
         Node1.ethg <--> ETH_100MBIT <--> switch.ethg++;
         Node2.ethg <--> ETH_100MBIT <--> switch.ethg++;
-        //Node3.ethg <--> ETH_100MBIT <--> switch.ethg++;
+        Node3.ethg <--> ETH_100MBIT <--> switch.ethg++;
 }

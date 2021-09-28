@@ -13,20 +13,27 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h>
+#include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h>
 
 namespace SOQoSMW {
 
-SomeIpSDFindResult::SomeIpSDFindResult(int serviceId, int instanceId, inet::L3Address remoteAddress, IService *service) :
-        SomeIpSDFindRequest(serviceId,instanceId,remoteAddress), _service(service) {
+SomeIpSDFindRequest::SomeIpSDFindRequest(int serviceId, int instanceId, inet::L3Address remoteAddress) :
+                _serviceId(serviceId), _instanceId(instanceId), _remoteAddress(remoteAddress){
 }
 
-SomeIpSDFindResult::~SomeIpSDFindResult() {
+SomeIpSDFindRequest::~SomeIpSDFindRequest() {
 }
 
-IService* SomeIpSDFindResult::getService() const {
-    return _service;
+int SomeIpSDFindRequest::getServiceId() const {
+    return _serviceId;
 }
 
+int SomeIpSDFindRequest::getInstanceId() const {
+    return _instanceId;
+}
+
+inet::L3Address SomeIpSDFindRequest::getRemoteAddress() const {
+    return _remoteAddress;
+}
 
 } /* end namespace SOQoSMW */

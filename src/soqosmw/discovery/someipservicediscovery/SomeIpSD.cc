@@ -197,8 +197,8 @@ void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
     inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
-    SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(findEntry->getServiceID(), findEntry->getInstanceID(), udpDataIndication->getSrcAddr());
-    emit(_serviceFindSignal, someIpSDFindResult);
+    SomeIpSDFindRequest* someIpSDFindRequest = new SomeIpSDFindRequest(findEntry->getServiceID(), findEntry->getInstanceID(), udpDataIndication->getSrcAddr());
+    emit(_serviceFindSignal, someIpSDFindRequest);
 }
 
 void SomeIpSD::processFindResult(cObject* obj) {

@@ -69,10 +69,12 @@ void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t si
 }
 
 void SomeIpLocalServiceManager::lookForService(cObject* obj) {
-    SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
-    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindResult->getServiceId());
+    SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
+    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId());
     if (IService* service = _lsr->getService(serviceIdentifier)) {
-        someIpSDFindResult->setService(service);
+        SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(someIpSDFindRequest->getServiceId(),
+                    someIpSDFindRequest->getInstanceId(), someIpSDFindRequest->getRemoteAddress(), service);
+        delete(someIpSDFindRequest);
         emit(_findResultSignal,someIpSDFindResult);
     }
 }

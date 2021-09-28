@@ -16,10 +16,8 @@
 #ifndef SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
 #define SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
 
-#include <omnetpp.h>
-#include "soqosmw/messages/someip/SomeIpSDHeader.h"
-#include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
 #include "soqosmw/service/base/IService.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
 
 namespace SOQoSMW {
 
@@ -30,37 +28,13 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpSDFindResult : public omnetpp::cObject{
+class SomeIpSDFindResult : public SomeIpSDFindRequest {
 /**
  * Methods
  */
 public:
-    SomeIpSDFindResult(int serviceId, int instanceId, inet::L3Address remoteAddress);
+    SomeIpSDFindResult(int serviceId, int instanceId, inet::L3Address remoteAddress, IService *service);
     virtual ~SomeIpSDFindResult();
-
-    /**
-     * Getter for the service id
-     * @return the service id
-     */
-    int getServiceId() const;
-
-    /**
-     * Getter for the instance id
-     * @return the instance id
-     */
-    int getInstanceId() const;
-
-    /**
-     * Getter for the remote ip address
-     * @return the remote address
-     */
-    inet::L3Address getRemoteAddress() const;
-
-    /**
-     * Sets the service
-     * @param service
-     */
-    void setService(IService* service);
 
     /**
      * Getter for the service
@@ -70,31 +44,16 @@ public:
 
 protected:
 private:
-    /**
-     * The service id
-     */
-    int _serviceId;
-
-    /**
-     * The instance id
-     */
-    int _instanceId;
-
-    /**
-     * The remote ip address
-     */
-    inet::L3Address _remoteAddress;
-
-    /**
-     * The service
-     */
-    IService* _service;
 /**
  * Member variables
  */
 public:
 protected:
 private:
+    /**
+     * The service
+     */
+    IService* _service;
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_ */
