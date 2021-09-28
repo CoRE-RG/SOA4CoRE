@@ -29,19 +29,18 @@ network SomeIpSDSmallTestNetwork
         }
 
     submodules:
-        node1: Node1 {
-
+        Node1: Node1 {
             @display("p=30,30");
         }
-        node2: Node2 {
+        Node2: Node2 {
             @display("p=172,147");
         }
 
-        node3: Node3 {
-            @display("p=315,30");
-        }
+//        Node3: Node3 {
+//            @display("p=315,30");
+//        }
 
-        switch: Switch {
+        switch: switch {
             @display("p=172,62");
         }
 
@@ -50,7 +49,7 @@ network SomeIpSDSmallTestNetwork
         }
 
     connections:
-        node1.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
-        node2.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
-        node3.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        Node1.ethg <--> ETH_100MBIT <--> switch.ethg++;
+        Node2.ethg <--> ETH_100MBIT <--> switch.ethg++;
+        //Node3.ethg <--> ETH_100MBIT <--> switch.ethg++;
 }

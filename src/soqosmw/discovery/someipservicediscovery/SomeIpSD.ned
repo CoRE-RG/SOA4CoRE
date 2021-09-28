@@ -36,6 +36,8 @@ simple SomeIpSD extends UDPBasicApp like IServiceDiscovery
         @signal[subscribeEventGroupSignal];
         // The signal which is emitted when a subscribeEventGroupAck is received
         @signal[subscribeEventGroupAckSignal];
+        // The Signal which is emitted when a service is discovered
+        @signal[serviceFoundSignal];
         
         // Broadcasts will be received by default
         receiveBroadcast = default(true);
@@ -47,4 +49,9 @@ simple SomeIpSD extends UDPBasicApp like IServiceDiscovery
         messageLength = default(16B);
         // The send interval of a message
         sendInterval = default(0.001s);
+     gates:
+        // Input gate for service discovery module
+        input sdIn;
+        // Output gate for service discovery module
+        output sdOut;
 }

@@ -22,7 +22,7 @@
 #include "soqosmw/messages/someip/SomeIpSDHeader.h"
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
 #include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
-#include "soqosmw/discovery/someipservicediscovery/SomeIpSDHeaderContainer.h"
+#include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h>
 
 namespace SOQoSMW {
 
@@ -89,6 +89,13 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      * @param msg
      */
     virtual void handleMessageWhenUp(cMessage *msg) override;
+
+    /**
+     * Is used just to override because there is no use for this
+     * @param doneCallback
+     * @return true
+     */
+    virtual bool handleNodeStart(IDoneCallback *doneCallback) override;
 
   private:
     /**

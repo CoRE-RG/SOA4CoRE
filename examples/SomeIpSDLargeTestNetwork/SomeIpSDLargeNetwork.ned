@@ -78,16 +78,16 @@ network SomeIpSDLargeTestNetwork
         }
         
     connections:
-        HostNorthWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
-        HostWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
-        HostSouthWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostNorthWest.ethg <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostWest.ethg <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostSouthWest.ethg <--> ETH_100MBIT <--> SwitchWest.ethg++;
 
-        HostNorth.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
-        HostSouth.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
+        HostNorth.ethg <--> ETH_100MBIT <--> SwitchCenter.ethg++;
+        HostSouth.ethg <--> ETH_100MBIT <--> SwitchCenter.ethg++;
 
-        HostNorthEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
-        HostEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
-        HostSouthEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostNorthEast.ethg <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostEast.ethg <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostSouthEast.ethg <--> ETH_100MBIT <--> SwitchEast.ethg++;
         
         SwitchWest.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
         SwitchEast.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;

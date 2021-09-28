@@ -1,6 +1,5 @@
 package soqosmw.examples.MinimalEvaluationNetwork.small_network;
 
-import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 

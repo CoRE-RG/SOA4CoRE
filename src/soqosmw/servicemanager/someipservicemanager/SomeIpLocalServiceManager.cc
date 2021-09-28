@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h>
 #include "soqosmw/applications/publisherapp/someip/SomeIpPublisher.h"
 #include "soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/servicemanager/someipservicemanager/SubscriptionRelations.h"
-#include "soqosmw/discovery/someipservicediscovery/SomeIpSDHeaderContainer.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 
 namespace SOQoSMW {
@@ -27,8 +27,7 @@ Define_Module(SomeIpLocalServiceManager);
 void SomeIpLocalServiceManager::initialize(int stage) {
     LocalServiceManager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
-        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(
-                   par("sdmoduleName"))))) {
+        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule("sd")))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
         if(SomeIpSD* sd = dynamic_cast<SomeIpSD*>(_sd)) {
@@ -70,11 +69,11 @@ void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t si
 }
 
 void SomeIpLocalServiceManager::lookForService(cObject* obj) {
-    SomeIpSDHeaderContainer* someIpSDHeaderContainer = dynamic_cast<SomeIpSDHeaderContainer*>(obj);
-    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDHeaderContainer->getSomeIpSdEntry().getServiceID());
+    SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
+    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindResult->getServiceId());
     if (IService* service = _lsr->getService(serviceIdentifier)) {
-        someIpSDHeaderContainer->setService(service);
-        emit(_findResultSignal,someIpSDHeaderContainer);
+        someIpSDFindResult->setService(service);
+        emit(_findResultSignal,someIpSDFindResult);
     }
 }
 

@@ -102,7 +102,7 @@ void LocalServiceManager::registerPublisherService(uint32_t publisherServiceId,
     }
     _lsr->addPublisherService(new QoSService(
             publisherServiceId,
-            inet::L3Address(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalAddress])->getValue().c_str()),
+            inet::L3AddressResolver().resolve(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalAddress])->getValue().c_str()),
             dynamic_cast<LocalPortQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalPort])->getValue(),
             qosPolicies));
 }
@@ -170,7 +170,7 @@ void LocalServiceManager::subscribeQoSService(IServiceIdentifier& publisherServi
         }
         QoSService qosService = QoSService(
                 publisherServiceIdentifier.getServiceId(),
-                inet::L3Address(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalAddress])->getValue().c_str()),
+                inet::L3AddressResolver().resolve(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalAddress])->getValue().c_str()),
                 localPort,
                 qosPolicyMap);
         if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {

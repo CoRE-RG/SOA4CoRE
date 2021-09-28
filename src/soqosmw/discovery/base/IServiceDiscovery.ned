@@ -28,4 +28,5 @@ moduleinterface IServiceDiscovery
     parameters:
         @signal[serviceFoundSignal](type=cObject);
         @display("i=block/table2");
+            
 }

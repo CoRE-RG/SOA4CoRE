@@ -28,19 +28,33 @@ namespace SOQoSMW {
 Define_Module(SomeIpSD);
 
 void SomeIpSD::initialize(int stage) {
-    inet::UDPBasicApp::initialize(stage);
+    inet::ApplicationBase::initialize(stage);
+    if (stage == inet::INITSTAGE_LOCAL) {
+        gate("udpOut")->connectTo(getParentModule()->gate("sdUDPOut"));
+        getParentModule()->gate("sdUDPIn")->connectTo(gate("udpIn"));
+        numSent = 0;
+        numReceived = 0;
+        WATCH(numSent);
+        WATCH(numReceived);
+
+        localPort = par("localPort");
+        destPort = par("destPort");
+        startTime = par("startTime").doubleValue();
+        stopTime = par("stopTime").doubleValue();
+        packetName = par("packetName");
+    }
     if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
-        if (!par("localAddress")) {
+        if (!(par("localAddress").stdstringValue().length())) {
             throw cRuntimeError("Please define a local ip address");
         }
+        processStart();
         IServiceDiscovery::_serviceFoundSignal = omnetpp::cComponent::registerSignal("serviceFoundSignal");
         _serviceFindSignal = omnetpp::cComponent::registerSignal("serviceFindSignal");
         _serviceOfferSignal = omnetpp::cComponent::registerSignal("serviceOfferSignal");
         _subscribeEventGroupSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupSignal");
         _subscribeEventGroupAckSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupAckSignal");
 
-        if (SomeIpLocalServiceManager* someIplocalServiceManager = dynamic_cast<SomeIpLocalServiceManager*>(getParentModule()->getSubmodule(
-                par("lsmmoduleName")))) {
+        if (SomeIpLocalServiceManager* someIplocalServiceManager = dynamic_cast<SomeIpLocalServiceManager*>(getParentModule()->getSubmodule("lsm"))) {
             someIplocalServiceManager->subscribe("findResultSignal",this);
             someIplocalServiceManager->subscribe("subscribeSignal",this);
             someIplocalServiceManager->subscribe("subscribeAckSignal",this);
@@ -48,6 +62,11 @@ void SomeIpSD::initialize(int stage) {
             throw cRuntimeError("SomeIpLocalServiceManager is needed for SOME/IP Discovery.");
         }
     }
+}
+
+bool SomeIpSD::handleNodeStart(IDoneCallback *doneCallback)
+{
+    return true;
 }
 
 void SomeIpSD::handleMessageWhenUp(cMessage *msg) {
@@ -177,18 +196,17 @@ void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
 
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
-    SomeIpSDHeaderContainer someIpSDHeaderContainer = SomeIpSDHeaderContainer(*findEntry, *someIpSDHeader);
-    emit(_serviceFindSignal, &someIpSDHeaderContainer);
+    inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
+    SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(findEntry->getServiceID(), findEntry->getInstanceID(), udpDataIndication->getSrcAddr());
+    emit(_serviceFindSignal, someIpSDFindResult);
 }
 
 void SomeIpSD::processFindResult(cObject* obj) {
-    SomeIpSDHeaderContainer* someIpSDHeaderContainer = dynamic_cast<SomeIpSDHeaderContainer*>(obj);
-    SomeIpSDEntry findEntry = someIpSDHeaderContainer->getSomeIpSdEntry();
-    SomeIpSDHeader someIpSDHeader = someIpSDHeaderContainer->getSomeIpSdHeader();
-    IService* service = someIpSDHeaderContainer->getService();
-    inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader.getControlInfo());
-    offer(findEntry.getServiceID(), findEntry.getInstanceID(), udpDataIndication->getSrcAddr(),
+    SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
+    IService* service = someIpSDFindResult->getService();
+    offer(someIpSDFindResult->getServiceId(), someIpSDFindResult->getInstanceId(), someIpSDFindResult->getRemoteAddress(),
             service->getAddress(), service->getPort());
+    delete(someIpSDFindResult);
 }
 
 void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someIpSDHeader) {

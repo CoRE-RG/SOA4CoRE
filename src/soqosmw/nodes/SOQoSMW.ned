@@ -53,6 +53,11 @@ module SOQoSMW
         output qosnpUDPOut;
         //connection for the quality of service negotiation module from udp
         input qosnpUDPIn;
+        
+        //connection for the SOME/IP SD module to udp
+        output sdUDPOut;
+        //connection for the SOME/IP SD module from udp
+        input sdUDPIn;
 
     submodules:
 
@@ -92,8 +97,7 @@ module SOQoSMW
             @display("p=400,100,c,50");
         }
 
-    connections:
+    connections allowunconnected:
         qosnp.udpOut --> qosnpUDPOut;
         qosnp.udpIn <-- qosnpUDPIn;
-        
 }

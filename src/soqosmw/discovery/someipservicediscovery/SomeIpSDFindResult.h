@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDHEADERCONTAINER_H_
-#define SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDHEADERCONTAINER_H_
+#ifndef SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
+#define SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
 
 #include <omnetpp.h>
 #include "soqosmw/messages/someip/SomeIpSDHeader.h"
@@ -24,32 +24,37 @@
 namespace SOQoSMW {
 
 /**
- * @brief This class provides a container for the SOME/IP SD header, its current investigated
- * SOME/IP SD entry and an optional Service
+ * @brief This class provides a container for results resulting from SOME/IP SD header find entry
  *
  * @ingroup soqosmw/discovery/someipservicediscovery
  *
  * @author Mehmet Cakir
  */
-class SomeIpSDHeaderContainer : public omnetpp::cObject{
+class SomeIpSDFindResult : public omnetpp::cObject{
 /**
  * Methods
  */
 public:
-    SomeIpSDHeaderContainer(SomeIpSDEntry& someIpSDEntry, SomeIpSDHeader& someIpSDHeader);
-    virtual ~SomeIpSDHeaderContainer();
+    SomeIpSDFindResult(int serviceId, int instanceId, inet::L3Address remoteAddress);
+    virtual ~SomeIpSDFindResult();
 
     /**
-     * Getter for the SOME/IP SD Entry
-     * @return the SOME/IP SD Entry
+     * Getter for the service id
+     * @return the service id
      */
-    SomeIpSDEntry& getSomeIpSdEntry() const;
+    int getServiceId() const;
 
     /**
-     * Getter for the SOME/IP SD Header
-     * @return the SOME/IP SD Header
+     * Getter for the instance id
+     * @return the instance id
      */
-    SomeIpSDHeader& getSomeIpSdHeader() const;
+    int getInstanceId() const;
+
+    /**
+     * Getter for the remote ip address
+     * @return the remote address
+     */
+    inet::L3Address getRemoteAddress() const;
 
     /**
      * Sets the service
@@ -63,19 +68,22 @@ public:
      */
     IService* getService() const;
 
-
-
 protected:
 private:
     /**
-     * The SOME/IP SD entry
+     * The service id
      */
-    SomeIpSDEntry& _someIpSDEntry;
+    int _serviceId;
 
     /**
-     * The SOME/IP SD Header
+     * The instance id
      */
-    SomeIpSDHeader& _someIpSDHeader;
+    int _instanceId;
+
+    /**
+     * The remote ip address
+     */
+    inet::L3Address _remoteAddress;
 
     /**
      * The service
@@ -89,4 +97,4 @@ protected:
 private:
 };
 } /* end namespace SOQoSMW */
-#endif /* SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDHEADERCONTAINER_H_ */
+#endif /* SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_ */

@@ -22,8 +22,13 @@ namespace SOQoSMW {
 
 Define_Module(SomeIpSubscriber);
 
-SomeIpSubscriber::SomeIpSubscriber() : SubscriberAppBase() {
+void SomeIpSubscriber::initialize() {
+    SubscriberAppBase::initialize();
     _instanceId = par("instanceID").intValue();
+}
+
+SomeIpSubscriber::SomeIpSubscriber() : SubscriberAppBase() {
+
 }
 
 SomeIpSubscriber::~SomeIpSubscriber() {
@@ -53,10 +58,6 @@ void SomeIpSubscriber::handleMessage(cMessage *msg)
         }
     }
     delete msg;
-}
-
-void SomeIpSubscriber::initialize() {
-    SubscriberAppBase::initialize();
 }
 
 uint16_t SomeIpSubscriber::getInstanceId() {

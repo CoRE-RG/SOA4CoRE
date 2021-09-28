@@ -29,7 +29,5 @@ simple SomeIpPublisher extends PublisherAppBase
         @class(SOQoSMW::SomeIpPublisher);
         
         // The instance id of the service that will be subscribed
-        int instanceID;
-        // The instance id of service that will be subscribed
-        instanceID = 0xFFFF;
+        int instanceID = default(0xFFFF);
 }

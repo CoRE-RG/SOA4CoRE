@@ -13,34 +13,37 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/discovery/someipservicediscovery/SomeIpSDHeaderContainer.h>
+#include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h>
 
 namespace SOQoSMW {
 
-SomeIpSDHeaderContainer::SomeIpSDHeaderContainer(SomeIpSDEntry& someIpSDEntry, SomeIpSDHeader& someIpSDHeader) :
-        _someIpSDEntry(someIpSDEntry), _someIpSDHeader(someIpSDHeader) {
-    // TODO Auto-generated constructor stub
-
+SomeIpSDFindResult::SomeIpSDFindResult(int serviceId, int instanceId, inet::L3Address remoteAddress) :
+        _serviceId(serviceId), _instanceId(instanceId), _remoteAddress(remoteAddress) {
 }
 
-SomeIpSDHeaderContainer::~SomeIpSDHeaderContainer() {
-    // TODO Auto-generated destructor stub
+SomeIpSDFindResult::~SomeIpSDFindResult() {
 }
 
-SomeIpSDEntry& SomeIpSDHeaderContainer::getSomeIpSdEntry() const {
-    return _someIpSDEntry;
+int SomeIpSDFindResult::getServiceId() const {
+    return _serviceId;
 }
 
-SomeIpSDHeader& SomeIpSDHeaderContainer::getSomeIpSdHeader() const {
-    return _someIpSDHeader;
+int SomeIpSDFindResult::getInstanceId() const {
+    return _instanceId;
 }
 
-IService* SomeIpSDHeaderContainer::getService() const {
+inet::L3Address SomeIpSDFindResult::getRemoteAddress() const {
+    return _remoteAddress;
+}
+
+IService* SomeIpSDFindResult::getService() const {
     return _service;
 }
 
-void SomeIpSDHeaderContainer::setService(IService* service) {
+void SomeIpSDFindResult::setService(IService* service) {
     _service = service;
 }
+
+
 
 } /* end namespace SOQoSMW */
