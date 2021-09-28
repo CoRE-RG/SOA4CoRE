@@ -65,8 +65,9 @@ void SOMEIPUDPPublisherEndpoint::sendPacket(uint16_t serviceID, uint16_t method_
     someipheader->setReturnCode(returnCode);
     someipheader->encapsulate(payload);
     for(auto pair = _remotes.begin(); pair != _remotes.end(); pair++){
-        _serverSocket.sendTo(someipheader, pair->first, pair->second);
+        _serverSocket.sendTo(someipheader->dup(), pair->first, pair->second);
     }
+    delete(someipheader);
 }
 
 } /* end namespace SOQoSMW */
