@@ -40,18 +40,18 @@ module SOQoSMWHost extends RTIPHost
     submodules:
 
         services[numServices]: <> like ISOQoSMWApplication {
-            @display("p=740,315,m,5,50,50");
+            @display("p=1071,65,m,5,50,50");
         }
 
         soqosmw: SOQoSMW {
-            @display("p=615,315");
+            @display("p=966,65");
         }
 
     connections allowunconnected:
 
         soqosmw.qosnpUDPOut --> udp.appIn++;
         soqosmw.qosnpUDPIn <-- udp.appOut++;
-        
+
         soqosmw.sdUDPOut --> udp.appIn++;
         soqosmw.sdUDPIn <-- udp.appOut++;
 
