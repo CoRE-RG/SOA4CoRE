@@ -40,20 +40,21 @@ ConnectionSpecificInformation* AVBSubscriberEndpoint::getConnectionSpecificInfor
     return connection;
 }
 
-void AVBSubscriberEndpoint::initialize()
-{
+void AVBSubscriberEndpoint::initialize() {
     _updateMessage = nullptr;
     // get owning app
     SOQoSMWApplicationBase* app = _connector->getApplications()[0];
-    if(!app){
-        throw cRuntimeError("Owning application not found in init of publisher.");
+    if (!app) {
+        throw cRuntimeError(
+                "Owning application not found in init of publisher.");
     }
 
     //find srp table
     _srpTable = check_and_cast<SRPTable *>(
             app->getParentModule()->getSubmodule("srpTable"));
-    if(!_srpTable){
-        throw cRuntimeError("srpTable module required for stream reservation but not found");
+    if (!_srpTable) {
+        throw cRuntimeError(
+                "srpTable module required for stream reservation but not found");
     }
 
     //init base class
@@ -66,44 +67,49 @@ void AVBSubscriberEndpoint::initializeTransportConnection() {
     _srpTable->subscribe(NF_AVB_LISTENER_REGISTRATION_TIMEOUT, this);
 
     // register listener
-    _srpTable->updateListenerWithStreamId(_streamID, this, _vlanID);
-    if (_updateInterval > 0)
-    {
+    if (_srpTable->getTalkerEntryForStreamId(_streamID, _vlanID)) {
+        _srpTable->updateListenerWithStreamId(_streamID, this, _vlanID);
+        _isConnected = true;
+    }
+
+    if (_updateInterval > 0) {
         scheduleUpdateMessage(simTime() + _updateInterval);
     }
 }
 
 void AVBSubscriberEndpoint::receiveSignal(cComponent* src, simsignal_t id,
         cObject* obj, cObject* details) {
-    if (id == NF_AVB_TALKER_REGISTERED)
-    {
-        SRPTable::TalkerEntry *tentry = check_and_cast<SRPTable::TalkerEntry*>(obj);
+    Enter_Method_Silent
+    ();
+    if (id == NF_AVB_TALKER_REGISTERED) {
+        SRPTable::TalkerEntry *tentry = check_and_cast<SRPTable::TalkerEntry*>(
+                obj);
 
         //If talker for the desired stream, register Listener
-        if (tentry->streamId == _streamID && tentry->vlan_id == _vlanID)
-        {
+        if (tentry->streamId == _streamID && tentry->vlan_id == _vlanID) {
             SRPTable *signal_srpTable = check_and_cast<SRPTable *>(src);
 
-            signal_srpTable->updateListenerWithStreamId(_streamID, this, _vlanID);
+            signal_srpTable->updateListenerWithStreamId(_streamID, this,
+                    _vlanID);
+            _isConnected = true;
 
-            EV_INFO << _endpointPath << ": Registered AVBListener for streamID " << _streamID << endl;
-            if (_updateInterval > 0)
-            {
+            EV_INFO << _endpointPath << ": Registered AVBListener for streamID "
+                           << _streamID << endl;
+            if (_updateInterval > 0) {
                 scheduleUpdateMessage(simTime() + _updateInterval);
             }
         }
-    }
-    else if (id == NF_AVB_LISTENER_REGISTRATION_TIMEOUT)
-    {
-        SRPTable::ListenerEntry *lentry = check_and_cast<SRPTable::ListenerEntry*>(obj);
-        if (lentry->streamId == _streamID && lentry->vlan_id == _vlanID)
-        {
-            if (lentry->module == this)
-            {
+    } else if (id == NF_AVB_LISTENER_REGISTRATION_TIMEOUT) {
+        _isConnected = false;
+        SRPTable::ListenerEntry *lentry = check_and_cast<
+                SRPTable::ListenerEntry*>(obj);
+        if (lentry->streamId == _streamID && lentry->vlan_id == _vlanID) {
+            if (lentry->module == this) {
 
-                EV_ERROR << _endpointPath << ": Registration failed for AVBListener streamID " << _streamID << endl;
-                if (_retryInterval > 0)
-                {
+                EV_ERROR << _endpointPath
+                                << ": Registration failed for AVBListener streamID "
+                                << _streamID << endl;
+                if (_retryInterval > 0) {
                     scheduleUpdateMessage(simTime() + _retryInterval);
                 }
             }
@@ -111,32 +117,31 @@ void AVBSubscriberEndpoint::receiveSignal(cComponent* src, simsignal_t id,
     }
 }
 
-void AVBSubscriberEndpoint::handleMessage(cMessage *msg)
-{
-    if (msg->isSelfMessage() && (strcmp(msg->getName(), "updateSubscription") == 0))
-    {
+void AVBSubscriberEndpoint::handleMessage(cMessage *msg) {
+    if (msg->isSelfMessage()
+            && (strcmp(msg->getName(), "updateSubscription") == 0)) {
         // update the subscription!
-        _srpTable->updateListenerWithStreamId(_streamID, this, _vlanID);
-        if (_updateInterval > 0)
-        {
+        if (_srpTable->getTalkerEntryForStreamId(_streamID, _vlanID)) {
+            _srpTable->updateListenerWithStreamId(_streamID, this, _vlanID);
+            _isConnected = true;
+        } else {
+            _isConnected = false;
+        }
+        if (_updateInterval > 0) {
             scheduleUpdateMessage(simTime() + _updateInterval);
         }
-    }
-    else
-    {
+    } else {
         RTSubscriberEndpointBase::handleMessage(msg);
     }
 }
 
 void AVBSubscriberEndpoint::processScheduledMessage(cMessage* msg) {
-    if(msg->arrivedOn("AVBin")){
-        if(AVBFrame* frame = dynamic_cast<AVBFrame*>(msg)){
+    if (msg->arrivedOn("AVBin")) {
+        if (AVBFrame* frame = dynamic_cast<AVBFrame*>(msg)) {
             handleTransportIn(frame->decapsulate());
         }
         delete msg;
-    }
-    else
-    {
+    } else {
         RTSubscriberEndpointBase::handleMessage(msg);
     }
 }
@@ -144,29 +149,29 @@ void AVBSubscriberEndpoint::processScheduledMessage(cMessage* msg) {
 void AVBSubscriberEndpoint::handleParameterChange(const char* parname) {
     RTSubscriberEndpointBase::handleParameterChange(parname);
 
-    if (!parname || !strcmp(parname, "updateInterval"))
-    {
-        this->_updateInterval = parameterDoubleCheckRange(par("updateInterval"), 0, DBL_MAX);
+    if (!parname || !strcmp(parname, "updateInterval")) {
+        this->_updateInterval = parameterDoubleCheckRange(par("updateInterval"),
+                0, DBL_MAX);
     }
-    if (!parname || !strcmp(parname, "retryInterval"))
-    {
-        this->_retryInterval = parameterDoubleCheckRange(par("retryInterval"), 0, DBL_MAX);
+    if (!parname || !strcmp(parname, "retryInterval")) {
+        this->_retryInterval = parameterDoubleCheckRange(par("retryInterval"),
+                0, DBL_MAX);
     }
-    if (!parname || !strcmp(parname, "streamID"))
-    {
-        this->_streamID = parameterULongCheckRange(par("streamID"), 0, static_cast<unsigned long>(MAX_STREAM_ID));
+    if (!parname || !strcmp(parname, "streamID")) {
+        this->_streamID = parameterULongCheckRange(par("streamID"), 0,
+                static_cast<unsigned long>(MAX_STREAM_ID));
     }
-    if (!parname || !strcmp(parname, "vlan_id"))
-    {
-        this->_vlanID = static_cast<unsigned short>(parameterULongCheckRange(par("vlan_id"), 0, MAX_VLAN_ID));
+    if (!parname || !strcmp(parname, "vlan_id")) {
+        this->_vlanID = static_cast<unsigned short>(parameterULongCheckRange(
+                par("vlan_id"), 0, MAX_VLAN_ID));
     }
 }
 
 void AVBSubscriberEndpoint::scheduleUpdateMessage(SimTime at) {
     // create message if it doesnt exist
-    if(_updateMessage){
+    if (_updateMessage) {
         // cancel previously scheduled updates
-        if(_updateMessage->isScheduled()){
+        if (_updateMessage->isScheduled()) {
             cancelEvent(_updateMessage);
         }
     } else {
