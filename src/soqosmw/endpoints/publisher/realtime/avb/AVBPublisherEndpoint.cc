@@ -71,10 +71,12 @@ void AVBPublisherEndpoint::handleParameterChange(const char* parname) {
         if (strcmp(par("srClass").stringValue(), "A") == 0)
         {
             this->_srClass = SR_CLASS::A;
+            this->_pcp = PCP_DEFAULT_SRCLASSA;
         }
         else if (strcmp(par("srClass").stringValue(), "B") == 0)
         {
             this->_srClass = SR_CLASS::B;
+            this->_pcp = PCP_DEFAULT_SRCLASSB;
         }
         else
         {
@@ -153,7 +155,7 @@ void AVBPublisherEndpoint::initializeTransportConnection() {
     _srpTable->subscribe(NF_AVB_LISTENER_UNREGISTERED, this);
     _srpTable->subscribe(NF_AVB_LISTENER_REGISTRATION_TIMEOUT, this);
     _srpTable->updateTalkerWithStreamId(_streamID, this,
-            _multicastMAC, _srClass, _frameSize, _intervalFrames, _vlanID);
+            _multicastMAC, _srClass, _frameSize, _intervalFrames, _vlanID, _pcp);
     EV_INFO << _endpointPath << ": Registered AVBTalker with streamID " << _streamID << endl;
 }
 
@@ -174,6 +176,7 @@ void AVBPublisherEndpoint::publish(cPacket* msg) {
         outFrame->setStreamID(_streamID);
         outFrame->setDest(_multicastMAC);
         outFrame->setVID(_vlanID);
+        outFrame->setPcp(_pcp);
 
         outFrame->encapsulate(msg->dup());
         //Padding

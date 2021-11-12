@@ -109,6 +109,11 @@ protected:
     uint16_t _vlanID;
 
     /**
+     * The pcp of the stream.
+     */
+    uint16_t _pcp;
+
+    /**
      * Calculated framesize.
      */
     size_t _frameSize;
