@@ -65,36 +65,15 @@ void UDPPublisherEndpoint::handleTransportIn(cMessage* msg) {
 }
 
 void UDPPublisherEndpoint::initializeTransportConnection() {
-    // get owning app
-    SOQoSMWApplicationBase* app = _connector->getApplications()[0];
-    if(!app){
-        throw cRuntimeError("Owning application not found in init of publisher.");
-    }
-
     _isConnected = false;
 
     // find UDP module and add another gate.
-    cModule* udp = app->getParentModule()->getSubmodule("udp");
+    cModule* udp = getParentModule()->getParentModule()->getSubmodule("udp");
     if(!udp){
         throw cRuntimeError("udp module required for udp publisher but not found");
     }
-    cGate* udpInGate = udp->getOrCreateFirstUnconnectedGate("appIn", 0, false, true);
-    cGate* udpOutGate = udp->getOrCreateFirstUnconnectedGate("appOut", 0, false, true);
-
-    // check and create new gates in middleware compound module
-    cModule* middleware = this->getParentModule();
-    if(!middleware->hasGate("udpEndpointsIn") && !middleware->hasGate("udpEndpointsOut")){
-        middleware->addGate("udpEndpointsIn", cGate::INPUT, true);
-        middleware->addGate("udpEndpointsOut", cGate::OUTPUT, true);
-    }
-    cGate* middlewareInGate = middleware->getOrCreateFirstUnconnectedGate("udpEndpointsIn", 0, true, true);
-    cGate* middlewareOutGate = middleware->getOrCreateFirstUnconnectedGate("udpEndpointsOut", 0, true, true);
-
-    // connect gates
-    this->gate(TRANSPORT_OUT_GATE_NAME)->connectTo(middlewareOutGate);
-    middlewareOutGate->connectTo(udpInGate);
-    udpOutGate->connectTo(middlewareInGate);
-    middlewareInGate->connectTo(this->gate(TRANSPORT_IN_GATE_NAME));
+    //connect to transport via middleware
+    connectToTransportGate(udp, "appIn", "appOut");
 
     // update server socket and listen
     _serverSocket.setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));

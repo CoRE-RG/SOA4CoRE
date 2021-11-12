@@ -40,8 +40,7 @@ namespace SOQoSMW {
  *
  * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
  */
-class EndpointBase : public ProcessingTimeSimulation
-{
+class EndpointBase: public ProcessingTimeSimulation {
 public:
 
     /**
@@ -83,7 +82,7 @@ private:
      */
     simtime_t _creationTime;
 
-  protected:
+protected:
     virtual void initialize() override;
 
     /**
@@ -94,15 +93,28 @@ private:
     virtual void handleParameterChange(const char* parname) override;
 
     /**
-    * Processes the scheduled message. Needs to delete the message after handling it.
-    * @param msg  the incoming message
-    */
-   virtual void processScheduledMessage(cMessage *msg) override;
+     * Processes the scheduled message. Needs to delete the message after handling it.
+     * @param msg  the incoming message
+     */
+    virtual void processScheduledMessage(cMessage *msg) override;
 
     /**
      * Is called during module initialization to initialize the transport connection;
      */
     virtual void initializeTransportConnection() = 0;
+
+    /**
+     * Helper Function to connect the endpoints transport in and out gates to a
+     * transport modules in and out gate.
+     * A gate in the middleware compound module will be created as a pass through.
+     * (endpoit <--> middleware <--> transport)
+     *
+     * @param tpModule Transport module to connect to.
+     * @param tpInGateName Name of the transport modules input gate.
+     * @param tpGateOut Name of the transport modules output gate.
+     */
+    void connectToTransportGate(cModule* tpModule,
+            const char* tpInGateName, const char* tpGateOut);
 
     /**
      * Handles messages incoming from transport gate and
@@ -119,7 +131,6 @@ private:
      * @param msg   the message to handle.
      */
     virtual void handleConnectorIn(cMessage *msg) = 0;
-
 
     /**
      * The name of the endpoint as a path for better specifying (e.g. "Reifendruck/links").
@@ -139,19 +150,27 @@ private:
     /**
      * Gate name (@directIn) to forward messages to the connector
      */
-    static const char CONNECTOR_OUT_GATE_NAME []; // = "endpointIn";
+    static const char CONNECTOR_OUT_GATE_NAME[]; // = "endpointIn";
     /**
      * Gate name (@directIn) to receive messages from the connector
      */
-    static const char CONNECTOR_IN_GATE_NAME []; // = "connectorIn";
+    static const char CONNECTOR_IN_GATE_NAME[]; // = "connectorIn";
     /**
      * Gate name for transport inputs
      */
-    static const char TRANSPORT_IN_GATE_NAME []; //= "transportIn";
+    static const char TRANSPORT_IN_GATE_NAME[]; //= "transportIn";
     /**
      * Gate name for transport outputs
      */
-    static const char TRANSPORT_OUT_GATE_NAME []; //= "transportOut";
+    static const char TRANSPORT_OUT_GATE_NAME[]; //= "transportOut";
+    /**
+     * Gate name for transport inputs
+     */
+    static const char TRANSPORT_MIDDLEWARE_IN_GATE_NAME[]; //= "tpEndpointsIn";
+    /**
+     * Gate name for transport outputs
+     */
+    static const char TRANSPORT_MIDDLEWARE_OUT_GATE_NAME[]; //= "tpEndpointsOut";
 };
 
 } /*end namespace SOQoSMW*/

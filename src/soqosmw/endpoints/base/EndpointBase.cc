@@ -26,9 +26,10 @@ const char EndpointBase::CONNECTOR_IN_GATE_NAME[] = "connectorIn";
 const char EndpointBase::TRANSPORT_IN_GATE_NAME[] = "transportIn";
 const char EndpointBase::TRANSPORT_OUT_GATE_NAME[] = "transportOut";
 
+const char EndpointBase::TRANSPORT_MIDDLEWARE_IN_GATE_NAME[] = "tpEndpointsIn";
+const char EndpointBase::TRANSPORT_MIDDLEWARE_OUT_GATE_NAME[] = "tpEndpointsOut";
 
-void EndpointBase::initialize()
-{
+void EndpointBase::initialize() {
     ProcessingTimeSimulation::initialize();
     handleParameterChange(nullptr);
     //nothing to do
@@ -43,11 +44,11 @@ simtime_t EndpointBase::getCreationTime() {
 }
 
 void EndpointBase::processScheduledMessage(cMessage* msg) {
-    if(msg->arrivedOn(CONNECTOR_IN_GATE_NAME)){
+    if (msg->arrivedOn(CONNECTOR_IN_GATE_NAME)) {
         // from connector
         handleConnectorIn(msg);
 
-    }else if(msg->arrivedOn(TRANSPORT_IN_GATE_NAME)){
+    } else if (msg->arrivedOn(TRANSPORT_IN_GATE_NAME)) {
         // from transport
         handleTransportIn(msg);
     } else {
@@ -78,5 +79,32 @@ void EndpointBase::handleParameterChange(const char* parname) {
     }
 }
 
+void EndpointBase::connectToTransportGate(cModule* tpModule, const char* tpInGateName,
+        const char* tpOutGateName) {
+    // get or create gates in transport module
+    cGate* tpInGate = tpModule->getOrCreateFirstUnconnectedGate(tpInGateName, 0,
+            false, true);
+    cGate* tpOutGate = tpModule->getOrCreateFirstUnconnectedGate(tpOutGateName, 0,
+            false, true);
+    // check or create gate vector in middleware compound module
+    cModule* middleware = this->getParentModule();
+    if (!middleware->hasGate(TRANSPORT_MIDDLEWARE_IN_GATE_NAME)
+            && !middleware->hasGate(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME)) {
+        middleware->addGate(TRANSPORT_MIDDLEWARE_IN_GATE_NAME, cGate::INPUT,
+                true);
+        middleware->addGate(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, cGate::OUTPUT,
+                true);
+    }
+    // get or create gates in middleware compound module
+    cGate* middlewareInGate = middleware->getOrCreateFirstUnconnectedGate(
+            TRANSPORT_MIDDLEWARE_IN_GATE_NAME, 0, true, true);
+    cGate* middlewareOutGate = middleware->getOrCreateFirstUnconnectedGate(
+            TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, 0, true, true);
+    // connect gates endpoit <--> middleware <--> transport
+    this->gate(TRANSPORT_OUT_GATE_NAME)->connectTo(middlewareOutGate);
+    middlewareOutGate->connectTo(tpInGate);
+    tpOutGate->connectTo(middlewareInGate);
+    middlewareInGate->connectTo(this->gate(TRANSPORT_IN_GATE_NAME));
+}
 
 } /*end namespace SOQoSMW*/
