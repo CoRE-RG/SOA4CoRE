@@ -35,12 +35,10 @@ TCPPublisherEndpoint::~TCPPublisherEndpoint() {
 void TCPPublisherEndpoint::handleParameterChange(const char* parname) {
     STDPublisherEndpointBase::handleParameterChange(parname);
 
-    if (!parname || !strcmp(parname, "localAddress"))
-    {
+    if (!parname || !strcmp(parname, "localAddress")) {
         _localAddress = par("localAddress").stdstringValue();
     }
-    if (!parname || !strcmp(parname, "localPort"))
-    {
+    if (!parname || !strcmp(parname, "localPort")) {
         _localPort = par("localPort");
     }
 }
@@ -53,30 +51,24 @@ ConnectionSpecificInformation* TCPPublisherEndpoint::getConnectionSpecificInform
 }
 
 void TCPPublisherEndpoint::initializeTransportConnection() {
-    // get owning app
-    SOQoSMWApplicationBase* app = _connector->getApplications()[0];
-    if(!app){
-        throw cRuntimeError("Owning application not found in init of publisher.");
-    }
-
     _isConnected = false;
 
     // find TCP module and add another gate.
-    cModule* tcp = app->getParentModule()->getSubmodule("tcp");
-    if(!tcp){
-        throw cRuntimeError("tcp module required for tcp publisher but not found");
+    cModule* tcp = getParentModule()->getParentModule()->getSubmodule("tcp");
+    if (!tcp) {
+        throw cRuntimeError(
+                "tcp module required for tcp publisher but not found");
     }
-    // create new gates
-    tcp->setGateSize("appIn", tcp->gateSize("appIn")+1);
-    tcp->setGateSize("appOut", tcp->gateSize("appOut")+1);
-    // connect to transport gates
-    this->gate(TRANSPORT_OUT_GATE_NAME)->connectTo(tcp->gate("appIn", tcp->gateSize("appIn")-1));
-    tcp->gate("appOut", tcp->gateSize("appOut")-1)->connectTo(this->gate(TRANSPORT_IN_GATE_NAME));
+    //connect to transport via middleware
+    connectToTransportGate(tcp, "appIn", "appOut");
 
     // update server socket and listen
     _serverSocket.renewSocket();
     _serverSocket.setDataTransferMode(TCPDataTransferMode::TCP_TRANSFER_OBJECT);
-    _serverSocket.bind(_localAddress.c_str() ? L3AddressResolver().resolve(_localAddress.c_str()) : L3Address(), _localPort);
+    _serverSocket.bind(
+            _localAddress.c_str() ?
+                    L3AddressResolver().resolve(_localAddress.c_str()) :
+                    L3Address(), _localPort);
 
     _serverSocket.setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));
 
@@ -91,7 +83,7 @@ void TCPPublisherEndpoint::handleTransportIn(cMessage* msg) {
     }
 
     //check if for server
-    if (_serverSocket.belongsToSocket(msg)) {// match message and socket
+    if (_serverSocket.belongsToSocket(msg)) { // match message and socket
         _serverSocket.processMessage(msg);
     } else {
         //check if it belongs to a socket in the map
@@ -99,14 +91,11 @@ void TCPPublisherEndpoint::handleTransportIn(cMessage* msg) {
 
         //if not open a new one!
         if (!socket) {
-
-            emit(_remotesSignal,1);
-
+            emit(_remotesSignal, 1);
             _isConnected = true;
             // new connection -- create new socket object and server process
             socket = new TCPSocket(msg);
             socket->setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));
-
             this->addSocket(socket);
         }
         socket->processMessage(msg); // invoke callback interface
@@ -114,8 +103,8 @@ void TCPPublisherEndpoint::handleTransportIn(cMessage* msg) {
 }
 
 void TCPPublisherEndpoint::publish(cPacket* msg) {
-    if(_isConnected) {
-        for(auto iter = socketMap.begin(); iter != socketMap.end(); iter++){
+    if (_isConnected) {
+        for (auto iter = socketMap.begin(); iter != socketMap.end(); iter++) {
             iter->second->send(msg->dup());
         }
     }

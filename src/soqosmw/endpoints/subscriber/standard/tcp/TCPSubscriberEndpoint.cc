@@ -46,23 +46,13 @@ void TCPSubscriberEndpoint::handleTransportIn(cMessage* msg) {
 }
 
 void TCPSubscriberEndpoint::initializeTransportConnection() {
-    // get owning app
-    SOQoSMWApplicationBase* app = _connector->getApplications()[0];
-    if(!app){
-        throw cRuntimeError("Owning application not found in init of publisher.");
-    }
-
     // find TCP module and add another gate.
-    cModule* tcp = app->getParentModule()->getSubmodule("tcp");
+    cModule* tcp = getParentModule()->getParentModule()->getSubmodule("tcp");
     if(!tcp){
         throw cRuntimeError("tcp module required for tcp subscriber but not found");
     }
-    // create new gates
-    tcp->setGateSize("appIn", tcp->gateSize("appIn")+1);
-    tcp->setGateSize("appOut", tcp->gateSize("appOut")+1);
-    // connect to transport gates
-    this->gate(TRANSPORT_OUT_GATE_NAME)->connectTo(tcp->gate("appIn", tcp->gateSize("appIn")-1));
-    tcp->gate("appOut", tcp->gateSize("appOut")-1)->connectTo(this->gate(TRANSPORT_IN_GATE_NAME));
+    //connect to transport via middleware
+    connectToTransportGate(tcp, "appIn", "appOut");
 
     // update server socket and connect
     _socket.renewSocket();

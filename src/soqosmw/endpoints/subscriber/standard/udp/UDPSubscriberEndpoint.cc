@@ -36,23 +36,13 @@ ConnectionSpecificInformation* UDPSubscriberEndpoint::getConnectionSpecificInfor
 }
 
 void UDPSubscriberEndpoint::initializeTransportConnection() {
-    // get owning app
-    SOQoSMWApplicationBase* app = _connector->getApplications()[0];
-    if(!app){
-        throw cRuntimeError("Owning application not found in init of publisher.");
-    }
-
     // find UDP module and add another gate.
-    cModule* udp = app->getParentModule()->getSubmodule("udp");
+    cModule* udp = getParentModule()->getParentModule()->getSubmodule("udp");
     if(!udp){
         throw cRuntimeError("udp module required for udp subscriber but not found");
     }
-    // create new gates
-    udp->setGateSize("appIn", udp->gateSize("appIn")+1);
-    udp->setGateSize("appOut", udp->gateSize("appOut")+1);
-    // connect to transport gates
-    this->gate(TRANSPORT_OUT_GATE_NAME)->connectTo(udp->gate("appIn", udp->gateSize("appIn")-1));
-    udp->gate("appOut", udp->gateSize("appOut")-1)->connectTo(this->gate(TRANSPORT_IN_GATE_NAME));
+    //connect to transport via middleware
+    connectToTransportGate(udp, "appIn", "appOut");
 
     // update server socket and connect
     _socket.setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));
