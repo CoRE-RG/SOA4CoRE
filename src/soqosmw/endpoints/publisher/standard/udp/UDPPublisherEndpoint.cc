@@ -65,8 +65,6 @@ void UDPPublisherEndpoint::handleTransportIn(cMessage* msg) {
 }
 
 void UDPPublisherEndpoint::initializeTransportConnection() {
-    _isConnected = false;
-
     // find UDP module and add another gate.
     cModule* udp = getParentModule()->getParentModule()->getSubmodule("udp");
     if(!udp){

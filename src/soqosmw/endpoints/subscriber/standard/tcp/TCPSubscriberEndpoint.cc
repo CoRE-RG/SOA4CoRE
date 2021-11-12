@@ -40,6 +40,7 @@ void TCPSubscriberEndpoint::handleTransportIn(cMessage* msg) {
 
     if(msg->getKind() == TCP_I_ESTABLISHED){
         _socket.processMessage(msg);
+        _isConnected = true;
     } else {
         STDSubscriberEndpointBase::handleTransportIn(msg);
     }

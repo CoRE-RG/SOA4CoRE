@@ -48,6 +48,7 @@ void UDPSubscriberEndpoint::initializeTransportConnection() {
     _socket.setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));
     _socket.setReuseAddress(true);
     _socket.bind(_localAddress.c_str() ? L3AddressResolver().resolve(_localAddress.c_str()) : L3Address(), _localPort);
+    _isConnected = true;
 }
 
 void UDPSubscriberEndpoint::handleParameterChange(const char* parname) {

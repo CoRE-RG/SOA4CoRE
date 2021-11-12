@@ -51,8 +51,6 @@ ConnectionSpecificInformation* TCPPublisherEndpoint::getConnectionSpecificInform
 }
 
 void TCPPublisherEndpoint::initializeTransportConnection() {
-    _isConnected = false;
-
     // find TCP module and add another gate.
     cModule* tcp = getParentModule()->getParentModule()->getSubmodule("tcp");
     if (!tcp) {
