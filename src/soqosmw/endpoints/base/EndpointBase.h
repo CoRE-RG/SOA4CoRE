@@ -49,6 +49,14 @@ public:
      */
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() = 0;
 
+    bool isIsConnected() const {
+        return _isConnected;
+    }
+
+    void setIsConnected(bool isConnected = false) {
+        _isConnected = isConnected;
+    }
+
     QoSGroups getQos() const {
         return _qos;
     }
@@ -131,6 +139,13 @@ protected:
      * @param msg   the message to handle.
      */
     virtual void handleConnectorIn(cMessage *msg) = 0;
+
+
+
+    /**
+     * Is this endpoint connected to transport
+     */
+    bool _isConnected = false;
 
     /**
      * The name of the endpoint as a path for better specifying (e.g. "Reifendruck/links").

@@ -36,13 +36,6 @@ namespace SOQoSMW {
 class PublisherEndpointBase : public EndpointBase
 {
 public:
-    bool isIsConnected() const {
-        return _isConnected;
-    }
-
-    void setIsConnected(bool isConnected = false) {
-        _isConnected = isConnected;
-    }
 
 protected:
     virtual void initialize() override;
@@ -70,13 +63,6 @@ protected:
      * @param payload   the payload to be published.
      */
     virtual void publish(cPacket* msg) = 0;
-
-
-
-    /**
-     * Is this publisher connected?
-     */
-    bool _isConnected = false;
 
     /**
      * Signal to capture statistics for connected remotes
