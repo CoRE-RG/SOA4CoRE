@@ -46,7 +46,7 @@ using namespace omnetpp;
 namespace SOQoSMW {
 
 /**
- * @brief The LocalServiceManager is used to create, find and remove local Services.
+ * @brief The LocalServiceManager creates, finds and removes local Services.
  *
  * @ingroup soqosmw/servicemanager
  *

@@ -17,7 +17,6 @@
 #include "soqosmw/applications/publisherapp/someip/SomeIpPublisher.h"
 #include "soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
-#include "soqosmw/servicemanager/someipservicemanager/SubscriptionRelations.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 
 namespace SOQoSMW {

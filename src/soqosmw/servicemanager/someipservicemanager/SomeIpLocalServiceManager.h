@@ -85,6 +85,12 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     void processAcknowledgedSubscription(cObject* obj);
 
     /**
+     * @brief Subscribes the given service
+     * @param obj
+     */
+    void subscribeService(cObject* obj) override;
+
+    /**
      * Member variables
      */
   public:
@@ -110,5 +116,5 @@ class SomeIpLocalServiceManager : public LocalServiceManager
      */
     std::map<IServiceRegistry::ServiceId, std::list<SomeIpService>> _pendingOffersMap;
 };
-}
+} /* end namespace SOQoSMW */
 #endif
