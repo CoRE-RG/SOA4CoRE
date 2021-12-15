@@ -37,9 +37,8 @@ simple LocalServiceManager like ILocalServiceManager
 
         string localAddress = default("");
 
-        //parameters for service creation:
-        	//AVB:
-        	//Interval in which a subscription is updated
+        // ########## parameters for service creation AVB ########## :
+        //Interval in which a subscription is updated
         double updateInterval @unit("s") = default(6s);
         //Interval in which a subscription is reregistered after a registration failed
         double retryInterval @unit("s") = default(1s);

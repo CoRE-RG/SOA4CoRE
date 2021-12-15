@@ -21,16 +21,14 @@
 #include <omnetpp.h>
 #include <soqosmw/messages/qosnegotiation/ConnectionSpecificInformation_m.h>
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/connector/pubsub/reader/SubscriberConnector.h"
 #include "soqosmw/connector/pubsub/writer/PublisherConnector.h"
 #include "soqosmw/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soqosmw/endpoints/subscriber/base/SubscriberEndpointBase.h"
-#include "soqosmw/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
-#include "soqosmw/discovery/static/StaticServiceDiscovery.h"
 #include "soqosmw/serviceregistry/base/IServiceRegistry.h"
+#include "soqosmw/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 #include "soqosmw/servicemanager/base/ILocalServiceManager.h"
 #include "soqosmw/service/qosservice/QoSService.h"
 #include <atomic>
@@ -38,7 +36,6 @@
 #include <map>
 #include <vector>
 //INET
-#include <inet/networklayer/common/L3Address.h>
 #include "inet/common/InitStages.h"
 
 using namespace omnetpp;
@@ -53,9 +50,14 @@ namespace SOQoSMW {
  * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
  */
 class LocalServiceManager: public ILocalServiceManager, public cSimpleModule, public cListener {
+
+    //TODO QoS dependencies should not be here anymore...
     friend QoSNegotiationProtocol;
     friend QoSBroker;
 
+    /**
+     * Methods
+     */
 public:
     LocalServiceManager();
     virtual ~LocalServiceManager();
@@ -66,11 +68,13 @@ public:
      * @param serviceId Path of the Publisher Service (e.g. "reifendruck/links")
      * @param qosPolicies The QoS Policies for the Publisher.
      * @param executingModule The service executing the request.
+     * @param intanceId The instanceId possibly used for SOME/IP SD
      */
     void registerPublisherService(
             uint32_t serviceId,
             QoSPolicyMap& qosPolicies,
-            SOQoSMWApplicationBase* executingApplication);
+            SOQoSMWApplicationBase* executingApplication,
+            uint16_t instanceId);
 
     /**
      * @brief This Method creates a new Subscriber for the publisher Service according to the QoSPolicies.
@@ -87,26 +91,11 @@ public:
 
     /**
      * @brief Subscribes the given service
-     * @param subscriberServiceIdentifier
-     * @param publisherServiceIdentifier
-     * @param qosPolicyMap
+     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
+     * @param qosPolicyMap the QoS policy map
+     * @param instanceId the instance ID of the service
      */
-    void subscribeQoSService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap);
-
-    /**
-     * @brief Receives discovery response
-     * @param source
-     * @param signalID
-     * @param obj
-     * @param details
-     */
-    virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
-
-    /**
-     * @brief Subscribes the given service
-     * @param obj
-     */
-    void subscribeService(cObject* obj) override;
+    virtual void subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) override;
 
     /**
      * Returns the publisher connector for the given publisher service
@@ -203,63 +192,13 @@ protected:
      */
     SubscriberEndpointBase* findSubscriberLike(uint32_t publisherServiceId, int qos);
 
-
     /**
-     * Contains pointers to the existing publisher connectors on a node.
+     * Adds an identifier of a requested service to the pendingRequestMap
+     * @param publisherServiceIdentifier the service id of the publisher service
+     * @param qosPolicyMap the QoS policy map
+     * @param instanceId the instance ID determining the wanted instance of the publisher service
      */
-    std::map<IServiceRegistry::ServiceId, PublisherConnector*> _publisherConnectors;
-
-    /**
-     * Counter for publishing endpoints created.
-     */
-    int _publisherEndpointCount = 0;
-
-    /**
-     * contains pointers to the existing subscriber connectors on a node.
-     * TODO maybe we need to allow more than one subscriber connector per publisher service for different QoS?
-     * Or we take the best QoS needed on device?
-     */
-    std::map<IServiceRegistry::ServiceId, SubscriberConnector*> _subscriberConnectors;
-
-    /**
-     * Contains pending requests
-     */
-    std::map<IServiceRegistry::ServiceId, std::list<QoSService>> _pendingRequestsMap;
-
-    /**
-     * Counter for subscribing endpoints created.
-     */
-    int _subscriberEndpointCount = 0;
-
-    /**
-     * A pointer to the service discovery.
-     */
-    IServiceDiscovery* _sd;
-
-    /**
-     * A pointer to the local service registry.
-     */
-    IServiceRegistry* _lsr;
-
-    /**
-     * A pointer to the QoS Negotiation Protocol module.
-     */
-    QoSNegotiationProtocol* _qosnp;
-
-    /**
-     * Static ID for created Requests.
-     */
-    std::atomic<int> _requestID;
-
-    /**
-     * Stores all issued requests.
-     */
-    std::vector<Request*> _requests;
-
-    /**
-     * Caches the localAddress parameter.
-     */
-    inet::L3Address _localAddress;
+    void addServiceToPendingRequestsMap(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId);
 
 private:
 
@@ -278,14 +217,6 @@ private:
      * @param executingApplication
      */
     void addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
-
-    /**
-     * Creates a negotiation request
-     * @param publisherService
-     * @param qosPolicies
-     * @return the negotiation request
-     */
-    Request* createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies);
 
     /**
      * Creates a publisher connector
@@ -319,6 +250,61 @@ private:
     PublisherEndpointBase* createTCPPublisherEndpoint(int qos, PublisherConnector* connector);
     PublisherEndpointBase* createUDPPublisherEndpoint(int qos, PublisherConnector* connector);
     PublisherEndpointBase* createSOMEIPPublisherEndpoint(int qos, PublisherConnector* connector);
+
+
+    /**
+     * Member variables
+     */
+public:
+protected:
+    /**
+     * Contains pointers to the existing publisher connectors on a node.
+     */
+    std::map<IServiceRegistry::ServiceId, PublisherConnector*> _publisherConnectors;
+
+    /**
+     * Counter for publishing endpoints created.
+     */
+    int _publisherEndpointCount = 0;
+
+    /**
+     * contains pointers to the existing subscriber connectors on a node.
+     * TODO maybe we need to allow more than one subscriber connector per publisher service for different QoS?
+     * Or we take the best QoS needed on device?
+     */
+    std::map<IServiceRegistry::ServiceId, SubscriberConnector*> _subscriberConnectors;
+
+    /**
+     * Counter for subscribing endpoints created.
+     */
+    int _subscriberEndpointCount = 0;
+
+    /**
+     * A pointer to the local service registry.
+     */
+    IServiceRegistry* _lsr;
+
+    /**
+     * Static ID for created Requests.
+     */
+    std::atomic<int> _requestID;
+
+    /**
+     * Stores all issued requests.
+     */
+    std::vector<Request*> _requests;
+
+    /**
+     * Caches the localAddress parameter.
+     */
+    inet::L3Address _localAddress;
+
+    /**
+     * Contains pending requests
+     */
+    std::map<IServiceRegistry::ServiceId, std::list<QoSService>> _pendingRequestsMap;
+private:
+
 };
 
 } /* end namespace  */

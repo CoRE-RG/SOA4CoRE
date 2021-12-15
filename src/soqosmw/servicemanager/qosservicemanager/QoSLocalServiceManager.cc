@@ -14,6 +14,8 @@
 // 
 
 #include "QoSLocalServiceManager.h"
+#include <inet/networklayer/common/L3Address.h>
+#include <soqosmw/discovery/someipservicediscovery/SomeIpSD.h>
 
 namespace SOQoSMW {
 
@@ -23,34 +25,69 @@ void QoSLocalServiceManager::initialize(int stage)
 {
     LocalServiceManager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
+        if(!(_qosnp =
+               dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
+                       par("qosnpmoduleName"))))) {
+            throw cRuntimeError("No QoSNegotiationProtocol module found.");
+        }
+        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule("sdmoduleName")))) {
+            throw cRuntimeError("No IServiceDiscovery found.");
+        }
+        if (dynamic_cast<SomeIpSD*>(getParentModule()->getSubmodule("sdmoduleName"))) {
+            throw cRuntimeError("QoSLocalServiceManager does not work with SOME/IP ServiceDiscovery.");
+        }
+        if (cSimpleModule* sd = dynamic_cast<cSimpleModule*>(_sd)) {
+            sd->subscribe("serviceFoundSignal",this);
+        } else {
+            throw cRuntimeError("Service discovery serviceFoundSignal could not be subscribed.");
+        }
+
     }
 }
 
-void QoSLocalServiceManager::handleMessage(cMessage *msg)
-{
-    // TODO - Generated method body
+void QoSLocalServiceManager::handleMessage(cMessage *msg) {
+    // Nothing to do
 }
 
 void QoSLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
     if (!strcmp(getSignalName(signalID),"serviceFoundSignal")) {
-        subscribeService(obj);
+        subscribeFoundService(obj);
     } else {
         throw cRuntimeError("Unknown signal.");
     }
 }
 
-void QoSLocalServiceManager::subscribeService(cObject* obj) {
+void QoSLocalServiceManager::subscribeFoundService(cObject* obj) {
     if (IService *service = dynamic_cast<IService*>(obj)) {
-        for (auto &qosService : _pendingRequestsMap[service->getServiceId()]) {
-            // TODO Request* request = createNegotiationRequest(service, qosService.getQoSPolicyMap());
+        for (QoSService& qosService : _pendingRequestsMap[service->getServiceId()]) {
+            Request* request = createNegotiationRequest(service, qosService.getQoSPolicyMap());
             //create qos broker for the request
-            // TODO _qosnp->createQoSBroker(request);
+            _qosnp->createQoSBroker(request);
         }
         _pendingRequestsMap.erase(service->getServiceId());
         _lsr->addPublisherService(service);
     } else {
         throw cRuntimeError("Given object is not a type of IService.");
     }
+}
+
+void QoSLocalServiceManager::subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
+    //check if publisher is already discovered, and if so, start the negotiation with a request.
+    if (IService* service = _lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier))) {
+        Request* request = createNegotiationRequest(service, qosPolicyMap);
+        //create qos broker for the request
+        _qosnp->createQoSBroker(request);
+    } else {
+        LocalServiceManager::addServiceToPendingRequestsMap(publisherServiceIdentifier, qosPolicyMap, instanceId);
+        _sd->discover(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
+    }
+}
+
+Request* QoSLocalServiceManager::createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies) {
+    EndpointDescription subscriber(publisherService->getServiceId(), _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription publisher(publisherService->getServiceId(), publisherService->getAddress(), _qosnp->getProtocolPort());
+    Request *request = new Request(_requestID++, subscriber, publisher, qosPolicies, nullptr);
+    return request;
 }
 
 } /* end namespace SOQoSMW */

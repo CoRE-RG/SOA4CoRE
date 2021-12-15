@@ -40,9 +40,12 @@ namespace SOQoSMW {
  *
  * @ingroup soqosmw/applications
  *
- * @author Timo Haeckel for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
  */
 class SOQoSMWApplicationBase: public virtual cSimpleModule {
+/**
+ * Methods
+ */
 public:
     virtual ~SOQoSMWApplicationBase();
 
@@ -70,6 +73,15 @@ protected:
      * @throws cRuntimeError When needed parameters could not be found.
      */
     virtual void handleParameterChange(const char* parname) override;
+
+private:
+
+    /**
+     * Member variables
+     */
+public:
+protected:
+
     /**
      * Reference to the LocalServiceManager.
      */
@@ -109,6 +121,13 @@ protected:
       * Id of the publishing service to subscribe to.
       */
     int _publisherServiceId;
+
+    /**
+     * Instance Id of the service
+     */
+    uint16_t _instanceId;
+
+private:
 };
 
 } /* end namespace SOQoSMW */

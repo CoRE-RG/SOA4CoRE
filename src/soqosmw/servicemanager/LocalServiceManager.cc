@@ -27,6 +27,7 @@
 #include "soqosmw/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
 #include "soqosmw/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
 #include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 //INET
 #include "inet/networklayer/common/L3AddressResolver.h"
 //STD
@@ -55,16 +56,6 @@ void LocalServiceManager::initialize(int stage) {
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
-        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(
-                   par("sdmoduleName"))))) {
-            throw cRuntimeError("No IServiceDiscovery found.");
-        }
-        if(StaticServiceDiscovery* sd = dynamic_cast<StaticServiceDiscovery*>(_sd)) {
-            sd->subscribe("serviceFoundSignal",this);
-        }
-        _qosnp =
-               dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
-                       par("qosnpmoduleName")));
         _lsr =
                dynamic_cast<IServiceRegistry*>(getParentModule()->getSubmodule(
                        par("lsrmoduleName")));
@@ -89,7 +80,7 @@ void LocalServiceManager::handleParameterChange(const char* parname) {
 
 void LocalServiceManager::registerPublisherService(uint32_t publisherServiceId,
         QoSPolicyMap& qosPolicies,
-        SOQoSMWApplicationBase* executingApplication) {
+        SOQoSMWApplicationBase* executingApplication, uint16_t instanceId) {
     Enter_Method("LSM:registerPublisherService()");
 
     PublisherConnector* publisherConnector = getPublisherConnector(publisherServiceId);
@@ -104,7 +95,7 @@ void LocalServiceManager::registerPublisherService(uint32_t publisherServiceId,
             publisherServiceId,
             inet::L3AddressResolver().resolve(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalAddress])->getValue().c_str()),
             dynamic_cast<LocalPortQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalPort])->getValue(),
-            qosPolicies));
+            instanceId, qosPolicies));
 }
 
 void LocalServiceManager::addPublisherServiceToConnector(PublisherConnector* publisherConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
@@ -157,52 +148,26 @@ void LocalServiceManager::registerSubscriberService(
     }
 }
 
-void LocalServiceManager::subscribeQoSService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap) {
-    //check if publisher exists in the network and start the negotiation with a request.
-    if (IService* service = _lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier))) {
-        Request* request = createNegotiationRequest(service, qosPolicyMap);
-        //create qos broker for the request
-        _qosnp->createQoSBroker(request);
-    } else {
-        int localPort = -1;
-        if (qosPolicyMap.count(QoSPolicyNames::LocalPort)) {
-            localPort = dynamic_cast<LocalPortQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalPort])->getValue();
-        }
-        QoSService qosService = QoSService(
-                publisherServiceIdentifier.getServiceId(),
-                inet::L3AddressResolver().resolve(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalAddress])->getValue().c_str()),
-                localPort,
-                qosPolicyMap);
-        if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
-            _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(qosService);
-        } else {
-            std::list<QoSService> qosServices;
-            qosServices.push_back(qosService);
-            _pendingRequestsMap[publisherServiceIdentifier.getServiceId()] = qosServices;
-        }
-        _sd->discover(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
-    }
+void LocalServiceManager::subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
+    throw cRuntimeError("LocalServiceManager has no implementation of subscribeService. \n"
+            "Override or use ServiceManager which implements subscribeService");
 }
 
-void LocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
-    if (!strcmp(getSignalName(signalID),"serviceFoundSignal")) {
-        subscribeService(obj);
-    } else {
-        throw cRuntimeError("Unknown signal.");
+void LocalServiceManager::addServiceToPendingRequestsMap(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
+    int localPort = -1;
+    if (qosPolicyMap.count(QoSPolicyNames::LocalPort)) {
+        localPort = dynamic_cast<LocalPortQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalPort])->getValue();
     }
-}
-
-void LocalServiceManager::subscribeService(cObject* obj) {
-    if (IService *service = dynamic_cast<IService*>(obj)) {
-        for (auto &qosService : _pendingRequestsMap[service->getServiceId()]) {
-            Request* request = createNegotiationRequest(service, qosService.getQoSPolicyMap());
-            //create qos broker for the request
-            _qosnp->createQoSBroker(request);
-        }
-        _pendingRequestsMap.erase(service->getServiceId());
-        _lsr->addPublisherService(service);
+    QoSService qosService = QoSService(
+            publisherServiceIdentifier.getServiceId(),
+            inet::L3AddressResolver().resolve(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalAddress])->getValue().c_str()),
+            localPort, instanceId, qosPolicyMap);
+    if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
+        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(qosService);
     } else {
-        throw cRuntimeError("Given object is not a type of IService.");
+        std::list<QoSService> qosServices;
+        qosServices.push_back(qosService);
+        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()] = qosServices;
     }
 }
 
@@ -210,13 +175,6 @@ void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* s
     if(!(subscriberConnector->addApplication(executingApplication))){
         throw cRuntimeError("This Subscriber service already exists on this host...");
     }
-}
-
-Request* LocalServiceManager::createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies) {
-    EndpointDescription subscriber(publisherService->getServiceId(), _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription publisher(publisherService->getServiceId(), publisherService->getAddress(), _qosnp->getProtocolPort());
-    Request *request = new Request(_requestID++, subscriber, publisher, qosPolicies, nullptr);
-    return request;
 }
 
 SubscriberConnector* LocalServiceManager::createSubscriberConnector(QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {

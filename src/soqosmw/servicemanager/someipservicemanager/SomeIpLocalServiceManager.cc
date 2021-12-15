@@ -14,8 +14,6 @@
 // 
 
 #include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h>
-#include "soqosmw/applications/publisherapp/someip/SomeIpPublisher.h"
-#include "soqosmw/applications/subscriberapp/someip/SomeIpSubscriber.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 
@@ -26,7 +24,14 @@ Define_Module(SomeIpLocalServiceManager);
 void SomeIpLocalServiceManager::initialize(int stage) {
     LocalServiceManager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
-        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule("sd")))) {
+        _qosnpAvailable = true;
+        if(!(_qosnp =
+               dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
+                       par("qosnpmoduleName"))))) {
+            _qosnpAvailable = false;
+        }
+
+        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule("sdmoduleName")))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
         if(SomeIpSD* sd = dynamic_cast<SomeIpSD*>(_sd)) {
@@ -49,7 +54,7 @@ void SomeIpLocalServiceManager::handleMessage(cMessage *msg) {
 
 
 void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
-    SomeIpService& someIpService = *dynamic_cast<SomeIpService*>(obj);
+    QoSService& someIpService = *dynamic_cast<QoSService*>(obj);
     _pendingOffersMap.erase(someIpService.getServiceId());
 }
 
@@ -67,6 +72,21 @@ void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t si
     }
 }
 
+void SomeIpLocalServiceManager::subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
+    //check if publisher is already discovered, and if so, start the negotiation with a request.
+    IService* service = _lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
+    if (_qosnpAvailable && service) {
+        Request* request = createNegotiationRequest(service, qosPolicyMap);
+        //create qos broker for the request
+        _qosnp->createQoSBroker(request);
+    } else if (service) {
+        //TODO start subscription
+    } else {
+        LocalServiceManager::addServiceToPendingRequestsMap(publisherServiceIdentifier, qosPolicyMap, instanceId);
+        _sd->discover(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
+    }
+}
+
 void SomeIpLocalServiceManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
     ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId());
@@ -79,11 +99,11 @@ void SomeIpLocalServiceManager::lookForService(cObject* obj) {
 }
 
 void SomeIpLocalServiceManager::addToPendingOffersAndSubscribe(cObject* obj) {
-    SomeIpService& someIpService = *dynamic_cast<SomeIpService*>(obj);
+    QoSService& someIpService = *dynamic_cast<QoSService*>(obj);
     if (_pendingOffersMap.count(someIpService.getServiceId())) {
         _pendingOffersMap[someIpService.getServiceId()].push_back(someIpService);
     } else {
-        std::list<SomeIpService> someIpservices;
+        std::list<QoSService> someIpservices;
         someIpservices.push_back(someIpService);
         _pendingOffersMap[someIpService.getServiceId()] = someIpservices;
     }
@@ -98,14 +118,20 @@ void SomeIpLocalServiceManager::addToPendingOffersAndSubscribe(cObject* obj) {
 }
 
 void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
-    SomeIpService& someIpService = *dynamic_cast<SomeIpService*>(obj);
+    QoSService& someIpService = *dynamic_cast<QoSService*>(obj);
     // Possible checks before final acknowledge ...
     ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpService.getServiceId());
     if (IService* service = _lsr->getService(serviceIdentifier)) {
         SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(someIpService.getServiceId(),someIpService.getInstanceId(),service->getAddress(),service->getPort(),someIpService.getAddress());
         emit(_subscribeAckSignal,&someIpSDSubscriptionInformation);
     }
+}
 
+Request* SomeIpLocalServiceManager::createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies) {
+    EndpointDescription subscriber(publisherService->getServiceId(), _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription publisher(publisherService->getServiceId(), publisherService->getAddress(), _qosnp->getProtocolPort());
+    Request *request = new Request(_requestID++, subscriber, publisher, qosPolicies, nullptr);
+    return request;
 }
 
 } /* end namespace SOQoSMW */

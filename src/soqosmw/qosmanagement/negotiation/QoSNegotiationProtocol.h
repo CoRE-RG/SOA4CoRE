@@ -50,6 +50,8 @@ namespace SOQoSMW {
  */
 class QoSNegotiationProtocol: public ProcessingTimeSimulation {
     friend class LocalServiceManager;
+    friend class QoSLocalServiceManager;
+    friend class SomeIpLocalServiceManager;
     friend class QoSBroker;
 public:
     QoSNegotiationProtocol();

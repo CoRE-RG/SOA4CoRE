@@ -17,7 +17,7 @@
 
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
 #include "soqosmw/connector/base/ConnectorBase.h"
-#include "soqosmw/servicemanager/LocalServiceManager.h"
+#include "soqosmw/servicemanager/base/ILocalServiceManager.h"
 
 #include <cstring>
 
@@ -35,7 +35,7 @@ void SOQoSMWApplicationBase::initialize() {
     this->_subscriberName = "";
     this->_publisherName = "";
     _localServiceManager =
-            dynamic_cast<LocalServiceManager*>(getParentModule()->getModuleByPath(par("serviceManagerModulePath")));
+            dynamic_cast<ILocalServiceManager*>(getParentModule()->getModuleByPath(par("serviceManagerModulePath")));
     if (!_localServiceManager) {
         throw cRuntimeError(
                 "Configuration problem of parameter serviceManagerModulePath in module %s.",
@@ -72,6 +72,10 @@ void SOQoSMWApplicationBase::handleParameterChange(const char* parname) {
     }
     if (!parname || !strcmp(parname, "localAddress")) {
         _localAddress = par("localAddress").stdstringValue();
+    }
+
+    if (!parname || !strcmp(parname, "instanceID")) {
+        _instanceId = par("instanceID").intValue();
     }
 }
 

@@ -13,30 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOQOSMW_ILOCALSERVICEMANAGER_H_
-#define __SOQOSMW_ILOCALSERVICEMANAGER_H_
+#ifndef SOQOSMW_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
+#define SOQOSMW_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
 
-#include "soqosmw/service/base/IServiceIdentifier.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
-#include <omnetpp.h>
+#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
 
 namespace SOQoSMW {
 
-/**
- * @brief Interface for the local service manager module
- *
- * @ingroup soqosmw/servicemanager
- *
- * @author Mehmet Cakir
- */
-class ILocalServiceManager
-{
+class QoSServiceIdentifier: public ServiceIdentifier {
 public:
-  virtual ~ILocalServiceManager();
-  virtual void subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) = 0;
+    QoSServiceIdentifier(int serviceId, int instanceId);
+    virtual ~QoSServiceIdentifier();
+    virtual bool operator==(const QoSServiceIdentifier& qosServiceIdentifier) const;
+    virtual bool operator!=(const QoSServiceIdentifier& qosServiceIdentifier) const;
+    int getInstanceId() const;
 
+protected:
+    int _instanceId;
 };
+} /* namespace SOQoSMW */
 
-} /*end namespace SOQoSMW*/
-
-#endif
+#endif /* SOQOSMW_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_ */

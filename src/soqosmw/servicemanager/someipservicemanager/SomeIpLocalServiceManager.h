@@ -19,7 +19,7 @@
 #include <omnetpp.h>
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
-#include "soqosmw/service/someipservice/SomeIpService.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 
 using namespace omnetpp;
 namespace SOQoSMW {
@@ -45,6 +45,14 @@ class SomeIpLocalServiceManager : public LocalServiceManager
      * @param details
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
+
+    /**
+     * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
+     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
+     * @param qosPolicyMap the QoS policy map
+     * @param instanceId the instanceId
+     */
+    void subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) override;
   protected:
     /**
      * Initializes the module and waits for find
@@ -61,7 +69,7 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     virtual void handleMessage(cMessage *msg) override;
   private:
     /**
-     * Looks for a requested service
+     * Looks for a requested service in the local registry
      * @param obj the SOME/IP SD header container containing the SOME/IP SD header and its corresponding entry
      */
     void lookForService(cObject* obj);
@@ -85,10 +93,18 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     void processAcknowledgedSubscription(cObject* obj);
 
     /**
-     * @brief Subscribes the given service
+     * Subscribes to the found service
      * @param obj
      */
-    void subscribeService(cObject* obj) override;
+    void subscribeFoundService(cObject* obj);
+
+    /**
+     * Creates a negotiation request
+     * @param publisherService
+     * @param qosPolicies
+     * @return the negotiation request
+     */
+    Request* createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies);
 
     /**
      * Member variables
@@ -114,7 +130,22 @@ class SomeIpLocalServiceManager : public LocalServiceManager
      * Contains received offers whose subscription has not yet been acknowledged
      * TODO: Check if it is necessary. No real use at the moment
      */
-    std::map<IServiceRegistry::ServiceId, std::list<SomeIpService>> _pendingOffersMap;
+    std::map<IServiceRegistry::ServiceId, std::list<QoSService>> _pendingOffersMap;
+
+    /**
+     * The QoS Negotiation Protocol module.
+     */
+    QoSNegotiationProtocol* _qosnp;
+
+    /**
+     * The service discovery.
+     */
+    IServiceDiscovery* _sd;
+
+    /**
+     * Indicates if QoS negotiation is available
+     */
+    bool _qosnpAvailable;
 };
 } /* end namespace SOQoSMW */
 #endif

@@ -14,14 +14,38 @@
 namespace SOQoSMW {
 
 class QoSService: public virtual ServiceBase {
+    /**
+     * Methods
+     */
 public:
-    QoSService(int serviceId, inet::L3Address address, int port, QoSPolicyMap qosPolicyMap);
+    QoSService(int serviceId, inet::L3Address address, int port, uint16_t instanceId, QoSPolicyMap qosPolicyMap = QoSPolicyMap());
     virtual ~QoSService();
 
+    /**
+     * Returns the QoS Policy Map
+     * @return the QoS Policy Map
+     */
     QoSPolicyMap getQoSPolicyMap();
 
+    /**
+     * Returns the instance ID
+     * @return the instance ID
+     */
+    uint16_t getInstanceId() const;
 protected:
+private:
+
+    /**
+     * Member variables
+     */
+public:
+protected:
+    /**
+     * The QoS Policy Map
+     */
     QoSPolicyMap _qosPolicyMap;
+private:
+    uint16_t _instanceId;
 };
 
 } /* namespace SOQoSMW */

@@ -135,8 +135,11 @@ void PublisherAppBase::createPublisherWithQoS() {
     //printQoS();
 
     //register this as new publisher app!
-    LocalServiceManager* localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager);
-    localServiceManager->registerPublisherService(this->_publisherServiceId, this->_qosPolicies, this);
+    LocalServiceManager* localServiceManager = nullptr;
+    if (!(localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager))){
+        throw cRuntimeError("No LocalServiceManager found.");
+    }
+    localServiceManager->registerPublisherService(this->_publisherServiceId, this->_qosPolicies, this, _instanceId);
     if ((_connector = localServiceManager->getPublisherConnector(this->_publisherServiceId)) == nullptr){
         throw cRuntimeError("PublisherConnector is null. Call registerPublisherService before.");
     }

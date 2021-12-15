@@ -37,6 +37,8 @@ simple SOQoSMWApplicationBase like ISOQoSMWApplication
     	int applicationTCPPort;
     	// the udp port for this service
     	int applicationUDPPort;
+    	// The instance id of the service that will be subscribed
+        int instanceID = default(0xFFFF);
         
     gates:
         // the connector gate to receive messages.

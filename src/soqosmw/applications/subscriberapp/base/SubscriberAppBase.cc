@@ -20,7 +20,7 @@
 #include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
-#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
+#include "soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 //AUTO-GENERATED MESSAGES
 #include "core4inet/utilities/ConfigFunctions.h"
@@ -63,11 +63,14 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
         setQoS();
         //create a subscriber
-        LocalServiceManager* localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager);
+        LocalServiceManager* localServiceManager = nullptr;
+        if (!(localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager))){
+            throw cRuntimeError("No LocalServiceManager found.");
+        }
         localServiceManager->registerSubscriberService(this->_publisherServiceId, this->_qosPolicies, this);
         _connector = localServiceManager->getSubscriberConnector(this->_publisherServiceId);
-        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId);
-        localServiceManager->subscribeQoSService(publisherServiceIdentifier, this->_qosPolicies);
+        QoSServiceIdentifier publisherServiceIdentifier = QoSServiceIdentifier(this->_publisherServiceId,this->_instanceId);
+        _localServiceManager->subscribeService(publisherServiceIdentifier, this->_qosPolicies, _instanceId);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }

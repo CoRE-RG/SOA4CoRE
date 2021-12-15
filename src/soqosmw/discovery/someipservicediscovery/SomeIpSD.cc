@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h>
 #include "soqosmw/applications/someipapp/base/ISomeIpAppBase.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
-#include "soqosmw/service/someipservice/SomeIpService.h"
-#include "soqosmw/service/someipserviceidentifier/SomeIpServiceIdentifier.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/networklayer/contract/ipv4/IPv4Address.h>
 #include <list>
@@ -213,7 +213,7 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     int num2ndOption = offerEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        SomeIpService service = SomeIpService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID());
+        QoSService service = QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID());
         emit(_serviceOfferSignal,&service);
         delete ipv4EndpointOption;
     }
@@ -223,7 +223,7 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
     int num2ndOption = subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        SomeIpService service = SomeIpService(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), subscribeEventGroupEntry->getInstanceID());
+        QoSService service = QoSService(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), subscribeEventGroupEntry->getInstanceID());
         emit(_subscribeEventGroupSignal,&service);
         delete ipv4EndpointOption;
     }
@@ -233,16 +233,16 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
     int num2ndOption = subscribeEventGroupAckEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        SomeIpService someIpService = SomeIpService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+        QoSService service = QoSService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
                 ipv4EndpointOption->getPort(), subscribeEventGroupAckEntry->getInstanceID());
-        emit(_subscribeEventGroupAckSignal,&someIpService);
-        emit(_serviceFoundSignal,&someIpService);
+        emit(_subscribeEventGroupAckSignal,&service);
+        emit(_serviceFoundSignal,&service);
         delete ipv4EndpointOption;
     }
 }
 
 void SomeIpSD::discover(IServiceIdentifier& serviceIdentifier) {
-    SomeIpServiceIdentifier& someIpServiceIdentifier = dynamic_cast<SomeIpServiceIdentifier&>(serviceIdentifier);
+    QoSServiceIdentifier& someIpServiceIdentifier = dynamic_cast<QoSServiceIdentifier&>(serviceIdentifier);
     find(someIpServiceIdentifier.getServiceId(),someIpServiceIdentifier.getInstanceId());
 }
 

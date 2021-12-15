@@ -13,24 +13,27 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOQOSMW_SERVICE_SOMEIPSERVICEIDENTIFIER_SOMEIPSERVICEIDENTIFIER_H_
-#define SOQOSMW_SERVICE_SOMEIPSERVICEIDENTIFIER_SOMEIPSERVICEIDENTIFIER_H_
-
-#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
+#include <soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h>
 
 namespace SOQoSMW {
 
-class SomeIpServiceIdentifier: public ServiceIdentifier {
-public:
-    SomeIpServiceIdentifier(int serviceId, int instanceId);
-    virtual ~SomeIpServiceIdentifier();
-    virtual bool operator==(const SomeIpServiceIdentifier& someIpServiceIdentifier) const;
-    virtual bool operator!=(const SomeIpServiceIdentifier& someIpServiceIdentifier) const;
-    int getInstanceId() const;
+QoSServiceIdentifier::QoSServiceIdentifier(int serviceId, int instanceId) : ServiceIdentifier(serviceId), _instanceId(instanceId) {
+}
 
-protected:
-    int _instanceId;
-};
+QoSServiceIdentifier::~QoSServiceIdentifier() {
+}
+
+bool QoSServiceIdentifier::operator==(const QoSServiceIdentifier& qosServiceIdentifier) const {
+    return this->_serviceId == qosServiceIdentifier.getServiceId() && this->_instanceId == qosServiceIdentifier.getInstanceId();
+}
+
+bool QoSServiceIdentifier::operator!=(const QoSServiceIdentifier& qosServiceIdentifier) const {
+    return !(*this == qosServiceIdentifier);
+}
+
+int QoSServiceIdentifier::getInstanceId() const {
+    return _instanceId;
+}
+
 } /* namespace SOQoSMW */
 
-#endif /* SOQOSMW_SERVICE_SOMEIPSERVICEIDENTIFIER_SOMEIPSERVICEIDENTIFIER_H_ */
