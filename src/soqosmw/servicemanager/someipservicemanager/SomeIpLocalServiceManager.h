@@ -75,10 +75,16 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     void lookForService(cObject* obj);
 
     /**
-     * Adds the offered service into the _pendingOffersMap and initiates the subscription
+     * Adds the offered service into the _pendingOffersMap
      * @param obj the offered service
      */
-    void addToPendingOffersAndSubscribe(cObject* obj);
+    void addToPendingOffers(cObject* obj);
+
+    /**
+     * Subscribes a service if there is a pending request for it
+     * @param obj the given service
+     */
+    void subscribeServiceIfThereIsAPendingRequest(cObject* obj);
 
     /**
      * Acknowledges the subscription

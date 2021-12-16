@@ -30,10 +30,10 @@ void QoSLocalServiceManager::initialize(int stage)
                        par("qosnpmoduleName"))))) {
             throw cRuntimeError("No QoSNegotiationProtocol module found.");
         }
-        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule("sdmoduleName")))) {
+        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(par("sdmoduleName"))))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
-        if (dynamic_cast<SomeIpSD*>(getParentModule()->getSubmodule("sdmoduleName"))) {
+        if (dynamic_cast<SomeIpSD*>(_sd)) {
             throw cRuntimeError("QoSLocalServiceManager does not work with SOME/IP ServiceDiscovery.");
         }
         if (cSimpleModule* sd = dynamic_cast<cSimpleModule*>(_sd)) {

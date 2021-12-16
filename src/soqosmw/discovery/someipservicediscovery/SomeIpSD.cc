@@ -236,7 +236,7 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
         QoSService service = QoSService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
                 ipv4EndpointOption->getPort(), subscribeEventGroupAckEntry->getInstanceID());
         emit(_subscribeEventGroupAckSignal,&service);
-        emit(_serviceFoundSignal,&service);
+        emit(_serviceFoundSignal,&service); //TODO makes no sense, service is already found after offer
         delete ipv4EndpointOption;
     }
 }
