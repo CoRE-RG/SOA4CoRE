@@ -36,8 +36,6 @@ simple SomeIpSD extends UDPBasicApp like IServiceDiscovery
         @signal[subscribeEventGroupSignal];
         // The signal which is emitted when a subscribeEventGroupAck is received
         @signal[subscribeEventGroupAckSignal];
-        // The Signal which is emitted when a service is discovered
-        @signal[serviceFoundSignal];
         
         // Broadcasts will be received by default
         receiveBroadcast = default(true);

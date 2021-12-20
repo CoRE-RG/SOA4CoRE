@@ -31,11 +31,27 @@ namespace SOQoSMW {
  * @author Timo Haeckel and Mehmet Cakir
  */
 class IServiceDiscovery {
-  public:
-    virtual void discover(IServiceIdentifier& serviceIdentifier) = 0;
 
-  protected:
-    omnetpp::simsignal_t _serviceFoundSignal;
+    /**
+     * Methods
+     */
+public:
+    virtual void discover(IServiceIdentifier& serviceIdentifier) = 0;
+protected:
+private:
+
+    /**
+     * Memver variables
+     */
+public:
+
+protected:
+    /**
+     * The signal which is emitted when a offer is received
+     */
+    omnetpp::simsignal_t _serviceOfferSignal;
+private:
+
 };
 
 } /*end namespace SOQoSMW*/

@@ -37,9 +37,9 @@ void QoSLocalServiceManager::initialize(int stage)
             throw cRuntimeError("QoSLocalServiceManager does not work with SOME/IP ServiceDiscovery.");
         }
         if (cSimpleModule* sd = dynamic_cast<cSimpleModule*>(_sd)) {
-            sd->subscribe("serviceFoundSignal",this);
+            sd->subscribe("serviceOfferSignal",this);
         } else {
-            throw cRuntimeError("Service discovery serviceFoundSignal could not be subscribed.");
+            throw cRuntimeError("Service discovery serviceOfferSignal could not be subscribed.");
         }
 
     }
@@ -50,14 +50,14 @@ void QoSLocalServiceManager::handleMessage(cMessage *msg) {
 }
 
 void QoSLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
-    if (!strcmp(getSignalName(signalID),"serviceFoundSignal")) {
-        subscribeFoundService(obj);
+    if (!strcmp(getSignalName(signalID),"serviceOfferSignal")) {
+        subscribeOfferedService(obj);
     } else {
         throw cRuntimeError("Unknown signal.");
     }
 }
 
-void QoSLocalServiceManager::subscribeFoundService(cObject* obj) {
+void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
     if (IService *service = dynamic_cast<IService*>(obj)) {
         for (QoSService& qosService : _pendingRequestsMap[service->getServiceId()]) {
             Request* request = createNegotiationRequest(service, qosService.getQoSPolicyMap());

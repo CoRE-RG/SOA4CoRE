@@ -181,11 +181,6 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
     omnetpp::simsignal_t _serviceFindSignal;
 
     /**
-     * The signal which is emitted when a offer is received
-     */
-    omnetpp::simsignal_t _serviceOfferSignal;
-
-    /**
      * The signal which is emitted when a subscribeEventGroup is received
      */
     omnetpp::simsignal_t _subscribeEventGroupSignal;

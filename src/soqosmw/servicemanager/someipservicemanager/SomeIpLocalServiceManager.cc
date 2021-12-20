@@ -32,15 +32,16 @@ void SomeIpLocalServiceManager::initialize(int stage) {
             _qosnpAvailable = false;
         }
 
-        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule("sdmoduleName")))) {
+        if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(par("sdmoduleName"))))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
         if(SomeIpSD* sd = dynamic_cast<SomeIpSD*>(_sd)) {
-            sd->subscribe("serviceFoundSignal",this);
             sd->subscribe("serviceFindSignal",this);
             sd->subscribe("serviceOfferSignal",this);
             sd->subscribe("subscribeEventGroupSignal",this);
             sd->subscribe("subscribeEventGroupAckSignal",this);
+        } else {
+            throw cRuntimeError("No SOME/IP SD found.");
         }
 
         _findResultSignal = omnetpp::cComponent::registerSignal("findResultSignal");
@@ -53,60 +54,34 @@ void SomeIpLocalServiceManager::handleMessage(cMessage *msg) {
     // Does nothing here
 }
 
-
+// Subscriber-side
 void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
-    QoSService& someIpService = *dynamic_cast<QoSService*>(obj);
-    _pendingOffersMap.erase(someIpService.getServiceId());
+    QoSService* someIpService = dynamic_cast<QoSService*>(obj);
+    _pendingRequestsMap.erase(someIpService->getServiceId());
 }
 
 void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
     if (!strcmp(getSignalName(signalID),"serviceFindSignal")) {
         lookForService(obj);
     } else if(!strcmp(getSignalName(signalID),"serviceOfferSignal")) {
-        addToPendingOffers(obj);
+        addToLocalServiceRegistry(obj);
         subscribeServiceIfThereIsAPendingRequest(obj);
     } else if(!strcmp(getSignalName(signalID),"subscribeEventGroupSignal")){
         acknowledgeSubscription(obj);
     } else if (!strcmp(getSignalName(signalID),"subscribeEventGroupAckSignal")) {
         processAcknowledgedSubscription(obj);
-    } else if (!strcmp(getSignalName(signalID),"serviceFoundSignal")) { //TODO makes no sense, service is already found after offer
-        subscribeFoundService(obj);
-    }
-}
-
-void SomeIpLocalServiceManager::subscribeFoundService(cObject* obj) {
-    //TODO Need to be removed, because subscription is already done with subscribeServiceIfThereIsAPendingRequest
-    /*
-    if (IService *service = dynamic_cast<IService*>(obj)) {
-        for (QoSService& qosService : _pendingRequestsMap[service->getServiceId()]) {
-            if (_qosnpAvailable) {
-                Request* request = createNegotiationRequest(service, qosService.getQoSPolicyMap());
-                //create qos broker for the request
-                _qosnp->createQoSBroker(request);
-            } else {
-                //TODO start subscription
-            }
-        }
-        _pendingRequestsMap.erase(service->getServiceId());
-        _lsr->addPublisherService(service);
     } else {
-        throw cRuntimeError("Given object is not a type of IService.");
+        throw cRuntimeError("Unknown signal.");
     }
-    */
 }
 
+// Subscriber-side
 void SomeIpLocalServiceManager::subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
     IService* service = _lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
     if (_qosnpAvailable && service) {
         Request* request = createNegotiationRequest(service, qosPolicyMap);
         _qosnp->createQoSBroker(request);
     } else if (service) {
-        ConnectionSpecificInformation* connectionlessCSI = new CSI_SOMEIP();
-        SubscriberEndpointBase* sub = createOrFindSubscriberFor(service->getServiceId(),connectionlessCSI);
-        delete connectionlessCSI;
-        if(!sub) {
-            throw cRuntimeError("No subscriber was created...");
-        }
         subscribeServiceIfThereIsAPendingRequest(service);
     } else {
         LocalServiceManager::addServiceToPendingRequestsMap(publisherServiceIdentifier, qosPolicyMap, instanceId);
@@ -114,6 +89,7 @@ void SomeIpLocalServiceManager::subscribeService(IServiceIdentifier& publisherSe
     }
 }
 
+// Publisher-side
 void SomeIpLocalServiceManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
     ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId());
@@ -129,33 +105,34 @@ void SomeIpLocalServiceManager::lookForService(cObject* obj) {
     }
 }
 
-void SomeIpLocalServiceManager::addToPendingOffers(cObject* obj) {
-    QoSService& qosService = *dynamic_cast<QoSService*>(obj);
-    if (_pendingOffersMap.count(qosService.getServiceId())) {
-        _pendingOffersMap[qosService.getServiceId()].push_back(qosService);
-    } else {
-        std::list<QoSService> qosServices;
-        qosServices.push_back(qosService);
-        _pendingOffersMap[qosService.getServiceId()] = qosServices;
+// Subscriber-side
+void SomeIpLocalServiceManager::addToLocalServiceRegistry(cObject* obj) {
+    QoSService* qosService = dynamic_cast<QoSService*>(obj);
+    if (!qosService) {
+        throw cRuntimeError("Service is not of type QoSService.");
     }
+    _lsr->addPublisherService(qosService);
 }
 
+// Subscriber-side
 void SomeIpLocalServiceManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
-    QoSService& qosService = *dynamic_cast<QoSService*>(obj);
-    if (_pendingRequestsMap.count(qosService.getServiceId())) {
-        for(std::list<QoSService>::const_iterator it = _pendingRequestsMap[qosService.getServiceId()].begin(); it != _pendingRequestsMap[qosService.getServiceId()].end(); ++it){
+    QoSService* qosService = dynamic_cast<QoSService*>(obj);
+    createSubscriberEndpoint(qosService);
+    if (_pendingRequestsMap.count(qosService->getServiceId())) {
+        for(std::list<QoSService>::const_iterator it = _pendingRequestsMap[qosService->getServiceId()].begin(); it != _pendingRequestsMap[qosService->getServiceId()].end(); ++it){
             SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
-                    qosService.getServiceId(),
-                    qosService.getInstanceId(),
+                    qosService->getServiceId(),
+                    qosService->getInstanceId(),
                     it->getAddress(),
                     it->getPort(),
-                    qosService.getAddress()
+                    qosService->getAddress()
             );
             emit(_subscribeSignal,&someIpSDSubscriptionInformation);
         }
     }
 }
 
+// Publisher-side
 void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
     QoSService& qosService = *dynamic_cast<QoSService*>(obj);
     ServiceIdentifier serviceIdentifier = ServiceIdentifier(qosService.getServiceId());
@@ -167,7 +144,7 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
                 service->getPort(),
                 qosService.getAddress()
         );
-        //TODO Should become possible for other QoS classes too, currently limited to SOME/IP
+        //TODO Should become possible for other QoS classes too, currently limited to SOME/IP UDP
         PublisherEndpointBase* pub = createOrFindPublisherFor(qosService.getServiceId(),QoSGroups::SOMEIP);
         if(!pub) {
             throw cRuntimeError("No Publisher was created.");
@@ -191,15 +168,27 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
             throw cRuntimeError("Unknown connection type. Only SOME/IP is currently supported");
         }
         delete subConnection;
+        delete info;
         emit(_subscribeAckSignal,&someIpSDSubscriptionInformation);
     }
 }
 
+// Subscriber-side
 Request* SomeIpLocalServiceManager::createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies) {
     EndpointDescription subscriber(publisherService->getServiceId(), _localAddress, _qosnp->getProtocolPort());
     EndpointDescription publisher(publisherService->getServiceId(), publisherService->getAddress(), _qosnp->getProtocolPort());
     Request *request = new Request(_requestID++, subscriber, publisher, qosPolicies, nullptr);
     return request;
+}
+
+// Subscriber-side
+void SomeIpLocalServiceManager::createSubscriberEndpoint(IService* service) {
+    ConnectionSpecificInformation* connectionlessCSI = new CSI_SOMEIP();
+    SubscriberEndpointBase* sub = createOrFindSubscriberFor(service->getServiceId(), connectionlessCSI);
+    delete connectionlessCSI;
+    if(!sub) {
+        throw cRuntimeError("No subscriber was created...");
+    }
 }
 
 } /* end namespace SOQoSMW */

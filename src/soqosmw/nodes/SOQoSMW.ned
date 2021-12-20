@@ -46,6 +46,8 @@ module SOQoSMW
         *.sdmoduleName = "sd";
         *.qosnpmoduleName = "qosnp";
         *.lsrmoduleName = "lsr";
+        bool hasQoSNP = default(true);
+        *.hasQoSNP = hasQoSNP;
 
         @display("i=block/layer");
     gates:
@@ -61,7 +63,7 @@ module SOQoSMW
 
     submodules:
 
-        qosnp: QoSNegotiationProtocol {
+        qosnp: QoSNegotiationProtocol if hasQoSNP {
             @display("p=160,50");
         }
 
@@ -98,6 +100,6 @@ module SOQoSMW
         }
 
     connections allowunconnected:
-        qosnp.udpOut --> qosnpUDPOut;
-        qosnp.udpIn <-- qosnpUDPIn;
+        qosnp.udpOut --> qosnpUDPOut if hasQoSNP;
+        qosnp.udpIn <-- qosnpUDPIn if hasQoSNP;
 }

@@ -38,7 +38,7 @@ StaticServiceDiscovery::~StaticServiceDiscovery() {
 void StaticServiceDiscovery::initialize(int stage)
 {
     if(stage == INITSTAGE_ROUTING_PROTOCOLS) {
-        IServiceDiscovery::_serviceFoundSignal = omnetpp::cComponent::registerSignal("serviceFoundSignal");
+        IServiceDiscovery::_serviceOfferSignal = omnetpp::cComponent::registerSignal("serviceOfferSignal");
         EV_DEBUG << "Initialising SD:";
         cXMLElement *config = par("services").xmlValue();
         EV_DEBUG << " read config: " << config->str();
@@ -77,7 +77,7 @@ void StaticServiceDiscovery::discover(IServiceIdentifier& serviceIdentifier) {
         throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }
 
-    emit(_serviceFoundSignal,service);
+    emit(_serviceOfferSignal,service);
 }
 
 /*

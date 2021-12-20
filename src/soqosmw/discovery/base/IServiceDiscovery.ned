@@ -26,7 +26,8 @@ package soqosmw.discovery.base;
 moduleinterface IServiceDiscovery
 {       
     parameters:
-        @signal[serviceFoundSignal](type=cObject);
+        // The signal which is emitted when a offer is received
+        @signal[serviceOfferSignal](type=cObject);
         @display("i=block/table2");
             
 }

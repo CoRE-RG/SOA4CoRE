@@ -33,6 +33,8 @@ module SOQoSMWHost extends RTIPHost
     parameters:
         hasUdp = true; //needed for qosnp
         hasTcp = true; //needed for tcp based communication
+        bool hasQoSNP = default(true);
+        *.hasQoSNP = hasQoSNP;
         int numServices = default(0);
         string localAddress = default("");
         *.localAddress = localAddress;
@@ -49,8 +51,8 @@ module SOQoSMWHost extends RTIPHost
 
     connections allowunconnected:
 
-        soqosmw.qosnpUDPOut --> udp.appIn++;
-        soqosmw.qosnpUDPIn <-- udp.appOut++;
+        soqosmw.qosnpUDPOut --> udp.appIn++ if hasQoSNP;
+        soqosmw.qosnpUDPIn <-- udp.appOut++ if hasQoSNP;
 
         soqosmw.sdUDPOut --> udp.appIn++;
         soqosmw.sdUDPIn <-- udp.appOut++;

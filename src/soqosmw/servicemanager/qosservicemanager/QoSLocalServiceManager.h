@@ -85,10 +85,10 @@ class QoSLocalServiceManager : public LocalServiceManager
     Request* createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies);
 
     /**
-     * Subscribes to the found service
+     * Subscribes to the offered service
      * @param obj
      */
-    void subscribeFoundService(cObject* obj);
+    void subscribeOfferedService(cObject* obj);
 
     /**
      * Member variables

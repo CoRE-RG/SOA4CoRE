@@ -75,10 +75,10 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     void lookForService(cObject* obj);
 
     /**
-     * Adds the offered service into the _pendingOffersMap
-     * @param obj the offered service
+     * Adds a service into the local service registry
+     * @param obj the service
      */
-    void addToPendingOffers(cObject* obj);
+    void addToLocalServiceRegistry(cObject* obj);
 
     /**
      * Subscribes a service if there is a pending request for it
@@ -99,18 +99,18 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     void processAcknowledgedSubscription(cObject* obj);
 
     /**
-     * Subscribes to the found service
-     * @param obj
-     */
-    void subscribeFoundService(cObject* obj);
-
-    /**
      * Creates a negotiation request
      * @param publisherService
      * @param qosPolicies
      * @return the negotiation request
      */
     Request* createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies);
+
+    /**
+     * Creates a subscriber endpoint for a service
+     * @param service the service
+     */
+    void createSubscriberEndpoint(IService* service);
 
     /**
      * Member variables
@@ -132,11 +132,6 @@ class SomeIpLocalServiceManager : public LocalServiceManager
      */
     omnetpp::simsignal_t _subscribeAckSignal;
   private:
-    /**
-     * Contains received offers whose subscription has not yet been acknowledged
-     * TODO: Check if it is necessary. No real use at the moment
-     */
-    std::map<IServiceRegistry::ServiceId, std::list<QoSService>> _pendingOffersMap;
 
     /**
      * The QoS Negotiation Protocol module.

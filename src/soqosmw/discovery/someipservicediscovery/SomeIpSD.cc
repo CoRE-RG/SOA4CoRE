@@ -48,9 +48,8 @@ void SomeIpSD::initialize(int stage) {
             throw cRuntimeError("Please define a local ip address");
         }
         processStart();
-        IServiceDiscovery::_serviceFoundSignal = omnetpp::cComponent::registerSignal("serviceFoundSignal");
+        IServiceDiscovery::_serviceOfferSignal = omnetpp::cComponent::registerSignal("serviceOfferSignal");
         _serviceFindSignal = omnetpp::cComponent::registerSignal("serviceFindSignal");
-        _serviceOfferSignal = omnetpp::cComponent::registerSignal("serviceOfferSignal");
         _subscribeEventGroupSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupSignal");
         _subscribeEventGroupAckSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupAckSignal");
 
@@ -213,8 +212,8 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     int num2ndOption = offerEntry->getNum1stAnd2ndOptions() & 0x0F;
     if (num2ndOption > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        QoSService service = QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID());
-        emit(_serviceOfferSignal,&service);
+        QoSService* service = new QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID());
+        emit(_serviceOfferSignal,service);
         delete ipv4EndpointOption;
     }
 }
@@ -236,7 +235,6 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
         QoSService service = QoSService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
                 ipv4EndpointOption->getPort(), subscribeEventGroupAckEntry->getInstanceID());
         emit(_subscribeEventGroupAckSignal,&service);
-        emit(_serviceFoundSignal,&service); //TODO makes no sense, service is already found after offer
         delete ipv4EndpointOption;
     }
 }
