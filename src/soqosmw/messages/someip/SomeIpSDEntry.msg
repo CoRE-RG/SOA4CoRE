@@ -28,11 +28,12 @@ packet SomeIpSDEntry {
     uint8_t type @enum(SomeIpSDEntryType);
     uint8_t index1stOptions;
     uint8_t index2ndOptions;
-    uint8_t num1stAnd2ndOptions;
+    uint8_t num1stOptions; // actually 4Bit
+    uint8_t num2ndOptions; // actually 4Bit
     uint16_t serviceID;
     uint16_t instanceID;
-    // Major Version - 8Bit, TTL - 24Bit
-    uint32_t majorVersion_TTL;
+    uint8_t majorVersion;
+    uint32_t TTL; // actually 24Bit
 }
 
 packet ServiceEntry extends SomeIpSDEntry {

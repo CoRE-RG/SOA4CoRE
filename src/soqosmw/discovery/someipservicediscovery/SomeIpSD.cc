@@ -87,10 +87,12 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
     findEntry->setType(SOQoSMW::SomeIpSDEntryType::FIND);
     findEntry->setIndex1stOptions(0x00);
     findEntry->setIndex2ndOptions(0x00);
-    findEntry->setNum1stAnd2ndOptions(0x00);
+    findEntry->setNum1stOptions(0);
+    findEntry->setNum2ndOptions(0);
     findEntry->setServiceID(serviceID);
     findEntry->setInstanceID(instanceID);
-    findEntry->setMajorVersion_TTL(0x01000003);
+    findEntry->setMajorVersion(1);
+    findEntry->setTTL(3);
     findEntry->setMinorVersion(0xFFFFFFFF);
     someIpSDHeader->encapEntry(findEntry);
 
@@ -105,10 +107,12 @@ void SomeIpSD::offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address re
     offerEntry->setType(SOQoSMW::SomeIpSDEntryType::OFFER);
     offerEntry->setIndex1stOptions(0x00);
     offerEntry->setIndex2ndOptions(0x00);
-    offerEntry->setNum1stAnd2ndOptions(0x01);
+    offerEntry->setNum1stOptions(0);
+    offerEntry->setNum2ndOptions(1);
     offerEntry->setServiceID(serviceID);
     offerEntry->setInstanceID(instanceID);
-    offerEntry->setMajorVersion_TTL(0x01000003);
+    offerEntry->setMajorVersion(1);
+    offerEntry->setTTL(3);
     offerEntry->setMinorVersion(0xFFFFFFFF);
     someIpSDHeader->encapEntry(offerEntry);
 
@@ -129,10 +133,12 @@ void SomeIpSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet
     subscribeEventgroupEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUP);
     subscribeEventgroupEntry->setIndex1stOptions(0);
     subscribeEventgroupEntry->setIndex2ndOptions(0);
-    subscribeEventgroupEntry->setNum1stAnd2ndOptions(0x01);
+    subscribeEventgroupEntry->setNum1stOptions(0);
+    subscribeEventgroupEntry->setNum2ndOptions(1);
     subscribeEventgroupEntry->setServiceID(serviceID);
     subscribeEventgroupEntry->setInstanceID(instanceID);
-    subscribeEventgroupEntry->setMajorVersion_TTL(0x01000003);
+    subscribeEventgroupEntry->setMajorVersion(1);
+    subscribeEventgroupEntry->setTTL(3);
     someIpSDHeader->encapEntry(subscribeEventgroupEntry);
 
     IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Subscriber");
@@ -152,10 +158,12 @@ void SomeIpSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, i
     subscribeEventgroupAckEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUPACK);
     subscribeEventgroupAckEntry->setIndex1stOptions(0);
     subscribeEventgroupAckEntry->setIndex2ndOptions(0);
-    subscribeEventgroupAckEntry->setNum1stAnd2ndOptions(0x01);
+    subscribeEventgroupAckEntry->setNum1stOptions(0);
+    subscribeEventgroupAckEntry->setNum2ndOptions(1);
     subscribeEventgroupAckEntry->setServiceID(serviceID);
     subscribeEventgroupAckEntry->setInstanceID(instanceID);
-    subscribeEventgroupAckEntry->setMajorVersion_TTL(0x01000003);
+    subscribeEventgroupAckEntry->setMajorVersion(1);
+    subscribeEventgroupAckEntry->setTTL(3);
     someIpSDHeader->encapEntry(subscribeEventgroupAckEntry);
 
     IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
@@ -209,8 +217,7 @@ void SomeIpSD::processFindResult(cObject* obj) {
 }
 
 void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someIpSDHeader) {
-    int num2ndOption = offerEntry->getNum1stAnd2ndOptions() & 0x0F;
-    if (num2ndOption > 0) {
+    if (offerEntry->getNum2ndOptions() > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
         QoSService* service = new QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID());
         emit(_serviceOfferSignal,service);
@@ -219,8 +226,7 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
 }
 
 void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader) {
-    int num2ndOption = subscribeEventGroupEntry->getNum1stAnd2ndOptions() & 0x0F;
-    if (num2ndOption > 0) {
+    if (subscribeEventGroupEntry->getNum2ndOptions() > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
         QoSService service = QoSService(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), subscribeEventGroupEntry->getInstanceID());
         emit(_subscribeEventGroupSignal,&service);
@@ -229,8 +235,7 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
 }
 
 void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader) {
-    int num2ndOption = subscribeEventGroupAckEntry->getNum1stAnd2ndOptions() & 0x0F;
-    if (num2ndOption > 0) {
+    if (subscribeEventGroupAckEntry->getNum2ndOptions() > 0) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
         QoSService service = QoSService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
                 ipv4EndpointOption->getPort(), subscribeEventGroupAckEntry->getInstanceID());

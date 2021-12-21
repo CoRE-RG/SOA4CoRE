@@ -12,7 +12,6 @@
 
 //Std
 #include <list>
-//SignalsAndGateways auto-generated messages
 #include "soqosmw/messages/someip/SomeIpSDHeader_m.h"
 #include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
 #include "soqosmw/messages/someip/SomeIpSDOption_m.h"
@@ -131,6 +130,8 @@ private:
      */
     void updateHeaderLength();
 
+    void copy(const SomeIpSDHeader& other);
+
     /**
      * Member variables
      */
@@ -139,8 +140,6 @@ protected:
 private:
     std::list<SomeIpSDEntry*> entryList;
     std::list<SomeIpSDOption*> optionList;
-
-    void copy(const SomeIpSDHeader& other);
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_ */
