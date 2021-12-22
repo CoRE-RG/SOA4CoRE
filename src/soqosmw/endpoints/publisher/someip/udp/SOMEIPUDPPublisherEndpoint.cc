@@ -45,7 +45,7 @@ void SOMEIPUDPPublisherEndpoint::sendPacket(uint16_t serviceID, uint16_t method_
     messageID = messageID | method_EventID;
     someipheader->setMessageID(messageID);
     // Length of whole SOME/IP Payload + header length in Payload.
-    someipheader->setLength(HEADER_COVERED_BY_PAYLOADLENGTH + payload->getByteLength());
+    someipheader->setLength(ADDITIONAL_BYTES_TO_PAYLOADLENGTH + payload->getByteLength());
     // Request ID ("Client ID Prefix" 8 Bit | "Client ID" 8 Bit | "Session ID" 16 Bit)
     uint32_t requestID = 0;
     requestID = clientIDPrefix;

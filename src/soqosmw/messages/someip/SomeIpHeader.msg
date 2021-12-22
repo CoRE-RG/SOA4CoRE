@@ -15,7 +15,7 @@
 
 namespace SOQoSMW;
 cplusplus {{
-#define HEADER_COVERED_BY_PAYLOADLENGTH 8
+#define ADDITIONAL_BYTES_TO_PAYLOADLENGTH 8 // see below SOME/IP Header from requestID (inclusive)
 }}
 
 //Type of message 
