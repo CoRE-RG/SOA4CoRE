@@ -24,5 +24,5 @@ simple SOMEIPTCPPublisherEndpoint extends TCPPublisherEndpoint
 {
     parameters:
         @class(SOQoSMW::SOMEIPTCPPublisherEndpoint);
-        qos = "SOMEIP";
+        qos = "SOMEIP_TCP";
 }

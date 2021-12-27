@@ -17,14 +17,22 @@
 #define __SOQOSMW_SOMEIPUDPPUBLISHERENDPOINT_H_
 
 #include "soqosmw/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
+#include "soqosmw/endpoints/publisher/someip/base/SOMEIPPublisherEndpointBase.h"
 
 namespace SOQoSMW {
 
 /**
+ * @brief The SOME/IP Publisher endpoint using the UDP protocol.
+ *
+ * @ingroup soqosmw/endpoints
+ *
  * @author Mehmet Cakir
  */
-class SOMEIPUDPPublisherEndpoint : public UDPPublisherEndpoint
+class SOMEIPUDPPublisherEndpoint : public SOMEIPPublisherEndpointBase, public UDPPublisherEndpoint
 {
+    /**
+     * Methods
+     */
 public:
     /**
      * Creates a connection specific information for this endpoint.
@@ -42,11 +50,13 @@ protected:
     virtual void publish(cPacket* msg) override;
 
 private:
+
     /**
-     * Sends a SOME/IP packet
+     * Member variables
      */
-    virtual void sendPacket(uint16_t serviceID, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
-            uint8_t protocolVersion, uint8_t interfaceVersion, uint8_t messageType, uint8_t returnCode, cPacket *payload);
+public:
+protected:
+private:
 };
 } /* end namespace SOQoSMW */
 #endif

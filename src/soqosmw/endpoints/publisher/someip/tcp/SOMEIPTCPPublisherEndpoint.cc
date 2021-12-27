@@ -14,9 +14,32 @@
 // 
 
 #include "SOMEIPTCPPublisherEndpoint.h"
+#include "soqosmw/messages/someip/SomeIpHeader_m.h"
 
 namespace SOQoSMW {
 
 Define_Module(SOMEIPTCPPublisherEndpoint);
+
+ConnectionSpecificInformation* SOMEIPTCPPublisherEndpoint::getConnectionSpecificInformation() {
+    CSI_SOMEIP* connection = new CSI_SOMEIP();
+    connection->setAddress(_localAddress.c_str());
+    connection->setPort(_localPort);
+    return connection;
+}
+
+void SOMEIPTCPPublisherEndpoint::publish(cPacket* msg) {
+    if(_isConnected) {
+        uint16_t serviceID = atoi(msg->getName());
+        cPacket* someipPacket = SOMEIPPublisherEndpointBase::createSOMEIPPacket(serviceID, msg->dup());
+        if (SomeIpHeader* someipheader = dynamic_cast<SomeIpHeader*>(someipPacket)){
+            for (auto iter = socketMap.begin(); iter != socketMap.end(); iter++) {
+                iter->second->send(someipheader->dup());
+            }
+            delete(someipheader);
+        } else {
+            throw cRuntimeError("Expected SomeIpHeader");
+        }
+    }
+}
 
 } /*end namespace SOQoSMW*/

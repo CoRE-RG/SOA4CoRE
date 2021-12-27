@@ -24,5 +24,4 @@ simple SOMEIPPublisherEndpointBase extends PublisherEndpointBase
 {
     parameters:
         endpointPath = default("SOME/IPPublisher");
-        qos = "SOME/IP";
 }

@@ -17,6 +17,7 @@
 #define __SOQOSMW_SOMEIPTCPPUBLISHERENDPOINT_H_
 
 #include "soqosmw/endpoints/publisher/standard/tcp/TCPPublisherEndpoint.h"
+#include "soqosmw/endpoints/publisher/someip/base/SOMEIPPublisherEndpointBase.h"
 
 namespace SOQoSMW {
 
@@ -25,8 +26,33 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SOMEIPTCPPublisherEndpoint : public TCPPublisherEndpoint
+class SOMEIPTCPPublisherEndpoint : public SOMEIPPublisherEndpointBase, public TCPPublisherEndpoint
 {
+    /**
+     * Methods
+     */
+public:
+    /**
+     * Creates a connection specific information for this endpoint.
+     * @return  the connection specific information.
+     */
+    virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
+protected:
+    /**
+     * Publish a payload to all subscribers. This needs to be implemented by all subclasses.
+     * The message will be deleted by the caller afterwards.
+     *
+     * @param payload   the payload to be published.
+     */
+    virtual void publish(cPacket* msg) override;
+private:
+
+    /**
+     * Member variables
+     */
+public:
+protected:
+private:
 };
 } /*end namespace SOQoSMW*/
 
