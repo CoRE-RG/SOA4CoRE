@@ -14,7 +14,6 @@
 // 
 
 #include <soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h>
-#include "soqosmw/applications/someipapp/base/ISomeIpAppBase.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"

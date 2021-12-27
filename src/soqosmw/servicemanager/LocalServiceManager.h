@@ -244,12 +244,14 @@ private:
     SubscriberEndpointBase* createAVBSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
     SubscriberEndpointBase* createTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
     SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createSOMEIPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+    SubscriberEndpointBase* createSomeIpTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+    SubscriberEndpointBase* createSomeIpUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
 
     PublisherEndpointBase* createAVBPublisherEndpoint(int qos, PublisherConnector* connector);
     PublisherEndpointBase* createTCPPublisherEndpoint(int qos, PublisherConnector* connector);
     PublisherEndpointBase* createUDPPublisherEndpoint(int qos, PublisherConnector* connector);
-    PublisherEndpointBase* createSOMEIPPublisherEndpoint(int qos, PublisherConnector* connector);
+    PublisherEndpointBase* createSomeIpTCPPublisherEndpoint(int qos, PublisherConnector* connector);
+    PublisherEndpointBase* createSomeIpUDPPublisherEndpoint(int qos, PublisherConnector* connector);
 
 
     /**

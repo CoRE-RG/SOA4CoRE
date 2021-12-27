@@ -19,4 +19,11 @@ namespace SOQoSMW {
 
 Define_Module(SOMEIPTCPSubscriberEndpoint);
 
+ConnectionSpecificInformation* SOMEIPTCPSubscriberEndpoint::getConnectionSpecificInformation() {
+    CSI_SOMEIP_TCP* connection = new CSI_SOMEIP_TCP();
+    connection->setAddress(_localAddress.c_str());
+    connection->setPort(_localPort);
+    return connection;
+}
+
 } /* end namespace SOQoSMW */

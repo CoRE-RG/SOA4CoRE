@@ -198,8 +198,8 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
                 switch (response->getQosClass()) {
                 case QoSGroups::STD_UDP:
                     connectionlessCSI = new CSI_UDP();
-                case QoSGroups::SOMEIP: {
-                    connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP();
+                case QoSGroups::SOMEIP_UDP: {
+                    connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP_UDP();
                     // create or find the subscriber
                     SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getServiceId(),connectionlessCSI);
 
@@ -273,7 +273,7 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
                                     case ConnectionType::ct_udp:
                                         udpPublisher->addRemote(subConnection);
                                         break;
-                                    case ConnectionType::ct_someip:
+                                    case ConnectionType::ct_someip_udp:
                                         // SOME/IP SD
                                         udpPublisher->addRemote(subConnection);
                                         break;
@@ -340,7 +340,7 @@ bool QoSBroker::handleFinalise(QoSNegotiationFinalise* finalise) {
                     // do not create another connectionless subscriber!
                     switch (info->getConnectionType()) {
                     case ConnectionType::ct_udp:
-                    case ConnectionType::ct_someip:
+                    case ConnectionType::ct_someip_udp:
                         break;
                     default:
                         // create or find the subscriber

@@ -31,7 +31,8 @@ enum ConnectionType{
     ct_tcp			= 1;
     ct_http			= 2;
     ct_avb			= 3;
-    ct_someip		= 4;
+    ct_someip_udp	= 4;
+    ct_someip_tcp	= 5;
 }
 
 packet ConnectionSpecificInformation {
@@ -56,6 +57,10 @@ packet CSI_AVB extends ConnectionSpecificInformation {
     int vlanID;
 }
 
-packet CSI_SOMEIP extends CSI_UDP {
-    connectionType = ConnectionType::ct_someip;
+packet CSI_SOMEIP_UDP extends CSI_UDP {
+    connectionType = ConnectionType::ct_someip_udp;
+}
+
+packet CSI_SOMEIP_TCP extends CSI_TCP {
+    connectionType = ConnectionType::ct_someip_tcp;
 }

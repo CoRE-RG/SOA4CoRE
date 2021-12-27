@@ -25,12 +25,24 @@ namespace SOQoSMW {
  */
 class SOMEIPUDPSubscriberEndpoint : public UDPSubscriberEndpoint
 {
+    /**
+     * Methods
+     */
 public:
     /**
      * Creates a connection specific information for this endpoint.
      * @return  the connection specific information.
      */
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
+protected:
+private:
+
+    /**
+     * Member variables
+     */
+public:
+protected:
+private:
 };
 
 } /* end namespace SOQoSMW */

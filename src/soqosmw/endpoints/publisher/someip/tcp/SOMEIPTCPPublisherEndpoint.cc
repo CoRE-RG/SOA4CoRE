@@ -21,7 +21,7 @@ namespace SOQoSMW {
 Define_Module(SOMEIPTCPPublisherEndpoint);
 
 ConnectionSpecificInformation* SOMEIPTCPPublisherEndpoint::getConnectionSpecificInformation() {
-    CSI_SOMEIP* connection = new CSI_SOMEIP();
+    CSI_SOMEIP_TCP* connection = new CSI_SOMEIP_TCP();
     connection->setAddress(_localAddress.c_str());
     connection->setPort(_localPort);
     return connection;

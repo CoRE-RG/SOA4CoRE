@@ -23,7 +23,7 @@ namespace SOQoSMW {
 /**
  * @author Mehmet Cakir
  */
-class SOMEIPSubscriberEndpointBase : public SubscriberEndpointBase
+class SOMEIPSubscriberEndpointBase
 {
 };
 

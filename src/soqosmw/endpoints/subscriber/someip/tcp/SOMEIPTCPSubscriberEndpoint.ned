@@ -24,5 +24,7 @@ simple SOMEIPTCPSubscriberEndpoint extends TCPSubscriberEndpoint
 {
     parameters:
         @class(SOQoSMW::SOMEIPTCPSubscriberEndpoint);
-        qos = "SOMEIP";
+        endpointPath = default("SOME/IP Subscriber");
+        qos = "SOMEIP_TCP";
+        
 }

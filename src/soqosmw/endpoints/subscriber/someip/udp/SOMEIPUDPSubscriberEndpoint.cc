@@ -20,7 +20,7 @@ namespace SOQoSMW {
 Define_Module(SOMEIPUDPSubscriberEndpoint);
 
 ConnectionSpecificInformation* SOMEIPUDPSubscriberEndpoint::getConnectionSpecificInformation() {
-    CSI_SOMEIP* connection = new CSI_SOMEIP();
+    CSI_SOMEIP_UDP* connection = new CSI_SOMEIP_UDP();
     connection->setAddress(_localAddress.c_str());
     connection->setPort(_localPort);
     return connection;

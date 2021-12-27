@@ -94,8 +94,12 @@ void SubscriberAppBase::setQoS() {
             _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_tcpPort);
     } else if(qosGroup == "STD_UDP") {
             _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_udpPort);
-    } else if(qosGroup == "SOMEIP") {
+    } else if(qosGroup == "SOMEIP_TCP") {
+        _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_tcpPort);
+    }  else if(qosGroup == "SOMEIP_UDP") {
         _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_udpPort);
+    } else {
+        throw cRuntimeError("Unknown QoS group");
     }
 }
 
@@ -128,8 +132,10 @@ void SubscriberAppBase::handleParameterChange(const char* parname)
             _qosGroup = new QoSGroup(QoSGroups::STD_UDP);
         } else if(group == "RT"){
             _qosGroup = new QoSGroup(QoSGroups::RT);
-        } else if(group == "SOMEIP"){
-            _qosGroup = new QoSGroup(QoSGroups::SOMEIP);
+        } else if(group == "SOMEIP_TCP"){
+            _qosGroup = new QoSGroup(QoSGroups::SOMEIP_TCP);
+        } else if(group == "SOMEIP_UDP") {
+            _qosGroup = new QoSGroup(QoSGroups::SOMEIP_UDP);
         } else {
             cRuntimeError("Not a valid connection type");
         }

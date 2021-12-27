@@ -145,7 +145,7 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
                 qosService.getAddress()
         );
         //TODO Should become possible for other QoS classes too, currently limited to SOME/IP UDP
-        PublisherEndpointBase* pub = createOrFindPublisherFor(qosService.getServiceId(),QoSGroups::SOMEIP);
+        PublisherEndpointBase* pub = createOrFindPublisherFor(qosService.getServiceId(),QoSGroups::SOMEIP_UDP);
         if(!pub) {
             throw cRuntimeError("No Publisher was created.");
         }
@@ -157,11 +157,11 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
         if (!info) {
             throw cRuntimeError("No ConnectionSpecificInformation received.");
         }
-        CSI_SOMEIP* subConnection = new CSI_SOMEIP();
+        CSI_SOMEIP_UDP* subConnection = new CSI_SOMEIP_UDP();
         subConnection->setAddress(qosService.getAddress().str().c_str());
         subConnection->setPort(qosService.getPort());
         switch (info->getConnectionType()) {
-        case ConnectionType::ct_someip:
+        case ConnectionType::ct_someip_udp:
             someipUdpPublisherEndpoint->addRemote(subConnection);
             break;
         default:
@@ -183,7 +183,7 @@ Request* SomeIpLocalServiceManager::createNegotiationRequest(IService* publisher
 
 // Subscriber-side
 void SomeIpLocalServiceManager::createSubscriberEndpoint(IService* service) {
-    ConnectionSpecificInformation* connectionlessCSI = new CSI_SOMEIP();
+    ConnectionSpecificInformation* connectionlessCSI = new CSI_SOMEIP_UDP();
     SubscriberEndpointBase* sub = createOrFindSubscriberFor(service->getServiceId(), connectionlessCSI);
     delete connectionlessCSI;
     if(!sub) {

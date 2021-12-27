@@ -243,9 +243,11 @@ PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
             case QoSGroups::WEB:
                 throw cRuntimeError("The web QoS Group is not yet available");
                 break;
-            //TODO SOMEIP case QoSGroups::SOMEIP for TCP
-            case QoSGroups::SOMEIP:
-                pub = createSOMEIPPublisherEndpoint(qos, connector);
+            case QoSGroups::SOMEIP_TCP:
+                pub = createSomeIpTCPPublisherEndpoint(qos, connector);
+                break;
+            case QoSGroups::SOMEIP_UDP:
+                pub = createSomeIpUDPPublisherEndpoint(qos, connector);
                 break;
             default:
                 throw cRuntimeError("Unknown connection type.");
@@ -289,9 +291,11 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
             case ConnectionType::ct_http:
                 throw cRuntimeError("The HTTP connection is not yet available");
                 break;
-            //TODO SOMEIP case ConnectionType::SOMEIP for TCP
-            case ConnectionType::ct_someip:
-                sub = createSOMEIPSubscriberEndpoint(csi, connector);
+            case ConnectionType::ct_someip_tcp:
+                sub = createSomeIpTCPSubscriberEndpoint(csi, connector);
+                break;
+            case ConnectionType::ct_someip_udp:
+                sub = createSomeIpUDPSubscriberEndpoint(csi, connector);
                 break;
             default:
                 throw cRuntimeError("Unknown connection type.");
@@ -324,9 +328,11 @@ int LocalServiceManager::getQoSGroupForConnectionType(int type){
     case ConnectionType::ct_http:
         return QoSGroups::WEB;
         break;
-    //TODO SOMEIP for TCP
-    case ConnectionType::ct_someip:
-        return QoSGroups::SOMEIP;
+    case ConnectionType::ct_someip_tcp:
+        return QoSGroups::SOMEIP_TCP;
+        break;
+    case ConnectionType::ct_someip_udp:
+        return QoSGroups::SOMEIP_UDP;
         break;
     default:
         throw cRuntimeError("Unknown connection type.");
@@ -484,13 +490,46 @@ SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
     return ret;
 }
 
-SubscriberEndpointBase* LocalServiceManager::createSOMEIPSubscriberEndpoint(
+SubscriberEndpointBase* LocalServiceManager::createSomeIpTCPSubscriberEndpoint(
         ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
 
     SubscriberEndpointBase* ret = nullptr;
 
-    CSI_SOMEIP* csi_someip = dynamic_cast<CSI_SOMEIP*>(csi);
+    CSI_SOMEIP_TCP* csi_someip = dynamic_cast<CSI_SOMEIP_TCP*>(csi);
+
+    if(csi_someip){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soqosmw.endpoints.subscriber.someip.tcp.SOMEIPTCPSubscriberEndpoint");
+        // 2. Create the module;
+        SOMEIPTCPSubscriberEndpoint* someipTcpEndpoint =
+                            dynamic_cast<SOMEIPTCPSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        someipTcpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(someipTcpEndpoint);
+        //connect endpoint to the reader
+        ret->setConnector(connector);
+        connector->addEndpoint(ret);
+    }
+
+    return ret;
+}
+
+SubscriberEndpointBase* LocalServiceManager::createSomeIpUDPSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* connector) {
+
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_SOMEIP_UDP* csi_someip = dynamic_cast<CSI_SOMEIP_UDP*>(csi);
 
     if(csi_someip){
         // 1. Find the factory object;
@@ -626,13 +665,43 @@ PublisherEndpointBase* LocalServiceManager::createUDPPublisherEndpoint(
     return ret;
 }
 
-PublisherEndpointBase* LocalServiceManager::createSOMEIPPublisherEndpoint(
+PublisherEndpointBase* LocalServiceManager::createSomeIpTCPPublisherEndpoint(
         int qos,
         PublisherConnector* connector) {
 
     PublisherEndpointBase* ret = nullptr;
 
-    if(qos == QoSGroups::SOMEIP){
+    if(qos == QoSGroups::SOMEIP_TCP){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soqosmw.endpoints.publisher.someip.tcp.SOMEIPTCPPublisherEndpoint");
+        // 2. Create the module;
+        SOMEIPTCPPublisherEndpoint* someipTcpEndpoint =
+                            dynamic_cast<SOMEIPTCPPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        someipTcpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(someipTcpEndpoint);
+        //connect endpoint to the reader
+        ret->setConnector(connector);
+        connector->addEndpoint(ret);
+    }
+    return ret;
+}
+
+PublisherEndpointBase* LocalServiceManager::createSomeIpUDPPublisherEndpoint(
+        int qos,
+        PublisherConnector* connector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qos == QoSGroups::SOMEIP_UDP){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
                     "soqosmw.endpoints.publisher.someip.udp.SOMEIPUDPPublisherEndpoint");
@@ -653,7 +722,6 @@ PublisherEndpointBase* LocalServiceManager::createSOMEIPPublisherEndpoint(
         ret->setConnector(connector);
         connector->addEndpoint(ret);
     }
-
     return ret;
 }
 
