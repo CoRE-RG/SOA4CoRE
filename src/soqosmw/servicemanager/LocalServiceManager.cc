@@ -363,7 +363,7 @@ SubscriberConnector* LocalServiceManager::findSubscriberConnectorLike(
     // find fitting connectors
     SubscriberConnector* connector = getSubscriberConnector(publisherServiceId);
     if(connector){
-        // we allready have a service subscribing to the data
+        // we already have a service subscribing to the data
         QoSGroup* conQoS = dynamic_cast<QoSGroup*>(connector->getQos()[QoSPolicyNames::QoSGroup]);
         if(qos == conQoS->getValue()){
             // same qos as well so try to add and return
@@ -490,10 +490,10 @@ SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
     return ret;
 }
 
+
 SubscriberEndpointBase* LocalServiceManager::createSomeIpTCPSubscriberEndpoint(
         ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
-
     SubscriberEndpointBase* ret = nullptr;
 
     CSI_SOMEIP_TCP* csi_someip = dynamic_cast<CSI_SOMEIP_TCP*>(csi);
@@ -512,6 +512,8 @@ SubscriberEndpointBase* LocalServiceManager::createSomeIpTCPSubscriberEndpoint(
         someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
         int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
         someipTcpEndpoint->par("localPort").setIntValue(localPort);
+        someipTcpEndpoint->par("remoteAddress").setStringValue(csi_someip->getAddress());
+        someipTcpEndpoint->par("remotePort").setIntValue(csi_someip->getPort());
 
         // cast back.
         ret = dynamic_cast<SubscriberEndpointBase*>(someipTcpEndpoint);

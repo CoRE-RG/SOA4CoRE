@@ -106,7 +106,7 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
     /**
      * Offers a service
      */
-    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address publisherIP, uint16_t publisherPort);
+    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address publisherIP, uint16_t publisherPort, IPProtocolId ipProtocolId);
 
     /**
      * Subscribes a service

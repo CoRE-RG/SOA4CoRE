@@ -16,19 +16,34 @@
 #ifndef SOQOSMW_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
 #define SOQOSMW_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
 
-#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
-
 namespace SOQoSMW {
 
-class QoSServiceIdentifier: public ServiceIdentifier {
+/**
+ * @brief The service identifier used to discover a service
+ *
+ * @ingroup soqosmw/service
+ *
+ * @author Mehmet Mueller
+ */
+
+class QoSServiceIdentifier {
 public:
     QoSServiceIdentifier(int serviceId, int instanceId);
     virtual ~QoSServiceIdentifier();
     virtual bool operator==(const QoSServiceIdentifier& qosServiceIdentifier) const;
     virtual bool operator!=(const QoSServiceIdentifier& qosServiceIdentifier) const;
+    int getServiceId() const;
     int getInstanceId() const;
 
 protected:
+    /**
+     * The service ID
+     */
+    int _serviceId;
+
+    /**
+     * The instance ID
+     */
     int _instanceId;
 };
 } /* namespace SOQoSMW */

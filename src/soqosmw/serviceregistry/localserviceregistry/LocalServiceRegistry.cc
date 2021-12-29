@@ -37,11 +37,11 @@ void LocalServiceRegistry::handleMessage(cMessage *msg)
 {
 }
 
-void LocalServiceRegistry::addPublisherService(IService *service) {
-    _serviceRegistry[service->getServiceId()] = service;
+void LocalServiceRegistry::addPublisherService(QoSService service) {
+    _serviceRegistry[service.getServiceId()] = service;
 }
 
-IService* LocalServiceRegistry::getService(ServiceIdentifier serviceIdentifier) {
+IService* LocalServiceRegistry::getService(QoSServiceIdentifier serviceIdentifier) {
     IService *service = nullptr;
     if (_serviceRegistry.count(serviceIdentifier.getServiceId())) {
         service = _serviceRegistry[serviceIdentifier.getServiceId()];

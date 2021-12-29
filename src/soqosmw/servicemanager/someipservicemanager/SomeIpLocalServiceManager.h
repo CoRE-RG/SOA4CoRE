@@ -113,6 +113,13 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     void createSubscriberEndpoint(IService* service);
 
     /**
+     * Returns the corresponding L4 protocol of the service
+     * @param service
+     * @return the corresponding L4 protocol of the service
+     */
+    IPProtocolId getIPProtocolId(QoSService* service);
+
+    /**
      * Member variables
      */
   public:

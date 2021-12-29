@@ -17,8 +17,8 @@
 
 namespace SOQoSMW {
 
-SomeIpSDFindResult::SomeIpSDFindResult(int serviceId, int instanceId, inet::L3Address remoteAddress, IService *service) :
-        SomeIpSDFindRequest(serviceId,instanceId,remoteAddress), _service(service) {
+SomeIpSDFindResult::SomeIpSDFindResult(int serviceId, int instanceId, L3Address remoteAddress, IService *service, IPProtocolId ipProtocolId) :
+        SomeIpSDFindRequest(serviceId,instanceId,remoteAddress), _service(service), _ipProtocolId(ipProtocolId) {
 }
 
 SomeIpSDFindResult::~SomeIpSDFindResult() {
@@ -28,5 +28,8 @@ IService* SomeIpSDFindResult::getService() const {
     return _service;
 }
 
+IPProtocolId SomeIpSDFindResult::getIPProtocolId() const {
+    return _ipProtocolId;
+}
 
 } /* end namespace SOQoSMW */

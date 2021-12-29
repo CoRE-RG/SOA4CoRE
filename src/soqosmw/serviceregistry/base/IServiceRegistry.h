@@ -8,8 +8,8 @@
 #ifndef SOQOSMW_SERVICEREGISTRY_BASE_ISERVICEREGISTRY_H_
 #define SOQOSMW_SERVICEREGISTRY_BASE_ISERVICEREGISTRY_H_
 
-#include <soqosmw/service/base/IService.h>
-#include <soqosmw/service/serviceidentifier/ServiceIdentifier.h>
+#include <soqosmw/service/qosservice/QoSService.h>
+#include <soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h>
 
 namespace SOQoSMW {
 
@@ -31,13 +31,13 @@ public:
     /**
      * Adds a published service
      */
-    virtual void addPublisherService(IService *service) = 0;
+    virtual void addPublisherService(QoSService service) = 0;
 
     /**
      * Returns a service for given service identifier
      * @return IService
      */
-    virtual IService* getService(ServiceIdentifier serviceIdentifier) = 0;
+    virtual QoSService getService(QoSServiceIdentifier serviceIdentifier) = 0;
 
     typedef uint32_t ServiceId;
 };

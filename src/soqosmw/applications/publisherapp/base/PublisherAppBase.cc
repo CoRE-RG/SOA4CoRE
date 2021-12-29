@@ -128,6 +128,17 @@ void PublisherAppBase::handleParameterChange(const char* parname) {
         this->_streamID = parameterULongCheckRange(par("streamID"), 0,
                 static_cast<unsigned long>(MAX_STREAM_ID));
     }
+
+    if (!parname || !strcmp(parname, "qosGroups")) {
+        const char* qosGroups = par("qosGroups");
+        const char* delim = " ";
+        char *token = strtok(const_cast<char*>(qosGroups), delim);
+        while (token != nullptr)
+        {
+            this->_qosGroups.push_back(std::string(token));
+            token = strtok(nullptr, delim);
+        }
+    }
 }
 
 void PublisherAppBase::createPublisherWithQoS() {
@@ -141,7 +152,7 @@ void PublisherAppBase::createPublisherWithQoS() {
     }
     localServiceManager->registerPublisherService(this->_publisherServiceId, this->_qosPolicies, this, _instanceId);
     if ((_connector = localServiceManager->getPublisherConnector(this->_publisherServiceId)) == nullptr){
-        throw cRuntimeError("PublisherConnector is null. Call registerPublisherService before.");
+        throw cRuntimeError("PublisherConnector is null. Call registerPublisherService first.");
     }
 }
 
@@ -181,8 +192,6 @@ void PublisherAppBase::handleMessage(cMessage *msg) {
             throw cRuntimeError("No Publisher Registered for this app.");
         }
         delete msg;
-
-
     } else {
         delete msg;
     }
@@ -190,29 +199,49 @@ void PublisherAppBase::handleMessage(cMessage *msg) {
 }
 
 void PublisherAppBase::setQoS() {
-    _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_tcpPort);
-    _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_udpPort);
-    _qosPolicies[QoSPolicyNames::LocalAddress] = new LocalAddressQoSPolicy(_localAddress);
-    _qosPolicies[QoSPolicyNames::StreamID] = new StreamIDQoSPolicy(_streamID);
-    _qosPolicies[QoSPolicyNames::SRClass] = new SRClassQoSPolicy(_srClass);
-    _qosPolicies[QoSPolicyNames::Framesize] = new FramesizeQoSPolicy(_framesize);
-    _qosPolicies[QoSPolicyNames::IntervalFrames] = new IntervalFramesQoSPolicy(_intervalFrames);
+    for (std::string qosGroup : _qosGroups) {
+        if (!strcmp(qosGroup, "STD_TCP") || !strcmp(qosGroup, "SOMEIP_TCP")) {
+            QoSGroups qos = !strcmp(qosGroup, "STD_TCP") ? QoSGroups::STD_TCP : QoSGroups::SOMEIP_TCP;
+            _qosServices.push_back(QoSService(_publisherServiceId,
+                    inet::L3AddressResolver().resolve(_localAddress.c_str()),
+                    _instanceId,
+                    qos,
+                    _tcpPort));
+        } else if (!strcmp(qosGroup, "STD_UDP") || !strcmp(qosGroup, "SOMEIP_UDP")) {
+            QoSGroups qos = !strcmp(qosGroup, "STD_UDP") ? QoSGroups::STD_UDP : QoSGroups::SOMEIP_UDP;
+            _qosServices.push_back(QoSService(_publisherServiceId,
+                    inet::L3AddressResolver().resolve(_localAddress.c_str()),
+                    _instanceId,
+                    qos,
+                    _udpPort));
+        } else if (!strcmp(qosGroup, "RT")) {
+            _qosServices.push_back(QoSService(_publisherServiceId,
+                    inet::L3AddressResolver().resolve(_localAddress.c_str()),
+                    _instanceId,
+                    QosGroups::RT,
+                    -1,
+                    _streamID,
+                    _srClass,
+                    _framesize,
+                    _intervalFrames));
+        } else if (!strcmp(qosGroup, "WEB")) {
+            throw cRuntimeError("WEB QoS is not implemented yet");
+        } else {
+            throw cRuntimeError("Unknown QoS");
+        }
+    }
 }
 
 void PublisherAppBase::printQoS() {
-    cout << "printing qos policies: [ ";
-    for (auto policy : _qosPolicies){
-        cout << policy.first << " ";
-    }
-    cout << "]" << endl << endl;
+    cout << "printing offered qos services:" << endl;
+    for (QoSService qosService : _qosServices){
 
-    cout << endl;
-    cout << "checking values: " << endl;
-    cout << "StreamID: " << (dynamic_cast<StreamIDQoSPolicy*>(_qosPolicies[QoSPolicyNames::StreamID]))->getValue() << endl;
-    int value = (int)(dynamic_cast<SRClassQoSPolicy*>(_qosPolicies[QoSPolicyNames::SRClass]))->getValue();
-    cout << "SRClass: " << value << endl;
-    cout << "Framesize: " << (dynamic_cast<FramesizeQoSPolicy*>(_qosPolicies[QoSPolicyNames::Framesize]))->getValue() << endl;
-    cout << "IntervalFrames: " << (dynamic_cast<IntervalFramesQoSPolicy*>(_qosPolicies[QoSPolicyNames::IntervalFrames]))->getValue() << endl;
+        cout << "Service ID: " << qosService.getServiceId() <<endl;
+        cout << "StreamID: " << qosService.getStreamId() << endl;
+        cout << "SRClass: " << qosService.getSrClass() << endl;
+        cout << "Framesize: " << qosService.getFramesize() << endl;
+        cout << "IntervalFrames: " << qosService.getIntervalFrames() << endl;
+    }
 
 }
 

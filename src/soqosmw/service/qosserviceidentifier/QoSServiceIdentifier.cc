@@ -17,7 +17,7 @@
 
 namespace SOQoSMW {
 
-QoSServiceIdentifier::QoSServiceIdentifier(int serviceId, int instanceId) : ServiceIdentifier(serviceId), _instanceId(instanceId) {
+QoSServiceIdentifier::QoSServiceIdentifier(int serviceId, int instanceId) : _serviceId(serviceId), _instanceId(instanceId) {
 }
 
 QoSServiceIdentifier::~QoSServiceIdentifier() {
@@ -29,6 +29,10 @@ bool QoSServiceIdentifier::operator==(const QoSServiceIdentifier& qosServiceIden
 
 bool QoSServiceIdentifier::operator!=(const QoSServiceIdentifier& qosServiceIdentifier) const {
     return !(*this == qosServiceIdentifier);
+}
+
+int QoSServiceIdentifier::getServiceId() const {
+    return _serviceId;
 }
 
 int QoSServiceIdentifier::getInstanceId() const {

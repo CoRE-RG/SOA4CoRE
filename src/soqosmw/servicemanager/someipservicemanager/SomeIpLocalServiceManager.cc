@@ -93,12 +93,14 @@ void SomeIpLocalServiceManager::subscribeService(IServiceIdentifier& publisherSe
 void SomeIpLocalServiceManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
     ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId());
-    if (IService* service = _lsr->getService(serviceIdentifier)) {
+    if (QoSService* service = dynamic_cast<QoSService*>(_lsr->getService(serviceIdentifier))) {
+        IPProtocolId ipProtocolId = getIPProtocolId(service);
         SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
                 someIpSDFindRequest->getServiceId(),
                 someIpSDFindRequest->getInstanceId(),
                 someIpSDFindRequest->getRemoteAddress(),
-                service
+                service,
+                ipProtocolId
         );
         delete(someIpSDFindRequest);
         emit(_findResultSignal,someIpSDFindResult);
@@ -189,6 +191,22 @@ void SomeIpLocalServiceManager::createSubscriberEndpoint(IService* service) {
     if(!sub) {
         throw cRuntimeError("No subscriber was created...");
     }
+}
+
+IPProtocolId SomeIpLocalServiceManager::getIPProtocolId(QoSService* service) {
+    QoSGroups qosGroup = dynamic_cast<QoSGroup*>(service->getQoSPolicyMap()[QoSPolicyNames::QoSGroup])->getValue();
+    IPProtocolId ipProtocolId = IPProtocolId::IP_PROT_ICMP;
+    switch (qosGroup) {
+        case QoSGroups::SOMEIP_TCP:
+            ipProtocolId = IPProtocolId::IP_PROT_TCP;
+            break;
+        case QoSGroups::SOMEIP_UDP:
+            ipProtocolId = IPProtocolId::IP_PROT_UDP;
+            break;
+        default:
+            throw cRuntimeError("Unknown QoS group.");
+    }
+    return ipProtocolId;
 }
 
 } /* end namespace SOQoSMW */

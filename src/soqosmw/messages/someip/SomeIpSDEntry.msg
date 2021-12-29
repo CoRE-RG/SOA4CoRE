@@ -26,6 +26,9 @@ enum SomeIpSDEntryType{
 packet SomeIpSDEntry {
     byteLength = 12;
     uint8_t type @enum(SomeIpSDEntryType);
+    // Two option fields are used to support two different types of options:
+    // Options common between multiple SOME/IP-SD entries and options different for each SOME/IP-SD entry.
+    // This way redundant information can be avoided. see [PRS_SOMEIPSD_00271]
     uint8_t index1stOptions;
     uint8_t index2ndOptions;
     uint8_t num1stOptions; // actually 4Bit

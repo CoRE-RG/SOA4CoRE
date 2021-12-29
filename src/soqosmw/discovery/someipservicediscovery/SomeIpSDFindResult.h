@@ -18,7 +18,9 @@
 
 #include "soqosmw/service/base/IService.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
+#include "inet/networklayer/common/IPProtocolId_m.h"
 
+using namespace inet;
 namespace SOQoSMW {
 
 /**
@@ -33,7 +35,7 @@ class SomeIpSDFindResult : public SomeIpSDFindRequest {
  * Methods
  */
 public:
-    SomeIpSDFindResult(int serviceId, int instanceId, inet::L3Address remoteAddress, IService *service);
+    SomeIpSDFindResult(int serviceId, int instanceId, L3Address remoteAddress, IService *service, IPProtocolId ipProtocolId);
     virtual ~SomeIpSDFindResult();
 
     /**
@@ -41,6 +43,12 @@ public:
      * @return the service
      */
     IService* getService() const;
+
+    /**
+     * Getter for the used L4 Protocol
+     * @return the IP Protocol ID of the used L4 protocol
+     */
+    IPProtocolId getIPProtocolId() const;
 
 protected:
 private:
@@ -54,6 +62,11 @@ private:
      * The service
      */
     IService* _service;
+
+    /**
+     * The used L4 protocol
+     */
+    IPProtocolId _ipProtocolId;
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_ */

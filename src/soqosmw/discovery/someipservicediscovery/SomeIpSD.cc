@@ -24,6 +24,10 @@
 
 namespace SOQoSMW {
 
+#define MAJOR_VERSION 0xFF       // see [PRS_SOMEIPSD_00351],[PRS_SOMEIPSD_00356],[PRS_SOMEIPSD_00386],[PRS_SOMEIPSD_00391]
+#define MINOR_VERSION 0xFFFFFFFF // see [PRS_SOMEIPSD_00351],[PRS_SOMEIPSD_00356],[PRS_SOMEIPSD_00386],[PRS_SOMEIPSD_00391]
+#define TTL 0xFFFFFF             // see [PRS_SOMEIPSD_00351],[PRS_SOMEIPSD_00356],[PRS_SOMEIPSD_00386],[PRS_SOMEIPSD_00391]
+
 Define_Module(SomeIpSD);
 
 void SomeIpSD::initialize(int stage) {
@@ -84,40 +88,40 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
 
     ServiceEntry *findEntry = new ServiceEntry("ServiceEntry");
     findEntry->setType(SOQoSMW::SomeIpSDEntryType::FIND);
-    findEntry->setIndex1stOptions(0x00);
-    findEntry->setIndex2ndOptions(0x00);
+    findEntry->setIndex1stOptions(0);
+    findEntry->setIndex2ndOptions(0);
     findEntry->setNum1stOptions(0);
     findEntry->setNum2ndOptions(0);
     findEntry->setServiceID(serviceID);
     findEntry->setInstanceID(instanceID);
-    findEntry->setMajorVersion(1);
+    findEntry->setMajorVersion(MAJOR_VERSION);
     findEntry->setTTL(3);
-    findEntry->setMinorVersion(0xFFFFFFFF);
+    findEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(findEntry);
 
     socket.sendTo(someIpSDHeader, inet::IPv4Address(BROADCASTADDRESS), destPort);
 }
 
-void SomeIpSD::offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address publisherIP, uint16_t publisherPort) {
+void SomeIpSD::offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address publisherIP, uint16_t publisherPort, IPProtocolId ipProtocolId) {
     Enter_Method("SomeIpSD::offer");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - OFFER");
 
     ServiceEntry *offerEntry = new ServiceEntry("ServiceEntry");
     offerEntry->setType(SOQoSMW::SomeIpSDEntryType::OFFER);
-    offerEntry->setIndex1stOptions(0x00);
-    offerEntry->setIndex2ndOptions(0x00);
+    offerEntry->setIndex1stOptions(0);
+    offerEntry->setIndex2ndOptions(0);
     offerEntry->setNum1stOptions(0);
     offerEntry->setNum2ndOptions(1);
     offerEntry->setServiceID(serviceID);
     offerEntry->setInstanceID(instanceID);
-    offerEntry->setMajorVersion(1);
+    offerEntry->setMajorVersion(MAJOR_VERSION);
     offerEntry->setTTL(3);
-    offerEntry->setMinorVersion(0xFFFFFFFF);
+    offerEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(offerEntry);
 
     IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
     ipv4EndpointOption->setIpv4Address(publisherIP.toIPv4());
-    ipv4EndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
+    ipv4EndpointOption->setL4Protocol(ipProtocolId);
     ipv4EndpointOption->setPort(publisherPort);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
@@ -136,7 +140,7 @@ void SomeIpSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet
     subscribeEventgroupEntry->setNum2ndOptions(1);
     subscribeEventgroupEntry->setServiceID(serviceID);
     subscribeEventgroupEntry->setInstanceID(instanceID);
-    subscribeEventgroupEntry->setMajorVersion(1);
+    subscribeEventgroupEntry->setMajorVersion(MAJOR_VERSION);
     subscribeEventgroupEntry->setTTL(3);
     someIpSDHeader->encapEntry(subscribeEventgroupEntry);
 
@@ -161,7 +165,7 @@ void SomeIpSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, i
     subscribeEventgroupAckEntry->setNum2ndOptions(1);
     subscribeEventgroupAckEntry->setServiceID(serviceID);
     subscribeEventgroupAckEntry->setInstanceID(instanceID);
-    subscribeEventgroupAckEntry->setMajorVersion(1);
+    subscribeEventgroupAckEntry->setMajorVersion(MAJOR_VERSION);
     subscribeEventgroupAckEntry->setTTL(3);
     someIpSDHeader->encapEntry(subscribeEventgroupAckEntry);
 
@@ -211,16 +215,30 @@ void SomeIpSD::processFindResult(cObject* obj) {
     SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
     IService* service = someIpSDFindResult->getService();
     offer(someIpSDFindResult->getServiceId(), someIpSDFindResult->getInstanceId(), someIpSDFindResult->getRemoteAddress(),
-            service->getAddress(), service->getPort());
+            service->getAddress(), service->getPort(), someIpSDFindResult->getIPProtocolId());
     delete(someIpSDFindResult);
 }
 
 void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someIpSDHeader) {
-    if (offerEntry->getNum2ndOptions() > 0) {
-        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        QoSService* service = new QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID());
-        emit(_serviceOfferSignal,service);
-        delete ipv4EndpointOption;
+    int numberOfOptions = offerEntry->getNum1stOptions()+offerEntry->getNum2ndOptions();
+    for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
+        if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
+            QoSPolicyMap qosPolicyMap = QoSPolicyMap();
+            switch(ipv4EndpointOption->getL4Protocol()) {
+                case IPProtocolId::IP_PROT_UDP:
+                    qosPolicyMap[QoSPolicyNames::QoSGroup] = new QoSGroup(QoSGroups::SOMEIP_UDP);
+                    break;
+                case IPProtocolId::IP_PROT_TCP:
+                    qosPolicyMap[QoSPolicyNames::QoSGroup] = new QoSGroup(QoSGroups::SOMEIP_TCP);
+                    break;
+                default:
+                    throw cRuntimeError("Unknown L4 Protocol.");
+            }
+
+            QoSService* service = new QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID(), qosPolicyMap);
+            emit(_serviceOfferSignal,service);
+            delete ipv4EndpointOption;
+        }
     }
 }
 
