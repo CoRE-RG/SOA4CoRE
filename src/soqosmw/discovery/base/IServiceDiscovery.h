@@ -18,8 +18,8 @@
 #ifndef __SOQOSMW_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 #define __SOQOSMW_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 
-#include <soqosmw/service/serviceidentifier/ServiceIdentifier.h>
 #include <omnetpp.h>
+#include "soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h"
 
 namespace SOQoSMW {
 
@@ -36,12 +36,12 @@ class IServiceDiscovery {
      * Methods
      */
 public:
-    virtual void discover(IServiceIdentifier& serviceIdentifier) = 0;
+    virtual void discover(QoSServiceIdentifier qosServiceIdentifier) = 0;
 protected:
 private:
 
     /**
-     * Memver variables
+     * Member variables
      */
 public:
 

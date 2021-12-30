@@ -14,12 +14,19 @@
 //
 
 #include <soqosmw/service/qosservice/QoSService.h>
+#include <algorithm>
 
 namespace SOQoSMW {
 
-QoSService::QoSService(int serviceId, inet::L3Address address, uint16_t instanceId, QoSGroups qos, int port = -1, int streamId = -1,
-        CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A, size_t framesize = -1, uint16_t intervalFrames = -1):
-        QoSServiceIdentifier(serviceId,instanceId), _address(address), _port(port), _streamId(streamId), _srClass(srClass), _framesize(framesize), _intervalFrames(intervalFrames){
+QoSService::QoSService() : _serviceIdentifier(QoSServiceIdentifier(-1,-1)), _defaultQoSService(true){
+
+}
+
+QoSService::QoSService(int serviceId, inet::L3Address address, uint16_t instanceId, std::set<QoSGroups> qosGroups,
+        int tcpPort, int udpPort, int streamId, CoRE4INET::SR_CLASS srClass, size_t framesize, uint16_t intervalFrames):
+        _serviceIdentifier(QoSServiceIdentifier(serviceId,instanceId)), _address(address), _qosGroups(qosGroups),
+        _tcpPort(tcpPort), _udpPort(udpPort), _streamId(streamId), _srClass(srClass), _framesize(framesize),
+        _intervalFrames(intervalFrames), _defaultQoSService(false){
 }
 
 QoSService::~QoSService() {
@@ -33,23 +40,28 @@ inet::L3Address QoSService::getAddress() const {
     return _address;
 }
 
-QoSGroups QoSService::getQosGroup() const {
-    return _qos;
+std::set<QoSGroups> QoSService::getQosGroups() const {
+    return _qosGroups;
 }
 
-int QoSService::getPort() const {
-    return _port;
+int QoSService::getTCPPort() const {
+    return _tcpPort;
+}
+
+int QoSService::getUDPPort() const {
+    return _udpPort;
 }
 
 bool QoSService::operator==(const QoSService& qoSService) const {
     return (_serviceIdentifier == qoSService._serviceIdentifier)
             && _address == qoSService.getAddress()
-            && _port == qoSService.getPort()
-            && _qos == qoSService.getQosGroup()
+            && _tcpPort == qoSService.getTCPPort()
+            && _udpPort == qoSService.getUDPPort()
             && _streamId == qoSService.getStreamId()
             && _srClass == qoSService.getSrClass()
             && _framesize == qoSService.getFramesize()
-            && _intervalFrames == qoSService.getIntervalFrames();
+            && _intervalFrames == qoSService.getIntervalFrames()
+            && _qosGroups == qoSService.getQosGroups();
 }
 
 bool QoSService::operator!=(const QoSService& qoSService) const {
@@ -74,6 +86,23 @@ CoRE4INET::SR_CLASS QoSService::getSrClass() const {
 
 int QoSService::getStreamId() const {
     return _streamId;
+}
+
+QoSGroups* QoSService::getCommonQoSGroup(QoSService qosService) {
+    QoSGroups* commonQoSGroup = nullptr;
+    std::set<QoSGroups> result;
+    std::set_intersection(_qosGroups.begin(), _qosGroups.end(), qosService.getQosGroups().begin(), qosService.getQosGroups().end(), std::inserter(result, result.begin()));
+    if (result.size() > 1) {
+        throw cRuntimeError("The subscriber set must not contain more than one QoSGroup");
+    }
+    if (result.size()) {
+        commonQoSGroup = new QoSGroups(*std::next(result.begin(), 1));
+    }
+    return commonQoSGroup;
+}
+
+bool QoSService::containsQoSGroup(QoSGroups qosGroup) {
+    return std::find(_qosGroups.begin(), _qosGroups.end(), qosGroup) != _qosGroups.end();
 }
 
 } /* namespace SOQoSMW */

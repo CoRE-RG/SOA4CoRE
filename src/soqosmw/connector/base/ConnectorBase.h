@@ -20,7 +20,7 @@
 
 #include <omnetpp.h>
 #include <mutex>
-#include "soqosmw/qospolicy/base/qospolicy.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 
 namespace SOQoSMW {
 class SOQoSMWApplicationBase;
@@ -44,6 +44,9 @@ namespace SOQoSMW {
  */
 class ConnectorBase : public cSimpleModule
 {
+    /**
+     * Methods
+     */
 public:
     /**
      * Adds the endpoint to this connector only if the endpoint is not already in the list
@@ -112,12 +115,12 @@ public:
         return _applications;
     }
 
-    QoSPolicyMap& getQos() {
-        return _qos;
+    QoSService getQoSService() {
+        return _qosService;
     }
 
-    void setQos(QoSPolicyMap& qos) {
-        _qos = qos;
+    void setQoSService(QoSService qosService) {
+        _qosService = qosService;
     }
 
 private:
@@ -142,6 +145,13 @@ private:
     virtual void handleParameterChange(const char* parname) override;
     virtual void finish() override;
 
+private:
+
+    /**
+     * Member variables
+     */
+public:
+protected:
     /**
      * Caches if forwarding to the endpoints is enabled.
      */
@@ -174,11 +184,6 @@ private:
     std::vector<SOQoSMWApplicationBase*> _applications;
 
     /**
-     * QoS of the connection
-     */
-    QoSPolicyMap _qos;
-
-    /**
      * The maximum number of allowed applications connected to this connector.
      * if < 0 infinite.
      */
@@ -200,6 +205,12 @@ private:
      * Gate name for traffic to the endpoint module.
      */
     static const char ENDPOINT_OUT_GATE_NAME []; //= "connectorIn";
+
+private:
+    /**
+     * QoSService of the connection
+     */
+    QoSService _qosService;
 };
 
 } /*end namespace SOQoSMW*/

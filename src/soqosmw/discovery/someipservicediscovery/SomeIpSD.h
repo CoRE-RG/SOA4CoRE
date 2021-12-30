@@ -22,7 +22,8 @@
 #include "soqosmw/messages/someip/SomeIpSDHeader.h"
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
 #include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
-#include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h>
+#include "soqosmw/discovery/someipservicediscovery/ExtractedQoSOptions.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h"
 
 namespace SOQoSMW {
 
@@ -42,9 +43,9 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
   public:
     /**
      * Initiates a service discovery
-     * @param serviceIdentifier
+     * @param qosServiceIdentifier
      */
-    void discover(IServiceIdentifier& serviceIdentifier) override;
+    void discover(QoSServiceIdentifier qosServiceIdentifier) override;
 
     /**
      * Subscribes a service
@@ -169,6 +170,13 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      * @param someIpSDHeader
      */
     void processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader);
+
+    /**
+     * Returns the extracted QoSOptions from an IPv4EndpointOption
+     * @param ipv4EndpointOption
+     * @return the extracted QoSOptions from an IPv4EndpointOption
+     */
+    ExtractedQoSOptions getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption);
 
 /**
  * Member variables

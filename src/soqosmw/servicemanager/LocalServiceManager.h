@@ -65,51 +65,39 @@ public:
     /**
      * @brief This Method creates a new Publisher according to the QoSPolicies.
      *
-     * @param serviceId Path of the Publisher Service (e.g. "reifendruck/links")
-     * @param qosPolicies The QoS Policies for the Publisher.
-     * @param executingModule The service executing the request.
-     * @param intanceId The instanceId possibly used for SOME/IP SD
+     * @param qosService The service representation of the Publisher application (e.g. "reifendruck/links")
+     * @param executingModule The application publishing a service.
      */
-    void registerPublisherService(
-            uint32_t serviceId,
-            QoSPolicyMap& qosPolicies,
-            SOQoSMWApplicationBase* executingApplication,
-            uint16_t instanceId);
+    void registerPublisherService(QoSService qosService, SOQoSMWApplicationBase* executingApplication);
 
     /**
      * @brief This Method creates a new Subscriber for the publisher Service according to the QoSPolicies.
      *
-     * @param subscriberPath Path of the Subscriber Service (e.g. "bordcomputer")
-     * @param publisherPath Path of the Publisher Service (e.g. "reifendruck/links")
-     * @param qosPolicies The QoS Policies for the Subscriber.
-     * @param executingModule The service executing the request.
+     * @param qosService The service representation of the Subscriber application (e.g. "bordcomputer")
+     * @param executingModule The application executing the request.
      */
-    void registerSubscriberService(
-            uint32_t publisherServiceId,
-            QoSPolicyMap& qosPolicies,
-            SOQoSMWApplicationBase* executingApplication);
+    void registerSubscriberService(QoSService qosService, SOQoSMWApplicationBase* executingApplication);
 
     /**
      * @brief Subscribes the given service
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param qosPolicyMap the QoS policy map
-     * @param instanceId the instance ID of the service
+     * @param qosService the QoS service
      */
-    virtual void subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) override;
+    virtual void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) override;
 
     /**
-     * Returns the publisher connector for the given publisher service
-     * @param publisherServiceId
-     * @return corresponding publisher connector
+     * Finds the connector for the publisher
+     * @param publisherServiceId     the service id of the publisher
+     * @return                       the connector if found, else nullptr
      */
-    PublisherConnector* getPublisherConnector(uint32_t publisherServiceId);
+    PublisherConnector* getPublisherConnectorForServiceId (uint32_t publisherServiceId);
 
     /**
-     * Returns the subscriber connector for the given publisher service
-     * @param publisherServiceId
-     * @return corresponding subscriber connector
+     * Finds the connector for the subscriber
+     * @param publisherServiceId     the service id of the publisher
+     * @return                       the connectors if found, else empty vector
      */
-    SubscriberConnector* getSubscriberConnector(uint32_t publisherServiceId);
+    std::vector<SubscriberConnector*> getSubscriberConnectorsForServiceId (uint32_t publisherServiceId);
 
 protected:
     /**
@@ -130,27 +118,13 @@ protected:
     virtual void handleParameterChange(const char* parname) override;
 
     /**
-     * Finds the connector for the publisher
-     * @param publisherServiceId     the service id of the publisher
-     * @return                       the connector if found, else nullptr
-     */
-    PublisherConnector* getPublisherConnectorForServiceId (uint32_t publisherServiceId);
-
-    /**
-     * Finds the connector for the subscriber
-     * @param publisherServiceId     the service id of the publisher
-     * @return                       the connector if found, else nullptr
-     */
-    SubscriberConnector* getSubscriberConnectorForServiceId (uint32_t publisherServiceId);
-
-    /**
      * Searches for a subscriber connector on this node for the given name and QoS.
      *
      * @param publisherServiceId     the service id of the publisher.
      * @param qos                    the QoS of the publisher.
      * @return                       the subscriber if found, else nullptr.
      */
-    SubscriberConnector* findSubscriberConnectorLike(uint32_t publisherServiceId, int qos);
+    SubscriberConnector* findSubscriberConnectorLike(uint32_t publisherServiceId, QoSGroups qosGroup);
 
     /**
      * Tries to find a publisher on this node for the given name and QoS.
@@ -158,10 +132,10 @@ protected:
      * The connector will be connected as well.
      *
      * @param publisherServiceId     the service id of the publisher.
-     * @param csi                    the csi of the publisher.
+     * @param qosGroup               the qosGroup of the publisher.
      * @return                       the corresponding publisher
      */
-    PublisherEndpointBase* createOrFindPublisherFor(uint32_t publisherServiceId,  int qos);
+    PublisherEndpointBase* createOrFindPublisherFor(uint32_t publisherServiceId,  QoSGroups qosGroup);
 
     /**
      * Tries to find a subscriber on this node for the given publisher name and QoS.
@@ -178,68 +152,65 @@ protected:
      * Searches for a publisher on this node for the given name and QoS.
      *
      * @param publisherServiceId     the service id of the publisher.
-     * @param qos                    the QoS of the publisher.
+     * @param qosGroup               the QoS of the publisher.
      * @return                       the publisher if found, else nullptr.
      */
-    PublisherEndpointBase* findPublisherLike(uint32_t publisherServiceId, int qos);
+    PublisherEndpointBase* findPublisherLike(uint32_t publisherServiceId, QoSGroups qosGroup);
 
     /**
      * Searches for a subscriber on this node for the given name and QoS.
      *
      * @param publisherServiceId     the service id of the publisher.
-     * @param qos                    the QoS of the publisher.
+     * @param qosGroup               the QoS of the publisher.
      * @return                       the corresponding publisher
      */
-    SubscriberEndpointBase* findSubscriberLike(uint32_t publisherServiceId, int qos);
+    SubscriberEndpointBase* findSubscriberLike(uint32_t publisherServiceId, QoSGroups qosGroup);
 
     /**
      * Adds an identifier of a requested service to the pendingRequestMap
      * @param publisherServiceIdentifier the service id of the publisher service
-     * @param qosPolicyMap the QoS policy map
-     * @param instanceId the instance ID determining the wanted instance of the publisher service
+     * @param qosService the QoS service
      */
-    void addServiceToPendingRequestsMap(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId);
+    void addServiceToPendingRequestsMap(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService);
 
 private:
 
     /**
      * Adds publisher service to a given publisher connector
      * @param publisherConnector
-     * @param qosPolicies
      * @param executingApplication
      */
-    void addPublisherServiceToConnector(PublisherConnector* publisherConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+    void addPublisherServiceToConnector(PublisherConnector* publisherConnector, SOQoSMWApplicationBase* executingApplication);
 
     /**
      * Adds subscriber service to a given subscriber connector
      * @param subscriberConnector
-     * @param qosPolicies
      * @param executingApplication
      */
-    void addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+    void addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, SOQoSMWApplicationBase* executingApplication);
 
     /**
      * Creates a publisher connector
-     * @param qosPolicies
+     * @param qosService
      * @param executingApplication
      * @return the publisher connector module
      */
-    PublisherConnector* createPublisherConnector(QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+    PublisherConnector* createPublisherConnector(QoSService qosService, SOQoSMWApplicationBase* executingApplication);
 
     /**
      * Creates a subscriber connector
-     * @param qosPolicies
+     * @param qosService
      * @param executingApplication
      * @return the subscriber connector module
      */
-    SubscriberConnector* createSubscriberConnector(QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication);
+    SubscriberConnector* createSubscriberConnector(QoSService qosService, SOQoSMWApplicationBase* executingApplication);
 
     /**
      * Matches the connection type to the qos group
-     * @param type      connection type. @see~ConnectionType
-     * @return          the qos group. @see~QoSGroups
+     * @param  connectionType @see~ConnectionType
+     * @return the qos group. @see~QoSGroups
      */
-    int getQoSGroupForConnectionType(int type);
+    QoSGroups getQoSGroupForConnectionType(int connectionType);
 
     SubscriberEndpointBase* createAVBSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
     SubscriberEndpointBase* createTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
@@ -273,8 +244,9 @@ protected:
      * contains pointers to the existing subscriber connectors on a node.
      * TODO maybe we need to allow more than one subscriber connector per publisher service for different QoS?
      * Or we take the best QoS needed on device?
+     * Update: We currently allow more than one subscriber connector
      */
-    std::map<IServiceRegistry::ServiceId, SubscriberConnector*> _subscriberConnectors;
+    std::map<IServiceRegistry::ServiceId, std::vector<SubscriberConnector*>> _subscriberConnectors;
 
     /**
      * Counter for subscribing endpoints created.

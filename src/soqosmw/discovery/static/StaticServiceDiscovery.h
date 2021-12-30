@@ -20,8 +20,7 @@
 
 //SOQOSMW
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
-#include "soqosmw/service/serviceidentifier/ServiceIdentifier.h"
-#include "soqosmw/service/base/IService.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 #include "soqosmw/serviceregistry/base/IServiceRegistry.h"
 //INET
 #include "inet/networklayer/common/L3Address.h"
@@ -45,9 +44,9 @@ public:
 
     /**
      * Discovers a service in the network
-     * @param serviceIdentifier
+     * @param qosServiceIdentifier
      */
-    void discover(IServiceIdentifier& serviceIdentifier) override;
+    void discover(QoSServiceIdentifier qosServiceIdentifier) override;
 
     /**
      * Check if the registry contains a service with the service identifier.
@@ -67,7 +66,7 @@ private:
     /**
      * Map used to abstract discovery of services
      */
-    std::unordered_map<IServiceRegistry::ServiceId,IService*> _discoveryAbstractionMap;
+    std::unordered_map<IServiceRegistry::ServiceId,QoSService> _discoveryAbstractionMap;
 };
 
 } /*end namespace SOQoSMW*/

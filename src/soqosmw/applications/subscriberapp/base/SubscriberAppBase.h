@@ -19,7 +19,6 @@
 #define __SOQOSMW_APPLICATIONS_SUBSCRIBERAPP_BASE_SUBSCRIBERAPPBASE_H_
 
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 //STD
 #include <string>
 #include <unordered_map>
@@ -59,12 +58,14 @@ private:
 protected:
 
     /**
-     * Caches QoS Policy parameters
+     * The service representation of this app
      */
-    QoSPolicyMap _qosPolicies;
+    QoSService _qosService;
 
-    QoSGroup* _qosGroup;
-
+    /**
+     * Caches the required QoS type
+     */
+    QoSGroups _qosGroup;
 
     /**
      * Initialization of the module. Sends activator message

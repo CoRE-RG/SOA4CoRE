@@ -16,9 +16,8 @@
 #ifndef __SOQOSMW_ILOCALSERVICEMANAGER_H_
 #define __SOQOSMW_ILOCALSERVICEMANAGER_H_
 
-#include "soqosmw/service/base/IServiceIdentifier.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 #include <omnetpp.h>
+#include "soqosmw/service/qosservice/QoSService.h"
 
 namespace SOQoSMW {
 
@@ -33,7 +32,7 @@ class ILocalServiceManager
 {
 public:
   virtual ~ILocalServiceManager();
-  virtual void subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) = 0;
+  virtual void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) = 0;
 
 };
 

@@ -16,7 +16,6 @@
 //
 
 #include "soqosmw/discovery/static/StaticServiceDiscovery.h"
-#include "soqosmw/service/base/ServiceBase.h"
 #include "soqosmw/serviceregistry/localserviceregistry/LocalServiceRegistry.h"
 //INET
 #include "inet/networklayer/common/L3AddressResolver.h"
@@ -55,13 +54,37 @@ void StaticServiceDiscovery::initialize(int stage)
             int id = atoi(service->getAttribute("id"));
             int port = atoi(service->getAttribute("port"));
 
+            const char* qosGroupsStr = service->getAttribute("qosGroups");
+            std::set<QoSGroups> qosGroups;
+            const char* delim = " ";
+            char *token = strtok(const_cast<char*>(qosGroupsStr), delim);
+            while (token != nullptr)
+            {
+                QoSGroups qosGroup;
+                if (std::string(token) == "STD_TCP") {
+                    qosGroup = QoSGroups::STD_TCP;
+                } else if (std::string(token) == "STD_UDP") {
+                    qosGroup = QoSGroups::STD_UDP;
+                } else if (std::string(token) == "SOMEIP_TCP") {
+                    qosGroup = QoSGroups::SOMEIP_TCP;
+                } else if (std::string(token) == "SOMEIP_UDP") {
+                    qosGroup = QoSGroups::SOMEIP_UDP;
+                } else if (std::string(token) == "RT") {
+                    qosGroup = QoSGroups::RT;
+                } else if (std::string(token) == "WEB") {
+                    throw cRuntimeError("WEB QoS is not implemented yet.");
+                }
+                qosGroups.insert(qosGroup);
+                token = strtok(nullptr, delim);
+            }
+
             EV_DEBUG << node;
 
             //ressolve the address
             const inet::L3Address address = inet::L3AddressResolver().resolve(node);
 
             //add entry to map
-            _discoveryAbstractionMap[id] = new ServiceBase(id, address, port);
+            _discoveryAbstractionMap[id] = QoSService(id, address, 0xFFFF, qosGroups, port, port);
             //_servicesInNetwork[ServiceIdentifier(id,name)] = new ServiceBase(name, id, address, port);
         }
         EV_DEBUG << endl;
@@ -69,15 +92,15 @@ void StaticServiceDiscovery::initialize(int stage)
 
 }
 
-void StaticServiceDiscovery::discover(IServiceIdentifier& serviceIdentifier) {
+void StaticServiceDiscovery::discover(QoSServiceIdentifier qosServiceIdentifier) {
     Enter_Method("SD::discover()");
-    IService *service = _discoveryAbstractionMap[serviceIdentifier.getServiceId()];
-
-    if (!service) {
+    if (!(_discoveryAbstractionMap.count(qosServiceIdentifier.getServiceId()))) {
         throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }
+    QoSService qosService = _discoveryAbstractionMap[qosServiceIdentifier.getServiceId()];
 
-    emit(_serviceOfferSignal,service);
+    QoSService* qosServicePtr = new QoSService(qosService);
+    emit(_serviceOfferSignal,qosServicePtr);
 }
 
 /*

@@ -18,7 +18,6 @@
 #include <soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h>
 #include "soqosmw/applications/subscriberapp/base/SubscriberAppBase.h"
 #include "soqosmw/connector/base/ConnectorBase.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 #include "soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
@@ -27,6 +26,7 @@
 #include "core4inet/base/avb/AVBDefs.h"
 //INET
 #include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
 //STD
 #include <cstring>
 #include <iostream>
@@ -67,10 +67,19 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
         if (!(localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager))){
             throw cRuntimeError("No LocalServiceManager found.");
         }
-        localServiceManager->registerSubscriberService(this->_publisherServiceId, this->_qosPolicies, this);
-        _connector = localServiceManager->getSubscriberConnector(this->_publisherServiceId);
+        localServiceManager->registerSubscriberService(_qosService, this);
+        std::vector<SubscriberConnector*> connectors = localServiceManager->getSubscriberConnectorsForServiceId(this->_publisherServiceId);
+        _connector = nullptr;
+        for (SubscriberConnector* subscriberConnector : connectors) {
+            if (subscriberConnector->getQoSService() == _qosService) {
+                _connector = subscriberConnector;
+            }
+        }
+        if (!_connector) {
+            throw cRuntimeError("No subscriber connector created.");
+        }
         QoSServiceIdentifier publisherServiceIdentifier = QoSServiceIdentifier(this->_publisherServiceId,this->_instanceId);
-        _localServiceManager->subscribeService(publisherServiceIdentifier, this->_qosPolicies, _instanceId);
+        _localServiceManager->subscribeService(publisherServiceIdentifier, this->_qosService);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }
@@ -87,20 +96,10 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
 }
 
 void SubscriberAppBase::setQoS() {
-    _qosPolicies[QoSPolicyNames::QoSGroup] = _qosGroup;
-    _qosPolicies[QoSPolicyNames::LocalAddress] = new LocalAddressQoSPolicy(_localAddress);
-    std::string qosGroup = par("qosGroup").stdstringValue();
-    if(qosGroup == "STD_TCP") {
-            _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_tcpPort);
-    } else if(qosGroup == "STD_UDP") {
-            _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_udpPort);
-    } else if(qosGroup == "SOMEIP_TCP") {
-        _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_tcpPort);
-    }  else if(qosGroup == "SOMEIP_UDP") {
-        _qosPolicies[QoSPolicyNames::LocalPort] = new LocalPortQoSPolicy(_udpPort);
-    } else {
-        throw cRuntimeError("Unknown QoS group");
-    }
+    std::set<QoSGroups> qosGroups;
+    qosGroups.insert(_qosGroup);
+    _qosService = QoSService(_publisherServiceId, inet::L3AddressResolver().resolve(_localAddress.c_str()),
+                                     _instanceId, qosGroups, _tcpPort, _udpPort);
 }
 
 void SubscriberAppBase::handleParameterChange(const char* parname)
@@ -124,20 +123,21 @@ void SubscriberAppBase::handleParameterChange(const char* parname)
 
     if (!parname || !strcmp(parname, "qosGroup")) {
         string group = par("qosGroup").stdstringValue();
-        if(group == "WS"){
-            _qosGroup = new QoSGroup(QoSGroups::WEB);
+        if(group == "WEB"){
+            //_qosGroup = QoSGroups::WEB;
+            throw cRuntimeError("WEB QoS is not implemented yet.");
         } else if(group == "STD_TCP"){
-            _qosGroup = new QoSGroup(QoSGroups::STD_TCP);
+            _qosGroup = QoSGroups::STD_TCP;
         } else if(group == "STD_UDP"){
-            _qosGroup = new QoSGroup(QoSGroups::STD_UDP);
+            _qosGroup = QoSGroups::STD_UDP;
         } else if(group == "RT"){
-            _qosGroup = new QoSGroup(QoSGroups::RT);
+            _qosGroup = QoSGroups::RT;
         } else if(group == "SOMEIP_TCP"){
-            _qosGroup = new QoSGroup(QoSGroups::SOMEIP_TCP);
+            _qosGroup = QoSGroups::SOMEIP_TCP;
         } else if(group == "SOMEIP_UDP") {
-            _qosGroup = new QoSGroup(QoSGroups::SOMEIP_UDP);
+            _qosGroup = QoSGroups::SOMEIP_UDP;
         } else {
-            cRuntimeError("Not a valid connection type");
+            throw cRuntimeError("Unknown QoS");
         }
 
     }

@@ -49,10 +49,9 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     /**
      * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param qosPolicyMap the QoS policy map
-     * @param instanceId the instanceId
+     * @param qosService the QoS service
      */
-    void subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) override;
+    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) override;
   protected:
     /**
      * Initializes the module and waits for find
@@ -104,20 +103,28 @@ class SomeIpLocalServiceManager : public LocalServiceManager
      * @param qosPolicies
      * @return the negotiation request
      */
-    Request* createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies);
+    Request* createNegotiationRequest(QoSService publisherService);
 
     /**
      * Creates a subscriber endpoint for a service
      * @param service the service
      */
-    void createSubscriberEndpoint(IService* service);
+    void createSubscriberEndpoint(QoSService service);
 
     /**
      * Returns the corresponding L4 protocol of the service
      * @param service
      * @return the corresponding L4 protocol of the service
      */
-    IPProtocolId getIPProtocolId(QoSService* service);
+    IPProtocolId getIPProtocolId(QoSService service);
+
+    /**
+     * Returns a copy of the given QoSService but only including the given qosGroup in its QoSGroups vector.
+     * This way the QoSService includes only the QoSGroup which is wanted to be subscribed to
+     * @param qosGroup
+     * @return the QoSService copy
+     */
+    QoSService getQoSServiceCopyWithGivenQoSGroupOnly(QoSService qosService, QoSGroups qosGroup);
 
     /**
      * Member variables

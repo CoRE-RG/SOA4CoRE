@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h>
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 #include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
-
+#include <algorithm>
 namespace SOQoSMW {
 
 Define_Module(SomeIpLocalServiceManager);
@@ -76,16 +76,26 @@ void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t si
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
-    IService* service = _lsr->getService(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
-    if (_qosnpAvailable && service) {
-        Request* request = createNegotiationRequest(service, qosPolicyMap);
-        _qosnp->createQoSBroker(request);
-    } else if (service) {
-        subscribeServiceIfThereIsAPendingRequest(service);
-    } else {
-        LocalServiceManager::addServiceToPendingRequestsMap(publisherServiceIdentifier, qosPolicyMap, instanceId);
-        _sd->discover(dynamic_cast<ServiceIdentifier&>(publisherServiceIdentifier));
+void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) {
+    bool serviceIsKnown = false;
+    bool serviceFound = false;
+    serviceIsKnown = _lsr->containsService(publisherServiceIdentifier);
+    if (_qosnpAvailable && serviceIsKnown) {
+        //Request* request = createNegotiationRequest(service);
+        //_qosnp->createQoSBroker(request);
+    } else if (serviceIsKnown) {
+        QoSService publisherService = _lsr->getService(publisherServiceIdentifier);
+        std::vector<QoSGroups> publisherQoSGroups = publisherService.getQosGroups();
+        QoSGroups qosGroup = qosService.getQosGroups()[0];
+        if (std::find(publisherQoSGroups.begin(), publisherQoSGroups.end(), qosGroup) != publisherQoSGroups.end()) {
+            publisherService = getQoSServiceCopyWithGivenQoSGroupOnly(publisherService, qosGroup);
+            subscribeServiceIfThereIsAPendingRequest(new QoSService(publisherService));
+            serviceFound = true;
+        }
+    }
+    if (!serviceFound) {
+        LocalServiceManager::addServiceToPendingRequestsMap(publisherServiceIdentifier, qosService);
+        _sd->discover(publisherServiceIdentifier);
     }
 }
 
@@ -171,15 +181,16 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
         }
         delete subConnection;
         delete info;
+        delete qosService;
         emit(_subscribeAckSignal,&someIpSDSubscriptionInformation);
     }
 }
 
 // Subscriber-side
-Request* SomeIpLocalServiceManager::createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies) {
-    EndpointDescription subscriber(publisherService->getServiceId(), _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription publisher(publisherService->getServiceId(), publisherService->getAddress(), _qosnp->getProtocolPort());
-    Request *request = new Request(_requestID++, subscriber, publisher, qosPolicies, nullptr);
+Request* SomeIpLocalServiceManager::createNegotiationRequest(QoSService publisherService) {
+    EndpointDescription subscriber(publisherService.getServiceId(), _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription publisher(publisherService.getServiceId(), publisherService.getAddress(), _qosnp->getProtocolPort());
+    Request *request = new Request(_requestID++, subscriber, publisher, publisherService, nullptr);
     return request;
 }
 
@@ -207,6 +218,15 @@ IPProtocolId SomeIpLocalServiceManager::getIPProtocolId(QoSService* service) {
             throw cRuntimeError("Unknown QoS group.");
     }
     return ipProtocolId;
+}
+
+QoSService SomeIpLocalServiceManager::getQoSServiceCopyWithGivenQoSGroupOnly(QoSService qosService, QoSGroups qosGroup) {
+    std::vector<QoSGroups> qosGroups;
+    qosGroups.push_back(qosGroup);
+    return QoSService(qosService.getServiceId(), qosService.getAddress(),
+            qosService.getInstanceId(), qosGroups, qosService.getTCPPort(), qosService.getUDPPort(),
+            qosService.getStreamId(), qosService.getSrClass(), qosService.getFramesize(),
+            qosService.getIntervalFrames());
 }
 
 } /* end namespace SOQoSMW */

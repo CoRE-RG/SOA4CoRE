@@ -16,7 +16,6 @@
 //
 
 #include "soqosmw/applications/publisherapp/gateway/GatewayPublisherApp.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/connector/base/ConnectorBase.h"
 //SignalsAndGateways
 #include "signalsandgateways/gateway/messages/GatewayAggregationMessage.h"

@@ -19,7 +19,6 @@
 #define __SOQOSMW_APPLICATIONS_PUBLISHERAPP_BASE_PUBLISHERAPP_H_
 
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/service/qosservice/QoSService.h"
 //CoRE4INET
 #include "core4inet/base/avb/AVBDefs.h"
@@ -89,9 +88,9 @@ protected:
     simsignal_t _msgSentSignal;
 
     /**
-     * The service representations of this app
+     * The service representation of this app
      */
-    std::vector<QoSService> _qosServices;
+    QoSService _qosService;
 
     /**
      * Caches the start time parameter
@@ -121,7 +120,7 @@ protected:
     /**
      * Caches the QoS types this application can serve
      */
-    std::vector<std::string> _qosGroups;
+    std::set<std::string> _qosGroups;
 
     /**
      * Initialization of the module. Sends activator message

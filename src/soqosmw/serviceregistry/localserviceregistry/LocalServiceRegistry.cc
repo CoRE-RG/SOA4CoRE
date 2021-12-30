@@ -24,9 +24,6 @@ LocalServiceRegistry::LocalServiceRegistry() {
 }
 
 LocalServiceRegistry::~LocalServiceRegistry() {
-    for (auto it = _serviceRegistry.begin(); it != _serviceRegistry.end(); ++it) {
-        delete it->second;
-    }
 }
 
 void LocalServiceRegistry::initialize()
@@ -41,15 +38,19 @@ void LocalServiceRegistry::addPublisherService(QoSService service) {
     _serviceRegistry[service.getServiceId()] = service;
 }
 
-IService* LocalServiceRegistry::getService(QoSServiceIdentifier serviceIdentifier) {
-    IService *service = nullptr;
+QoSService LocalServiceRegistry::getService(QoSServiceIdentifier serviceIdentifier) {
+    QoSService service;
     if (_serviceRegistry.count(serviceIdentifier.getServiceId())) {
         service = _serviceRegistry[serviceIdentifier.getServiceId()];
     }
     return service;
 }
 
-std::unordered_map<LocalServiceRegistry::ServiceId,IService*> LocalServiceRegistry::getRegistry() {
+bool LocalServiceRegistry::containsService(QoSServiceIdentifier serviceIdentifier) {
+    return _serviceRegistry.count(serviceIdentifier.getServiceId());
+}
+
+std::unordered_map<LocalServiceRegistry::ServiceId,QoSService> LocalServiceRegistry::getRegistry() {
     return _serviceRegistry;
 }
 

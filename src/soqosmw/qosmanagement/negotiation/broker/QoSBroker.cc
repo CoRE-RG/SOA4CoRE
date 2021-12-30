@@ -20,7 +20,6 @@
 #include "soqosmw/qosmanagement/negotiation/broker/QoSBroker.h"
 
 #include "soqosmw/qosmanagement/negotiation/datatypes/Request.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 #include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
@@ -103,9 +102,9 @@ bool QoSBroker::startNegotiation() {
         QoSNegotiationRequest* request = new QoSNegotiationRequest("QoSNegotiationRequest");
         // fill envelope
         fillEnvelope(request);
-        QoSPolicyMap qosPolicies =
-                _request->getQosPolicies();
-        request->setQosClass((dynamic_cast<QoSGroup*>(qosPolicies[QoSPolicyNames::QoSGroup]))->getValue());
+        QoSService qosService =
+                _request->getQosService();
+        request->setQosClass(*std::next(qosService.getQosGroups().begin(), 1));
         // set request size
         request->setByteLength(getNegotiationMessageSize(request));
         // send QoS Request
@@ -258,7 +257,7 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
             if (isEstablishAcceptable(establish)) {
 
                 // create or find the publisher
-                PublisherEndpointBase* pub = _lsm->createOrFindPublisherFor(_local.getServiceId(),establish->getQosClass());
+                PublisherEndpointBase* pub = _lsm->createOrFindPublisherFor(_local.getServiceId(), QoSGroups(establish->getQosClass()));
 
                 if(pub){
                     // encapsulate the CSI into the packet.
@@ -468,8 +467,8 @@ size_t QoSBroker::getNegotiationMessageSize(QoSNegotiationProtocolMsg* msg) {
     return result;
 }
 
-bool QoSBroker::isQoSGroup(int qosGroup) {
-    return (dynamic_cast<QoSGroup*>(((QoSPolicyMap)_request->getQosPolicies())[QoSPolicyNames::QoSGroup]))->getValue() == qosGroup;
+bool QoSBroker::isQoSGroup(QoSGroups qosGroup) {
+    return *std::next(_request->getQosService().getQosGroups().begin(), 1) == qosGroup;
 }
 
 } /* namespace SOQoSMW */

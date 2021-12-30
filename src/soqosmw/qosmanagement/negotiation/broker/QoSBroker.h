@@ -199,7 +199,7 @@ private:
      * @param qosGroup
      * @return true if given qosGroup is same as in the _request
      */
-    bool isQoSGroup(int qosGroup);
+    bool isQoSGroup(QoSGroups qosGroup);
 
     /**
      * Holds the current state.

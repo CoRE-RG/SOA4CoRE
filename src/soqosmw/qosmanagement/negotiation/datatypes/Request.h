@@ -19,7 +19,7 @@
 #define SOQOSMW_QOSMANAGEMENT_NEGOTIATION_DATATYPES_REQUEST_H_
 
 #include "soqosmw/base/EndpointDescription.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 
 #include <string>
 #include <unordered_map>
@@ -54,11 +54,11 @@ enum RequestStatus {
  */
 class Request {
 public:
-    Request(int serviceId, EndpointDescription& subscriberEndpointDescription, EndpointDescription& publisherEndpointDescription,
-            QoSPolicyMap& qosPolicies,
+    Request(int requestId, EndpointDescription& subscriberEndpointDescription, EndpointDescription& publisherEndpointDescription,
+            QoSService qosService,
             omnetpp::cGate *notificationGate) :
-            _serviceId(serviceId), _subscriberEndpointDescription(subscriberEndpointDescription),
-            _publisherEndpointDescription(publisherEndpointDescription), _qosPolicies(qosPolicies), _notificationGate(notificationGate) {
+            _requestId(requestId), _subscriberEndpointDescription(subscriberEndpointDescription),
+            _publisherEndpointDescription(publisherEndpointDescription), _qosService(qosService), _notificationGate(notificationGate) {
         this->setStatus(CREATED);
     }
 
@@ -66,8 +66,8 @@ public:
 
     }
 
-    int getServiceId() const {
-        return _serviceId;
+    int getRequestId() const {
+        return _requestId;
     }
 
     omnetpp::cGate* getNotificationGate() {
@@ -78,8 +78,8 @@ public:
         return _publisherEndpointDescription;
     }
 
-    const QoSPolicyMap& getQosPolicies() const {
-        return _qosPolicies;
+    const QoSService getQosService() const {
+        return _qosService;
     }
 
     const EndpointDescription& getSubscriberEndpointDescription() const {
@@ -95,10 +95,10 @@ public:
     }
 
 private:
-    const int _serviceId;
+    const int _requestId;
     const EndpointDescription _subscriberEndpointDescription;
     const EndpointDescription _publisherEndpointDescription;
-    const QoSPolicyMap _qosPolicies;
+    const QoSService _qosService;
     omnetpp::cGate *_notificationGate;
     RequestStatus _status;
 };

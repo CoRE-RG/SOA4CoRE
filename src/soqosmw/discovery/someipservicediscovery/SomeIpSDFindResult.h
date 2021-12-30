@@ -16,7 +16,7 @@
 #ifndef SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
 #define SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
 
-#include "soqosmw/service/base/IService.h"
+#include "soqosmw/service/qosservice/QoSService.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
 #include "inet/networklayer/common/IPProtocolId_m.h"
 
@@ -35,14 +35,14 @@ class SomeIpSDFindResult : public SomeIpSDFindRequest {
  * Methods
  */
 public:
-    SomeIpSDFindResult(int serviceId, int instanceId, L3Address remoteAddress, IService *service, IPProtocolId ipProtocolId);
+    SomeIpSDFindResult(int serviceId, int instanceId, L3Address remoteAddress, QoSService service, IPProtocolId ipProtocolId);
     virtual ~SomeIpSDFindResult();
 
     /**
      * Getter for the service
      * @return the service
      */
-    IService* getService() const;
+    QoSService getService() const;
 
     /**
      * Getter for the used L4 Protocol
@@ -61,7 +61,7 @@ private:
     /**
      * The service
      */
-    IService* _service;
+    QoSService _service;
 
     /**
      * The used L4 protocol

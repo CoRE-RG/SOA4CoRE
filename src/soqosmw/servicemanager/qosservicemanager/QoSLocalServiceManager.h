@@ -45,13 +45,6 @@ class QoSLocalServiceManager : public LocalServiceManager
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 
-    /**
-     * @brief Subscribes the given service
-     * @param subscriberServiceIdentifier
-     * @param publisherServiceIdentifier
-     * @param qosPolicyMap
-     */
-    void subscribeQoSService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap);
   protected:
     /**
      * Initializes the module and waits for find
@@ -70,25 +63,31 @@ class QoSLocalServiceManager : public LocalServiceManager
     /**
      * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param qosPolicyMap the QoS policy map
-     * @param instanceId the instanceId
+     * @param qosService the QoS service representation of the subscriber
      */
-    void subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) override;
+    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) override;
 
   private:
     /**
      * Creates a negotiation request
      * @param publisherService
-     * @param qosPolicies
      * @return the negotiation request
      */
-    Request* createNegotiationRequest(IService* publisherService, QoSPolicyMap qosPolicies);
+    Request* createNegotiationRequest(QoSService publisherService);
 
     /**
      * Subscribes to the offered service
      * @param obj
      */
     void subscribeOfferedService(cObject* obj);
+
+    /**
+     * Returns a copy of the given QoSService but only including the given qosGroup in its QoSGroups vector.
+     * This way the QoSService includes only the QoSGroup which is wanted to be subscribed to
+     * @param qosGroup
+     * @return the QoSService copy
+     */
+    QoSService getQoSServiceCopyWithGivenQoSGroupOnly(QoSService qosService, QoSGroups qosGroup);
 
     /**
      * Member variables

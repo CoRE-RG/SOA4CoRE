@@ -78,35 +78,27 @@ void LocalServiceManager::handleParameterChange(const char* parname) {
 
 }
 
-void LocalServiceManager::registerPublisherService(uint32_t publisherServiceId,
-        QoSPolicyMap& qosPolicies,
-        SOQoSMWApplicationBase* executingApplication, uint16_t instanceId) {
+void LocalServiceManager::registerPublisherService(QoSService qosService, SOQoSMWApplicationBase* executingApplication) {
     Enter_Method("LSM:registerPublisherService()");
 
-    PublisherConnector* publisherConnector = getPublisherConnector(publisherServiceId);
+    PublisherConnector* publisherConnector = getPublisherConnectorForServiceId(qosService.getServiceId());
     if (publisherConnector != nullptr) {
-        addPublisherServiceToConnector(publisherConnector, qosPolicies, executingApplication);
+        addPublisherServiceToConnector(publisherConnector, executingApplication);
     } else {
-        publisherConnector = createPublisherConnector(qosPolicies, executingApplication);
+        publisherConnector = createPublisherConnector(qosService, executingApplication);
         //save the writer so that new endpoints can be connected to the application.
-        _publisherConnectors[publisherServiceId] = publisherConnector;
+        _publisherConnectors[qosService.getServiceId()] = publisherConnector;
     }
-    _lsr->addPublisherService(new QoSService(
-            publisherServiceId,
-            inet::L3AddressResolver().resolve(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalAddress])->getValue().c_str()),
-            dynamic_cast<LocalPortQoSPolicy*>(qosPolicies[QoSPolicyNames::LocalPort])->getValue(),
-            instanceId, qosPolicies));
+    _lsr->addPublisherService(qosService);
 }
 
-void LocalServiceManager::addPublisherServiceToConnector(PublisherConnector* publisherConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
-    if(publisherConnector->addApplication(executingApplication)){
-        publisherConnector->setQos(qosPolicies);
-    } else {
+void LocalServiceManager::addPublisherServiceToConnector(PublisherConnector* publisherConnector, SOQoSMWApplicationBase* executingApplication) {
+    if(!(publisherConnector->addApplication(executingApplication))){
         throw cRuntimeError("This Publisher service already exists on this host...");
     }
 }
 
-PublisherConnector* LocalServiceManager::createPublisherConnector(QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
+PublisherConnector* LocalServiceManager::createPublisherConnector(QoSService qosService, SOQoSMWApplicationBase* executingApplication) {
     // create a connector for the publisher
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soqosmw.connector.pubsub.writer.PublisherConnector");
@@ -115,7 +107,7 @@ PublisherConnector* LocalServiceManager::createPublisherConnector(QoSPolicyMap& 
     PublisherConnector *module = dynamic_cast<PublisherConnector*> (moduleType->create("publisherConnectors", this->getParentModule(), vectorsize + 1, vectorsize));
     // 3. Set up its parameters and gate sizes as needed;
     module->addApplication(executingApplication);
-    module->setQos(qosPolicies);
+    module->setQoSService(qosService);
     module->finalizeParameters();
     // 4. Tell the (possibly compound) module to recursively create its internal submodules and connections;
     module->buildInside();
@@ -125,43 +117,38 @@ PublisherConnector* LocalServiceManager::createPublisherConnector(QoSPolicyMap& 
     return module;
 }
 
-PublisherConnector* LocalServiceManager::getPublisherConnector(uint32_t publisherServiceId) {
-    //TODO Maybe getPublisherConnectorForName should be made public ...
-    return getPublisherConnectorForServiceId(publisherServiceId);
-}
-
-
-void LocalServiceManager::registerSubscriberService(
-            uint32_t publisherServiceId,
-            QoSPolicyMap& qosPolicies,
-            SOQoSMWApplicationBase* executingApplication)
+void LocalServiceManager::registerSubscriberService(QoSService qosService, SOQoSMWApplicationBase* executingApplication)
 {
     Enter_Method("LSM:registerSubscriberService()");
 
-    SubscriberConnector* subscriberConnector = getSubscriberConnectorForServiceId(publisherServiceId);
-    if (subscriberConnector != nullptr && equalQoSMap(qosPolicies, subscriberConnector->getQos())) {
-        addSubscriberServiceToConnector(subscriberConnector, qosPolicies, executingApplication);
-    } else {
-        subscriberConnector = createSubscriberConnector(qosPolicies, executingApplication);
+    std::vector<SubscriberConnector*> subscriberConnectors = getSubscriberConnectorsForServiceId(qosService.getServiceId());
+    SubscriberConnector* subscriberConnector = nullptr;
+    if(!subscriberConnectors.empty()) {
+        for (SubscriberConnector* connector : subscriberConnectors) {
+            QoSService connectedQosService = connector->getQoSService();
+            if (QoSGroups* qosGroup = connectedQosService.getCommonQoSGroup(qosService)) {
+                subscriberConnector = connector;
+                addSubscriberServiceToConnector(subscriberConnector, executingApplication);
+                delete qosGroup;
+                break;
+            }
+        }
+    }
+    if (!subscriberConnector) {
+        subscriberConnector = createSubscriberConnector(qosService, executingApplication);
+        subscriberConnectors = _subscriberConnectors[qosService.getServiceId()];
+        subscriberConnectors.push_back(subscriberConnector);
         // save the reader so that new endpoints can be connected to the application.
-        _subscriberConnectors[publisherServiceId] = subscriberConnector;
+        _subscriberConnectors[qosService.getServiceId()] = subscriberConnectors;
     }
 }
 
-void LocalServiceManager::subscribeService(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
+void LocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) {
     throw cRuntimeError("LocalServiceManager has no implementation of subscribeService. \n"
             "Override or use ServiceManager which implements subscribeService");
 }
 
-void LocalServiceManager::addServiceToPendingRequestsMap(IServiceIdentifier& publisherServiceIdentifier, QoSPolicyMap& qosPolicyMap, uint16_t instanceId) {
-    int localPort = -1;
-    if (qosPolicyMap.count(QoSPolicyNames::LocalPort)) {
-        localPort = dynamic_cast<LocalPortQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalPort])->getValue();
-    }
-    QoSService qosService = QoSService(
-            publisherServiceIdentifier.getServiceId(),
-            inet::L3AddressResolver().resolve(dynamic_cast<LocalAddressQoSPolicy*>(qosPolicyMap[QoSPolicyNames::LocalAddress])->getValue().c_str()),
-            localPort, instanceId, qosPolicyMap);
+void LocalServiceManager::addServiceToPendingRequestsMap(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) {
     if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
         _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(qosService);
     } else {
@@ -171,13 +158,13 @@ void LocalServiceManager::addServiceToPendingRequestsMap(IServiceIdentifier& pub
     }
 }
 
-void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
+void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, SOQoSMWApplicationBase* executingApplication) {
     if(!(subscriberConnector->addApplication(executingApplication))){
         throw cRuntimeError("This Subscriber service already exists on this host...");
     }
 }
 
-SubscriberConnector* LocalServiceManager::createSubscriberConnector(QoSPolicyMap& qosPolicies, SOQoSMWApplicationBase* executingApplication) {
+SubscriberConnector* LocalServiceManager::createSubscriberConnector(QoSService qosService, SOQoSMWApplicationBase* executingApplication) {
     // create a connector for the subscriber
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soqosmw.connector.pubsub.reader.SubscriberConnector");
@@ -186,7 +173,7 @@ SubscriberConnector* LocalServiceManager::createSubscriberConnector(QoSPolicyMap
     SubscriberConnector *module = dynamic_cast<SubscriberConnector*> (moduleType->create("subscriberConnectors", this->getParentModule(), vectorsize + 1, vectorsize));
     // 3. Set up its parameters and gate sizes as needed;
     module->addApplication(executingApplication);
-    module->setQos(qosPolicies);
+    module->setQoSService(qosService);
     module->finalizeParameters();
     // 4. Tell the (possibly compound) module to recursively create its internal submodules and connections;
     module->buildInside();
@@ -196,58 +183,57 @@ SubscriberConnector* LocalServiceManager::createSubscriberConnector(QoSPolicyMap
     return module;
 }
 
-SubscriberConnector* LocalServiceManager::getSubscriberConnector(uint32_t publisherServiceId) {
-    return getSubscriberConnectorForServiceId(publisherServiceId);
-}
-
 PublisherConnector* LocalServiceManager::getPublisherConnectorForServiceId(
         uint32_t publisherServiceId) {
+    PublisherConnector* publisherConnector = nullptr;
     auto connector = _publisherConnectors.find(publisherServiceId);
     if(connector != _publisherConnectors.end()){
-        return connector->second;
+        publisherConnector = connector->second;
     }
-    return nullptr;
+    return publisherConnector;
 }
 
 
-SubscriberConnector* LocalServiceManager::getSubscriberConnectorForServiceId(
+std::vector<SubscriberConnector*> LocalServiceManager::getSubscriberConnectorsForServiceId(
         uint32_t publisherServiceId) {
+    vector<SubscriberConnector*> subscriberConnectors;
     auto connector = _subscriberConnectors.find(publisherServiceId);
     if(connector != _subscriberConnectors.end()){
-        return connector->second;
+        vector<SubscriberConnector*> subscriberConnectors = connector->second;
+        subscriberConnectors = connector->second;
     }
-    return nullptr;
+    return subscriberConnectors;
 }
 
 PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
-        uint32_t publisherServiceId, int qos) {
+        uint32_t publisherServiceId, QoSGroups qosGroup) {
 
     PublisherEndpointBase* pub = nullptr;
 
-    pub = findPublisherLike(publisherServiceId, qos);
+    pub = findPublisherLike(publisherServiceId, qosGroup);
     if(!pub){
-        PublisherConnector* connector = getPublisherConnector(publisherServiceId);
+        PublisherConnector* connector = getPublisherConnectorForServiceId(publisherServiceId);
 
         if(connector){
             //create according endpoint
-            switch(qos){
+            switch(qosGroup){
             case QoSGroups::RT:
-                pub = createAVBPublisherEndpoint(qos, connector);
+                pub = createAVBPublisherEndpoint(qosGroup, connector);
                 break;
             case QoSGroups::STD_TCP:
-                pub = createTCPPublisherEndpoint(qos, connector);
+                pub = createTCPPublisherEndpoint(qosGroup, connector);
                 break;
             case QoSGroups::STD_UDP:
-                pub = createUDPPublisherEndpoint(qos, connector);
+                pub = createUDPPublisherEndpoint(qosGroup, connector);
                 break;
             case QoSGroups::WEB:
                 throw cRuntimeError("The web QoS Group is not yet available");
                 break;
             case QoSGroups::SOMEIP_TCP:
-                pub = createSomeIpTCPPublisherEndpoint(qos, connector);
+                pub = createSomeIpTCPPublisherEndpoint(qosGroup, connector);
                 break;
             case QoSGroups::SOMEIP_UDP:
-                pub = createSomeIpUDPPublisherEndpoint(qos, connector);
+                pub = createSomeIpUDPPublisherEndpoint(qosGroup, connector);
                 break;
             default:
                 throw cRuntimeError("Unknown connection type.");
@@ -270,11 +256,11 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
         uint32_t publisherServiceId, ConnectionSpecificInformation* csi) {
 
     SubscriberEndpointBase* sub = nullptr;
-    auto group = getQoSGroupForConnectionType(csi->getConnectionType());
+    QoSGroups qosGroup = getQoSGroupForConnectionType(csi->getConnectionType());
 
-    sub = findSubscriberLike(publisherServiceId, group);
+    sub = findSubscriberLike(publisherServiceId, qosGroup);
     if(!sub){
-        SubscriberConnector* connector = findSubscriberConnectorLike(publisherServiceId, group);
+        SubscriberConnector* connector = findSubscriberConnectorLike(publisherServiceId, qosGroup);
 
         if(connector){
             //create according endpoint
@@ -314,8 +300,8 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
     return sub;
 }
 
-int LocalServiceManager::getQoSGroupForConnectionType(int type){
-    switch(type){
+QoSGroups LocalServiceManager::getQoSGroupForConnectionType(int connectionType){
+    switch(connectionType){
     case ConnectionType::ct_avb:
         return QoSGroups::RT;
         break;
@@ -338,17 +324,16 @@ int LocalServiceManager::getQoSGroupForConnectionType(int type){
         throw cRuntimeError("Unknown connection type.");
         break;
     }
-    //return QoSGroup::RT;
 }
 
 PublisherEndpointBase* LocalServiceManager::findPublisherLike(
-        uint32_t publisherServiceId, int qos) {
+        uint32_t publisherServiceId, QoSGroups qosGroup) {
 
     // find fitting connectors
-    PublisherConnector* connector = getPublisherConnector(publisherServiceId);
+    PublisherConnector* connector = getPublisherConnectorForServiceId(publisherServiceId);
     if(connector){
         for (auto endpoint: connector->getEndpoints()){
-            if(endpoint->getQos() == qos){
+            if(endpoint->getQos() == qosGroup){
                 return dynamic_cast<PublisherEndpointBase*>(endpoint);
             }
         }
@@ -358,30 +343,29 @@ PublisherEndpointBase* LocalServiceManager::findPublisherLike(
 }
 
 SubscriberConnector* LocalServiceManager::findSubscriberConnectorLike(
-        uint32_t publisherServiceId, int qos) {
+        uint32_t publisherServiceId, QoSGroups qosGroup) {
 
     // find fitting connectors
-    SubscriberConnector* connector = getSubscriberConnector(publisherServiceId);
-    if(connector){
-        // we already have a service subscribing to the data
-        QoSGroup* conQoS = dynamic_cast<QoSGroup*>(connector->getQos()[QoSPolicyNames::QoSGroup]);
-        if(qos == conQoS->getValue()){
-            // same qos as well so try to add and return
-            return connector;
+    SubscriberConnector* subscriberConnector = nullptr;
+    std::vector<SubscriberConnector*> subscriberconnectors = getSubscriberConnectorsForServiceId(publisherServiceId);
+    for (SubscriberConnector* connector : subscriberconnectors) {
+        QoSService qosService = connector->getQoSService();
+        if (connector->getQoSService().containsQoSGroup(qosGroup)) {
+            subscriberConnector = connector;
+            break;
         }
     }
-
-    return nullptr;
+    return subscriberConnector;
 }
 
 SubscriberEndpointBase* LocalServiceManager::findSubscriberLike(
-        uint32_t publisherServiceId, int qos) {
+        uint32_t publisherServiceId, QoSGroups qosGroup) {
 
     // find fitting connectors
-    SubscriberConnector* connector = findSubscriberConnectorLike(publisherServiceId, qos);
+    SubscriberConnector* connector = findSubscriberConnectorLike(publisherServiceId, qosGroup);
     if(connector){
         for (auto endpoint: connector->getEndpoints()){
-            if(endpoint->getQos() == qos){
+            if(endpoint->getQos() == qosGroup){
                 return dynamic_cast<SubscriberEndpointBase*>(endpoint);
             }
         }
@@ -440,9 +424,9 @@ SubscriberEndpointBase* LocalServiceManager::createTCPSubscriberEndpoint(
                                     moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
         _subscriberEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         tcpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getTCPPort();
         tcpEndpoint->par("localPort").setIntValue(localPort);
         tcpEndpoint->par("remoteAddress").setStringValue(csi_tcp->getAddress());
         tcpEndpoint->par("remotePort").setIntValue(csi_tcp->getPort());
@@ -475,9 +459,9 @@ SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
                                     moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
         _subscriberEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         udpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getUDPPort();
         udpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.
@@ -508,9 +492,9 @@ SubscriberEndpointBase* LocalServiceManager::createSomeIpTCPSubscriberEndpoint(
                                     moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
         _subscriberEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getTCPPort();
         someipTcpEndpoint->par("localPort").setIntValue(localPort);
         someipTcpEndpoint->par("remoteAddress").setStringValue(csi_someip->getAddress());
         someipTcpEndpoint->par("remotePort").setIntValue(csi_someip->getPort());
@@ -543,9 +527,9 @@ SubscriberEndpointBase* LocalServiceManager::createSomeIpUDPSubscriberEndpoint(
                                     moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
         _subscriberEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         someipUdpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getUDPPort();
         someipUdpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.
@@ -574,10 +558,10 @@ PublisherEndpointBase* LocalServiceManager::createAVBPublisherEndpoint(
                                     moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
         _publisherEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        auto streamID = (dynamic_cast<StreamIDQoSPolicy*>(connector->getQos()[QoSPolicyNames::StreamID]))->getValue();
+        auto streamID = connector->getQoSService().getStreamId();
         avbEndpoint->par("streamID").setIntValue(streamID);
 
-        auto srClass = (dynamic_cast<SRClassQoSPolicy*>(connector->getQos()[QoSPolicyNames::SRClass]))->getValue();
+        auto srClass = connector->getQoSService().getSrClass();
         string strSrClass;
         switch(srClass){
         case SR_CLASS::A: strSrClass = "A"; break;
@@ -586,13 +570,13 @@ PublisherEndpointBase* LocalServiceManager::createAVBPublisherEndpoint(
         }
         avbEndpoint->par("srClass").setStringValue(strSrClass);
 
-        auto intervalFrames = (dynamic_cast<IntervalFramesQoSPolicy*>(connector->getQos()[QoSPolicyNames::IntervalFrames]))->getValue();
+        auto intervalFrames = connector->getQoSService().getIntervalFrames();
         avbEndpoint->par("intervalFrames").setIntValue(intervalFrames);
 
-        auto vlanID = (dynamic_cast<IntervalFramesQoSPolicy*>(connector->getQos()[QoSPolicyNames::IntervalFrames]))->getValue();
+        auto vlanID = connector->getQoSService().getIntervalFrames();
         avbEndpoint->par("vlan_id").setIntValue(vlanID);
 
-        auto payload = (dynamic_cast<FramesizeQoSPolicy*>(connector->getQos()[QoSPolicyNames::Framesize]))->getValue();
+        auto payload = connector->getQoSService().getFramesize();
         avbEndpoint->par("payload").setIntValue(payload);
 
         // cast back.
@@ -621,9 +605,9 @@ PublisherEndpointBase* LocalServiceManager::createTCPPublisherEndpoint(
                                     moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
         _publisherEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         tcpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getTCPPort();
         tcpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.
@@ -652,9 +636,9 @@ PublisherEndpointBase* LocalServiceManager::createUDPPublisherEndpoint(
                                     moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
         _publisherEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         udpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getUDPPort();
         udpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.
@@ -683,9 +667,9 @@ PublisherEndpointBase* LocalServiceManager::createSomeIpTCPPublisherEndpoint(
                                     moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
         _publisherEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getTCPPort();
         someipTcpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.
@@ -713,9 +697,9 @@ PublisherEndpointBase* LocalServiceManager::createSomeIpUDPPublisherEndpoint(
                                     moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
         _publisherEndpointCount++;
         // 3. Set up its parameters and gate sizes as needed;
-        string localAddr = (dynamic_cast<LocalAddressQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalAddress]))->getValue();
+        string localAddr = connector->getQoSService().getAddress().str();
         someipUdpEndpoint->par("localAddress").setStringValue(localAddr);
-        int localPort = (dynamic_cast<LocalPortQoSPolicy*>(connector->getQos()[QoSPolicyNames::LocalPort]))->getValue();
+        int localPort = connector->getQoSService().getUDPPort();
         someipUdpEndpoint->par("localPort").setIntValue(localPort);
 
         // cast back.

@@ -213,9 +213,23 @@ void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIp
 
 void SomeIpSD::processFindResult(cObject* obj) {
     SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
-    IService* service = someIpSDFindResult->getService();
+    QoSService service = someIpSDFindResult->getService();
+    int port = -1;
+    switch(someIpSDFindResult->getIPProtocolId()) {
+        case IPProtocolId::IP_PROT_UDP:
+            port = service.getUDPPort();
+            break;
+        case IPProtocolId::IP_PROT_TCP:
+            port = service.getTCPPort();
+            break;
+        default:
+            throw cRuntimeError("Unknown Protocol");
+    }
+    if (port == -1) {
+        throw cRuntimeError("-1 is an invalid port.");
+    }
     offer(someIpSDFindResult->getServiceId(), someIpSDFindResult->getInstanceId(), someIpSDFindResult->getRemoteAddress(),
-            service->getAddress(), service->getPort(), someIpSDFindResult->getIPProtocolId());
+            service.getAddress(), port, someIpSDFindResult->getIPProtocolId());
     delete(someIpSDFindResult);
 }
 
@@ -223,19 +237,12 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     int numberOfOptions = offerEntry->getNum1stOptions()+offerEntry->getNum2ndOptions();
     for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
         if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
-            QoSPolicyMap qosPolicyMap = QoSPolicyMap();
-            switch(ipv4EndpointOption->getL4Protocol()) {
-                case IPProtocolId::IP_PROT_UDP:
-                    qosPolicyMap[QoSPolicyNames::QoSGroup] = new QoSGroup(QoSGroups::SOMEIP_UDP);
-                    break;
-                case IPProtocolId::IP_PROT_TCP:
-                    qosPolicyMap[QoSPolicyNames::QoSGroup] = new QoSGroup(QoSGroups::SOMEIP_TCP);
-                    break;
-                default:
-                    throw cRuntimeError("Unknown L4 Protocol.");
-            }
-
-            QoSService* service = new QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), offerEntry->getInstanceID(), qosPolicyMap);
+            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
+            std::set<QoSGroups> qosGroups;
+            qosGroups.insert(extractedQoSOptions.getQosGroup());
+            QoSService* service = new QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+                                                 offerEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
+                                                 extractedQoSOptions.getUdpPort());
             emit(_serviceOfferSignal,service);
             delete ipv4EndpointOption;
         }
@@ -243,27 +250,39 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
 }
 
 void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader) {
-    if (subscribeEventGroupEntry->getNum2ndOptions() > 0) {
-        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        QoSService service = QoSService(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(), ipv4EndpointOption->getPort(), subscribeEventGroupEntry->getInstanceID());
-        emit(_subscribeEventGroupSignal,&service);
-        delete ipv4EndpointOption;
+    int numberOfOptions = subscribeEventGroupEntry->getNum1stOptions()+subscribeEventGroupEntry->getNum2ndOptions();
+    for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
+        if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
+            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
+            std::set<QoSGroups> qosGroups;
+            qosGroups.insert(extractedQoSOptions.getQosGroup());
+            QoSService* service = new QoSService(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+                                                 subscribeEventGroupEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
+                                                 extractedQoSOptions.getUdpPort());
+            emit(_subscribeEventGroupSignal, service);
+            delete ipv4EndpointOption;
+        }
     }
 }
 
 void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader) {
-    if (subscribeEventGroupAckEntry->getNum2ndOptions() > 0) {
-        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption());
-        QoSService service = QoSService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
-                ipv4EndpointOption->getPort(), subscribeEventGroupAckEntry->getInstanceID());
-        emit(_subscribeEventGroupAckSignal,&service);
-        delete ipv4EndpointOption;
+    int numberOfOptions = subscribeEventGroupAckEntry->getNum1stOptions()+subscribeEventGroupAckEntry->getNum2ndOptions();
+    for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
+        if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
+            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
+            std::set<QoSGroups> qosGroups;
+            qosGroups.insert(extractedQoSOptions.getQosGroup());
+            QoSService* service = new QoSService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+                                                 subscribeEventGroupAckEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
+                                                 extractedQoSOptions.getUdpPort());
+            emit(_subscribeEventGroupAckSignal,service);
+            delete ipv4EndpointOption;
+        }
     }
 }
 
-void SomeIpSD::discover(IServiceIdentifier& serviceIdentifier) {
-    QoSServiceIdentifier& someIpServiceIdentifier = dynamic_cast<QoSServiceIdentifier&>(serviceIdentifier);
-    find(someIpServiceIdentifier.getServiceId(),someIpServiceIdentifier.getInstanceId());
+void SomeIpSD::discover(QoSServiceIdentifier qosServiceIdentifier) {
+    find(qosServiceIdentifier.getServiceId(),qosServiceIdentifier.getInstanceId());
 }
 
 void SomeIpSD::processSubscription(cObject* obj) {
@@ -296,6 +315,25 @@ void SomeIpSD::receiveSignal(cComponent *source, simsignal_t signalID, cObject *
     } else {
         throw cRuntimeError("Unknown signal.");
     }
+}
+
+ExtractedQoSOptions SomeIpSD::getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption) {
+    QoSGroups qosGroup = QoSGroups::RT;
+    int tcpPort = -1;
+    int udpPort = -1;
+    switch(ipv4EndpointOption->getL4Protocol()) {
+        case IPProtocolId::IP_PROT_UDP:
+            qosGroup = QoSGroups::SOMEIP_UDP;
+            udpPort = ipv4EndpointOption->getPort();
+            break;
+        case IPProtocolId::IP_PROT_TCP:
+            qosGroup = QoSGroups::SOMEIP_TCP;
+            tcpPort = ipv4EndpointOption->getPort();
+            break;
+        default:
+            throw cRuntimeError("Unknown L4 Protocol.");
+    }
+    return ExtractedQoSOptions(qosGroup, udpPort, tcpPort);
 }
 
 } /* end namespace SOQoSMW */

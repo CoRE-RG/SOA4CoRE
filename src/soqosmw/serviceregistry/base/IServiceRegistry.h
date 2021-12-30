@@ -35,9 +35,16 @@ public:
 
     /**
      * Returns a service for given service identifier
-     * @return IService
+     * @return QoSService
      */
     virtual QoSService getService(QoSServiceIdentifier serviceIdentifier) = 0;
+
+    /**
+     * Returns true if there is a service for the given service identifier
+     * @param serviceIdentifier the service identifier
+     * @return true if there is a service for the given service identifier, else false
+     */
+    virtual bool containsService(QoSServiceIdentifier serviceIdentifier) = 0;
 
     typedef uint32_t ServiceId;
 };

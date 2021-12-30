@@ -16,7 +16,6 @@
 //
 
 #include "soqosmw/applications/publisherapp/base/PublisherAppBase.h"
-#include "soqosmw/qospolicy/base/qospolicy.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
 #include "soqosmw/connector/base/ConnectorBase.h"
 //CoRE4INET
@@ -24,6 +23,7 @@
 #include "core4inet/utilities/ConfigFunctions.h"
 //INET
 #include "inet/linklayer/ethernet/Ethernet.h"
+#include "inet/networklayer/common/L3AddressResolver.h"
 //STD
 #include <cstring>
 #include <iostream>
@@ -130,12 +130,12 @@ void PublisherAppBase::handleParameterChange(const char* parname) {
     }
 
     if (!parname || !strcmp(parname, "qosGroups")) {
-        const char* qosGroups = par("qosGroups");
+        const char* qosGroups = par("qosGroups").stringValue();
         const char* delim = " ";
         char *token = strtok(const_cast<char*>(qosGroups), delim);
         while (token != nullptr)
         {
-            this->_qosGroups.push_back(std::string(token));
+            this->_qosGroups.insert(std::string(token));
             token = strtok(nullptr, delim);
         }
     }
@@ -150,10 +150,8 @@ void PublisherAppBase::createPublisherWithQoS() {
     if (!(localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager))){
         throw cRuntimeError("No LocalServiceManager found.");
     }
-    localServiceManager->registerPublisherService(this->_publisherServiceId, this->_qosPolicies, this, _instanceId);
-    if ((_connector = localServiceManager->getPublisherConnector(this->_publisherServiceId)) == nullptr){
-        throw cRuntimeError("PublisherConnector is null. Call registerPublisherService first.");
-    }
+    localServiceManager->registerPublisherService(_qosService, this);
+    _connector = localServiceManager->getPublisherConnectorForServiceId(_publisherServiceId);
 }
 
 void PublisherAppBase::scheduleNextMessage() {
@@ -199,49 +197,37 @@ void PublisherAppBase::handleMessage(cMessage *msg) {
 }
 
 void PublisherAppBase::setQoS() {
+    std::set<QoSGroups> qosGroups;
     for (std::string qosGroup : _qosGroups) {
-        if (!strcmp(qosGroup, "STD_TCP") || !strcmp(qosGroup, "SOMEIP_TCP")) {
-            QoSGroups qos = !strcmp(qosGroup, "STD_TCP") ? QoSGroups::STD_TCP : QoSGroups::SOMEIP_TCP;
-            _qosServices.push_back(QoSService(_publisherServiceId,
-                    inet::L3AddressResolver().resolve(_localAddress.c_str()),
-                    _instanceId,
-                    qos,
-                    _tcpPort));
-        } else if (!strcmp(qosGroup, "STD_UDP") || !strcmp(qosGroup, "SOMEIP_UDP")) {
-            QoSGroups qos = !strcmp(qosGroup, "STD_UDP") ? QoSGroups::STD_UDP : QoSGroups::SOMEIP_UDP;
-            _qosServices.push_back(QoSService(_publisherServiceId,
-                    inet::L3AddressResolver().resolve(_localAddress.c_str()),
-                    _instanceId,
-                    qos,
-                    _udpPort));
-        } else if (!strcmp(qosGroup, "RT")) {
-            _qosServices.push_back(QoSService(_publisherServiceId,
-                    inet::L3AddressResolver().resolve(_localAddress.c_str()),
-                    _instanceId,
-                    QosGroups::RT,
-                    -1,
-                    _streamID,
-                    _srClass,
-                    _framesize,
-                    _intervalFrames));
-        } else if (!strcmp(qosGroup, "WEB")) {
+        if (qosGroup == "STD_TCP") {
+            qosGroups.insert(QoSGroups::STD_TCP);
+        } else if (qosGroup == "STD_UDP") {
+            qosGroups.insert(QoSGroups::STD_UDP);
+        } else if (qosGroup == "SOMEIP_TCP") {
+            qosGroups.insert(QoSGroups::SOMEIP_TCP);
+        } else if (qosGroup == "SOMEIP_UDP") {
+            qosGroups.insert(QoSGroups::SOMEIP_UDP);
+        } else if (qosGroup == "RT") {
+            qosGroups.insert(QoSGroups::RT);
+        } else if (qosGroup == "WEB") {
             throw cRuntimeError("WEB QoS is not implemented yet");
         } else {
             throw cRuntimeError("Unknown QoS");
         }
     }
+
+    _qosService = QoSService(_publisherServiceId,
+                             inet::L3AddressResolver().resolve(_localAddress.c_str()),
+                             _instanceId, qosGroups, _tcpPort, _udpPort, _streamID, _srClass, _framesize, _intervalFrames);
 }
 
 void PublisherAppBase::printQoS() {
     cout << "printing offered qos services:" << endl;
-    for (QoSService qosService : _qosServices){
-
-        cout << "Service ID: " << qosService.getServiceId() <<endl;
-        cout << "StreamID: " << qosService.getStreamId() << endl;
-        cout << "SRClass: " << qosService.getSrClass() << endl;
-        cout << "Framesize: " << qosService.getFramesize() << endl;
-        cout << "IntervalFrames: " << qosService.getIntervalFrames() << endl;
-    }
+    cout << "Service ID: " << _qosService.getServiceId() <<endl;
+    cout << "StreamID: " << _qosService.getStreamId() << endl;
+    cout << "SRClass: " << CoRE4INET::SR_CLASStoString[_qosService.getSrClass()] << endl;
+    cout << "Framesize: " << _qosService.getFramesize() << endl;
+    cout << "IntervalFrames: " << _qosService.getIntervalFrames() << endl;
 
 }
 
