@@ -1,0 +1,10 @@
+Demonstrates a small network which discovers services with SOME/IP SD FIND and OFFER messages.
+After the service discovery publishers send messages to their subscribers.
+
+- The small network contains the three hosts: node1, node2, node3
+
+- Next to that there is one switch that connects every node with each other.
+  So all hosts can communicate with each other over the switch.
+
+- Currently the QoS groups are limited to STD_TCP and STD_UDP.
+  
