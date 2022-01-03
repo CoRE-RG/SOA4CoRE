@@ -30,13 +30,6 @@ Define_Module(SomeIpLocalServiceManager);
 void SomeIpLocalServiceManager::initialize(int stage) {
     LocalServiceManager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
-        _qosnpAvailable = true;
-        if(!(_qosnp =
-               dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
-                       par("qosnpmoduleName"))))) {
-            _qosnpAvailable = false;
-        }
-
         if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(par("sdmoduleName"))))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
@@ -98,13 +91,8 @@ void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t si
 
 // Subscriber-side
 void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
-    bool serviceIsKnown = false;
     bool serviceFound = false;
-    serviceIsKnown = _lsr->containsService(publisherServiceIdentifier);
-    if (_qosnpAvailable && serviceIsKnown) {
-        //Request* request = createNegotiationRequest(service);
-        //_qosnp->createQoSBroker(request);
-    } else if (serviceIsKnown) {
+    if (_lsr->containsService(publisherServiceIdentifier)) {
         PublisherApplicationInformation publisherService = _lsr->getService(publisherServiceIdentifier);
         if (publisherService.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
             PublisherApplicationInformationNotification* publisherApplicationInformationNotification =
@@ -212,14 +200,6 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
         }
     }
     delete obj;
-}
-
-// Subscriber-side
-Request* SomeIpLocalServiceManager::createNegotiationRequest(PublisherApplicationInformation publisherService, QoSGroup qosGroup) {
-    EndpointDescription subscriber(publisherService.getServiceId(), _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription publisher(publisherService.getServiceId(), publisherService.getAddress(), _qosnp->getProtocolPort());
-    Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
-    return request;
 }
 
 // Subscriber-side

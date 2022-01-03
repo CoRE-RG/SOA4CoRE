@@ -98,14 +98,6 @@ class SomeIpLocalServiceManager : public LocalServiceManager
     void processAcknowledgedSubscription(cObject* obj);
 
     /**
-     * Creates a negotiation request
-     * @param publisherService
-     * @param qosPolicies
-     * @return the negotiation request
-     */
-    Request* createNegotiationRequest(PublisherApplicationInformation publisherService, QoSGroup qosGroup);
-
-    /**
      * Creates a subscriber endpoint for a service
      * @param publisherApplicationInformation the publisher application information
      * @param qosGroup the QoS group
@@ -141,19 +133,9 @@ class SomeIpLocalServiceManager : public LocalServiceManager
   private:
 
     /**
-     * The QoS Negotiation Protocol module.
-     */
-    QoSNegotiationProtocol* _qosnp;
-
-    /**
      * The service discovery.
      */
     IServiceDiscovery* _sd;
-
-    /**
-     * Indicates if QoS negotiation is available
-     */
-    bool _qosnpAvailable;
 };
 } /* end namespace SOQoSMW */
 #endif
