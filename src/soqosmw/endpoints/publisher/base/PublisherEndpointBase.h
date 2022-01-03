@@ -20,7 +20,10 @@
 
 #include "soqosmw/endpoints/base/EndpointBase.h"
 
+
 namespace SOQoSMW {
+
+class PublisherConnector;
 
 /**
  * @brief The PublisherEndpointBase implements the common interface for all endpoint modules (@see~EndpointBase).
@@ -35,7 +38,13 @@ namespace SOQoSMW {
  */
 class PublisherEndpointBase : public EndpointBase
 {
+    /**
+     * Methods
+     */
 public:
+    const PublisherConnector* getPublisherConnector() const;
+
+    void setPublisherConnector(PublisherConnector* publisherConnector);
 
 protected:
     virtual void initialize() override;
@@ -64,11 +73,22 @@ protected:
      */
     virtual void publish(cPacket* msg) = 0;
 
+private:
+
+    /**
+     * Member variables
+     */
+public:
+protected:
     /**
      * Signal to capture statistics for connected remotes
      */
     simsignal_t _remotesSignal;
 
+    /**
+     * The connector to applications.
+     */
+    PublisherConnector* _publisherConnector;
 private:
     /**
      * Signal to capture statistics for sent messages

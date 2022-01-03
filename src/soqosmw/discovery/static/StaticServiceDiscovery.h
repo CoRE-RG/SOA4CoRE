@@ -19,8 +19,8 @@
 #define __SOQOSMW_DISCOVERY_STATIC_STATICSERVICEDISCOVERY_H_
 
 //SOQOSMW
+#include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
-#include "soqosmw/service/qosservice/QoSService.h"
 #include "soqosmw/serviceregistry/base/IServiceRegistry.h"
 //INET
 #include "inet/networklayer/common/L3Address.h"
@@ -66,7 +66,7 @@ private:
     /**
      * Map used to abstract discovery of services
      */
-    std::unordered_map<IServiceRegistry::ServiceId,QoSService> _discoveryAbstractionMap;
+    std::unordered_map<IServiceRegistry::ServiceId,PublisherApplicationInformation> _discoveryAbstractionMap;
 };
 
 } /*end namespace SOQoSMW*/

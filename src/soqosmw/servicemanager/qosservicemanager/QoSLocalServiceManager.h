@@ -63,9 +63,9 @@ class QoSLocalServiceManager : public LocalServiceManager
     /**
      * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param qosService the QoS service representation of the subscriber
+     * @param subscriberApplicationInformation the application information about the subscriber
      */
-    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) override;
+    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
 
   private:
     /**
@@ -73,21 +73,13 @@ class QoSLocalServiceManager : public LocalServiceManager
      * @param publisherService
      * @return the negotiation request
      */
-    Request* createNegotiationRequest(QoSService publisherService);
+    Request* createNegotiationRequest(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup);
 
     /**
      * Subscribes to the offered service
      * @param obj
      */
     void subscribeOfferedService(cObject* obj);
-
-    /**
-     * Returns a copy of the given QoSService but only including the given qosGroup in its QoSGroups vector.
-     * This way the QoSService includes only the QoSGroup which is wanted to be subscribed to
-     * @param qosGroup
-     * @return the QoSService copy
-     */
-    QoSService getQoSServiceCopyWithGivenQoSGroupOnly(QoSService qosService, QoSGroups qosGroup);
 
     /**
      * Member variables

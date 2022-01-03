@@ -13,13 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef SOQOSMW_SERVICE_QOSSERVICE_QOSSERVICE_H_
-#define SOQOSMW_SERVICE_QOSSERVICE_QOSSERVICE_H_
+#ifndef SOQOSMW_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_
+#define SOQOSMW_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_
 
 #include "soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h"
 #include "core4inet/base/avb/AVBDefs.h"
 #include "inet/networklayer/common/L3Address.h"
-#include "soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 
 using namespace CoRE4INET;
 namespace SOQoSMW {
@@ -32,19 +31,19 @@ namespace SOQoSMW {
  * @author Mehmet Mueller
  */
 
-class QoSService {
+class ApplicationInformation {
     /**
      * Methods
      */
 public:
-    QoSService();
+    ApplicationInformation();
 
-    QoSService(int serviceId, inet::L3Address address, uint16_t instanceId, std::set<QoSGroups> qosGroups, int tcpPort = -1, int udpPort = -1, int streamId = -1,
+    ApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId, int tcpPort = -1, int udpPort = -1, int streamId = -1,
             CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A, size_t framesize = -1, uint16_t intervalFrames = -1);
-    virtual ~QoSService();
+    virtual ~ApplicationInformation();
 
-    virtual bool operator==(const QoSService& qoSService) const;
-    virtual bool operator!=(const QoSService& qoSService) const;
+    virtual bool operator==(const ApplicationInformation& applicationInformation) const;
+    virtual bool operator!=(const ApplicationInformation& applicationInformation) const;
 
     /**
      * Returns the service id
@@ -69,12 +68,6 @@ public:
      * @return the UDP port
      */
     int getUDPPort() const;
-
-    /**
-     * Returns the QoS groups this service provides
-     * @return the QoS groups
-     */
-    std::set<QoSGroups> getQosGroups() const;
 
     /**
      * Returns the instance ID
@@ -107,20 +100,6 @@ public:
     int getStreamId() const;
 
     /**
-     * Returns a common QoS group if present
-     * @param qoSService
-     * @return A common QoS group if present, else nullptr
-     */
-    QoSGroups* getCommonQoSGroup(QoSService qosService);
-
-    /**
-     * Returns true if this service contains the given QoS group
-     * @param qosGroup
-     * @return true if this service contains given qosGroup, else false
-     */
-    bool containsQoSGroup(QoSGroups qosGroup);
-
-    /**
      * Returns true if the service is instantiated by the default constructor.
      * @return true if the service is instantiated by the default constructor, else false
      */
@@ -134,7 +113,6 @@ private:
      */
 public:
 protected:
-private:
     /**
      * The service identifier
      */
@@ -154,11 +132,6 @@ private:
      * The UDP port
      */
     int _udpPort;
-
-    /**
-     * The QoS groups this service provides
-     */
-    std::set<QoSGroups> _qosGroups;
 
     /**
      * The stream ID for AVB traffic
@@ -185,9 +158,11 @@ private:
      * since the default constructor does not specify a useful QoSService.
      */
     bool _defaultQoSService;
+private:
+
 
 };
 
 } /* namespace SOQoSMW */
 
-#endif /* SOQOSMW_SERVICE_QOSSERVICE_QOSSERVICE_H_ */
+#endif /* SOQOSMW_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_ */

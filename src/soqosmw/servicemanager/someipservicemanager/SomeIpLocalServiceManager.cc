@@ -14,9 +14,11 @@
 // 
 
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 #include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
+#include "soqosmw/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
 #include <algorithm>
 namespace SOQoSMW {
 
@@ -56,8 +58,18 @@ void SomeIpLocalServiceManager::handleMessage(cMessage *msg) {
 
 // Subscriber-side
 void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
-    QoSService* someIpService = dynamic_cast<QoSService*>(obj);
-    _pendingRequestsMap.erase(someIpService->getServiceId());
+    PublisherApplicationInformation* publisherApplicationInformation = dynamic_cast<PublisherApplicationInformation*>(obj);
+    if (_pendingRequestsMap.count(publisherApplicationInformation->getServiceId())) {
+        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation->getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation->getServiceId()].end(); ++it){
+            if (publisherApplicationInformation->containsQoSGroup(it->getQoSGroup())) {
+                createSubscriberEndpoint(*publisherApplicationInformation, it->getQoSGroup());
+                _pendingRequestsMap[publisherApplicationInformation->getServiceId()].remove(*it);
+                if (_pendingRequestsMap[publisherApplicationInformation->getServiceId()].empty()) {
+                    _pendingRequestsMap.erase(publisherApplicationInformation->getServiceId());
+                }
+            }
+        }
+    }
 }
 
 void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
@@ -76,7 +88,7 @@ void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t si
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) {
+void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     bool serviceIsKnown = false;
     bool serviceFound = false;
     serviceIsKnown = _lsr->containsService(publisherServiceIdentifier);
@@ -84,17 +96,17 @@ void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherS
         //Request* request = createNegotiationRequest(service);
         //_qosnp->createQoSBroker(request);
     } else if (serviceIsKnown) {
-        QoSService publisherService = _lsr->getService(publisherServiceIdentifier);
-        std::vector<QoSGroups> publisherQoSGroups = publisherService.getQosGroups();
-        QoSGroups qosGroup = qosService.getQosGroups()[0];
-        if (std::find(publisherQoSGroups.begin(), publisherQoSGroups.end(), qosGroup) != publisherQoSGroups.end()) {
-            publisherService = getQoSServiceCopyWithGivenQoSGroupOnly(publisherService, qosGroup);
-            subscribeServiceIfThereIsAPendingRequest(new QoSService(publisherService));
+        PublisherApplicationInformation publisherService = _lsr->getService(publisherServiceIdentifier);
+        if (publisherService.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
+            subscribeServiceIfThereIsAPendingRequest(new PublisherApplicationInformation(publisherService));
             serviceFound = true;
+        } else {
+            throw cRuntimeError("The service id = %d is not provided with the requested QoS group = %d",
+                    publisherServiceIdentifier.getServiceId(), subscriberApplicationInformation.getQoSGroup());
         }
     }
     if (!serviceFound) {
-        LocalServiceManager::addServiceToPendingRequestsMap(publisherServiceIdentifier, qosService);
+        LocalServiceManager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
         _sd->discover(publisherServiceIdentifier);
     }
 }
@@ -102,15 +114,13 @@ void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherS
 // Publisher-side
 void SomeIpLocalServiceManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
-    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId());
-    if (QoSService* service = dynamic_cast<QoSService*>(_lsr->getService(serviceIdentifier))) {
-        IPProtocolId ipProtocolId = getIPProtocolId(service);
+    QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getSubscriberApplicationInformation().getServiceId(),
+            someIpSDFindRequest->getSubscriberApplicationInformation().getInstanceId());
+    if (_lsr->containsService(serviceIdentifier)){
+        PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
         SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
-                someIpSDFindRequest->getServiceId(),
-                someIpSDFindRequest->getInstanceId(),
                 someIpSDFindRequest->getRemoteAddress(),
-                service,
-                ipProtocolId
+                foundPublisherApplicationInformation
         );
         delete(someIpSDFindRequest);
         emit(_findResultSignal,someIpSDFindResult);
@@ -119,114 +129,127 @@ void SomeIpLocalServiceManager::lookForService(cObject* obj) {
 
 // Subscriber-side
 void SomeIpLocalServiceManager::addToLocalServiceRegistry(cObject* obj) {
-    QoSService* qosService = dynamic_cast<QoSService*>(obj);
-    if (!qosService) {
-        throw cRuntimeError("Service is not of type QoSService.");
+    PublisherApplicationInformation* publisherApplicationInformation = dynamic_cast<PublisherApplicationInformation*>(obj);
+    if (!publisherApplicationInformation) {
+        throw cRuntimeError("Service is not of type PublisherApplicationInformation.");
     }
-    _lsr->addPublisherService(qosService);
+    _lsr->addPublisherService(*publisherApplicationInformation);
+    delete publisherApplicationInformation;
 }
 
 // Subscriber-side
 void SomeIpLocalServiceManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
-    QoSService* qosService = dynamic_cast<QoSService*>(obj);
-    createSubscriberEndpoint(qosService);
-    if (_pendingRequestsMap.count(qosService->getServiceId())) {
-        for(std::list<QoSService>::const_iterator it = _pendingRequestsMap[qosService->getServiceId()].begin(); it != _pendingRequestsMap[qosService->getServiceId()].end(); ++it){
-            SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
-                    qosService->getServiceId(),
-                    qosService->getInstanceId(),
-                    it->getAddress(),
-                    it->getPort(),
-                    qosService->getAddress()
-            );
-            emit(_subscribeSignal,&someIpSDSubscriptionInformation);
+    PublisherApplicationInformation* publisherApplicationInformation = dynamic_cast<PublisherApplicationInformation*>(obj);
+    if (_pendingRequestsMap.count(publisherApplicationInformation->getServiceId())) {
+        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation->getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation->getServiceId()].end(); ++it){
+            if (publisherApplicationInformation->containsQoSGroup(it->getQoSGroup())) {
+                SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
+                        publisherApplicationInformation->getAddress(),
+                        *it
+                );
+                emit(_subscribeSignal,&someIpSDSubscriptionInformation);
+            }
         }
     }
+    delete publisherApplicationInformation;
 }
 
 // Publisher-side
 void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
-    QoSService& qosService = *dynamic_cast<QoSService*>(obj);
-    ServiceIdentifier serviceIdentifier = ServiceIdentifier(qosService.getServiceId());
-    if (IService* service = _lsr->getService(serviceIdentifier)) {
-        SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
-                qosService.getServiceId(),
-                qosService.getInstanceId(),
-                service->getAddress(),
-                service->getPort(),
-                qosService.getAddress()
-        );
-        //TODO Should become possible for other QoS classes too, currently limited to SOME/IP UDP
-        PublisherEndpointBase* pub = createOrFindPublisherFor(qosService.getServiceId(),QoSGroups::SOMEIP_UDP);
-        if(!pub) {
-            throw cRuntimeError("No Publisher was created.");
+    SubscriberApplicationInformation& subscriberApplicationInformation = *dynamic_cast<SubscriberApplicationInformation*>(obj);
+    QoSServiceIdentifier qosServiceIdentifier = QoSServiceIdentifier(subscriberApplicationInformation.getServiceId(), subscriberApplicationInformation.getInstanceId());
+    if (_lsr->containsService(qosServiceIdentifier)) {
+        PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(qosServiceIdentifier);
+        if (publisherApplicationInformation.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
+            SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
+                    subscriberApplicationInformation.getAddress(),
+                    subscriberApplicationInformation
+            );
+            switch (subscriberApplicationInformation.getQoSGroup()) {
+                case QoSGroup::SOMEIP_TCP: {
+                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherFor(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_TCP);
+                    if(!publisherEndpointBase) {
+                        throw cRuntimeError("No SOME/IP TCP Publisher was created.");
+                    }
+                    SOMEIPTCPPublisherEndpoint* someipTcpPublisherEndpoint = dynamic_cast<SOMEIPTCPPublisherEndpoint*>(publisherEndpointBase);
+                    if(!(someipTcpPublisherEndpoint)) {
+                        throw cRuntimeError("Endpoint is no SOMEIPTCPPublisherEndpoint.");
+                    }
+                }
+                case QoSGroup::SOMEIP_UDP: {
+                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherFor(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_UDP);
+                    if(!publisherEndpointBase) {
+                        throw cRuntimeError("No SOME/IP UDP Publisher was created.");
+                    }
+                    SOMEIPUDPPublisherEndpoint* someipUdpPublisherEndpoint = dynamic_cast<SOMEIPUDPPublisherEndpoint*>(publisherEndpointBase);
+                    if(!(someipUdpPublisherEndpoint)) {
+                        throw cRuntimeError("Endpoint is no SOMEIPUDPPublisherEndpoint.");
+                    }
+                    CSI_SOMEIP_UDP* csi_udp_someip = new CSI_SOMEIP_UDP();
+                    csi_udp_someip->setAddress(subscriberApplicationInformation.getAddress().str().c_str());
+                    csi_udp_someip->setPort(subscriberApplicationInformation.getUDPPort());
+                    someipUdpPublisherEndpoint->addRemote(csi_udp_someip);
+                    delete csi_udp_someip;
+                }
+                default:
+                    throw cRuntimeError("Unknown QoS group");
+            }
+            delete obj;
+            emit(_subscribeAckSignal,&someIpSDSubscriptionInformation);
         }
-        SOMEIPUDPPublisherEndpoint* someipUdpPublisherEndpoint = dynamic_cast<SOMEIPUDPPublisherEndpoint*>(pub);
-        if(!(someipUdpPublisherEndpoint)) {
-            throw cRuntimeError("Endpoint is no SOMEIPUDPPublisherEndpoint.");
-        }
-        ConnectionSpecificInformation* info = pub->getConnectionSpecificInformation();
-        if (!info) {
-            throw cRuntimeError("No ConnectionSpecificInformation received.");
-        }
-        CSI_SOMEIP_UDP* subConnection = new CSI_SOMEIP_UDP();
-        subConnection->setAddress(qosService.getAddress().str().c_str());
-        subConnection->setPort(qosService.getPort());
-        switch (info->getConnectionType()) {
-        case ConnectionType::ct_someip_udp:
-            someipUdpPublisherEndpoint->addRemote(subConnection);
-            break;
-        default:
-            throw cRuntimeError("Unknown connection type. Only SOME/IP is currently supported");
-        }
-        delete subConnection;
-        delete info;
-        delete qosService;
-        emit(_subscribeAckSignal,&someIpSDSubscriptionInformation);
     }
 }
 
 // Subscriber-side
-Request* SomeIpLocalServiceManager::createNegotiationRequest(QoSService publisherService) {
+Request* SomeIpLocalServiceManager::createNegotiationRequest(PublisherApplicationInformation publisherService, QoSGroup qosGroup) {
     EndpointDescription subscriber(publisherService.getServiceId(), _localAddress, _qosnp->getProtocolPort());
     EndpointDescription publisher(publisherService.getServiceId(), publisherService.getAddress(), _qosnp->getProtocolPort());
-    Request *request = new Request(_requestID++, subscriber, publisher, publisherService, nullptr);
+    Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
     return request;
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::createSubscriberEndpoint(IService* service) {
-    ConnectionSpecificInformation* connectionlessCSI = new CSI_SOMEIP_UDP();
-    SubscriberEndpointBase* sub = createOrFindSubscriberFor(service->getServiceId(), connectionlessCSI);
-    delete connectionlessCSI;
+void SomeIpLocalServiceManager::createSubscriberEndpoint(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
+    SubscriberEndpointBase* sub = nullptr;
+    switch (qosGroup) {
+        case QoSGroup::SOMEIP_TCP: {
+            CSI_SOMEIP_TCP* csi_someip_tcp = new CSI_SOMEIP_TCP();
+            csi_someip_tcp->setAddress(publisherApplicationInformation.getAddress().str().c_str());
+            csi_someip_tcp->setPort(publisherApplicationInformation.getTCPPort());
+            sub = createOrFindSubscriberFor(publisherApplicationInformation.getServiceId(), csi_someip_tcp);
+            delete csi_someip_tcp;
+            break;
+        }
+        case QoSGroup::SOMEIP_UDP: {
+            CSI_SOMEIP_UDP* csi_someip_udp = new CSI_SOMEIP_UDP();
+            csi_someip_udp->setAddress(publisherApplicationInformation.getAddress().str().c_str());
+            csi_someip_udp->setPort(publisherApplicationInformation.getUDPPort());
+            sub = createOrFindSubscriberFor(publisherApplicationInformation.getServiceId(), csi_someip_udp);
+            delete csi_someip_udp;
+            break;
+        }
+        default:
+            throw cRuntimeError("Unknown QoS group.");
+    }
+
     if(!sub) {
         throw cRuntimeError("No subscriber was created...");
     }
 }
 
-IPProtocolId SomeIpLocalServiceManager::getIPProtocolId(QoSService* service) {
-    QoSGroups qosGroup = dynamic_cast<QoSGroup*>(service->getQoSPolicyMap()[QoSPolicyNames::QoSGroup])->getValue();
+IPProtocolId SomeIpLocalServiceManager::getIPProtocolId(QoSGroup qosGroup) {
     IPProtocolId ipProtocolId = IPProtocolId::IP_PROT_ICMP;
     switch (qosGroup) {
-        case QoSGroups::SOMEIP_TCP:
+        case QoSGroup::SOMEIP_TCP:
             ipProtocolId = IPProtocolId::IP_PROT_TCP;
             break;
-        case QoSGroups::SOMEIP_UDP:
+        case QoSGroup::SOMEIP_UDP:
             ipProtocolId = IPProtocolId::IP_PROT_UDP;
             break;
         default:
             throw cRuntimeError("Unknown QoS group.");
     }
     return ipProtocolId;
-}
-
-QoSService SomeIpLocalServiceManager::getQoSServiceCopyWithGivenQoSGroupOnly(QoSService qosService, QoSGroups qosGroup) {
-    std::vector<QoSGroups> qosGroups;
-    qosGroups.push_back(qosGroup);
-    return QoSService(qosService.getServiceId(), qosService.getAddress(),
-            qosService.getInstanceId(), qosGroups, qosService.getTCPPort(), qosService.getUDPPort(),
-            qosService.getStreamId(), qosService.getSrClass(), qosService.getFramesize(),
-            qosService.getIntervalFrames());
 }
 
 } /* end namespace SOQoSMW */

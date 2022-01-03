@@ -59,15 +59,13 @@ void QoSLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signa
 }
 
 void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
-    if (QoSService* offeredService = dynamic_cast<QoSService*>(obj)) {
-        for (QoSService qosService : _pendingRequestsMap[offeredService->getServiceId()]) {
-            if (QoSGroups* commonQoSGroup = offeredService->getCommonQoSGroup(qosService)) {
-                QoSService publisherService = getQoSServiceCopyWithGivenQoSGroupOnly(*offeredService, *commonQoSGroup);
-                delete commonQoSGroup;
-                Request* request = createNegotiationRequest(publisherService);
+    if (PublisherApplicationInformation* offeredService = dynamic_cast<PublisherApplicationInformation*>(obj)) {
+        for (SubscriberApplicationInformation subscriberApplicationInformation : _pendingRequestsMap[offeredService->getServiceId()]) {
+            if (offeredService->containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
+                Request* request = createNegotiationRequest(*offeredService, subscriberApplicationInformation.getQoSGroup());
                 //create qos broker for the request
                 _qosnp->createQoSBroker(request);
-                _pendingRequestsMap[qosService.getServiceId()].remove(qosService);
+                _pendingRequestsMap[subscriberApplicationInformation.getServiceId()].remove(subscriberApplicationInformation);
             }
         }
         if(!_pendingRequestsMap[offeredService->getServiceId()].size()) {
@@ -80,40 +78,29 @@ void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
     }
 }
 
-void QoSLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) {
+void QoSLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     //check if publisher is already discovered, and if so, start the negotiation with a request.
     bool serviceFound = false;
     if (_lsr->containsService(publisherServiceIdentifier)) {
-        QoSService publisherService = _lsr->getService(publisherServiceIdentifier);
-        if (QoSGroups* commonQoSGroup = qosService.getCommonQoSGroup(publisherService)) {
-            publisherService = getQoSServiceCopyWithGivenQoSGroupOnly(publisherService, *commonQoSGroup);
-            delete commonQoSGroup;
-            Request* request = createNegotiationRequest(publisherService);
+        PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(publisherServiceIdentifier);
+        if (publisherApplicationInformation.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
+            Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplicationInformation.getQoSGroup());
             //create qos broker for the request
             _qosnp->createQoSBroker(request);
             serviceFound = true;
         }
     }
     if (!serviceFound) {
-        LocalServiceManager::addServiceToPendingRequestsMap(publisherServiceIdentifier, qosService);
+        LocalServiceManager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
         _sd->discover(publisherServiceIdentifier);
     }
 }
 
-Request* QoSLocalServiceManager::createNegotiationRequest(QoSService publisherService) {
-    EndpointDescription subscriber(publisherService.getServiceId(), _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription publisher(publisherService.getServiceId(), publisherService.getAddress(), _qosnp->getProtocolPort());
-    Request *request = new Request(_requestID++, subscriber, publisher, publisherService, nullptr);
+Request* QoSLocalServiceManager::createNegotiationRequest(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
+    EndpointDescription subscriber(publisherApplicationInformation.getServiceId(), _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription publisher(publisherApplicationInformation.getServiceId(), publisherApplicationInformation.getAddress(), _qosnp->getProtocolPort());
+    Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
     return request;
-}
-
-QoSService QoSLocalServiceManager::getQoSServiceCopyWithGivenQoSGroupOnly(QoSService qosService, QoSGroups qosGroup) {
-    std::set<QoSGroups> qosGroups;
-    qosGroups.insert(qosGroup);
-    return QoSService(qosService.getServiceId(), qosService.getAddress(),
-            qosService.getInstanceId(), qosGroups, qosService.getTCPPort(), qosService.getUDPPort(),
-            qosService.getStreamId(), qosService.getSrClass(), qosService.getFramesize(),
-            qosService.getIntervalFrames());
 }
 
 } /* end namespace SOQoSMW */

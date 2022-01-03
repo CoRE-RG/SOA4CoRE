@@ -16,24 +16,33 @@
 // 
 
 #include "SubscriberEndpointBase.h"
+#include "soqosmw/connector/pubsub/reader/SubscriberConnector.h"
 
 
 namespace SOQoSMW {
 
-
-} /*end namespace SOQoSMW*/
-
-void SOQoSMW::SubscriberEndpointBase::initialize(){
+void SubscriberEndpointBase::initialize(){
     this->_msgRecv = registerSignal("msgRecv");
     EndpointBase::initialize();
 }
 
-void SOQoSMW::SubscriberEndpointBase::handleTransportIn(cMessage* msg) {
-    sendDirect(msg, _connector->gate(CONNECTOR_OUT_GATE_NAME));
+void SubscriberEndpointBase::handleTransportIn(cMessage* msg) {
+    sendDirect(msg, _subscriberConnector->gate(CONNECTOR_OUT_GATE_NAME));
     emit(this->_msgRecv, msg);
 }
 
-void SOQoSMW::SubscriberEndpointBase::handleConnectorIn(cMessage* msg) {
+void SubscriberEndpointBase::handleConnectorIn(cMessage* msg) {
     //ignore messages from connector ... shouldnt actually be called..
     throw cRuntimeError("Received a message from connector, this should not happen...");
 }
+
+const SubscriberConnector* SubscriberEndpointBase::getSubscriberConnector() const {
+    return _subscriberConnector;
+}
+
+void SubscriberEndpointBase::setSubscriberConnector(SubscriberConnector* subscriberConnector) {
+    _subscriberConnector = subscriberConnector;
+}
+
+
+} /*end namespace SOQoSMW*/

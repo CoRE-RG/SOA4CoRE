@@ -19,13 +19,12 @@
 #define __SOQOSMW_APPLICATIONS_SUBSCRIBERAPP_BASE_SUBSCRIBERAPPBASE_H_
 
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
+#include "soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
+#include "soqosmw/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
+
 //STD
 #include <string>
 #include <unordered_map>
-
-namespace SOQoSMW {
-class QoSGroup;
-} /* namespace SOQoSMW */
 
 namespace SOQoSMW {
 class SubscriptionReader;
@@ -58,14 +57,14 @@ private:
 protected:
 
     /**
-     * The service representation of this app
+     * The application informations of this app
      */
-    QoSService _qosService;
+    SubscriberApplicationInformation _subscriberApplicationInformation;
 
     /**
      * Caches the required QoS type
      */
-    QoSGroups _qosGroup;
+    QoSGroup _qosGroup;
 
     /**
      * Initialization of the module. Sends activator message

@@ -32,13 +32,18 @@ simple SubscriberConnector extends ConnectorBase
         @class(SOQoSMW::SubscriberConnector);
         // maximum number of appilcations allowed to connect to this connector.
         // -1 = infinite
-        maxApplications = default(-1);
-        // maximum number of endpoints allowed to connect to this connector.
-        // -1 = infinite
-        maxEndpoints = default(1);
+        int maxApplications = default(-1);
+
+        // Signal emitted when a message is forwarded to Applications
+        @signal[forwardedToApps](type=omnetpp::cPacket);
+        //Statistic of the amount of messages that were forwarded to applications
+        @statistic[fwdToApps](title="Forwarded to Apps"; source=forwardedToApps; record=count; unit=packets);
+        //Statistic of the amount of bytes that were forwarded to applications
+        @statistic[fwdToAppsBytes](title="Forwarded Bytes"; source=forwardedToApps; unit=B; record="sum(packetBytes)","vector(packetBytes)","histogram(packetBytes)?","floatingIntervalSumVector(packetBytes)?"; interpolationmode=none); //possible parameter e.g.: **.floatingintervalvectorrecorder-measure-interval = 20ms for floatingIntervalRecorders
+        //End-to-end latency
+        @statistic[fwdToAppsLatency](title="End-to-end latency"; source="messageAge(forwardedToApps)"; unit=s; record=stats,histogram?,vector; interpolationmode=none);
         
-        // Indicates if messages should be forwarded to applications.
-        applicationFwdEnabled = default(true);
-        // Indicates if messages should be forwarded to endpoints.
-        endpointFwdEnabled = default(false);
+    gates:
+        // input gate for messages from the endpoint
+        input endpointIn @directIn;
 }

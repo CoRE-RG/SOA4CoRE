@@ -23,7 +23,6 @@
 #include <soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h>
 #include <string>
 
-#include "soqosmw/connector/base/ConnectorBase.h"
 #include "soqosmw/utility/processing/ProcessingTimeSimulation.h"
 //AUTO-GENERATED MESSAGES
 
@@ -57,16 +56,8 @@ public:
         _isConnected = isConnected;
     }
 
-    QoSGroups getQos() const {
+    QoSGroup getQos() const {
         return _qos;
-    }
-
-    const ConnectorBase* getConnector() const {
-        return _connector;
-    }
-
-    void setConnector(ConnectorBase* connector) {
-        _connector = connector;
     }
 
     const std::string& getEndpointPath() const {
@@ -153,14 +144,9 @@ protected:
     std::string _endpointPath;
 
     /**
-     * The connector to applications.
-     */
-    ConnectorBase* _connector;
-
-    /**
      * Holds the information about the QoS group realized in this endpoint.
      */
-    QoSGroups _qos;
+    QoSGroup _qos;
 
     /**
      * Gate name (@directIn) to forward messages to the connector

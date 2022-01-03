@@ -102,9 +102,9 @@ bool QoSBroker::startNegotiation() {
         QoSNegotiationRequest* request = new QoSNegotiationRequest("QoSNegotiationRequest");
         // fill envelope
         fillEnvelope(request);
-        QoSService qosService =
-                _request->getQosService();
-        request->setQosClass(*std::next(qosService.getQosGroups().begin(), 1));
+        QoSGroup qosGroup =
+                _request->getQosGroup();
+        request->setQosClass(qosGroup);
         // set request size
         request->setByteLength(getNegotiationMessageSize(request));
         // send QoS Request
@@ -195,9 +195,9 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
 
                 ConnectionSpecificInformation* connectionlessCSI = nullptr;
                 switch (response->getQosClass()) {
-                case QoSGroups::STD_UDP:
+                case QoSGroup::STD_UDP:
                     connectionlessCSI = new CSI_UDP();
-                case QoSGroups::SOMEIP_UDP: {
+                case QoSGroup::SOMEIP_UDP: {
                     connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP_UDP();
                     // create or find the subscriber
                     SubscriberEndpointBase* sub = _lsm->createOrFindSubscriberFor(_remote.getServiceId(),connectionlessCSI);
@@ -257,7 +257,7 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
             if (isEstablishAcceptable(establish)) {
 
                 // create or find the publisher
-                PublisherEndpointBase* pub = _lsm->createOrFindPublisherFor(_local.getServiceId(), QoSGroups(establish->getQosClass()));
+                PublisherEndpointBase* pub = _lsm->createOrFindPublisherFor(_local.getServiceId(), QoSGroup(establish->getQosClass()));
 
                 if(pub){
                     // encapsulate the CSI into the packet.
@@ -467,8 +467,8 @@ size_t QoSBroker::getNegotiationMessageSize(QoSNegotiationProtocolMsg* msg) {
     return result;
 }
 
-bool QoSBroker::isQoSGroup(QoSGroups qosGroup) {
-    return *std::next(_request->getQosService().getQosGroups().begin(), 1) == qosGroup;
+bool QoSBroker::isQoSGroup(QoSGroup qosGroup) {
+    return _request->getQosGroup() == qosGroup;
 }
 
 } /* namespace SOQoSMW */

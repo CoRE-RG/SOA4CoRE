@@ -16,6 +16,7 @@
 // 
 
 #include "PublisherEndpointBase.h"
+#include "soqosmw/connector/pubsub/writer/PublisherConnector.h"
 
 
 namespace SOQoSMW {
@@ -30,6 +31,14 @@ void PublisherEndpointBase::initialize() {
 void PublisherEndpointBase::handleTransportIn(cMessage* msg) {
     //ignore messages from transport layer... shouldnt actually be called..
     throw cRuntimeError("Received a message from transport, this should not happen...");
+}
+
+const PublisherConnector* PublisherEndpointBase::getPublisherConnector() const {
+    return _publisherConnector;
+}
+
+void PublisherEndpointBase::setPublisherConnector(PublisherConnector* publisherConnector) {
+    _publisherConnector = publisherConnector;
 }
 
 void PublisherEndpointBase::handleConnectorIn(cMessage* msg) {

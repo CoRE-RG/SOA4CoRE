@@ -150,7 +150,7 @@ void PublisherAppBase::createPublisherWithQoS() {
     if (!(localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager))){
         throw cRuntimeError("No LocalServiceManager found.");
     }
-    localServiceManager->registerPublisherService(_qosService, this);
+    localServiceManager->registerPublisherService(_publisherApplicationInformation, this);
     _connector = localServiceManager->getPublisherConnectorForServiceId(_publisherServiceId);
 }
 
@@ -197,18 +197,18 @@ void PublisherAppBase::handleMessage(cMessage *msg) {
 }
 
 void PublisherAppBase::setQoS() {
-    std::set<QoSGroups> qosGroups;
+    std::set<QoSGroup> qosGroups;
     for (std::string qosGroup : _qosGroups) {
         if (qosGroup == "STD_TCP") {
-            qosGroups.insert(QoSGroups::STD_TCP);
+            qosGroups.insert(QoSGroup::STD_TCP);
         } else if (qosGroup == "STD_UDP") {
-            qosGroups.insert(QoSGroups::STD_UDP);
+            qosGroups.insert(QoSGroup::STD_UDP);
         } else if (qosGroup == "SOMEIP_TCP") {
-            qosGroups.insert(QoSGroups::SOMEIP_TCP);
+            qosGroups.insert(QoSGroup::SOMEIP_TCP);
         } else if (qosGroup == "SOMEIP_UDP") {
-            qosGroups.insert(QoSGroups::SOMEIP_UDP);
+            qosGroups.insert(QoSGroup::SOMEIP_UDP);
         } else if (qosGroup == "RT") {
-            qosGroups.insert(QoSGroups::RT);
+            qosGroups.insert(QoSGroup::RT);
         } else if (qosGroup == "WEB") {
             throw cRuntimeError("WEB QoS is not implemented yet");
         } else {
@@ -216,18 +216,18 @@ void PublisherAppBase::setQoS() {
         }
     }
 
-    _qosService = QoSService(_publisherServiceId,
+    _publisherApplicationInformation = PublisherApplicationInformation(_publisherServiceId,
                              inet::L3AddressResolver().resolve(_localAddress.c_str()),
                              _instanceId, qosGroups, _tcpPort, _udpPort, _streamID, _srClass, _framesize, _intervalFrames);
 }
 
 void PublisherAppBase::printQoS() {
     cout << "printing offered qos services:" << endl;
-    cout << "Service ID: " << _qosService.getServiceId() <<endl;
-    cout << "StreamID: " << _qosService.getStreamId() << endl;
-    cout << "SRClass: " << CoRE4INET::SR_CLASStoString[_qosService.getSrClass()] << endl;
-    cout << "Framesize: " << _qosService.getFramesize() << endl;
-    cout << "IntervalFrames: " << _qosService.getIntervalFrames() << endl;
+    cout << "Service ID: " << _publisherApplicationInformation.getServiceId() <<endl;
+    cout << "StreamID: " << _publisherApplicationInformation.getStreamId() << endl;
+    cout << "SRClass: " << CoRE4INET::SR_CLASStoString[_publisherApplicationInformation.getSrClass()] << endl;
+    cout << "Framesize: " << _publisherApplicationInformation.getFramesize() << endl;
+    cout << "IntervalFrames: " << _publisherApplicationInformation.getIntervalFrames() << endl;
 
 }
 

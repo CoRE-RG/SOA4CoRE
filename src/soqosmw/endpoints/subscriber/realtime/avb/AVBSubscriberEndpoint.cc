@@ -18,6 +18,7 @@
 #include "AVBSubscriberEndpoint.h"
 
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
+#include "soqosmw/connector/pubsub/reader/SubscriberConnector.h"
 
 //CoRE4INET
 #include "core4inet/base/NotifierConsts.h"
@@ -43,7 +44,7 @@ ConnectionSpecificInformation* AVBSubscriberEndpoint::getConnectionSpecificInfor
 void AVBSubscriberEndpoint::initialize() {
     _updateMessage = nullptr;
     // get owning app
-    SOQoSMWApplicationBase* app = _connector->getApplications()[0];
+    SOQoSMWApplicationBase* app = _subscriberConnector->getApplications()[0];
     if (!app) {
         throw cRuntimeError(
                 "Owning application not found in init of publisher.");

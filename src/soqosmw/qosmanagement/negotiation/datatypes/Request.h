@@ -18,9 +18,8 @@
 #ifndef SOQOSMW_QOSMANAGEMENT_NEGOTIATION_DATATYPES_REQUEST_H_
 #define SOQOSMW_QOSMANAGEMENT_NEGOTIATION_DATATYPES_REQUEST_H_
 
+#include <soqosmw/messages/qosnegotiation/QoSNegotiationProtocol_m.h>
 #include "soqosmw/base/EndpointDescription.h"
-#include "soqosmw/service/qosservice/QoSService.h"
-
 #include <string>
 #include <unordered_map>
 
@@ -55,10 +54,10 @@ enum RequestStatus {
 class Request {
 public:
     Request(int requestId, EndpointDescription& subscriberEndpointDescription, EndpointDescription& publisherEndpointDescription,
-            QoSService qosService,
+            QoSGroup qosGroup,
             omnetpp::cGate *notificationGate) :
             _requestId(requestId), _subscriberEndpointDescription(subscriberEndpointDescription),
-            _publisherEndpointDescription(publisherEndpointDescription), _qosService(qosService), _notificationGate(notificationGate) {
+            _publisherEndpointDescription(publisherEndpointDescription), _qosGroup(qosGroup), _notificationGate(notificationGate) {
         this->setStatus(CREATED);
     }
 
@@ -78,8 +77,8 @@ public:
         return _publisherEndpointDescription;
     }
 
-    const QoSService getQosService() const {
-        return _qosService;
+    const QoSGroup getQosGroup() const {
+        return _qosGroup;
     }
 
     const EndpointDescription& getSubscriberEndpointDescription() const {
@@ -98,7 +97,7 @@ private:
     const int _requestId;
     const EndpointDescription _subscriberEndpointDescription;
     const EndpointDescription _publisherEndpointDescription;
-    const QoSService _qosService;
+    const QoSGroup _qosGroup;
     omnetpp::cGate *_notificationGate;
     RequestStatus _status;
 };

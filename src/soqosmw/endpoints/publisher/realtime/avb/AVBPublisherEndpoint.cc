@@ -18,6 +18,7 @@
 #include "AVBPublisherEndpoint.h"
 
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
+#include "soqosmw/connector/pubsub/writer/PublisherConnector.h"
 
 //STD
 #include <string>
@@ -40,7 +41,7 @@ Define_Module(AVBPublisherEndpoint);
 
 void AVBPublisherEndpoint::initialize() {
     // get owning app
-    SOQoSMWApplicationBase* app = _connector->getApplications()[0];
+    SOQoSMWApplicationBase* app = _publisherConnector->getApplication();
     if(!app){
         throw cRuntimeError("Owning application not found in init of publisher.");
     }

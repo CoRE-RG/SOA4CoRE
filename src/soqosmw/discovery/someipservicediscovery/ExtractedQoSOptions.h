@@ -32,14 +32,14 @@ class ExtractedQoSOptions {
  * Methods
  */
 public:
-    ExtractedQoSOptions(QoSGroups qosGroup, int udpPort, int tcpPort);
+    ExtractedQoSOptions(QoSGroup qosGroup, int udpPort, int tcpPort);
     virtual ~ExtractedQoSOptions();
 
     /**
      * Returns the QoS group
      * @return the QoS group
      */
-    QoSGroups getQosGroup() const;
+    QoSGroup getQosGroup() const;
 
     /**
      * Returns the TCP Port
@@ -65,7 +65,7 @@ private:
     /**
      * The QoS group
      */
-    QoSGroups _qosGroup;
+    QoSGroup _qosGroup;
 
     /**
      * The UDP port

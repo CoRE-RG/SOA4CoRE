@@ -22,6 +22,8 @@
 
 namespace SOQoSMW {
 
+class SubscriberConnector;
+
 /**
  * @brief The SubscriberEndpointBase implements the common interface for all endpoint modules (@see~EndpointBase).
  * Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
@@ -35,6 +37,14 @@ namespace SOQoSMW {
  */
 class SubscriberEndpointBase : public EndpointBase
 {
+    /**
+     * Methods
+     */
+public:
+    const SubscriberConnector* getSubscriberConnector() const;
+
+    void setSubscriberConnector(SubscriberConnector* subscriberConnector);
+
 protected:
     virtual void initialize() override;
 
@@ -53,13 +63,22 @@ protected:
      * @param msg   the message to handle.
      */
     virtual void handleConnectorIn(cMessage *msg) override;
+private:
 
+    /**
+     * Member variables
+     */
+public:
+protected:
+    /**
+     * The connector to applications.
+     */
+    SubscriberConnector* _subscriberConnector;
 private:
     /**
      * Signal to capture statistics for received messages
      */
     simsignal_t _msgRecv;
-
 };
 
 } /*end namespace SOQoSMW*/

@@ -33,7 +33,7 @@ enum SOQoSMWProtocols;
 namespace SOQoSMW;
 
 //Groups of QoS Requirements
-enum QoSGroups {
+enum QoSGroup {
     RT = 0; // RealTime Requirements --> AVB / TSN
     STD_TCP = 1; // Standard Requirements --> TCP IP
     STD_UDP = 2; // Standard Requirements --> UDP IP
@@ -63,7 +63,7 @@ packet QoSNegotiationProtocolMsg extends SOQoSMW::Envelope {
     //receiver; inherited from Envelope
     //sender; inherited from Envelope  
     int messageType @enum(QoSNegotiationMsgType); //indicates the type of message for better casting.
-    int qosClass @enum(QoSGroups); 
+    int qosClass @enum(QoSGroup); 
 }
 
 //request for qos negotiation

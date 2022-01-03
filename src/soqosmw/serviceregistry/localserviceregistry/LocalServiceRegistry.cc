@@ -34,12 +34,12 @@ void LocalServiceRegistry::handleMessage(cMessage *msg)
 {
 }
 
-void LocalServiceRegistry::addPublisherService(QoSService service) {
-    _serviceRegistry[service.getServiceId()] = service;
+void LocalServiceRegistry::addPublisherService(PublisherApplicationInformation publisherApplicationInformation) {
+    _serviceRegistry[publisherApplicationInformation.getServiceId()] = publisherApplicationInformation;
 }
 
-QoSService LocalServiceRegistry::getService(QoSServiceIdentifier serviceIdentifier) {
-    QoSService service;
+PublisherApplicationInformation LocalServiceRegistry::getService(QoSServiceIdentifier serviceIdentifier) {
+    PublisherApplicationInformation service;
     if (_serviceRegistry.count(serviceIdentifier.getServiceId())) {
         service = _serviceRegistry[serviceIdentifier.getServiceId()];
     }
@@ -50,7 +50,7 @@ bool LocalServiceRegistry::containsService(QoSServiceIdentifier serviceIdentifie
     return _serviceRegistry.count(serviceIdentifier.getServiceId());
 }
 
-std::unordered_map<LocalServiceRegistry::ServiceId,QoSService> LocalServiceRegistry::getRegistry() {
+std::unordered_map<LocalServiceRegistry::ServiceId,PublisherApplicationInformation> LocalServiceRegistry::getRegistry() {
     return _serviceRegistry;
 }
 

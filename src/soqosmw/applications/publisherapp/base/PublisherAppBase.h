@@ -18,9 +18,8 @@
 #ifndef __SOQOSMW_APPLICATIONS_PUBLISHERAPP_BASE_PUBLISHERAPP_H_
 #define __SOQOSMW_APPLICATIONS_PUBLISHERAPP_BASE_PUBLISHERAPP_H_
 
+#include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
 #include "soqosmw/applications/base/SOQoSMWApplicationBase.h"
-#include "soqosmw/service/qosservice/QoSService.h"
-//CoRE4INET
 #include "core4inet/base/avb/AVBDefs.h"
 //STD
 #include <cstdint>
@@ -88,9 +87,9 @@ protected:
     simsignal_t _msgSentSignal;
 
     /**
-     * The service representation of this app
+     * The application informations of this app
      */
-    QoSService _qosService;
+    PublisherApplicationInformation _publisherApplicationInformation;
 
     /**
      * Caches the start time parameter

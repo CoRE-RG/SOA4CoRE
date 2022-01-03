@@ -17,7 +17,7 @@
 #define SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDREQUEST_H_
 
 #include <omnetpp.h>
-#include "inet/networklayer/common/L3Address.h"
+#include "soqosmw/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 
 /**
  * @brief This class provides a container for a SOME/IP SD find request
@@ -34,26 +34,20 @@ class SomeIpSDFindRequest : public cObject{
  * Methods
  */
 public:
-    SomeIpSDFindRequest(int serviceId, int instanceId, inet::L3Address remoteAddress);
+    SomeIpSDFindRequest(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation);
     virtual ~SomeIpSDFindRequest();
-
-    /**
-     * Getter for the service id
-     * @return the service id
-     */
-    int getServiceId() const;
-
-    /**
-     * Getter for the instance id
-     * @return the instance id
-     */
-    int getInstanceId() const;
 
     /**
      * Getter for the remote ip address
      * @return the remote address
      */
     inet::L3Address getRemoteAddress() const;
+
+    /**
+     * Getter for the subscriber application information
+     * @return the subscriber application information
+     */
+    SubscriberApplicationInformation getSubscriberApplicationInformation() const;
 
 protected:
 private:
@@ -65,19 +59,14 @@ public:
 protected:
 private:
     /**
-     * The service id
-     */
-    int _serviceId;
-
-    /**
-     * The instance id
-     */
-    int _instanceId;
-
-    /**
      * The remote ip address
      */
     inet::L3Address _remoteAddress;
+
+    /**
+     * The subscriber application information
+     */
+    SubscriberApplicationInformation _subscriberApplicationInformation;
 };
 
 } /* end namespace SOQoSMW */

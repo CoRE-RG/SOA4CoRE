@@ -17,9 +17,9 @@
 #define __SOQOSMW_SOMEIPLOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
+#include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soqosmw/servicemanager/LocalServiceManager.h"
-#include "soqosmw/service/qosservice/QoSService.h"
 
 using namespace omnetpp;
 namespace SOQoSMW {
@@ -51,7 +51,7 @@ class SomeIpLocalServiceManager : public LocalServiceManager
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
      * @param qosService the QoS service
      */
-    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, QoSService qosService) override;
+    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
   protected:
     /**
      * Initializes the module and waits for find
@@ -103,28 +103,21 @@ class SomeIpLocalServiceManager : public LocalServiceManager
      * @param qosPolicies
      * @return the negotiation request
      */
-    Request* createNegotiationRequest(QoSService publisherService);
+    Request* createNegotiationRequest(PublisherApplicationInformation publisherService, QoSGroup qosGroup);
 
     /**
      * Creates a subscriber endpoint for a service
-     * @param service the service
+     * @param publisherApplicationInformation the publisher application information
+     * @param qosGroup the QoS group
      */
-    void createSubscriberEndpoint(QoSService service);
+    void createSubscriberEndpoint(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup);
 
     /**
      * Returns the corresponding L4 protocol of the service
      * @param service
      * @return the corresponding L4 protocol of the service
      */
-    IPProtocolId getIPProtocolId(QoSService service);
-
-    /**
-     * Returns a copy of the given QoSService but only including the given qosGroup in its QoSGroups vector.
-     * This way the QoSService includes only the QoSGroup which is wanted to be subscribed to
-     * @param qosGroup
-     * @return the QoSService copy
-     */
-    QoSService getQoSServiceCopyWithGivenQoSGroupOnly(QoSService qosService, QoSGroups qosGroup);
+    IPProtocolId getIPProtocolId(QoSGroup qosGroup);
 
     /**
      * Member variables

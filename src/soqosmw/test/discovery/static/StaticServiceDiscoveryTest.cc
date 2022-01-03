@@ -37,7 +37,7 @@ void StaticServiceDiscoveryTest::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg->isName("sdTest")) {
         std::cout << "Printing Registry from Test Module:" << endl;
         for (auto& service : dynamic_cast<LocalServiceRegistry*>(_sr)->getRegistry()) {
-            std::cout << service.first << ": " << service.second->getAddress() << std::endl;
+            std::cout << service.first << ": " << service.second.getAddress() << std::endl;
         }
     }
 }

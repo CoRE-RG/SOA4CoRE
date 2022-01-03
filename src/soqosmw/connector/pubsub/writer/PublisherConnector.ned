@@ -30,15 +30,20 @@ simple PublisherConnector extends ConnectorBase
 {
     parameters:
         @class(SOQoSMW::PublisherConnector);
-        // maximum number of appilcations allowed to connect to this connector.
-        // -1 = infinite
-        maxApplications = default(1);
         // maximum number of endpoints allowed to connect to this connector.
         // -1 = infinite
-        maxEndpoints = default(-1);
+        int maxEndpoints = default(-1);
         
-        // Indicates if messages should be forwarded to applications.
-        applicationFwdEnabled = default(false);
-        // Indicates if messages should be forwarded to endpoints.
-        endpointFwdEnabled = default(true);
+        // Signal emitted when a message is forwarded to Endpoints
+        @signal[forwardedToEPs](type=omnetpp::cPacket);
+        //Statistic of the amount of messages that were forwarded to endpoints
+        @statistic[fwdToEPs](title="Forwarded to EPs"; source=forwardedToEPs; record=count; unit=packets);
+        //Statistic of the amount of bytes that were forwarded to endpoints
+        @statistic[fwdToEPsBytes](title="Fowarded Bytes"; source=forwardedToEPs; unit=B; record="sum(packetBytes)","vector(packetBytes)","histogram(packetBytes)?","floatingIntervalSumVector(packetBytes)?"; interpolationmode=none); //possible parameter e.g.: **.floatingintervalvectorrecorder-measure-interval = 20ms for floatingIntervalRecorders
+        //End-to-end latency
+        @statistic[fwdToEPsLatency](title="End-to-end latency"; source="messageAge(forwardedToEPs)"; unit=s; record=stats,histogram?,vector; interpolationmode=none);
+        
+    gates:
+        // input gate for messages from the application
+        input applicationIn @directIn;
 }

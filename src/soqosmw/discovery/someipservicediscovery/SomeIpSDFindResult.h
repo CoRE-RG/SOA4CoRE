@@ -16,9 +16,7 @@
 #ifndef SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
 #define SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
 
-#include "soqosmw/service/qosservice/QoSService.h"
-#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
-#include "inet/networklayer/common/IPProtocolId_m.h"
+#include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
 
 using namespace inet;
 namespace SOQoSMW {
@@ -30,25 +28,27 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpSDFindResult : public SomeIpSDFindRequest {
+class SomeIpSDFindResult {
 /**
  * Methods
  */
 public:
-    SomeIpSDFindResult(int serviceId, int instanceId, L3Address remoteAddress, QoSService service, IPProtocolId ipProtocolId);
+    SomeIpSDFindResult(L3Address remoteAddress, PublisherApplicationInformation publisherApplicationInformation);
     virtual ~SomeIpSDFindResult();
 
     /**
-     * Getter for the service
-     * @return the service
+     * Getter for the remote ip address
+     * @return the remote address
      */
-    QoSService getService() const;
+    inet::L3Address getRemoteAddress() const;
 
     /**
-     * Getter for the used L4 Protocol
-     * @return the IP Protocol ID of the used L4 protocol
+     * Getter for the PublisherApplicationInformation
+     * @return the PublisherApplicationInformation
      */
-    IPProtocolId getIPProtocolId() const;
+    PublisherApplicationInformation getPublisherApplicationInformation() const;
+
+
 
 protected:
 private:
@@ -59,14 +59,14 @@ public:
 protected:
 private:
     /**
-     * The service
+     * The remote ip address
      */
-    QoSService _service;
+    inet::L3Address _remoteAddress;
 
     /**
-     * The used L4 protocol
+     * The service
      */
-    IPProtocolId _ipProtocolId;
+    PublisherApplicationInformation _publisherApplicationInformation;
 };
 } /* end namespace SOQoSMW */
 #endif /* SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_ */

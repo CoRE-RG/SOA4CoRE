@@ -17,32 +17,20 @@
 
 namespace SOQoSMW {
 
-SomeIpSDSubscriptionInformation::SomeIpSDSubscriptionInformation(uint16_t serviceId, uint16_t instanceId, inet::L3Address localAddress, uint16_t localPort, inet::L3Address remoteAddress) :
-_serviceId(serviceId), _instanceId(instanceId), _localAddress(localAddress), _localPort(localPort), _remoteAddress(remoteAddress){
+SomeIpSDSubscriptionInformation::SomeIpSDSubscriptionInformation(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation) :
+        _remoteAddress(remoteAddress), _subscriberApplicationInformation(subscriberApplicationInformation){
 
 }
 
 SomeIpSDSubscriptionInformation::~SomeIpSDSubscriptionInformation() {
 }
 
-uint16_t SomeIpSDSubscriptionInformation::getInstanceId() const {
-    return _instanceId;
-}
-
-const inet::L3Address& SomeIpSDSubscriptionInformation::getLocalAddress() const {
-    return _localAddress;
-}
-
-uint16_t SomeIpSDSubscriptionInformation::getLocalPort() const {
-    return _localPort;
-}
-
 const inet::L3Address& SomeIpSDSubscriptionInformation::getRemoteAddress() const {
     return _remoteAddress;
 }
 
-uint16_t SomeIpSDSubscriptionInformation::getServiceId() const {
-    return _serviceId;
+const SubscriberApplicationInformation& SomeIpSDSubscriptionInformation::getSubscriberApplicationInformation() const {
+    return _subscriberApplicationInformation;
 }
 
 } /* end namespace SOQoSMW */

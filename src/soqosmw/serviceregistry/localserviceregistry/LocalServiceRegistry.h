@@ -40,19 +40,19 @@ class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
     /**
      * Adds a published service
      */
-    virtual void addPublisherService(QoSService service) override;
+    virtual void addPublisherService(PublisherApplicationInformation publisherApplicationInformation) override;
 
     /**
      * Returns a service for given service identifier
      * @return QoSService
      */
-    virtual QoSService getService(QoSServiceIdentifier serviceIdentifier) override;
+    virtual PublisherApplicationInformation getService(QoSServiceIdentifier serviceIdentifier) override;
 
     /**
      * Returns the service registry as a map
      * @return registry map
      */
-    std::unordered_map<ServiceId,QoSService> getRegistry();
+    std::unordered_map<ServiceId,PublisherApplicationInformation> getRegistry();
 
     /**
      * Returns true if the service registry contains a service for the given service identifier
@@ -65,7 +65,10 @@ class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
   private:
-    std::unordered_map<ServiceId,QoSService> _serviceRegistry;
+    /**
+     * Caches a map of service IDs and the corresponding application information of the application which serves the service
+     */
+    std::unordered_map<ServiceId,PublisherApplicationInformation> _serviceRegistry;
 };
 
 } /* namespace SOQoSMW */

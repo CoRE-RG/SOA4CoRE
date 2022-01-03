@@ -17,7 +17,7 @@
 #define SOQOSMW_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDSUBSCRIPTIONINFORMATION_H_
 
 #include <stdint.h>
-#include <inet/networklayer/common/L3Address.h>
+#include "soqosmw/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 
 namespace SOQoSMW {
 
@@ -33,18 +33,12 @@ class SomeIpSDSubscriptionInformation : public cObject{
  * Methods
  */
 public:
-    SomeIpSDSubscriptionInformation(uint16_t serviceId, uint16_t instanceId, inet::L3Address localAddress, uint16_t localPort, inet::L3Address remoteAddress);
+    SomeIpSDSubscriptionInformation(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation);
     virtual ~SomeIpSDSubscriptionInformation();
-
-    uint16_t getInstanceId() const;
-
-    const inet::L3Address& getLocalAddress() const;
-
-    uint16_t getLocalPort() const;
 
     const inet::L3Address& getRemoteAddress() const;
 
-    uint16_t getServiceId() const;
+    const SubscriberApplicationInformation& getSubscriberApplicationInformation() const;
 
 protected:
 private:
@@ -54,11 +48,15 @@ private:
 public:
 protected:
 private:
-    uint16_t _serviceId;
-    uint16_t _instanceId;
-    inet::L3Address _localAddress;
-    uint16_t _localPort;
+    /**
+     * The remote address of the publisher
+     */
     inet::L3Address _remoteAddress;
+
+    /**
+     * The subscriber application information
+     */
+    SubscriberApplicationInformation _subscriberApplicationInformation;
 };
 
 } /* end namespace SOQoSMW */

@@ -17,13 +17,13 @@
 
 namespace SOQoSMW {
 
-ExtractedQoSOptions::ExtractedQoSOptions(QoSGroups qosGroup, int udpPort, int tcpPort) : _qosGroup(qosGroup), _udpPort(udpPort), _tcpPort(tcpPort) {
+ExtractedQoSOptions::ExtractedQoSOptions(QoSGroup qosGroup, int udpPort, int tcpPort) : _qosGroup(qosGroup), _udpPort(udpPort), _tcpPort(tcpPort) {
 }
 
 ExtractedQoSOptions::~ExtractedQoSOptions() {
 }
 
-QoSGroups ExtractedQoSOptions::getQosGroup() const {
+QoSGroup ExtractedQoSOptions::getQosGroup() const {
     return _qosGroup;
 }
 

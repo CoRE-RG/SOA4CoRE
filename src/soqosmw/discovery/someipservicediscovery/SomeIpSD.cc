@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
 #include <soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h>
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
-#include "soqosmw/service/qosservice/QoSService.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/networklayer/contract/ipv4/IPv4Address.h>
 #include <list>
@@ -213,7 +213,7 @@ void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIp
 
 void SomeIpSD::processFindResult(cObject* obj) {
     SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
-    QoSService service = someIpSDFindResult->getService();
+    ApplicationInformation service = someIpSDFindResult->getService();
     int port = -1;
     switch(someIpSDFindResult->getIPProtocolId()) {
         case IPProtocolId::IP_PROT_UDP:
@@ -238,9 +238,9 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
         if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
             ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-            std::set<QoSGroups> qosGroups;
+            std::set<QoSGroup> qosGroups;
             qosGroups.insert(extractedQoSOptions.getQosGroup());
-            QoSService* service = new QoSService(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+            PublisherApplicationInformation* service = new PublisherApplicationInformation(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
                                                  offerEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
                                                  extractedQoSOptions.getUdpPort());
             emit(_serviceOfferSignal,service);
@@ -254,9 +254,9 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
     for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
         if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
             ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-            std::set<QoSGroups> qosGroups;
+            std::set<QoSGroup> qosGroups;
             qosGroups.insert(extractedQoSOptions.getQosGroup());
-            QoSService* service = new QoSService(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+            PublisherApplicationInformation* service = new PublisherApplicationInformation(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
                                                  subscribeEventGroupEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
                                                  extractedQoSOptions.getUdpPort());
             emit(_subscribeEventGroupSignal, service);
@@ -270,9 +270,9 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
     for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
         if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
             ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-            std::set<QoSGroups> qosGroups;
+            std::set<QoSGroup> qosGroups;
             qosGroups.insert(extractedQoSOptions.getQosGroup());
-            QoSService* service = new QoSService(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+            PublisherApplicationInformation* service = new PublisherApplicationInformation(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
                                                  subscribeEventGroupAckEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
                                                  extractedQoSOptions.getUdpPort());
             emit(_subscribeEventGroupAckSignal,service);
@@ -318,16 +318,16 @@ void SomeIpSD::receiveSignal(cComponent *source, simsignal_t signalID, cObject *
 }
 
 ExtractedQoSOptions SomeIpSD::getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption) {
-    QoSGroups qosGroup = QoSGroups::RT;
+    QoSGroup qosGroup = QoSGroup::RT;
     int tcpPort = -1;
     int udpPort = -1;
     switch(ipv4EndpointOption->getL4Protocol()) {
         case IPProtocolId::IP_PROT_UDP:
-            qosGroup = QoSGroups::SOMEIP_UDP;
+            qosGroup = QoSGroup::SOMEIP_UDP;
             udpPort = ipv4EndpointOption->getPort();
             break;
         case IPProtocolId::IP_PROT_TCP:
-            qosGroup = QoSGroups::SOMEIP_TCP;
+            qosGroup = QoSGroup::SOMEIP_TCP;
             tcpPort = ipv4EndpointOption->getPort();
             break;
         default:
