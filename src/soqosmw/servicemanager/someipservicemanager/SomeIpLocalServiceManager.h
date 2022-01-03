@@ -69,7 +69,7 @@ class SomeIpLocalServiceManager : public LocalServiceManager
   private:
     /**
      * Looks for a requested service in the local registry
-     * @param obj the SOME/IP SD header container containing the SOME/IP SD header and its corresponding entry
+     * @param obj the SomeIpSDFindRequest
      */
     void lookForService(cObject* obj);
 

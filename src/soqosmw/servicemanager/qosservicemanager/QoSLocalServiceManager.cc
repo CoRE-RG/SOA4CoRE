@@ -16,6 +16,8 @@
 #include "QoSLocalServiceManager.h"
 #include <inet/networklayer/common/L3Address.h>
 #include <soqosmw/discovery/someipservicediscovery/SomeIpSD.h>
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h"
 #include "soqosmw/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 #include <algorithm>
 
@@ -35,15 +37,16 @@ void QoSLocalServiceManager::initialize(int stage)
         if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(par("sdmoduleName"))))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
-        if (dynamic_cast<SomeIpSD*>(_sd)) {
-            throw cRuntimeError("QoSLocalServiceManager does not work with SOME/IP ServiceDiscovery.");
-        }
         if (cSimpleModule* sd = dynamic_cast<cSimpleModule*>(_sd)) {
             sd->subscribe("serviceOfferSignal",this);
         } else {
             throw cRuntimeError("Service discovery serviceOfferSignal could not be subscribed.");
         }
 
+        if (SomeIpSD* someIpSD = dynamic_cast<SomeIpSD*>(_sd)) {
+            someIpSD->subscribe("serviceFindSignal", this);
+        }
+        _findResultSignal = omnetpp::cComponent::registerSignal("findResultSignal");
     }
 }
 
@@ -54,6 +57,8 @@ void QoSLocalServiceManager::handleMessage(cMessage *msg) {
 void QoSLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
     if (!strcmp(getSignalName(signalID),"serviceOfferSignal")) {
         subscribeOfferedService(obj);
+    } else if (!strcmp(getSignalName(signalID),"serviceFindSignal")) {
+        lookForService(obj);
     } else {
         throw cRuntimeError("Unknown signal.");
     }
@@ -81,6 +86,22 @@ void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
         delete obj;
     } else {
         throw cRuntimeError("Given object is not type of PublisherApplicationInformation.");
+    }
+}
+
+// Publisher-side
+void QoSLocalServiceManager::lookForService(cObject* obj) {
+    SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
+    QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getServiceId(),
+            someIpSDFindRequest->getInstanceId());
+    if (_lsr->containsService(serviceIdentifier)){
+        PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
+        SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
+                someIpSDFindRequest->getRemoteAddress(),
+                foundPublisherApplicationInformation
+        );
+        delete(someIpSDFindRequest);
+        emit(_findResultSignal,someIpSDFindResult);
     }
 }
 

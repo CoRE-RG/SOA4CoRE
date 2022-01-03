@@ -26,4 +26,7 @@ simple QoSLocalServiceManager extends LocalServiceManager
         parameters:
         @class(SOQoSMW::QoSLocalServiceManager);
         @display("i=block/join");
+        
+        // The signal which is emitted when a requested service is found
+        @signal[findResultSignal];
 }

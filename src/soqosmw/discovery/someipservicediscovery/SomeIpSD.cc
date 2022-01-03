@@ -16,6 +16,7 @@
 #include <soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h>
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
+#include "soqosmw/servicemanager/qosservicemanager/QoSLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDAcknowledgeSubscription.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
@@ -64,8 +65,10 @@ void SomeIpSD::initialize(int stage) {
             someIplocalServiceManager->subscribe("findResultSignal",this);
             someIplocalServiceManager->subscribe("subscribeSignal",this);
             someIplocalServiceManager->subscribe("subscribeAckSignal",this);
+        } else if (QoSLocalServiceManager* qosLocalServiceManager = dynamic_cast<QoSLocalServiceManager*>(getParentModule()->getSubmodule("lsm"))){
+            qosLocalServiceManager->subscribe("findResultSignal",this);
         } else {
-            throw cRuntimeError("SomeIpLocalServiceManager is needed for SOME/IP Discovery.");
+            throw cRuntimeError("SomeIpLocalServiceManager or QoSLocalServiceManager is needed for SOME/IP Discovery.");
         }
     }
 }
@@ -132,6 +135,14 @@ void SomeIpSD::offer(PublisherApplicationInformation publisherApplicationInforma
                 publisherPort = publisherApplicationInformation.getTCPPort();
                 break;
             case QoSGroup::SOMEIP_UDP:
+                ipProtocolId = IPProtocolId::IP_PROT_UDP;
+                publisherPort = publisherApplicationInformation.getUDPPort();
+                break;
+            case QoSGroup::STD_TCP:
+                ipProtocolId = IPProtocolId::IP_PROT_TCP;
+                publisherPort = publisherApplicationInformation.getTCPPort();
+                break;
+            case QoSGroup::STD_UDP:
                 ipProtocolId = IPProtocolId::IP_PROT_UDP;
                 publisherPort = publisherApplicationInformation.getUDPPort();
                 break;
@@ -380,16 +391,17 @@ void SomeIpSD::receiveSignal(cComponent *source, simsignal_t signalID, cObject *
 }
 
 ExtractedQoSOptions SomeIpSD::getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption) {
+    bool hasQoSNP = getParentModule()->par("hasQoSNP");
     QoSGroup qosGroup = QoSGroup::RT;
     int tcpPort = -1;
     int udpPort = -1;
     switch(ipv4EndpointOption->getL4Protocol()) {
         case IPProtocolId::IP_PROT_UDP:
-            qosGroup = QoSGroup::SOMEIP_UDP;
+            qosGroup = !hasQoSNP ? QoSGroup::SOMEIP_UDP : QoSGroup::STD_UDP;
             udpPort = ipv4EndpointOption->getPort();
             break;
         case IPProtocolId::IP_PROT_TCP:
-            qosGroup = QoSGroup::SOMEIP_TCP;
+            qosGroup = !hasQoSNP ? QoSGroup::SOMEIP_TCP : QoSGroup::STD_TCP;
             tcpPort = ipv4EndpointOption->getPort();
             break;
         default:

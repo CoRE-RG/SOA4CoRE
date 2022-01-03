@@ -82,10 +82,20 @@ class QoSLocalServiceManager : public LocalServiceManager
     void subscribeOfferedService(cObject* obj);
 
     /**
+     * Looks for a requested service in the local registry
+     * @param obj the SomeIpSDFindRequest
+     */
+    void lookForService(cObject* obj);
+
+    /**
      * Member variables
      */
   public:
   protected:
+    /**
+     * The signal which is emitted when a requested service is found
+     */
+    omnetpp::simsignal_t _findResultSignal;
   private:
     /**
      * The QoS Negotiation Protocol module.
