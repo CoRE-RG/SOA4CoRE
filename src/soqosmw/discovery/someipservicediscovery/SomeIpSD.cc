@@ -13,13 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
 #include <soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h>
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDAcknowledgeSubscription.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/networklayer/contract/ipv4/IPv4Address.h>
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
 #include <list>
 
 namespace SOQoSMW {
@@ -102,7 +104,7 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
     socket.sendTo(someIpSDHeader, inet::IPv4Address(BROADCASTADDRESS), destPort);
 }
 
-void SomeIpSD::offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address publisherIP, uint16_t publisherPort, IPProtocolId ipProtocolId) {
+void SomeIpSD::offer(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress) {
     Enter_Method("SomeIpSD::offer");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - OFFER");
 
@@ -110,25 +112,42 @@ void SomeIpSD::offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address re
     offerEntry->setType(SOQoSMW::SomeIpSDEntryType::OFFER);
     offerEntry->setIndex1stOptions(0);
     offerEntry->setIndex2ndOptions(0);
-    offerEntry->setNum1stOptions(0);
-    offerEntry->setNum2ndOptions(1);
-    offerEntry->setServiceID(serviceID);
-    offerEntry->setInstanceID(instanceID);
+    offerEntry->setNum1stOptions(publisherApplicationInformation.getQosGroups().size());
+    offerEntry->setNum2ndOptions(0);
+    offerEntry->setServiceID(publisherApplicationInformation.getServiceId());
+    offerEntry->setInstanceID(publisherApplicationInformation.getInstanceId());
     offerEntry->setMajorVersion(MAJOR_VERSION);
     offerEntry->setTTL(3);
     offerEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(offerEntry);
 
-    IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-    ipv4EndpointOption->setIpv4Address(publisherIP.toIPv4());
-    ipv4EndpointOption->setL4Protocol(ipProtocolId);
-    ipv4EndpointOption->setPort(publisherPort);
-    someIpSDHeader->encapOption(ipv4EndpointOption);
+    for (QoSGroup qosGroup : publisherApplicationInformation.getQosGroups()) {
+        IPProtocolId ipProtocolId;
+        uint16_t publisherPort;
+        switch (qosGroup) {
+            case QoSGroup::SOMEIP_TCP:
+                ipProtocolId = IPProtocolId::IP_PROT_TCP;
+                publisherPort = publisherApplicationInformation.getTCPPort();
+                break;
+            case QoSGroup::SOMEIP_UDP:
+                ipProtocolId = IPProtocolId::IP_PROT_UDP;
+                publisherPort = publisherApplicationInformation.getUDPPort();
+                break;
+            default:
+                throw cRuntimeError("Unknown QoSGroup");
+        }
+
+        IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
+        ipv4EndpointOption->setIpv4Address(publisherApplicationInformation.getAddress().toIPv4());
+        ipv4EndpointOption->setL4Protocol(ipProtocolId);
+        ipv4EndpointOption->setPort(publisherPort);
+        someIpSDHeader->encapOption(ipv4EndpointOption);
+    }
 
     socket.sendTo(someIpSDHeader, remoteAddress, destPort);
 }
 
-void SomeIpSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address subscriberIP, uint16_t subscriberPort) {
+void SomeIpSD::subscribeEventgroup(SubscriberApplicationInformation subscriberApplicationInformation, inet::L3Address remoteAddress) {
     Enter_Method("SomeIpSD::subscribeEventgroup");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - SUBSCRIBEEVENTGROUP");
 
@@ -136,24 +155,39 @@ void SomeIpSD::subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet
     subscribeEventgroupEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUP);
     subscribeEventgroupEntry->setIndex1stOptions(0);
     subscribeEventgroupEntry->setIndex2ndOptions(0);
-    subscribeEventgroupEntry->setNum1stOptions(0);
-    subscribeEventgroupEntry->setNum2ndOptions(1);
-    subscribeEventgroupEntry->setServiceID(serviceID);
-    subscribeEventgroupEntry->setInstanceID(instanceID);
+    subscribeEventgroupEntry->setNum1stOptions(1);
+    subscribeEventgroupEntry->setNum2ndOptions(0);
+    subscribeEventgroupEntry->setServiceID(subscriberApplicationInformation.getServiceId());
+    subscribeEventgroupEntry->setInstanceID(subscriberApplicationInformation.getInstanceId());
     subscribeEventgroupEntry->setMajorVersion(MAJOR_VERSION);
     subscribeEventgroupEntry->setTTL(3);
     someIpSDHeader->encapEntry(subscribeEventgroupEntry);
 
+    IPProtocolId ipProtocolId;
+    uint16_t subscriberPort;
+    switch (subscriberApplicationInformation.getQoSGroup()) {
+        case QoSGroup::SOMEIP_TCP:
+            ipProtocolId = IPProtocolId::IP_PROT_TCP;
+            subscriberPort = subscriberApplicationInformation.getTCPPort();
+            break;
+        case QoSGroup::SOMEIP_UDP:
+            ipProtocolId = IPProtocolId::IP_PROT_UDP;
+            subscriberPort = subscriberApplicationInformation.getUDPPort();
+            break;
+        default:
+            throw cRuntimeError("Unknown QoSGroup");
+    }
+
     IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Subscriber");
-    ipv4EndpointOption->setIpv4Address(subscriberIP.toIPv4());
-    ipv4EndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
+    ipv4EndpointOption->setIpv4Address(subscriberApplicationInformation.getAddress().toIPv4());
+    ipv4EndpointOption->setL4Protocol(ipProtocolId);
     ipv4EndpointOption->setPort(subscriberPort);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
     socket.sendTo(someIpSDHeader, remoteAddress, destPort);
 }
 
-void SomeIpSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress) {
+void SomeIpSD::subscribeEventgroupAck(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress, QoSGroup qosGroup) {
     Enter_Method("SomeIpSD::subscribeEventgroupAck");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - SUBSCRIBEEVENTGROUPACK");
 
@@ -161,17 +195,32 @@ void SomeIpSD::subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, i
     subscribeEventgroupAckEntry->setType(SOQoSMW::SomeIpSDEntryType::SUBSCRIBEVENTGROUPACK);
     subscribeEventgroupAckEntry->setIndex1stOptions(0);
     subscribeEventgroupAckEntry->setIndex2ndOptions(0);
-    subscribeEventgroupAckEntry->setNum1stOptions(0);
-    subscribeEventgroupAckEntry->setNum2ndOptions(1);
-    subscribeEventgroupAckEntry->setServiceID(serviceID);
-    subscribeEventgroupAckEntry->setInstanceID(instanceID);
+    subscribeEventgroupAckEntry->setNum1stOptions(1);
+    subscribeEventgroupAckEntry->setNum2ndOptions(0);
+    subscribeEventgroupAckEntry->setServiceID(publisherApplicationInformation.getServiceId());
+    subscribeEventgroupAckEntry->setInstanceID(publisherApplicationInformation.getInstanceId());
     subscribeEventgroupAckEntry->setMajorVersion(MAJOR_VERSION);
     subscribeEventgroupAckEntry->setTTL(3);
     someIpSDHeader->encapEntry(subscribeEventgroupAckEntry);
 
+    IPProtocolId ipProtocolId;
+    uint16_t publisherPort;
+    switch (qosGroup) {
+        case QoSGroup::SOMEIP_TCP:
+            ipProtocolId = IPProtocolId::IP_PROT_TCP;
+            publisherPort = publisherApplicationInformation.getTCPPort();
+            break;
+        case QoSGroup::SOMEIP_UDP:
+            ipProtocolId = IPProtocolId::IP_PROT_UDP;
+            publisherPort = publisherApplicationInformation.getUDPPort();
+            break;
+        default:
+            throw cRuntimeError("Unknown QoSGroup");
+    }
+
     IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-    ipv4EndpointOption->setIpv4Address(publisherIP.toIPv4());
-    ipv4EndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
+    ipv4EndpointOption->setIpv4Address(publisherApplicationInformation.getAddress().toIPv4());
+    ipv4EndpointOption->setL4Protocol(ipProtocolId);
     ipv4EndpointOption->setPort(publisherPort);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
@@ -213,72 +262,86 @@ void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIp
 
 void SomeIpSD::processFindResult(cObject* obj) {
     SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
-    ApplicationInformation service = someIpSDFindResult->getService();
-    int port = -1;
-    switch(someIpSDFindResult->getIPProtocolId()) {
-        case IPProtocolId::IP_PROT_UDP:
-            port = service.getUDPPort();
-            break;
-        case IPProtocolId::IP_PROT_TCP:
-            port = service.getTCPPort();
-            break;
-        default:
-            throw cRuntimeError("Unknown Protocol");
-    }
-    if (port == -1) {
-        throw cRuntimeError("-1 is an invalid port.");
-    }
-    offer(someIpSDFindResult->getServiceId(), someIpSDFindResult->getInstanceId(), someIpSDFindResult->getRemoteAddress(),
-            service.getAddress(), port, someIpSDFindResult->getIPProtocolId());
-    delete(someIpSDFindResult);
+    PublisherApplicationInformation publisherApplicationInformation = someIpSDFindResult->getPublisherApplicationInformation();
+    offer(publisherApplicationInformation, someIpSDFindResult->getRemoteAddress());
+    delete(obj);
 }
 
 void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someIpSDHeader) {
-    int numberOfOptions = offerEntry->getNum1stOptions()+offerEntry->getNum2ndOptions();
-    for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
-        if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
-            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-            std::set<QoSGroup> qosGroups;
-            qosGroups.insert(extractedQoSOptions.getQosGroup());
-            PublisherApplicationInformation* service = new PublisherApplicationInformation(offerEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
-                                                 offerEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
-                                                 extractedQoSOptions.getUdpPort());
-            emit(_serviceOfferSignal,service);
-            delete ipv4EndpointOption;
+    std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
+    std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
+
+    std::set<QoSGroup> qosGroups;
+    L3Address ipAddress;
+    uint16_t tcpPort;
+    uint16_t udpPort;
+
+    std::advance(optionsListIterator, offerEntry->getIndex1stOptions());
+    for (int firstOptionsIdx = 0; firstOptionsIdx < offerEntry->getNum1stOptions(); firstOptionsIdx++) {
+        std::advance(optionsListIterator, firstOptionsIdx);
+        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
+        if(!ipv4EndpointOption) {
+            throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
         }
+        ipAddress = ipv4EndpointOption->getIpv4Address();
+        ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
+        tcpPort = extractedQoSOptions.getTcpPort() != -1 ? extractedQoSOptions.getTcpPort() : tcpPort;
+        udpPort = extractedQoSOptions.getUdpPort() != -1 ? extractedQoSOptions.getUdpPort() : udpPort;
+        qosGroups.insert(extractedQoSOptions.getQosGroup());
     }
+
+    PublisherApplicationInformation* publisherApplicationInformation = new PublisherApplicationInformation(offerEntry->getServiceID(), ipAddress,
+                                         offerEntry->getInstanceID(), qosGroups, tcpPort,
+                                         udpPort);
+    emit(_serviceOfferSignal,publisherApplicationInformation);
 }
 
 void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader) {
-    int numberOfOptions = subscribeEventGroupEntry->getNum1stOptions()+subscribeEventGroupEntry->getNum2ndOptions();
-    for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
-        if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
-            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-            std::set<QoSGroup> qosGroups;
-            qosGroups.insert(extractedQoSOptions.getQosGroup());
-            PublisherApplicationInformation* service = new PublisherApplicationInformation(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
-                                                 subscribeEventGroupEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
-                                                 extractedQoSOptions.getUdpPort());
-            emit(_subscribeEventGroupSignal, service);
-            delete ipv4EndpointOption;
+    std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
+    std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
+
+    QoSGroup qosGroup;
+    std::advance(optionsListIterator, subscribeEventGroupEntry->getIndex1stOptions());
+    for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupEntry->getNum1stOptions(); firstOptionsIdx++) {
+        std::advance(optionsListIterator, firstOptionsIdx);
+        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
+        if(!ipv4EndpointOption) {
+            throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
         }
+        ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
+        qosGroup = extractedQoSOptions.getQosGroup();
+        SubscriberApplicationInformation* subscriberApplicationInformation = new SubscriberApplicationInformation(subscribeEventGroupEntry->getServiceID(),
+                ipv4EndpointOption->getIpv4Address(), subscribeEventGroupEntry->getInstanceID(), qosGroup, extractedQoSOptions.getTcpPort(), extractedQoSOptions.getUdpPort());
+        emit(_subscribeEventGroupSignal, subscriberApplicationInformation);
     }
 }
 
 void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader) {
-    int numberOfOptions = subscribeEventGroupAckEntry->getNum1stOptions()+subscribeEventGroupAckEntry->getNum2ndOptions();
-    for (int optionIdx = 0; optionIdx < numberOfOptions; optionIdx++) {
-        if (IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(someIpSDHeader->decapOption())) {
-            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-            std::set<QoSGroup> qosGroups;
-            qosGroups.insert(extractedQoSOptions.getQosGroup());
-            PublisherApplicationInformation* service = new PublisherApplicationInformation(subscribeEventGroupAckEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
-                                                 subscribeEventGroupAckEntry->getInstanceID(), qosGroups, extractedQoSOptions.getTcpPort(),
-                                                 extractedQoSOptions.getUdpPort());
-            emit(_subscribeEventGroupAckSignal,service);
-            delete ipv4EndpointOption;
+    std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
+    std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
+
+    std::set<QoSGroup> qosGroups;
+    L3Address ipAddress;
+    uint16_t tcpPort;
+    uint16_t udpPort;
+
+    std::advance(optionsListIterator, subscribeEventGroupAckEntry->getIndex1stOptions());
+    for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupAckEntry->getNum1stOptions(); firstOptionsIdx++) {
+        std::advance(optionsListIterator, firstOptionsIdx);
+        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
+        if(!ipv4EndpointOption) {
+            throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
         }
+        ipAddress = ipv4EndpointOption->getIpv4Address();
+        ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
+        tcpPort = extractedQoSOptions.getTcpPort() != -1 ? extractedQoSOptions.getTcpPort() : tcpPort;
+        udpPort = extractedQoSOptions.getUdpPort() != -1 ? extractedQoSOptions.getUdpPort() : udpPort;
+        qosGroups.insert(extractedQoSOptions.getQosGroup());
     }
+
+    PublisherApplicationInformation* publisherApplicationInformation = new PublisherApplicationInformation(subscribeEventGroupAckEntry->getServiceID(), ipAddress,
+            subscribeEventGroupAckEntry->getInstanceID(), qosGroups, tcpPort, udpPort);
+    emit(_subscribeEventGroupAckSignal, publisherApplicationInformation);
 }
 
 void SomeIpSD::discover(QoSServiceIdentifier qosServiceIdentifier) {
@@ -286,23 +349,17 @@ void SomeIpSD::discover(QoSServiceIdentifier qosServiceIdentifier) {
 }
 
 void SomeIpSD::processSubscription(cObject* obj) {
-    SomeIpSDSubscriptionInformation& someIpSDSubscriptionInformation = *dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
-    subscribeService(someIpSDSubscriptionInformation.getServiceId(), someIpSDSubscriptionInformation.getInstanceId(), someIpSDSubscriptionInformation.getRemoteAddress(),
-            someIpSDSubscriptionInformation.getLocalAddress(), someIpSDSubscriptionInformation.getLocalPort());
+    SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = *dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
+    SubscriberApplicationInformation subscriberApplicationInformation = someIpSDSubscriptionInformation.getSubscriberApplicationInformation();
+    subscribeEventgroup(subscriberApplicationInformation, someIpSDSubscriptionInformation.getRemoteAddress());
+    delete obj;
 }
 
 void SomeIpSD::processAcknowledgment(cObject *obj) {
-    SomeIpSDSubscriptionInformation& someIpSDSubscriptionInformation = *dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
-    acknowledgeSubscription(someIpSDSubscriptionInformation.getServiceId(), someIpSDSubscriptionInformation.getInstanceId(), someIpSDSubscriptionInformation.getLocalAddress(),
-            someIpSDSubscriptionInformation.getLocalPort(), someIpSDSubscriptionInformation.getRemoteAddress());
-}
-
-void SomeIpSD::subscribeService(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, inet::L3Address subscriberIP, uint16_t subscriberPort) {
-    subscribeEventgroup(serviceID, instanceID, publisherIP, subscriberIP, subscriberPort);
-}
-
-void SomeIpSD::acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress) {
-    subscribeEventgroupAck(serviceID, instanceID, publisherIP, publisherPort, remoteAddress);
+    SomeIpSDAcknowledgeSubscription someIpSDAcknowledgeSubscription = *dynamic_cast<SomeIpSDAcknowledgeSubscription*>(obj);
+    subscribeEventgroupAck(someIpSDAcknowledgeSubscription.getPublisherApplicationInformation(), someIpSDAcknowledgeSubscription.getRemoteAddress(),
+            someIpSDAcknowledgeSubscription.getQosGroup());
+    delete obj;
 }
 
 void SomeIpSD::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {

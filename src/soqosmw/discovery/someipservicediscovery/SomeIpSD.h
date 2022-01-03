@@ -23,7 +23,8 @@
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
 #include "soqosmw/messages/someip/SomeIpSDEntry_m.h"
 #include "soqosmw/discovery/someipservicediscovery/ExtractedQoSOptions.h"
-#include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h"
+#include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
+#include <soqosmw/service/subscriberapplicationinformation/SubscriberApplicationInformation.h>
 
 namespace SOQoSMW {
 
@@ -46,26 +47,6 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      * @param qosServiceIdentifier
      */
     void discover(QoSServiceIdentifier qosServiceIdentifier) override;
-
-    /**
-     * Subscribes a service
-     * @param serviceID
-     * @param instanceID
-     * @param publisherIP
-     * @param subscriberIP
-     * @param subscriberPort
-     */
-    void subscribeService(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, inet::L3Address subscriberIP, uint16_t subscriberPort);
-
-    /**
-     * Acknowledges subscription
-     * @param serviceID
-     * @param instanceID
-     * @param publisherIP
-     * @param publisherPort
-     * @param remoteAddress
-     */
-    void acknowledgeSubscription(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress);
 
     /**
      * @brief Receives discovery response
@@ -106,18 +87,25 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
 
     /**
      * Offers a service
+     * @param publisherApplicationInformation the application information of the publisher service
+     * @param remoteAddress the remote address to which the offer is sent
      */
-    void offer(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address publisherIP, uint16_t publisherPort, IPProtocolId ipProtocolId);
+    void offer(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress);
 
     /**
      * Subscribes a service
+     * @param subscriberApplicationInformation the subscriber application information
+     * @param remoteAddress the remote address of the publisher
      */
-    void subscribeEventgroup(uint16_t serviceID, uint16_t instanceID, inet::L3Address remoteAddress, inet::L3Address subscriberIP, uint16_t subscriberPort);
+    void subscribeEventgroup(SubscriberApplicationInformation subscriberApplicationInformation, inet::L3Address remoteAddress);
 
     /**
      * Acknowledges a subscription
+     * @param subscriberApplicationInformation the application information of the subscriber
+     * @param remoteAddress the remote address of the subscriber
+     * @param qosGroup the QoS group
      */
-    void subscribeEventgroupAck(uint16_t serviceID, uint16_t instanceID, inet::L3Address publisherIP, uint16_t publisherPort, inet::L3Address remoteAddress);
+    void subscribeEventgroupAck(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress, QoSGroup qosGroup);
 
     /**
      * Processes a SOME/IP SD Header

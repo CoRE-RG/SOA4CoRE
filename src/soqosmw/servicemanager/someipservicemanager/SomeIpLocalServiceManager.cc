@@ -17,6 +17,7 @@
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
 #include "soqosmw/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
+#include "soqosmw/discovery/someipservicediscovery/SomeIpSDAcknowledgeSubscription.h"
 #include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soqosmw/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
 #include <algorithm>
@@ -70,6 +71,7 @@ void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
             }
         }
     }
+    delete publisherApplicationInformation;
 }
 
 void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
@@ -114,8 +116,8 @@ void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherS
 // Publisher-side
 void SomeIpLocalServiceManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
-    QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getSubscriberApplicationInformation().getServiceId(),
-            someIpSDFindRequest->getSubscriberApplicationInformation().getInstanceId());
+    QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getServiceId(),
+            someIpSDFindRequest->getInstanceId());
     if (_lsr->containsService(serviceIdentifier)){
         PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
         SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
@@ -156,14 +158,15 @@ void SomeIpLocalServiceManager::subscribeServiceIfThereIsAPendingRequest(cObject
 
 // Publisher-side
 void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
-    SubscriberApplicationInformation& subscriberApplicationInformation = *dynamic_cast<SubscriberApplicationInformation*>(obj);
+    SubscriberApplicationInformation subscriberApplicationInformation = *dynamic_cast<SubscriberApplicationInformation*>(obj);
     QoSServiceIdentifier qosServiceIdentifier = QoSServiceIdentifier(subscriberApplicationInformation.getServiceId(), subscriberApplicationInformation.getInstanceId());
     if (_lsr->containsService(qosServiceIdentifier)) {
         PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(qosServiceIdentifier);
         if (publisherApplicationInformation.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
-            SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
+            SomeIpSDAcknowledgeSubscription* someIpSDAcknowledgeSubscription = new SomeIpSDAcknowledgeSubscription(
                     subscriberApplicationInformation.getAddress(),
-                    subscriberApplicationInformation
+                    publisherApplicationInformation,
+                    subscriberApplicationInformation.getQoSGroup()
             );
             switch (subscriberApplicationInformation.getQoSGroup()) {
                 case QoSGroup::SOMEIP_TCP: {
@@ -195,7 +198,7 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
                     throw cRuntimeError("Unknown QoS group");
             }
             delete obj;
-            emit(_subscribeAckSignal,&someIpSDSubscriptionInformation);
+            emit(_subscribeAckSignal,someIpSDAcknowledgeSubscription);
         }
     }
 }

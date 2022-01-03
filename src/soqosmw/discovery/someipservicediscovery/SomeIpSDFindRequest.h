@@ -34,20 +34,26 @@ class SomeIpSDFindRequest : public cObject{
  * Methods
  */
 public:
-    SomeIpSDFindRequest(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation);
+    SomeIpSDFindRequest(uint16_t serviceId, uint16_t instanceId, inet::L3Address remoteAddress);
     virtual ~SomeIpSDFindRequest();
 
     /**
-     * Getter for the remote ip address
+     * Returns the service ID
+     * @return the service ID
+     */
+    uint16_t getServiceId() const;
+
+    /**
+     * Returns the instance ID
+     * @return the instance ID
+     */
+    uint16_t getInstanceId() const;
+
+    /**
+     * Returns the remote ip address
      * @return the remote address
      */
     inet::L3Address getRemoteAddress() const;
-
-    /**
-     * Getter for the subscriber application information
-     * @return the subscriber application information
-     */
-    SubscriberApplicationInformation getSubscriberApplicationInformation() const;
 
 protected:
 private:
@@ -58,6 +64,16 @@ private:
 public:
 protected:
 private:
+    /**
+     * The service ID
+     */
+    uint16_t _serviceId;
+
+    /**
+     * The instance ID
+     */
+    uint16_t _instanceId;
+
     /**
      * The remote ip address
      */

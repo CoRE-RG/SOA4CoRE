@@ -17,19 +17,23 @@
 
 namespace SOQoSMW {
 
-SomeIpSDFindRequest::SomeIpSDFindRequest(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation) :
-                _remoteAddress(remoteAddress), _subscriberApplicationInformation(subscriberApplicationInformation) {
+SomeIpSDFindRequest::SomeIpSDFindRequest(uint16_t serviceId, uint16_t instanceId, inet::L3Address remoteAddress) :
+                _serviceId(serviceId), _instanceId(instanceId), _remoteAddress(remoteAddress) {
 }
 
 SomeIpSDFindRequest::~SomeIpSDFindRequest() {
 }
 
-inet::L3Address SomeIpSDFindRequest::getRemoteAddress() const {
-    return _remoteAddress;
+uint16_t SomeIpSDFindRequest::getServiceId() const {
+    return _serviceId;
 }
 
-SubscriberApplicationInformation SomeIpSDFindRequest::getSubscriberApplicationInformation() const {
-    return _subscriberApplicationInformation;
+uint16_t SomeIpSDFindRequest::getInstanceId() const {
+    return _instanceId;
+}
+
+inet::L3Address SomeIpSDFindRequest::getRemoteAddress() const {
+    return _remoteAddress;
 }
 
 
