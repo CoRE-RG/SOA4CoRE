@@ -1,3 +1,3 @@
 <services>
-	<service name="service1Publisher" node="Publisher" id="1" port="3171"/>
+	<service name="service1Publisher" node="Publisher" id="1" port="3171" qosGroups="STD_UDP STD_TCP RT SOMEIP_UDP SOMEIP_TCP"/>
 </services>

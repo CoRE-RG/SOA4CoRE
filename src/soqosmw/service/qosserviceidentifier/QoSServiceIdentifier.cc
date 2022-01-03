@@ -17,6 +17,10 @@
 
 namespace SOQoSMW {
 
+QoSServiceIdentifier::QoSServiceIdentifier() {
+
+}
+
 QoSServiceIdentifier::QoSServiceIdentifier(int serviceId, int instanceId) : _serviceId(serviceId), _instanceId(instanceId) {
 }
 

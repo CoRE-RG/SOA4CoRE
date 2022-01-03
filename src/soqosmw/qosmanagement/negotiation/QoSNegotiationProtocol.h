@@ -58,6 +58,7 @@ public:
     virtual ~QoSNegotiationProtocol();
 
 protected:
+    using ProcessingTimeSimulation::initialize;
     virtual void initialize(int stage) override;
     virtual int numInitStages() const override {
         return inet::NUM_INIT_STAGES;

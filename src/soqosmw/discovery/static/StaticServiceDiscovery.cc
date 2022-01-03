@@ -17,6 +17,7 @@
 
 #include "soqosmw/discovery/static/StaticServiceDiscovery.h"
 #include "soqosmw/serviceregistry/localserviceregistry/LocalServiceRegistry.h"
+#include "soqosmw/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 //INET
 #include "inet/networklayer/common/L3AddressResolver.h"
 //STD
@@ -84,8 +85,11 @@ void StaticServiceDiscovery::initialize(int stage)
             const inet::L3Address address = inet::L3AddressResolver().resolve(node);
 
             //add entry to map
-            _discoveryAbstractionMap[id] = PublisherApplicationInformation(id, address, 0xFFFF, qosGroups, port, port);
-            //_servicesInNetwork[ServiceIdentifier(id,name)] = new ServiceBase(name, id, address, port);
+            if (!_discoveryAbstractionMap.count(id)) {
+                _discoveryAbstractionMap[id] = PublisherApplicationInformation(id, address, 0xFFFF, qosGroups, port, port);
+            } else {
+                throw cRuntimeError("There can not be multiple publishers with the same service id.");
+            }
         }
         EV_DEBUG << endl;
     }
@@ -98,17 +102,9 @@ void StaticServiceDiscovery::discover(QoSServiceIdentifier qosServiceIdentifier)
         throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }
     PublisherApplicationInformation publisherApplicationInformation = _discoveryAbstractionMap[qosServiceIdentifier.getServiceId()];
-
-    PublisherApplicationInformation* publisherApplicationInformationPtr = new PublisherApplicationInformation(publisherApplicationInformation);
-    emit(_serviceOfferSignal,publisherApplicationInformationPtr);
+    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = new PublisherApplicationInformationNotification(publisherApplicationInformation);
+    emit(_serviceOfferSignal, publisherApplicationInformationNotification);
 }
-
-/*
-bool StaticServiceDiscovery::contains(ServiceIdentifier serviceIdentifier) {
-    Enter_Method("SD::contains()");
-    return _servicesInNetwork.count(serviceIdentifier)>0;
-}
-*/
 
 void StaticServiceDiscovery::handleMessage(cMessage *msg) {
     // TODO - Generated method body

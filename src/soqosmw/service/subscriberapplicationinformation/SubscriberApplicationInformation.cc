@@ -28,7 +28,23 @@ SubscriberApplicationInformation::SubscriberApplicationInformation(int serviceId
 }
 
 SubscriberApplicationInformation::~SubscriberApplicationInformation() {
+
 }
+
+/*
+SubscriberApplicationInformation::SubscriberApplicationInformation(const SubscriberApplicationInformation& subscriberApplicationInformation) :
+        ApplicationInformation(subscriberApplicationInformation), _qosGroup(subscriberApplicationInformation._qosGroup) {
+}
+
+SubscriberApplicationInformation& SubscriberApplicationInformation::operator=(const SubscriberApplicationInformation& subscriberApplicationInformation) {
+    if(this == &subscriberApplicationInformation)
+        return *this;
+
+    ApplicationInformation::operator =(subscriberApplicationInformation);
+    _qosGroup = subscriberApplicationInformation._qosGroup;
+    return *this;
+}
+*/
 
 QoSGroup SubscriberApplicationInformation::getQoSGroup() const{
     return _qosGroup;

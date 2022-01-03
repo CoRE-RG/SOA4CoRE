@@ -16,6 +16,7 @@
 #include "QoSLocalServiceManager.h"
 #include <inet/networklayer/common/L3Address.h>
 #include <soqosmw/discovery/someipservicediscovery/SomeIpSD.h>
+#include "soqosmw/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 #include <algorithm>
 
 namespace SOQoSMW {
@@ -59,22 +60,27 @@ void QoSLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signa
 }
 
 void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
-    if (PublisherApplicationInformation* offeredService = dynamic_cast<PublisherApplicationInformation*>(obj)) {
-        for (SubscriberApplicationInformation subscriberApplicationInformation : _pendingRequestsMap[offeredService->getServiceId()]) {
-            if (offeredService->containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
-                Request* request = createNegotiationRequest(*offeredService, subscriberApplicationInformation.getQoSGroup());
+    if (PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj)) {
+        PublisherApplicationInformation offeredService = publisherApplicationInformationNotification->getPublisherApplicationInformation();
+        std::list<SubscriberApplicationInformation> subscriberApplicationInformationToBeRemoved;
+        for (SubscriberApplicationInformation subscriberApplicationInformation : _pendingRequestsMap[offeredService.getServiceId()]) {
+            if (offeredService.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
+                Request* request = createNegotiationRequest(offeredService, subscriberApplicationInformation.getQoSGroup());
                 //create qos broker for the request
                 _qosnp->createQoSBroker(request);
-                _pendingRequestsMap[subscriberApplicationInformation.getServiceId()].remove(subscriberApplicationInformation);
+                subscriberApplicationInformationToBeRemoved.push_back(subscriberApplicationInformation);
             }
         }
-        if(!_pendingRequestsMap[offeredService->getServiceId()].size()) {
-            _pendingRequestsMap.erase(offeredService->getServiceId());
+        for (SubscriberApplicationInformation subscriberApplicationInformation : subscriberApplicationInformationToBeRemoved) {
+            _pendingRequestsMap[subscriberApplicationInformation.getServiceId()].remove(subscriberApplicationInformation);
+            if(!_pendingRequestsMap[subscriberApplicationInformation.getServiceId()].size()) {
+                _pendingRequestsMap.erase(subscriberApplicationInformation.getServiceId());
+            }
         }
-        _lsr->addPublisherService(*offeredService);
-        delete offeredService;
+        _lsr->addPublisherService(offeredService);
+        delete obj;
     } else {
-        throw cRuntimeError("Given object is not type of QoSService.");
+        throw cRuntimeError("Given object is not type of PublisherApplicationInformation.");
     }
 }
 

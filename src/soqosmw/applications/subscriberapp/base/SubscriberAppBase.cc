@@ -73,6 +73,7 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
         for (SubscriberConnector* subscriberConnector : connectors) {
             if (subscriberConnector->getSubscriberApplicationInformation().getQoSGroup() == _qosGroup) {
                 _connector = subscriberConnector;
+                break;
             }
         }
         if (!_connector) {

@@ -17,29 +17,58 @@
 
 namespace SOQoSMW {
 
-ApplicationInformation::ApplicationInformation() : _serviceIdentifier(QoSServiceIdentifier(-1,-1)), _defaultQoSService(true){
+ApplicationInformation::ApplicationInformation() {
 
 }
 
 ApplicationInformation::ApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId,
         int tcpPort, int udpPort, int streamId, CoRE4INET::SR_CLASS srClass, size_t framesize, uint16_t intervalFrames):
-        _serviceIdentifier(QoSServiceIdentifier(serviceId,instanceId)), _address(address), _tcpPort(tcpPort),
-        _udpPort(udpPort), _streamId(streamId), _srClass(srClass), _framesize(framesize), _intervalFrames(intervalFrames),
-        _defaultQoSService(false){
+        _serviceId(serviceId), _address(address), _instanceId(instanceId), _tcpPort(tcpPort),
+        _udpPort(udpPort), _streamId(streamId), _srClass(srClass), _framesize(framesize), _intervalFrames(intervalFrames) {
 }
+
+/*
+ApplicationInformation::ApplicationInformation(const ApplicationInformation& applicationInformation) {
+    _serviceId = applicationInformation._serviceId;
+    _address = applicationInformation._address;
+    _instanceId = applicationInformation._instanceId;
+    _tcpPort = applicationInformation._tcpPort;
+    _udpPort = applicationInformation._udpPort;
+    _streamId = applicationInformation._streamId;
+    _srClass = applicationInformation._srClass;
+    _framesize = applicationInformation._framesize;
+    _intervalFrames = applicationInformation._intervalFrames;
+
+}
+
+ApplicationInformation& ApplicationInformation::operator=(const ApplicationInformation& applicationInformation) {
+    if(this == &applicationInformation)
+        return *this;
+
+    _serviceId = applicationInformation._serviceId;
+    _address = applicationInformation._address;
+    _instanceId = applicationInformation._instanceId;
+    _tcpPort = applicationInformation._tcpPort;
+    _udpPort = applicationInformation._udpPort;
+    _streamId = applicationInformation._streamId;
+    _srClass = applicationInformation._srClass;
+    _framesize = applicationInformation._framesize;
+    _intervalFrames = applicationInformation._intervalFrames;
+    return *this;
+}
+
+*/
 
 ApplicationInformation::~ApplicationInformation() {
 }
 
 int ApplicationInformation::getServiceId() const {
-    return _serviceIdentifier.getServiceId();
+    return _serviceId;
 }
 
 inet::L3Address ApplicationInformation::getAddress() const {
     return _address;
 }
-
-
 
 int ApplicationInformation::getTCPPort() const {
     return _tcpPort;
@@ -50,8 +79,9 @@ int ApplicationInformation::getUDPPort() const {
 }
 
 bool ApplicationInformation::operator==(const ApplicationInformation& applicationInformation) const {
-    return (_serviceIdentifier == applicationInformation._serviceIdentifier)
+    return _serviceId == applicationInformation.getServiceId()
             && _address == applicationInformation.getAddress()
+            && _instanceId == applicationInformation.getInstanceId()
             && _tcpPort == applicationInformation.getTCPPort()
             && _udpPort == applicationInformation.getUDPPort()
             && _streamId == applicationInformation.getStreamId()
@@ -65,7 +95,7 @@ bool ApplicationInformation::operator!=(const ApplicationInformation& applicatio
 }
 
 uint16_t ApplicationInformation::getInstanceId() const{
-    return _serviceIdentifier.getInstanceId();
+    return _instanceId;
 }
 
 size_t ApplicationInformation::getFramesize() const {

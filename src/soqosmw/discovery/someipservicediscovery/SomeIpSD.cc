@@ -349,16 +349,16 @@ void SomeIpSD::discover(QoSServiceIdentifier qosServiceIdentifier) {
 }
 
 void SomeIpSD::processSubscription(cObject* obj) {
-    SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = *dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
-    SubscriberApplicationInformation subscriberApplicationInformation = someIpSDSubscriptionInformation.getSubscriberApplicationInformation();
-    subscribeEventgroup(subscriberApplicationInformation, someIpSDSubscriptionInformation.getRemoteAddress());
+    SomeIpSDSubscriptionInformation* someIpSDSubscriptionInformation = dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
+    SubscriberApplicationInformation subscriberApplicationInformation = someIpSDSubscriptionInformation->getSubscriberApplicationInformation();
+    subscribeEventgroup(subscriberApplicationInformation, someIpSDSubscriptionInformation->getRemoteAddress());
     delete obj;
 }
 
 void SomeIpSD::processAcknowledgment(cObject *obj) {
-    SomeIpSDAcknowledgeSubscription someIpSDAcknowledgeSubscription = *dynamic_cast<SomeIpSDAcknowledgeSubscription*>(obj);
-    subscribeEventgroupAck(someIpSDAcknowledgeSubscription.getPublisherApplicationInformation(), someIpSDAcknowledgeSubscription.getRemoteAddress(),
-            someIpSDAcknowledgeSubscription.getQosGroup());
+    SomeIpSDAcknowledgeSubscription* someIpSDAcknowledgeSubscription = dynamic_cast<SomeIpSDAcknowledgeSubscription*>(obj);
+    subscribeEventgroupAck(someIpSDAcknowledgeSubscription->getPublisherApplicationInformation(), someIpSDAcknowledgeSubscription->getRemoteAddress(),
+            someIpSDAcknowledgeSubscription->getQosGroup());
     delete obj;
 }
 

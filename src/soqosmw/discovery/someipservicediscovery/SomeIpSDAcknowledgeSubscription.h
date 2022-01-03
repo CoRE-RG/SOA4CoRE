@@ -20,7 +20,7 @@
 
 namespace SOQoSMW {
 
-class SomeIpSDAcknowledgeSubscription : public cObject{
+class SomeIpSDAcknowledgeSubscription : public cObject, noncopyable {
     /**
      * Methods
      */

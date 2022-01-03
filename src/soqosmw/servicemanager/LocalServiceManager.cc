@@ -59,7 +59,7 @@ void LocalServiceManager::initialize(int stage) {
                dynamic_cast<IServiceRegistry*>(getParentModule()->getSubmodule(
                        par("lsrmoduleName")));
        WATCH_MAP(_publisherConnectors);
-       WATCH_MAP(_subscriberConnectors);
+       // WATCH_MAP(_subscriberConnectors); TODO is it possible to watch a map with list as value?
     }
 }
 

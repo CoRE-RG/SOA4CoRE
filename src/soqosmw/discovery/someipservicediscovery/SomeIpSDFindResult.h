@@ -28,7 +28,7 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpSDFindResult {
+class SomeIpSDFindResult : public cObject, noncopyable{
 /**
  * Methods
  */

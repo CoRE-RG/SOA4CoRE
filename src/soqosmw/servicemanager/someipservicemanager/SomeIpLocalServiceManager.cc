@@ -20,6 +20,7 @@
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDAcknowledgeSubscription.h"
 #include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soqosmw/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
+#include "soqosmw/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 #include <algorithm>
 namespace SOQoSMW {
 
@@ -100,7 +101,9 @@ void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherS
     } else if (serviceIsKnown) {
         PublisherApplicationInformation publisherService = _lsr->getService(publisherServiceIdentifier);
         if (publisherService.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
-            subscribeServiceIfThereIsAPendingRequest(new PublisherApplicationInformation(publisherService));
+            PublisherApplicationInformationNotification* publisherApplicationInformationNotification =
+                    new PublisherApplicationInformationNotification(publisherService);
+            subscribeServiceIfThereIsAPendingRequest(publisherApplicationInformationNotification);
             serviceFound = true;
         } else {
             throw cRuntimeError("The service id = %d is not provided with the requested QoS group = %d",
@@ -141,19 +144,21 @@ void SomeIpLocalServiceManager::addToLocalServiceRegistry(cObject* obj) {
 
 // Subscriber-side
 void SomeIpLocalServiceManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
-    PublisherApplicationInformation* publisherApplicationInformation = dynamic_cast<PublisherApplicationInformation*>(obj);
-    if (_pendingRequestsMap.count(publisherApplicationInformation->getServiceId())) {
-        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation->getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation->getServiceId()].end(); ++it){
-            if (publisherApplicationInformation->containsQoSGroup(it->getQoSGroup())) {
-                SomeIpSDSubscriptionInformation someIpSDSubscriptionInformation = SomeIpSDSubscriptionInformation(
-                        publisherApplicationInformation->getAddress(),
+    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
+    PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
+            dynamic_cast<PublisherApplicationInformationNotification*>(obj)->getPublisherApplicationInformation();
+    if (_pendingRequestsMap.count(publisherApplicationInformation.getServiceId())) {
+        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation.getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation.getServiceId()].end(); ++it){
+            if (publisherApplicationInformation.containsQoSGroup(it->getQoSGroup())) {
+                SomeIpSDSubscriptionInformation* someIpSDSubscriptionInformation = new SomeIpSDSubscriptionInformation(
+                        publisherApplicationInformation.getAddress(),
                         *it
                 );
-                emit(_subscribeSignal,&someIpSDSubscriptionInformation);
+                emit(_subscribeSignal,someIpSDSubscriptionInformation);
             }
         }
     }
-    delete publisherApplicationInformation;
+    delete obj;
 }
 
 // Publisher-side

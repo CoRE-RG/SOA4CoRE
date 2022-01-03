@@ -21,7 +21,7 @@
 
 namespace SOQoSMW {
 
-class PublisherApplicationInformation: public ApplicationInformation, public cObject {
+class PublisherApplicationInformation: public ApplicationInformation {
     /**
      * Methods
      */
@@ -32,6 +32,11 @@ public:
             int tcpPort = -1, int udpPort = -1, int streamId = -1, CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A,
             size_t framesize = -1, uint16_t intervalFrames = -1);
     virtual ~PublisherApplicationInformation();
+
+    /*
+    PublisherApplicationInformation(const PublisherApplicationInformation& publisherApplicationInformation);
+    virtual PublisherApplicationInformation& operator=(const PublisherApplicationInformation& publisherApplicationInformation);
+*/
 
     /**
      * Returns the QoS groups

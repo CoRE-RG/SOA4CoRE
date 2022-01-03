@@ -28,7 +28,7 @@ namespace SOQoSMW {
  *
  * @author Mehmet Cakir
  */
-class SomeIpSDSubscriptionInformation : public cObject{
+class SomeIpSDSubscriptionInformation : public cObject, noncopyable {
 /**
  * Methods
  */

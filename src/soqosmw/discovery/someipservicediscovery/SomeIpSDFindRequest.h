@@ -29,7 +29,7 @@
 
 namespace SOQoSMW {
 
-class SomeIpSDFindRequest : public cObject{
+class SomeIpSDFindRequest : public cObject, noncopyable {
 /**
  * Methods
  */

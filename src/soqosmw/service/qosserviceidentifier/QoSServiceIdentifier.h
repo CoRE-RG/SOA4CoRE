@@ -16,6 +16,7 @@
 #ifndef SOQOSMW_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
 #define SOQOSMW_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
 
+
 namespace SOQoSMW {
 
 /**
@@ -28,6 +29,7 @@ namespace SOQoSMW {
 
 class QoSServiceIdentifier {
 public:
+    QoSServiceIdentifier();
     QoSServiceIdentifier(int serviceId, int instanceId);
     virtual ~QoSServiceIdentifier();
     virtual bool operator==(const QoSServiceIdentifier& qosServiceIdentifier) const;

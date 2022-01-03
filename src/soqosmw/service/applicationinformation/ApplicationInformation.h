@@ -41,7 +41,10 @@ public:
     ApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId, int tcpPort = -1, int udpPort = -1, int streamId = -1,
             CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A, size_t framesize = -1, uint16_t intervalFrames = -1);
     virtual ~ApplicationInformation();
-
+/*
+    ApplicationInformation(const ApplicationInformation& applicationInformation);
+    virtual ApplicationInformation& operator=(const ApplicationInformation& applicationInformation);
+*/
     virtual bool operator==(const ApplicationInformation& applicationInformation) const;
     virtual bool operator!=(const ApplicationInformation& applicationInformation) const;
 
@@ -99,12 +102,6 @@ public:
      */
     int getStreamId() const;
 
-    /**
-     * Returns true if the service is instantiated by the default constructor.
-     * @return true if the service is instantiated by the default constructor, else false
-     */
-    bool isDefaultConstructed();
-
 protected:
 private:
 
@@ -113,10 +110,16 @@ private:
      */
 public:
 protected:
+
     /**
-     * The service identifier
+     * The service Id
      */
-    QoSServiceIdentifier _serviceIdentifier;
+    int _serviceId;
+
+    /**
+     * The instanceId
+     */
+    uint16_t _instanceId;
 
     /**
      * The IP address
@@ -152,12 +155,6 @@ protected:
      * The interval frames for AVB traffic
      */
     uint16_t _intervalFrames;
-
-    /**
-     * Indicates if this service is instantiated by the default constructor,
-     * since the default constructor does not specify a useful QoSService.
-     */
-    bool _defaultQoSService;
 private:
 
 
