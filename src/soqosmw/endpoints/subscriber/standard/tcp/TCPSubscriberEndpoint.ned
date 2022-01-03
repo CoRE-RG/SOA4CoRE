@@ -33,7 +33,7 @@ simple TCPSubscriberEndpoint extends STDSubscriberEndpointBase
 {
     parameters:
         @class(SOQoSMW::TCPSubscriberEndpoint);
-    	qos = "STD_TCP"; // invalid...
+    	qos = default("STD_TCP"); // invalid...
     
         // Local IP address for TCP socket
         string localAddress;

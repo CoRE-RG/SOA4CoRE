@@ -33,7 +33,7 @@ simple TCPPublisherEndpoint extends STDPublisherEndpointBase
 {
     parameters:
         @class(SOQoSMW::TCPPublisherEndpoint);
-    	qos = "STD_TCP";
+    	qos = default("STD_TCP");
     
         // Local ip address for TCP socket
         string localAddress;

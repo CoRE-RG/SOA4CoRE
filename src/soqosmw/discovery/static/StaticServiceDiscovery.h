@@ -22,6 +22,7 @@
 #include <soqosmw/service/publisherapplicationinformation/PublisherApplicationInformation.h>
 #include "soqosmw/discovery/base/IServiceDiscovery.h"
 #include "soqosmw/serviceregistry/base/IServiceRegistry.h"
+//#include <omnetpp.h>
 //INET
 #include "inet/networklayer/common/L3Address.h"
 #include "inet/common/InitStages.h"

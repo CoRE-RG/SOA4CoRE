@@ -25,5 +25,5 @@ simple SOMEIPUDPPublisherEndpoint extends UDPPublisherEndpoint
     parameters:
         @class(SOQoSMW::SOMEIPUDPPublisherEndpoint);
         endpointPath = default("SOME/IP Publisher");
-        qos = "SOMEIP_UDP";
+        qos = default("SOMEIP_UDP");
 }

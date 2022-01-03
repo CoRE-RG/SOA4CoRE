@@ -25,5 +25,5 @@ simple SOMEIPTCPPublisherEndpoint extends TCPPublisherEndpoint
     parameters:
         @class(SOQoSMW::SOMEIPTCPPublisherEndpoint);
         endpointPath = default("SOME/IP Publisher");
-        qos = "SOMEIP_TCP";
+        qos = default("SOMEIP_TCP");
 }

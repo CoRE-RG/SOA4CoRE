@@ -247,7 +247,6 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
 
     SubscriberEndpointBase* sub = nullptr;
     QoSGroup qosGroup = getQoSGroupForConnectionType(ConnectionType(csi->getConnectionType()));
-
     sub = findSubscriberLike(publisherServiceId, qosGroup);
     if(!sub){
         SubscriberConnector* connector = findSubscriberConnectorLike(publisherServiceId, qosGroup);

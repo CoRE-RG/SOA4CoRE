@@ -22,6 +22,8 @@
 #include <inet/networklayer/contract/ipv4/IPv4Address.h>
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindResult.h"
 #include "soqosmw/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
+#include "soqosmw/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
+#include "soqosmw/service/subscriberapplicationinformation/SubscriberApplicationInformationNotification.h"
 #include <list>
 
 namespace SOQoSMW {
@@ -290,10 +292,11 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
         qosGroups.insert(extractedQoSOptions.getQosGroup());
     }
 
-    PublisherApplicationInformation* publisherApplicationInformation = new PublisherApplicationInformation(offerEntry->getServiceID(), ipAddress,
+    PublisherApplicationInformation publisherApplicationInformation = PublisherApplicationInformation(offerEntry->getServiceID(), ipAddress,
                                          offerEntry->getInstanceID(), qosGroups, tcpPort,
                                          udpPort);
-    emit(_serviceOfferSignal,publisherApplicationInformation);
+    PublisherApplicationInformationNotification *publisherApplicationInformationNotification = new PublisherApplicationInformationNotification(publisherApplicationInformation);
+    emit(_serviceOfferSignal,publisherApplicationInformationNotification);
 }
 
 void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader) {
@@ -310,9 +313,10 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
         }
         ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
         qosGroup = extractedQoSOptions.getQosGroup();
-        SubscriberApplicationInformation* subscriberApplicationInformation = new SubscriberApplicationInformation(subscribeEventGroupEntry->getServiceID(),
+        SubscriberApplicationInformation subscriberApplicationInformation = SubscriberApplicationInformation(subscribeEventGroupEntry->getServiceID(),
                 ipv4EndpointOption->getIpv4Address(), subscribeEventGroupEntry->getInstanceID(), qosGroup, extractedQoSOptions.getTcpPort(), extractedQoSOptions.getUdpPort());
-        emit(_subscribeEventGroupSignal, subscriberApplicationInformation);
+        SubscriberApplicationInformationNotification* subscriberApplicationInformationNotification = new SubscriberApplicationInformationNotification(subscriberApplicationInformation);
+        emit(_subscribeEventGroupSignal, subscriberApplicationInformationNotification);
     }
 }
 
@@ -339,9 +343,10 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
         qosGroups.insert(extractedQoSOptions.getQosGroup());
     }
 
-    PublisherApplicationInformation* publisherApplicationInformation = new PublisherApplicationInformation(subscribeEventGroupAckEntry->getServiceID(), ipAddress,
+    PublisherApplicationInformation publisherApplicationInformation = PublisherApplicationInformation(subscribeEventGroupAckEntry->getServiceID(), ipAddress,
             subscribeEventGroupAckEntry->getInstanceID(), qosGroups, tcpPort, udpPort);
-    emit(_subscribeEventGroupAckSignal, publisherApplicationInformation);
+    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = new PublisherApplicationInformationNotification(publisherApplicationInformation);
+    emit(_subscribeEventGroupAckSignal, publisherApplicationInformationNotification);
 }
 
 void SomeIpSD::discover(QoSServiceIdentifier qosServiceIdentifier) {

@@ -32,7 +32,7 @@ simple EndpointBase extends ProcessingTimeSimulation like IEndpoint
 {
     parameters:
         // indicates which qos is realized in this endpoint one of RT, STD_UDP, STD_TCP, WEB
-        string qos;  
+        string qos = default("");  
         
      	//The name of the endpoint as a path (e.g. "Reifendruck/links").
     	string endpointPath = default("");

@@ -55,12 +55,11 @@ void StaticServiceDiscovery::initialize(int stage)
             int id = atoi(service->getAttribute("id"));
             int port = atoi(service->getAttribute("port"));
 
-            const char* qosGroupsStr = service->getAttribute("qosGroups");
+            cStringTokenizer stringTokenizer(service->getAttribute("qosGroups")," ");
             std::set<QoSGroup> qosGroups;
-            const char* delim = " ";
-            char *token = strtok(const_cast<char*>(qosGroupsStr), delim);
-            while (token != nullptr)
+            while (stringTokenizer.hasMoreTokens())
             {
+                const char *token = stringTokenizer.nextToken();
                 QoSGroup qosGroup;
                 if (std::string(token) == "STD_TCP") {
                     qosGroup = QoSGroup::STD_TCP;
@@ -76,7 +75,6 @@ void StaticServiceDiscovery::initialize(int stage)
                     throw cRuntimeError("WEB QoS is not implemented yet.");
                 }
                 qosGroups.insert(qosGroup);
-                token = strtok(nullptr, delim);
             }
 
             EV_DEBUG << node;

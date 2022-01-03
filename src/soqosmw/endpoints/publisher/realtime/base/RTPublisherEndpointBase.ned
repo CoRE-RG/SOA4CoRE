@@ -32,5 +32,5 @@ simple RTPublisherEndpointBase extends PublisherEndpointBase
 {
     parameters:
         endpointPath = default("RTPublisher");
-    	qos = "RT";
+    	qos = default("RT");
 }

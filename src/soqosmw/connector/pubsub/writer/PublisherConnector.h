@@ -112,7 +112,7 @@ private:
      */
     int _maxEndpoints = -1;
 
-    SOQoSMWApplicationBase* _soqosMwApplicationBase;
+    SOQoSMWApplicationBase* _soqosMwApplicationBase = nullptr;
 
     /**
      * Endpoints to connect to the applications.

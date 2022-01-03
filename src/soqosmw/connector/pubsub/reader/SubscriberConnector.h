@@ -118,7 +118,7 @@ private:
     /**
      * The endpoint to which this connector is connected
      */
-    SubscriberEndpointBase* _subscriberEndpointBase;
+    SubscriberEndpointBase* _subscriberEndpointBase = nullptr;
 
     /**
      * The subscriber application information

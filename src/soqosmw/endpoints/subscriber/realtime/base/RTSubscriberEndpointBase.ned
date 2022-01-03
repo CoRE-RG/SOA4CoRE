@@ -32,5 +32,5 @@ simple RTSubscriberEndpointBase extends SubscriberEndpointBase
 {
     parameters:
         endpointPath = default("RTSubscriber");
-    	qos = "RT";
+    	qos = default("RT");
 }

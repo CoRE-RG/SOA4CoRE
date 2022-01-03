@@ -130,13 +130,10 @@ void PublisherAppBase::handleParameterChange(const char* parname) {
     }
 
     if (!parname || !strcmp(parname, "qosGroups")) {
-        const char* qosGroups = par("qosGroups").stringValue();
-        const char* delim = " ";
-        char *token = strtok(const_cast<char*>(qosGroups), delim);
-        while (token != nullptr)
-        {
+        cStringTokenizer stringTokenizer(par("qosGroups").stringValue()," ");
+        while (stringTokenizer.hasMoreTokens()) {
+            const char *token = stringTokenizer.nextToken();
             this->_qosGroups.insert(std::string(token));
-            token = strtok(nullptr, delim);
         }
     }
 }

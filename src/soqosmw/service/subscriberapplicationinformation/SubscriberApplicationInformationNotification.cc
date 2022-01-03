@@ -13,17 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.endpoints.subscriber.someip.udp;
+#include <soqosmw/service/subscriberapplicationinformation/SubscriberApplicationInformationNotification.h>
 
-import soqosmw.endpoints.subscriber.standard.udp.UDPSubscriberEndpoint;
+namespace SOQoSMW {
 
-//
-// @author Mehmet Cakir
-//
-simple SOMEIPUDPSubscriberEndpoint extends UDPSubscriberEndpoint
-{
-    parameters:
-        @class(SOQoSMW::SOMEIPUDPSubscriberEndpoint);
-        endpointPath = default("SOME/IP Subscriber");
-        qos = default("SOMEIP_UDP");
+SubscriberApplicationInformationNotification::SubscriberApplicationInformationNotification(SubscriberApplicationInformation subscriberApplicationInformation) :
+        _subscriberApplicationInformation(subscriberApplicationInformation){
 }
+
+SubscriberApplicationInformationNotification::~SubscriberApplicationInformationNotification() {
+}
+
+const SubscriberApplicationInformation& SubscriberApplicationInformationNotification::getSubscriberApplicationInformation() const {
+    return _subscriberApplicationInformation;
+}
+} /* end namespace */
+

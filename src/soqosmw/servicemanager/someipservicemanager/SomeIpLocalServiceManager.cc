@@ -21,6 +21,7 @@
 #include "soqosmw/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soqosmw/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
 #include "soqosmw/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
+#include "soqosmw/service/subscriberapplicationinformation/SubscriberApplicationInformationNotification.h"
 #include <algorithm>
 namespace SOQoSMW {
 
@@ -60,19 +61,24 @@ void SomeIpLocalServiceManager::handleMessage(cMessage *msg) {
 
 // Subscriber-side
 void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
-    PublisherApplicationInformation* publisherApplicationInformation = dynamic_cast<PublisherApplicationInformation*>(obj);
-    if (_pendingRequestsMap.count(publisherApplicationInformation->getServiceId())) {
-        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation->getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation->getServiceId()].end(); ++it){
-            if (publisherApplicationInformation->containsQoSGroup(it->getQoSGroup())) {
-                createSubscriberEndpoint(*publisherApplicationInformation, it->getQoSGroup());
-                _pendingRequestsMap[publisherApplicationInformation->getServiceId()].remove(*it);
-                if (_pendingRequestsMap[publisherApplicationInformation->getServiceId()].empty()) {
-                    _pendingRequestsMap.erase(publisherApplicationInformation->getServiceId());
-                }
+    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
+    PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
+    std::list<SubscriberApplicationInformation> subscriberApplicationInformationsToBeRemoved;
+    if (_pendingRequestsMap.count(publisherApplicationInformation.getServiceId())) {
+        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation.getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation.getServiceId()].end(); ++it){
+            if (publisherApplicationInformation.containsQoSGroup(it->getQoSGroup())) {
+                createSubscriberEndpoint(publisherApplicationInformation, it->getQoSGroup());
+                subscriberApplicationInformationsToBeRemoved.push_back(*it);
+            }
+        }
+        for (SubscriberApplicationInformation subscriberApplicationInformation : subscriberApplicationInformationsToBeRemoved) {
+            _pendingRequestsMap[subscriberApplicationInformation.getServiceId()].remove(subscriberApplicationInformation);
+            if (_pendingRequestsMap[subscriberApplicationInformation.getServiceId()].empty()) {
+                _pendingRequestsMap.erase(subscriberApplicationInformation.getServiceId());
             }
         }
     }
-    delete publisherApplicationInformation;
+    delete obj;
 }
 
 void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
@@ -134,12 +140,9 @@ void SomeIpLocalServiceManager::lookForService(cObject* obj) {
 
 // Subscriber-side
 void SomeIpLocalServiceManager::addToLocalServiceRegistry(cObject* obj) {
-    PublisherApplicationInformation* publisherApplicationInformation = dynamic_cast<PublisherApplicationInformation*>(obj);
-    if (!publisherApplicationInformation) {
-        throw cRuntimeError("Service is not of type PublisherApplicationInformation.");
-    }
-    _lsr->addPublisherService(*publisherApplicationInformation);
-    delete publisherApplicationInformation;
+    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
+    PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
+    _lsr->addPublisherService(publisherApplicationInformation);
 }
 
 // Subscriber-side
@@ -163,7 +166,8 @@ void SomeIpLocalServiceManager::subscribeServiceIfThereIsAPendingRequest(cObject
 
 // Publisher-side
 void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
-    SubscriberApplicationInformation subscriberApplicationInformation = *dynamic_cast<SubscriberApplicationInformation*>(obj);
+    SubscriberApplicationInformationNotification* subscriberApplicationInformationNotification = dynamic_cast<SubscriberApplicationInformationNotification*>(obj);
+    SubscriberApplicationInformation subscriberApplicationInformation = subscriberApplicationInformationNotification->getSubscriberApplicationInformation();
     QoSServiceIdentifier qosServiceIdentifier = QoSServiceIdentifier(subscriberApplicationInformation.getServiceId(), subscriberApplicationInformation.getInstanceId());
     if (_lsr->containsService(qosServiceIdentifier)) {
         PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(qosServiceIdentifier);
@@ -183,6 +187,7 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
                     if(!(someipTcpPublisherEndpoint)) {
                         throw cRuntimeError("Endpoint is no SOMEIPTCPPublisherEndpoint.");
                     }
+                    break;
                 }
                 case QoSGroup::SOMEIP_UDP: {
                     PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherFor(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_UDP);
@@ -198,14 +203,15 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
                     csi_udp_someip->setPort(subscriberApplicationInformation.getUDPPort());
                     someipUdpPublisherEndpoint->addRemote(csi_udp_someip);
                     delete csi_udp_someip;
+                    break;
                 }
                 default:
                     throw cRuntimeError("Unknown QoS group");
             }
-            delete obj;
             emit(_subscribeAckSignal,someIpSDAcknowledgeSubscription);
         }
     }
+    delete obj;
 }
 
 // Subscriber-side
