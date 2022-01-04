@@ -32,6 +32,7 @@ namespace SOQoSMW {
 #define MAJOR_VERSION 0xFF       // see [PRS_SOMEIPSD_00351],[PRS_SOMEIPSD_00356],[PRS_SOMEIPSD_00386],[PRS_SOMEIPSD_00391]
 #define MINOR_VERSION 0xFFFFFFFF // see [PRS_SOMEIPSD_00351],[PRS_SOMEIPSD_00356],[PRS_SOMEIPSD_00386],[PRS_SOMEIPSD_00391]
 #define TTL 0xFFFFFF             // see [PRS_SOMEIPSD_00351],[PRS_SOMEIPSD_00356],[PRS_SOMEIPSD_00386],[PRS_SOMEIPSD_00391]
+#define QOS_NP_OPTIONS_COUNT 1
 
 Define_Module(SomeIpSD);
 
@@ -61,6 +62,7 @@ void SomeIpSD::initialize(int stage) {
         _subscribeEventGroupSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupSignal");
         _subscribeEventGroupAckSignal = omnetpp::cComponent::registerSignal("subscribeEventGroupAckSignal");
 
+        _hasQoSNP = getParentModule()->par("hasQoSNP");
         if (SomeIpLocalServiceManager* someIplocalServiceManager = dynamic_cast<SomeIpLocalServiceManager*>(getParentModule()->getSubmodule("lsm"))) {
             someIplocalServiceManager->subscribe("findResultSignal",this);
             someIplocalServiceManager->subscribe("subscribeSignal",this);
@@ -102,7 +104,7 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
     findEntry->setServiceID(serviceID);
     findEntry->setInstanceID(instanceID);
     findEntry->setMajorVersion(MAJOR_VERSION);
-    findEntry->setTTL(3);
+    findEntry->setTTL(TTL);
     findEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(findEntry);
 
@@ -122,38 +124,37 @@ void SomeIpSD::offer(PublisherApplicationInformation publisherApplicationInforma
     offerEntry->setServiceID(publisherApplicationInformation.getServiceId());
     offerEntry->setInstanceID(publisherApplicationInformation.getInstanceId());
     offerEntry->setMajorVersion(MAJOR_VERSION);
-    offerEntry->setTTL(3);
+    offerEntry->setTTL(TTL);
     offerEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(offerEntry);
 
-    for (QoSGroup qosGroup : publisherApplicationInformation.getQosGroups()) {
-        IPProtocolId ipProtocolId;
-        uint16_t publisherPort;
-        switch (qosGroup) {
-            case QoSGroup::SOMEIP_TCP:
-                ipProtocolId = IPProtocolId::IP_PROT_TCP;
-                publisherPort = publisherApplicationInformation.getTCPPort();
-                break;
-            case QoSGroup::SOMEIP_UDP:
-                ipProtocolId = IPProtocolId::IP_PROT_UDP;
-                publisherPort = publisherApplicationInformation.getUDPPort();
-                break;
-            case QoSGroup::STD_TCP:
-                ipProtocolId = IPProtocolId::IP_PROT_TCP;
-                publisherPort = publisherApplicationInformation.getTCPPort();
-                break;
-            case QoSGroup::STD_UDP:
-                ipProtocolId = IPProtocolId::IP_PROT_UDP;
-                publisherPort = publisherApplicationInformation.getUDPPort();
-                break;
-            default:
-                throw cRuntimeError("Unknown QoSGroup");
-        }
+    if (!_hasQoSNP) {
+        for (QoSGroup qosGroup : publisherApplicationInformation.getQosGroups()) {
+            IPProtocolId ipProtocolId;
+            uint16_t publisherPort;
+            switch (qosGroup) {
+                case QoSGroup::SOMEIP_TCP:
+                    ipProtocolId = IPProtocolId::IP_PROT_TCP;
+                    publisherPort = publisherApplicationInformation.getTCPPort();
+                    break;
+                case QoSGroup::SOMEIP_UDP:
+                    ipProtocolId = IPProtocolId::IP_PROT_UDP;
+                    publisherPort = publisherApplicationInformation.getUDPPort();
+                    break;
+                default:
+                    throw cRuntimeError("Unknown QoSGroup");
+            }
 
+            IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
+            ipv4EndpointOption->setIpv4Address(publisherApplicationInformation.getAddress().toIPv4());
+            ipv4EndpointOption->setL4Protocol(ipProtocolId);
+            ipv4EndpointOption->setPort(publisherPort);
+            someIpSDHeader->encapOption(ipv4EndpointOption);
+        }
+    } else {
+        offerEntry->setNum1stOptions(QOS_NP_OPTIONS_COUNT);
         IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
         ipv4EndpointOption->setIpv4Address(publisherApplicationInformation.getAddress().toIPv4());
-        ipv4EndpointOption->setL4Protocol(ipProtocolId);
-        ipv4EndpointOption->setPort(publisherPort);
         someIpSDHeader->encapOption(ipv4EndpointOption);
     }
 
@@ -173,7 +174,7 @@ void SomeIpSD::subscribeEventgroup(SubscriberApplicationInformation subscriberAp
     subscribeEventgroupEntry->setServiceID(subscriberApplicationInformation.getServiceId());
     subscribeEventgroupEntry->setInstanceID(subscriberApplicationInformation.getInstanceId());
     subscribeEventgroupEntry->setMajorVersion(MAJOR_VERSION);
-    subscribeEventgroupEntry->setTTL(3);
+    subscribeEventgroupEntry->setTTL(TTL);
     someIpSDHeader->encapEntry(subscribeEventgroupEntry);
 
     IPProtocolId ipProtocolId;
@@ -213,7 +214,7 @@ void SomeIpSD::subscribeEventgroupAck(PublisherApplicationInformation publisherA
     subscribeEventgroupAckEntry->setServiceID(publisherApplicationInformation.getServiceId());
     subscribeEventgroupAckEntry->setInstanceID(publisherApplicationInformation.getInstanceId());
     subscribeEventgroupAckEntry->setMajorVersion(MAJOR_VERSION);
-    subscribeEventgroupAckEntry->setTTL(3);
+    subscribeEventgroupAckEntry->setTTL(TTL);
     someIpSDHeader->encapEntry(subscribeEventgroupAckEntry);
 
     IPProtocolId ipProtocolId;
@@ -297,10 +298,12 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
             throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
         }
         ipAddress = ipv4EndpointOption->getIpv4Address();
-        ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-        tcpPort = extractedQoSOptions.getTcpPort() != -1 ? extractedQoSOptions.getTcpPort() : tcpPort;
-        udpPort = extractedQoSOptions.getUdpPort() != -1 ? extractedQoSOptions.getUdpPort() : udpPort;
-        qosGroups.insert(extractedQoSOptions.getQosGroup());
+        if (!_hasQoSNP) {
+            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
+            tcpPort = extractedQoSOptions.getTcpPort() != -1 ? extractedQoSOptions.getTcpPort() : tcpPort;
+            udpPort = extractedQoSOptions.getUdpPort() != -1 ? extractedQoSOptions.getUdpPort() : udpPort;
+            qosGroups.insert(extractedQoSOptions.getQosGroup());
+        }
     }
 
     PublisherApplicationInformation publisherApplicationInformation = PublisherApplicationInformation(offerEntry->getServiceID(), ipAddress,
@@ -391,17 +394,16 @@ void SomeIpSD::receiveSignal(cComponent *source, simsignal_t signalID, cObject *
 }
 
 ExtractedQoSOptions SomeIpSD::getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption) {
-    bool hasQoSNP = getParentModule()->par("hasQoSNP");
     QoSGroup qosGroup = QoSGroup::RT;
     int tcpPort = -1;
     int udpPort = -1;
     switch(ipv4EndpointOption->getL4Protocol()) {
         case IPProtocolId::IP_PROT_UDP:
-            qosGroup = !hasQoSNP ? QoSGroup::SOMEIP_UDP : QoSGroup::STD_UDP;
+            qosGroup = QoSGroup::SOMEIP_UDP;
             udpPort = ipv4EndpointOption->getPort();
             break;
         case IPProtocolId::IP_PROT_TCP:
-            qosGroup = !hasQoSNP ? QoSGroup::SOMEIP_TCP : QoSGroup::STD_TCP;
+            qosGroup = QoSGroup::SOMEIP_TCP;
             tcpPort = ipv4EndpointOption->getPort();
             break;
         default:

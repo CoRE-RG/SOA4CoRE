@@ -171,7 +171,7 @@ ConnectionSpecificInformation* AVBPublisherEndpoint::getConnectionSpecificInform
 void AVBPublisherEndpoint::publish(cPacket* msg) {
     if (_isConnected) {
         std::string name = "Stream ";
-        name += _streamID;
+        name += std::to_string(_streamID);
         AVBFrame *outFrame = new AVBFrame(name.c_str());
         outFrame->setTimestamp();
         outFrame->setStreamID(_streamID);

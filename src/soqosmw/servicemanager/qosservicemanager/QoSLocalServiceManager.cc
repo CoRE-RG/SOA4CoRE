@@ -69,16 +69,14 @@ void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
         PublisherApplicationInformation offeredService = publisherApplicationInformationNotification->getPublisherApplicationInformation();
         std::list<SubscriberApplicationInformation> subscriberApplicationInformationToBeRemoved;
         for (SubscriberApplicationInformation subscriberApplicationInformation : _pendingRequestsMap[offeredService.getServiceId()]) {
-            if (offeredService.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
-                Request* request = createNegotiationRequest(offeredService, subscriberApplicationInformation.getQoSGroup());
-                //create qos broker for the request
-                _qosnp->createQoSBroker(request);
-                subscriberApplicationInformationToBeRemoved.push_back(subscriberApplicationInformation);
-            }
+            Request* request = createNegotiationRequest(offeredService, subscriberApplicationInformation.getQoSGroup());
+            //create qos broker for the request
+            _qosnp->createQoSBroker(request);
+            subscriberApplicationInformationToBeRemoved.push_back(subscriberApplicationInformation);
         }
         for (SubscriberApplicationInformation subscriberApplicationInformation : subscriberApplicationInformationToBeRemoved) {
             _pendingRequestsMap[subscriberApplicationInformation.getServiceId()].remove(subscriberApplicationInformation);
-            if(!_pendingRequestsMap[subscriberApplicationInformation.getServiceId()].size()) {
+            if(_pendingRequestsMap[subscriberApplicationInformation.getServiceId()].empty()) {
                 _pendingRequestsMap.erase(subscriberApplicationInformation.getServiceId());
             }
         }
@@ -107,17 +105,13 @@ void QoSLocalServiceManager::lookForService(cObject* obj) {
 
 void QoSLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     //check if publisher is already discovered, and if so, start the negotiation with a request.
-    bool serviceFound = false;
     if (_lsr->containsService(publisherServiceIdentifier)) {
         PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(publisherServiceIdentifier);
-        if (publisherApplicationInformation.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
-            Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplicationInformation.getQoSGroup());
-            //create qos broker for the request
-            _qosnp->createQoSBroker(request);
-            serviceFound = true;
-        }
+        Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplicationInformation.getQoSGroup());
+        //create qos broker for the request
+        _qosnp->createQoSBroker(request);
     }
-    if (!serviceFound) {
+    else {
         LocalServiceManager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
         _sd->discover(publisherServiceIdentifier);
     }

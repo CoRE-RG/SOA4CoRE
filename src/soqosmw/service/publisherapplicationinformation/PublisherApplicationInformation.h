@@ -28,15 +28,10 @@ class PublisherApplicationInformation: public ApplicationInformation {
 public:
     PublisherApplicationInformation();
 
-    PublisherApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId, std::set<QoSGroup> qosGroups,
+    PublisherApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId = INSTANCE_ID, std::set<QoSGroup> qosGroups = {},
             int tcpPort = -1, int udpPort = -1, int streamId = -1, CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A,
             size_t framesize = -1, uint16_t intervalFrames = -1);
     virtual ~PublisherApplicationInformation();
-
-    /*
-    PublisherApplicationInformation(const PublisherApplicationInformation& publisherApplicationInformation);
-    virtual PublisherApplicationInformation& operator=(const PublisherApplicationInformation& publisherApplicationInformation);
-*/
 
     /**
      * Returns the QoS groups

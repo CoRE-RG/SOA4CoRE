@@ -31,20 +31,6 @@ PublisherApplicationInformation::PublisherApplicationInformation(int serviceId, 
 PublisherApplicationInformation::~PublisherApplicationInformation() {
 }
 
-/*
-PublisherApplicationInformation::PublisherApplicationInformation(const PublisherApplicationInformation& publisherApplicationInformation) :
-        ApplicationInformation(publisherApplicationInformation), _qosGroups(publisherApplicationInformation._qosGroups) {
-}
-PublisherApplicationInformation& PublisherApplicationInformation::operator=(const PublisherApplicationInformation& publisherApplicationInformation) {
-    if(this == &publisherApplicationInformation)
-        return *this;
-
-    ApplicationInformation::operator =(publisherApplicationInformation);
-    _qosGroups = publisherApplicationInformation._qosGroups;
-    return *this;
-}
-*/
-
 std::set<QoSGroup> PublisherApplicationInformation::getQosGroups() const {
     return _qosGroups;
 }

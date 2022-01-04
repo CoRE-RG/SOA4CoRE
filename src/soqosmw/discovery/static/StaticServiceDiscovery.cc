@@ -53,30 +53,6 @@ void StaticServiceDiscovery::initialize(int stage)
             cXMLElement* service = services[i];
             const char* node = service->getAttribute("node");
             int id = atoi(service->getAttribute("id"));
-            int port = atoi(service->getAttribute("port"));
-
-            cStringTokenizer stringTokenizer(service->getAttribute("qosGroups")," ");
-            std::set<QoSGroup> qosGroups;
-            while (stringTokenizer.hasMoreTokens())
-            {
-                const char *token = stringTokenizer.nextToken();
-                QoSGroup qosGroup;
-                if (std::string(token) == "STD_TCP") {
-                    qosGroup = QoSGroup::STD_TCP;
-                } else if (std::string(token) == "STD_UDP") {
-                    qosGroup = QoSGroup::STD_UDP;
-                } else if (std::string(token) == "SOMEIP_TCP") {
-                    qosGroup = QoSGroup::SOMEIP_TCP;
-                } else if (std::string(token) == "SOMEIP_UDP") {
-                    qosGroup = QoSGroup::SOMEIP_UDP;
-                } else if (std::string(token) == "RT") {
-                    qosGroup = QoSGroup::RT;
-                } else if (std::string(token) == "WEB") {
-                    throw cRuntimeError("WEB QoS is not implemented yet.");
-                }
-                qosGroups.insert(qosGroup);
-            }
-
             EV_DEBUG << node;
 
             //ressolve the address
@@ -84,7 +60,7 @@ void StaticServiceDiscovery::initialize(int stage)
 
             //add entry to map
             if (!_discoveryAbstractionMap.count(id)) {
-                _discoveryAbstractionMap[id] = PublisherApplicationInformation(id, address, 0xFFFF, qosGroups, port, port);
+                _discoveryAbstractionMap[id] = PublisherApplicationInformation(id, address);
             } else {
                 throw cRuntimeError("There can not be multiple publishers with the same service id.");
             }

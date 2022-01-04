@@ -28,15 +28,10 @@ class SubscriberApplicationInformation: public ApplicationInformation {
 public:
     SubscriberApplicationInformation();
 
-    SubscriberApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId, QoSGroup qosGroup,
+    SubscriberApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId = INSTANCE_ID, QoSGroup qosGroup = QoSGroup::RT,
             int tcpPort = -1, int udpPort = -1, int streamId = -1, CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A,
             size_t framesize = -1, uint16_t intervalFrames = -1);
     virtual ~SubscriberApplicationInformation();
-
-    /*
-    SubscriberApplicationInformation(const SubscriberApplicationInformation& subscriberApplicationInformation);
-    virtual SubscriberApplicationInformation& operator=(const SubscriberApplicationInformation& subscriberApplicationInformation);
-*/
 
     QoSGroup getQoSGroup() const;
 

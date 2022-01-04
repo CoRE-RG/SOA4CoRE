@@ -191,6 +191,11 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      * The local ip address
      */
     inet::L3Address _localAddress;
+
+    /**
+     * Indicates if QoS Negotiation Protocol is present
+     */
+    bool _hasQoSNP;
 };
 } /* end namespace SOQoSMW */
 #endif

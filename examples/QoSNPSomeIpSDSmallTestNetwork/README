@@ -5,6 +5,4 @@ After the service discovery publishers send messages to their subscribers.
 
 - Next to that there is one switch that connects every node with each other.
   So all hosts can communicate with each other over the switch.
-
-- Currently the QoS groups are limited to STD_TCP and STD_UDP.
   

@@ -15,6 +15,7 @@
 
 #ifndef SOQOSMW_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_
 #define SOQOSMW_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_
+#define INSTANCE_ID 0xFFFF // see [PRS_SOMEIPSD_00268], [PRS_SOMEIPSD_00270], [PRS_SOMEIPSD_00351]
 
 #include "soqosmw/service/qosserviceidentifier/QoSServiceIdentifier.h"
 #include "core4inet/base/avb/AVBDefs.h"
@@ -38,13 +39,10 @@ class ApplicationInformation {
 public:
     ApplicationInformation();
 
-    ApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId, int tcpPort = -1, int udpPort = -1, int streamId = -1,
+    ApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId = INSTANCE_ID, int tcpPort = -1, int udpPort = -1, int streamId = -1,
             CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A, size_t framesize = -1, uint16_t intervalFrames = -1);
     virtual ~ApplicationInformation();
-/*
-    ApplicationInformation(const ApplicationInformation& applicationInformation);
-    virtual ApplicationInformation& operator=(const ApplicationInformation& applicationInformation);
-*/
+
     virtual bool operator==(const ApplicationInformation& applicationInformation) const;
     virtual bool operator!=(const ApplicationInformation& applicationInformation) const;
 

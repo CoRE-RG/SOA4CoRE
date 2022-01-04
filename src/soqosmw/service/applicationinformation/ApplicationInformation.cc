@@ -27,38 +27,6 @@ ApplicationInformation::ApplicationInformation(int serviceId, inet::L3Address ad
         _udpPort(udpPort), _streamId(streamId), _srClass(srClass), _framesize(framesize), _intervalFrames(intervalFrames) {
 }
 
-/*
-ApplicationInformation::ApplicationInformation(const ApplicationInformation& applicationInformation) {
-    _serviceId = applicationInformation._serviceId;
-    _address = applicationInformation._address;
-    _instanceId = applicationInformation._instanceId;
-    _tcpPort = applicationInformation._tcpPort;
-    _udpPort = applicationInformation._udpPort;
-    _streamId = applicationInformation._streamId;
-    _srClass = applicationInformation._srClass;
-    _framesize = applicationInformation._framesize;
-    _intervalFrames = applicationInformation._intervalFrames;
-
-}
-
-ApplicationInformation& ApplicationInformation::operator=(const ApplicationInformation& applicationInformation) {
-    if(this == &applicationInformation)
-        return *this;
-
-    _serviceId = applicationInformation._serviceId;
-    _address = applicationInformation._address;
-    _instanceId = applicationInformation._instanceId;
-    _tcpPort = applicationInformation._tcpPort;
-    _udpPort = applicationInformation._udpPort;
-    _streamId = applicationInformation._streamId;
-    _srClass = applicationInformation._srClass;
-    _framesize = applicationInformation._framesize;
-    _intervalFrames = applicationInformation._intervalFrames;
-    return *this;
-}
-
-*/
-
 ApplicationInformation::~ApplicationInformation() {
 }
 
