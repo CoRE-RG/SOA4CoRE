@@ -64,8 +64,8 @@ packet IPv4EndpointOption extends SomeIpSDOption {
     byteLength = 12;
     length = 0x0009;
     type = IPV4ENDPOINT;
+    reserved = 0;
     IPv4Address ipv4Address;
-    uint8_t reserved = 0;
     uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
@@ -74,48 +74,24 @@ packet IPv6EndpointOption extends SomeIpSDOption {
     byteLength = 24;
     length = 0x0015;
     type = IPV6ENDPOINT;
+    reserved = 0;
     IPv6Address ipv6Address;
-    uint8_t reserved = 0;
     uint8_t l4Protocol @enum(IPProtocolId);
     uint16_t port;
 }
 
-packet IPv4MulticastOption extends SomeIpSDOption {
-    byteLength = 12;
-    length = 0x0009;
+packet IPv4MulticastOption extends IPv4EndpointOption {
     type = IPV4MULTICAST;
-    IPv4Address ipv4Address;
-    uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(IPProtocolId);
-    uint16_t port;
 }
 
-packet IPv6MulticastOption extends SomeIpSDOption {
-    byteLength = 24;
-    length = 0x0015;
+packet IPv6MulticastOption extends IPv6EndpointOption {
     type = IPV6MULTICAST;
-    IPv6Address ipv6Address;
-    uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(IPProtocolId);
-    uint16_t port;
 }
 
-packet IPv4SDEndpointOption extends SomeIpSDOption {
-    byteLength = 12;
-    length = 0x0009;
+packet IPv4SDEndpointOption extends IPv4EndpointOption {
     type = IPV4SDENDPOINT;
-    IPv4Address ipv4Address;
-    uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(IPProtocolId);
-    uint16_t port;
 }
 
-packet IPv6SDEndpointOption extends SomeIpSDOption {
-    byteLength = 24;
-    length = 0x0015;
+packet IPv6SDEndpointOption extends IPv6EndpointOption {
     type = IPV6SDENDPOINT;
-    IPv6Address ipv6Address;
-    uint8_t reserved = 0;
-    uint8_t l4Protocol @enum(IPProtocolId);
-    uint16_t port;
 }
