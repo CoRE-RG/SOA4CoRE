@@ -70,6 +70,14 @@ public:
 
     simtime_t getCreationTime();
 
+    int getServiceId() const {
+        return _serviceId;
+    }
+
+    void setServiceId(int serviceId) {
+        _serviceId = serviceId;
+    }
+
 private:
     /**
      * Signal to emit creationTime
@@ -142,6 +150,11 @@ protected:
      * The name of the endpoint as a path for better specifying (e.g. "Reifendruck/links").
      */
     std::string _endpointPath;
+
+    /**
+     * The service ID for which this endpoint serves
+     */
+    int _serviceId;
 
     /**
      * Holds the information about the QoS group realized in this endpoint.

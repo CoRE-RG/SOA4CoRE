@@ -65,10 +65,6 @@ protected:
      */
     simsignal_t _messageDroppedSignal;
 
-
-
-
-
 private:
 };
 
