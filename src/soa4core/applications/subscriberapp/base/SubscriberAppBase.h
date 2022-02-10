@@ -26,14 +26,6 @@
 #include <string>
 #include <unordered_map>
 
-namespace SOA4CoRE {
-class SubscriptionReader;
-} /* namespace SOA4CoRE */
-
-namespace omnetpp {
-class cMessage;
-} /* namespace omnetpp */
-
 using namespace omnetpp;
 
 namespace SOA4CoRE {

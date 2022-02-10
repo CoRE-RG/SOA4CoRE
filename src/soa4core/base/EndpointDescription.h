@@ -29,7 +29,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/base
  *
- * @author Timo Haeckel & Mehmet Mueller
+ * @author Timo Haeckel and Mehmet Mueller
  */
 class EndpointDescription {
 public:

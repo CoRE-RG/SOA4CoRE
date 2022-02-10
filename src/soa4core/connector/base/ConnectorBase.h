@@ -28,13 +28,13 @@ namespace SOA4CoRE {
 #define PROCESSINGDELAY_MSG_NAME "Processing Delay"
 
 /**
- * @brief The ConnectorBase provides a common interface for all connctor modules.
+ * @brief The ConnectorBase provides a common interface for all connector modules.
  * Those modules are created by the LocalServiceManager module (@see~LocalServiceManager)
  * during runtime to connect a service application to its protocol specific service endpoints.
  *
  * @ingroup soa4core/connector
  *
- * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class ConnectorBase : public cSimpleModule
 {

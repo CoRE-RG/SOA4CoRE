@@ -26,7 +26,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/endpoints
  *
- * @author Mehmet Cakir
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class SOMEIPUDPPublisherEndpoint : public SOMEIPPublisherEndpointBase, public UDPPublisherEndpoint
 {

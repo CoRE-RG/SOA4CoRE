@@ -21,7 +21,7 @@
 namespace SOA4CoRE {
 
 /**
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class SOMEIPTCPSubscriberEndpoint : public TCPSubscriberEndpoint
 {

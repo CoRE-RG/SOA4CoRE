@@ -37,9 +37,6 @@ enum MiddlewareProtocols {
     QOSNEGOTIATIONPROTOCOL = 0;
 }
 
-//
-// TODO generated message class
-//
 packet Envelope {
     int 					protocol @enum(MiddlewareProtocols); //indicates the type of message for better casting and correct forwarding.
     EndpointDescription 	receiver; //contains information about the receiver of the message.

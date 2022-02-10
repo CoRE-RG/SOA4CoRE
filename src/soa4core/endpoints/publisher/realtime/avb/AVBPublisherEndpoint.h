@@ -19,8 +19,6 @@
 #define __SOA4CORE_AVBPUBLISHERENDPOINT_H_
 
 #include "soa4core/endpoints/publisher/realtime/base/RTPublisherEndpointBase.h"
-
-
 //INET
 #include <inet/linklayer/common/MACAddress.h>
 //CoRE4INET

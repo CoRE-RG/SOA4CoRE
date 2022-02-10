@@ -122,8 +122,8 @@ void SomeIpLocalServiceManager::lookForService(cObject* obj) {
                     someIpSDFindRequest->getRemoteAddress(),
                     foundPublisherApplicationInformation
             );
+            emit(_findResultSignal,someIpSDFindResult);
         }
-        emit(_findResultSignal,someIpSDFindResult);
     }
     delete(someIpSDFindRequest);
 }

@@ -22,7 +22,7 @@ import soa4core.discovery.base.IServiceDiscovery;
 // The SomeipSD provides a SOME/IP service discovery implementation of the SomeIpAppBase.
 // This module realizes the SOME/IP service discovery.
 //
-// @author Mehmet Mueller
+// @author Mehmet Mueller for HAW Hamburg
 //
 simple SomeIpSD extends UDPBasicApp like IServiceDiscovery 
 {

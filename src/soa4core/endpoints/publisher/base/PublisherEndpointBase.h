@@ -34,7 +34,7 @@ class PublisherConnector;
  *
  * @ingroup soa4core/endpoints
  *
- * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class PublisherEndpointBase : public EndpointBase
 {

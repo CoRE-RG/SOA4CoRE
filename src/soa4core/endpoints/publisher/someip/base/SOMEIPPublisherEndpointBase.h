@@ -32,7 +32,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/endpoints
  *
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class SOMEIPPublisherEndpointBase
 {

@@ -1,9 +1,17 @@
-/*
- * SomeIpSDHeader.h
- *
- *  Created on: Apr 30, 2020
- *      Author: mehkir
- */
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with this program.  If not, see http://www.gnu.org/licenses/.
+//
 
 #ifndef SOA4CORE_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_
 #define SOA4CORE_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_
@@ -24,7 +32,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/messages
  *
- * @author Mehmet Mueller (adapted from Philipp Meyer GatewayAggregationMessage in SignalsAndGateways)
+ * @author Mehmet Mueller for HAW Hamburg (adapted from Philipp Meyer GatewayAggregationMessage in SignalsAndGateways)
  */
 class SomeIpSDHeader : public SomeIpSDHeader_Base {
 

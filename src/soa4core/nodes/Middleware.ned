@@ -32,7 +32,7 @@ import soa4core.endpoints.base.IEndpoint;
 // This compound module groups all SOA4CoRE Components into on module.
 // All modules created during runtime will be integrated to this compound module.
 //
-// @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
+// @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
 
 module Middleware

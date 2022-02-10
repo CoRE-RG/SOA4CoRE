@@ -19,20 +19,14 @@
 #define __SOA4CORE_QOSMANAGEMENT_NEGOTIATION_BROKER_QOSBROKER_H_
 
 #include "soa4core/base/EndpointDescription.h"
-#include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
+#include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include <string>
+//INET
+#include <inet/transportlayer/contract/udp/UDPSocket.h>
 
 namespace SOA4CoRE {
 class LocalServiceManager;
 } /* namespace SOA4CoRE */
-
-namespace SOA4CoRE {
-class Request;
-} /* namespace SOA4CoRE */
-
-namespace inet {
-class UDPSocket;
-} /* namespace inet */
 
 using namespace omnetpp;
 

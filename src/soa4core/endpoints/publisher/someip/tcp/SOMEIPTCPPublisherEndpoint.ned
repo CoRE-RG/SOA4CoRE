@@ -18,7 +18,7 @@ package soa4core.endpoints.publisher.someip.tcp;
 import soa4core.endpoints.publisher.standard.tcp.TCPPublisherEndpoint;
 
 //
-// @author Mehmet Mueller
+// @author Mehmet Mueller for HAW Hamburg
 //
 simple SOMEIPTCPPublisherEndpoint extends TCPPublisherEndpoint
 {

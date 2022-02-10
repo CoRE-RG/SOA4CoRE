@@ -24,10 +24,6 @@
 #include <string>
 #include <unordered_map>
 
-namespace SOA4CoRE {
-class MiddlewareApplicationBase;
-} /* namespace SOA4CoRE */
-
 namespace omnetpp {
 class cGate;
 } /* namespace omnetpp */

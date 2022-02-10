@@ -18,7 +18,7 @@ package soa4core.endpoints.subscriber.someip.udp;
 import soa4core.endpoints.subscriber.standard.udp.UDPSubscriberEndpoint;
 
 //
-// @author Mehmet Mueller
+// @author Mehmet Mueller for HAW Hamburg
 //
 simple SOMEIPUDPSubscriberEndpoint extends UDPSubscriberEndpoint
 {
