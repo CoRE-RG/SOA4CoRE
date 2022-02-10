@@ -13,10 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.examples.test_pubsub.small_network;
+package soa4core.examples.test_pubsub.small_network;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherSwitch;
-import soqosmw.nodes.SOQoSMWHost;
+import soa4core.nodes.MiddlewareHost;
 
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.ethernet.Eth100M;
@@ -34,15 +34,15 @@ network small_network
 {
     @display("bgb=721,473,white,black");
     submodules:
-        Publisher: SOQoSMWHost {
+        Publisher: MiddlewareHost {
             @display("p=49,408;i=block/source;is=l");
         }
 
-        RTSubscriber: SOQoSMWHost {
+        RTSubscriber: MiddlewareHost {
             @display("p=365,30;i=block/sink,#FF8080,50;is=l");
         }
 
-        STDSubscriber: SOQoSMWHost {
+        STDSubscriber: MiddlewareHost {
             @display("p=634,400;i=block/sink,#0080FF;is=l");
         }
 

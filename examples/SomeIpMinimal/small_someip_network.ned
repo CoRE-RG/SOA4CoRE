@@ -1,4 +1,4 @@
-package soqosmw.examples.SomeIpMinimal;
+package soa4core.examples.SomeIpMinimal;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import inet.node.ethernet.EtherLink;

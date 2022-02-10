@@ -1,4 +1,4 @@
-package soqosmw.examples.MinimalEvaluationNetwork.large_network;
+package soa4core.examples.MinimalEvaluationNetwork.large_network;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import core4inet.incoming.AS6802.TTIncoming;

@@ -13,17 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.examples.SomeIpSDLargeTestNetwork;
+package soa4core.examples.SomeIpSDLargeTestNetwork;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import core4inet.incoming.AS6802.TTIncoming;
 import core4inet.buffer.AS6802.TTQueueBuffer;
 import core4inet.incoming.AS6802.RCIncoming;
 import core4inet.buffer.AS6802.RCQueueBuffer;
-import soqosmw.nodes.SOQoSMWHost;
+import soa4core.nodes.MiddlewareHost;
 
 
-module HostNorthWest extends SOQoSMWHost
+module HostNorthWest extends MiddlewareHost
 {
 	submodules:
 	connections: 

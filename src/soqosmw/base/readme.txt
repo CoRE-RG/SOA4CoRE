@@ -1,1 +1,0 @@
-Base definitions for all soqosmw modules.

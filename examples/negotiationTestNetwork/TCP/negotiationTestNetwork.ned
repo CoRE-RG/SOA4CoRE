@@ -1,4 +1,4 @@
-package soqosmw.examples.negotiationTestNetwork.TCP;
+package soa4core.examples.negotiationTestNetwork.TCP;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import inet.node.ethernet.EtherLink;

@@ -1,4 +1,4 @@
-package soqosmw.examples.MinimalEvaluationNetwork.small_network;
+package soa4core.examples.MinimalEvaluationNetwork.small_network;
 
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;

@@ -1,4 +1,4 @@
-package soqosmw.examples.NewDesignTest;
+package soa4core.examples.NewDesignTest;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherSwitch;
 import core4inet.incoming.AS6802.TTIncoming;

@@ -1,4 +1,4 @@
-package soqosmw.simulations.examples_andl.test_gateway.minimal_net;
+package soa4core.simulations.examples_andl.test_gateway.minimal_net;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import inet.node.ethernet.EtherLink;

@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soqosmw.examples.SomeIpSDLargeTestNetwork;
+package soa4core.examples.SomeIpSDLargeTestNetwork;
 
 import inet.node.ethernet.EtherSwitch;
 

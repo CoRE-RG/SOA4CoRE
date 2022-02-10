@@ -1,4 +1,4 @@
-package soqosmw.examples.negotiationTestNetwork.RT;
+package soa4core.examples.negotiationTestNetwork.RT;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherSwitch;
 import core4inet.incoming.AS6802.TTIncoming;
