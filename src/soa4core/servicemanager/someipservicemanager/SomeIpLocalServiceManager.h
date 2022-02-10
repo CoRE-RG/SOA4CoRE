@@ -18,7 +18,6 @@
 
 #include <omnetpp.h>
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soa4core/servicemanager/LocalServiceManager.h"
 
 using namespace omnetpp;
@@ -29,7 +28,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/servicemanager
  *
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class SomeIpLocalServiceManager : public LocalServiceManager
 {

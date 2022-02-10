@@ -15,6 +15,7 @@
 
 #include "soa4core/discovery/someipservicediscovery/SomeIpSDFindResult.h"
 #include "soa4core/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
+#include "soa4core/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soa4core/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soa4core/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
 #include "soa4core/discovery/someipservicediscovery/SomeIpSDAcknowledgeSubscription.h"

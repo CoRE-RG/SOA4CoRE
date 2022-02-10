@@ -15,11 +15,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-
-#include "soa4core/base/EndpointDescription.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 #include "soa4core/servicemanager/LocalServiceManager.h"
+#include "soa4core/messages/Envelope_m.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //INET

@@ -15,8 +15,6 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "soa4core/service/applicationinformation/ApplicationInformation.h"
-#include "soa4core/base/EndpointDescription.h"
 #include "soa4core/servicemanager/LocalServiceManager.h"
 #include "soa4core/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"

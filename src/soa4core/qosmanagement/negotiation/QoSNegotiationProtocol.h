@@ -27,16 +27,6 @@
 //STD
 #include <vector>
 
-namespace SOA4CoRE {
-class Request;
-class Envelope;
-class QoSBroker;
-class QoSNegotiationEstablish;
-class QoSNegotiationFinalise;
-class QoSNegotiationRequest;
-class QoSNegotiationResponse;
-} /* namespace SOA4CoRE */
-
 using namespace omnetpp;
 
 namespace SOA4CoRE {
@@ -49,10 +39,7 @@ namespace SOA4CoRE {
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class QoSNegotiationProtocol: public ProcessingTimeSimulation {
-    friend class LocalServiceManager;
     friend class QoSLocalServiceManager;
-    friend class SomeIpLocalServiceManager;
-    friend class QoSBroker;
 public:
     QoSNegotiationProtocol();
     virtual ~QoSNegotiationProtocol();
