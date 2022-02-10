@@ -117,13 +117,15 @@ void SomeIpLocalServiceManager::lookForService(cObject* obj) {
             someIpSDFindRequest->getInstanceId());
     if (_lsr->containsService(serviceIdentifier)){
         PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
-        SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
-                someIpSDFindRequest->getRemoteAddress(),
-                foundPublisherApplicationInformation
-        );
-        delete(someIpSDFindRequest);
+        if(foundPublisherApplicationInformation.getAddress() == _localAddress) {
+            SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
+                    someIpSDFindRequest->getRemoteAddress(),
+                    foundPublisherApplicationInformation
+            );
+        }
         emit(_findResultSignal,someIpSDFindResult);
     }
+    delete(someIpSDFindRequest);
 }
 
 // Subscriber-side

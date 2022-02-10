@@ -27,10 +27,6 @@
 #include <string>
 #include <unordered_map>
 
-namespace SOA4CoRE {
-class PublisherWriter;
-} /* namespace SOA4CoRE */
-
 using namespace omnetpp;
 
 namespace SOA4CoRE {
