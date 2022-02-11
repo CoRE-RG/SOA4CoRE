@@ -17,7 +17,7 @@
 #define __SOA4CORE_SERVICEMANAGER_BASE_IMANAGER_H_
 
 #include <omnetpp.h>
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 
 namespace SOA4CoRE {
 
@@ -32,7 +32,7 @@ class IManager
 {
 public:
   virtual ~IManager();
-  virtual void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) = 0;
+  virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) = 0;
 
 };
 

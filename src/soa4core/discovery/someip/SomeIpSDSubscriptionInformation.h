@@ -16,8 +16,8 @@
 #ifndef SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDSUBSCRIPTIONINFORMATION_H_
 #define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDSUBSCRIPTIONINFORMATION_H_
 
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 #include <stdint.h>
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 
 namespace SOA4CoRE {
 

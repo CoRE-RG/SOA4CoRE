@@ -22,8 +22,8 @@
 #include "soa4core/messages/someip/SomeIpSDHeader.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/discovery/someip/ExtractedQoSOptions.h"
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpSDEntry_m.h"
 //INET
@@ -47,9 +47,9 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
   public:
     /**
      * Initiates a service discovery
-     * @param qosServiceIdentifier
+     * @param serviceIdentifier
      */
-    void discover(QoSServiceIdentifier qosServiceIdentifier) override;
+    void discover(ServiceIdentifier serviceIdentifier) override;
 
     /**
      * @brief Receives discovery response

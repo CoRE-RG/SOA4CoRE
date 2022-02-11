@@ -18,8 +18,8 @@
 #ifndef __SOA4CORE_DISCOVERY_STATIC_STATICSERVICEDISCOVERY_H_
 #define __SOA4CORE_DISCOVERY_STATIC_STATICSERVICEDISCOVERY_H_
 
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
 #include <soa4core/registry/base/IRegistry.h>
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include <inet/networklayer/common/L3Address.h>
 #include <inet/common/InitStages.h>
@@ -42,9 +42,9 @@ public:
 
     /**
      * Discovers a service in the network
-     * @param qosServiceIdentifier
+     * @param serviceIdentifier
      */
-    void discover(QoSServiceIdentifier qosServiceIdentifier) override;
+    void discover(ServiceIdentifier serviceIdentifier) override;
 
     /**
      * Check if the registry contains a service with the service identifier.

@@ -13,10 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOA4CORE_SERVICE_SUBSCRIBERAPPLICATIONINFORMATION_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_
-#define SOA4CORE_SERVICE_SUBSCRIBERAPPLICATIONINFORMATION_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_
+#ifndef SOA4CORE_APPLICATIONINFORMATION_SUBSCRIBER_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_
+#define SOA4CORE_APPLICATIONINFORMATION_SUBSCRIBER_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_
 
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 
 namespace SOA4CoRE {
 class SubscriberApplicationInformationNotification : public omnetpp::cObject, omnetpp::noncopyable {
@@ -41,4 +41,4 @@ private:
     SubscriberApplicationInformation _subscriberApplicationInformation;
 };
 } /* end namespace */
-#endif /* SOA4CORE_SERVICE_SUBSCRIBERAPPLICATIONINFORMATION_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_ */
+#endif /* SOA4CORE_APPLICATIONINFORMATION_SUBSCRIBER_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_ */

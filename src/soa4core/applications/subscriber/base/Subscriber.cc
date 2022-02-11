@@ -18,8 +18,8 @@
 #include <soa4core/applications/subscriber/base/Subscriber.h>
 #include <soa4core/manager/Manager.h>
 #include <soa4core/manager/Manager.h>
+#include <soa4core/serviceidentifier/ServiceIdentifier.h>
 #include "soa4core/connector/base/ConnectorBase.h"
-#include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //CORE4INET
 #include <core4inet/utilities/ConfigFunctions.h>
@@ -79,7 +79,7 @@ void Subscriber::handleMessage(cMessage *msg)
         if (!_connector) {
             throw cRuntimeError("No subscriber connector created.");
         }
-        QoSServiceIdentifier publisherServiceIdentifier = QoSServiceIdentifier(this->_publisherServiceId,this->_instanceId);
+        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId,this->_instanceId);
         _localServiceManager->subscribeService(publisherServiceIdentifier, _subscriberApplicationInformation);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");

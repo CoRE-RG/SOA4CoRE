@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
 #include <algorithm>
 
 namespace SOA4CoRE {

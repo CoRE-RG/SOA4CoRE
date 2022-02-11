@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOA4CORE_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
-#define SOA4CORE_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_
+#ifndef SOA4CORE_SERVICEIDENTIFIER_SERVICEIDENTIFIER_H_
+#define SOA4CORE_SERVICEIDENTIFIER_SERVICEIDENTIFIER_H_
 
 
 namespace SOA4CoRE {
@@ -27,13 +27,13 @@ namespace SOA4CoRE {
  * @author Mehmet Mueller for HAW Hamburg
  */
 
-class QoSServiceIdentifier {
+class ServiceIdentifier {
 public:
-    QoSServiceIdentifier();
-    QoSServiceIdentifier(int serviceId, int instanceId);
-    virtual ~QoSServiceIdentifier();
-    virtual bool operator==(const QoSServiceIdentifier& qosServiceIdentifier) const;
-    virtual bool operator!=(const QoSServiceIdentifier& qosServiceIdentifier) const;
+    ServiceIdentifier();
+    ServiceIdentifier(int serviceId, int instanceId);
+    virtual ~ServiceIdentifier();
+    virtual bool operator==(const ServiceIdentifier& serviceIdentifier) const;
+    virtual bool operator!=(const ServiceIdentifier& serviceIdentifier) const;
     int getServiceId() const;
     int getInstanceId() const;
 
@@ -50,4 +50,4 @@ protected:
 };
 } /* namespace SOA4CoRE */
 
-#endif /* SOA4CORE_SERVICE_QOSSERVICEIDENTIFIER_QOSSERVICEIDENTIFIER_H_ */
+#endif /* SOA4CORE_SERVICEIDENTIFIER_SERVICEIDENTIFIER_H_ */

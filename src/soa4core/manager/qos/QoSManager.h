@@ -66,7 +66,7 @@ class QoSManager : public Manager
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
      * @param subscriberApplicationInformation the application information about the subscriber
      */
-    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
+    void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
 
   private:
     /**

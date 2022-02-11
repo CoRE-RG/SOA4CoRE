@@ -13,33 +13,33 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
+#include <soa4core/serviceidentifier/ServiceIdentifier.h>
 
 namespace SOA4CoRE {
 
-QoSServiceIdentifier::QoSServiceIdentifier() {
+ServiceIdentifier::ServiceIdentifier() {
 
 }
 
-QoSServiceIdentifier::QoSServiceIdentifier(int serviceId, int instanceId) : _serviceId(serviceId), _instanceId(instanceId) {
+ServiceIdentifier::ServiceIdentifier(int serviceId, int instanceId) : _serviceId(serviceId), _instanceId(instanceId) {
 }
 
-QoSServiceIdentifier::~QoSServiceIdentifier() {
+ServiceIdentifier::~ServiceIdentifier() {
 }
 
-bool QoSServiceIdentifier::operator==(const QoSServiceIdentifier& qosServiceIdentifier) const {
-    return this->_serviceId == qosServiceIdentifier.getServiceId() && this->_instanceId == qosServiceIdentifier.getInstanceId();
+bool ServiceIdentifier::operator==(const ServiceIdentifier& serviceIdentifier) const {
+    return this->_serviceId == serviceIdentifier.getServiceId() && this->_instanceId == serviceIdentifier.getInstanceId();
 }
 
-bool QoSServiceIdentifier::operator!=(const QoSServiceIdentifier& qosServiceIdentifier) const {
-    return !(*this == qosServiceIdentifier);
+bool ServiceIdentifier::operator!=(const ServiceIdentifier& serviceIdentifier) const {
+    return !(*this == serviceIdentifier);
 }
 
-int QoSServiceIdentifier::getServiceId() const {
+int ServiceIdentifier::getServiceId() const {
     return _serviceId;
 }
 
-int QoSServiceIdentifier::getInstanceId() const {
+int ServiceIdentifier::getInstanceId() const {
     return _instanceId;
 }
 

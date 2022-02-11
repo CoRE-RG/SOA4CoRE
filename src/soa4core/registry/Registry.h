@@ -46,7 +46,7 @@ class Registry : public cSimpleModule, public IRegistry
      * Returns a service for given service identifier
      * @return QoSService
      */
-    virtual PublisherApplicationInformation getService(QoSServiceIdentifier serviceIdentifier) override;
+    virtual PublisherApplicationInformation getService(ServiceIdentifier serviceIdentifier) override;
 
     /**
      * Returns the service registry as a map
@@ -59,7 +59,7 @@ class Registry : public cSimpleModule, public IRegistry
      * @param serviceIdentifier
      * @return true if a service for the given service identifier is present, else false
      */
-    virtual bool containsService(QoSServiceIdentifier serviceIdentifier) override;
+    virtual bool containsService(ServiceIdentifier serviceIdentifier) override;
 
   protected:
     virtual void initialize() override;

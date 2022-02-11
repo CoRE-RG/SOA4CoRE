@@ -13,6 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h>
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformationNotification.h>
 #include <soa4core/discovery/someip/SomeIpSD.h>
 #include <soa4core/discovery/someip/SomeIpSDAcknowledgeSubscription.h>
 #include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
@@ -21,8 +23,6 @@
 #include <soa4core/manager/someip/SomeIpManager.h>
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformationNotification.h"
 #include <algorithm>
 namespace SOA4CoRE {
 
@@ -91,7 +91,7 @@ void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObj
 }
 
 // Subscriber-side
-void SomeIpManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void SomeIpManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     bool serviceFound = false;
     if (_lsr->containsService(publisherServiceIdentifier)) {
         PublisherApplicationInformation publisherService = _lsr->getService(publisherServiceIdentifier);
@@ -114,7 +114,7 @@ void SomeIpManager::subscribeService(QoSServiceIdentifier publisherServiceIdenti
 // Publisher-side
 void SomeIpManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
-    QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getServiceId(),
+    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId(),
             someIpSDFindRequest->getInstanceId());
     if (_lsr->containsService(serviceIdentifier)){
         PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
@@ -159,9 +159,9 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
 void SomeIpManager::acknowledgeSubscription(cObject* obj) {
     SubscriberApplicationInformationNotification* subscriberApplicationInformationNotification = dynamic_cast<SubscriberApplicationInformationNotification*>(obj);
     SubscriberApplicationInformation subscriberApplicationInformation = subscriberApplicationInformationNotification->getSubscriberApplicationInformation();
-    QoSServiceIdentifier qosServiceIdentifier = QoSServiceIdentifier(subscriberApplicationInformation.getServiceId(), subscriberApplicationInformation.getInstanceId());
-    if (_lsr->containsService(qosServiceIdentifier)) {
-        PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(qosServiceIdentifier);
+    ServiceIdentifier serviceIdentifier = ServiceIdentifier(subscriberApplicationInformation.getServiceId(), subscriberApplicationInformation.getInstanceId());
+    if (_lsr->containsService(serviceIdentifier)) {
+        PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(serviceIdentifier);
         if (publisherApplicationInformation.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
             SomeIpSDAcknowledgeSubscription* someIpSDAcknowledgeSubscription = new SomeIpSDAcknowledgeSubscription(
                     subscriberApplicationInformation.getAddress(),

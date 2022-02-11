@@ -13,11 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef SOA4CORE_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_
-#define SOA4CORE_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_
+#ifndef SOA4CORE_APPLICATIONINFORMATION_BASE_APPLICATIONINFORMATION_H_
+#define SOA4CORE_APPLICATIONINFORMATION_BASE_APPLICATIONINFORMATION_H_
+
 #define INSTANCE_ID 0xFFFF // see [PRS_SOMEIPSD_00268], [PRS_SOMEIPSD_00270], [PRS_SOMEIPSD_00351]
 
-#include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
+#include <soa4core/serviceidentifier/ServiceIdentifier.h>
 #include <core4inet/base/avb/AVBDefs.h>
 #include <inet/networklayer/common/L3Address.h>
 
@@ -160,4 +161,4 @@ private:
 
 } /* namespace SOA4CoRE */
 
-#endif /* SOA4CORE_SERVICE_APPLICATIONINFORMATION_APPLICATIONINFORMATION_H_ */
+#endif /* SOA4CORE_APPLICATIONINFORMATION_BASE_APPLICATIONINFORMATION_H_ */

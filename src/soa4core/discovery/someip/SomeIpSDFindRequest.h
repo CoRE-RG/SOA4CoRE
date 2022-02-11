@@ -17,7 +17,7 @@
 #define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDREQUEST_H_
 
 #include <omnetpp.h>
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 
 /**
  * @brief This class provides a container for a SOME/IP SD find request

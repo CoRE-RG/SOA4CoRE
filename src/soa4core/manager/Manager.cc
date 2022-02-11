@@ -132,12 +132,12 @@ void Manager::registerSubscriberService(SubscriberApplicationInformation subscri
     }
 }
 
-void Manager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void Manager::subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     throw cRuntimeError("Manager has no implementation of subscribeService. \n"
             "Override or use ServiceManager which implements subscribeService");
 }
 
-void Manager::addSubscriberToPendingRequestsMap(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void Manager::addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
         _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(subscriberApplicationInformation);
     } else {

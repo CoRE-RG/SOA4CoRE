@@ -18,9 +18,8 @@
 #ifndef __SOA4CORE_APPLICATIONS_SUBSCRIBER_BASE_SUBSCRIBER_H_
 #define __SOA4CORE_APPLICATIONS_SUBSCRIBER_BASE_SUBSCRIBER_H_
 
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 #include "soa4core/applications/base/ServiceBase.h"
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
-//AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 
 

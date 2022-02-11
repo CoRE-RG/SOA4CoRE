@@ -18,10 +18,10 @@
 #ifndef __SOA4CORE_PUBLISHERCONNECTOR_H_
 #define __SOA4CORE_PUBLISHERCONNECTOR_H_
 
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 
 namespace SOA4CoRE {
 

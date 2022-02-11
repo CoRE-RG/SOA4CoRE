@@ -13,11 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h>
 #include <soa4core/discovery/someip/SomeIpSD.h>
 #include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
 #include <soa4core/discovery/someip/SomeIpSDFindResult.h>
 #include <soa4core/manager/qos/QoSManager.h>
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 #include <algorithm>
 //INET
 #include <inet/networklayer/common/L3Address.h>
@@ -91,7 +91,7 @@ void QoSManager::subscribeOfferedService(cObject* obj) {
 // Publisher-side
 void QoSManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
-    QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getServiceId(),
+    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId(),
             someIpSDFindRequest->getInstanceId());
     if (_lsr->containsService(serviceIdentifier)){
         PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
@@ -104,7 +104,7 @@ void QoSManager::lookForService(cObject* obj) {
     }
 }
 
-void QoSManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     //check if publisher is already discovered, and if so, start the negotiation with a request.
     if (_lsr->containsService(publisherServiceIdentifier)) {
         PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(publisherServiceIdentifier);

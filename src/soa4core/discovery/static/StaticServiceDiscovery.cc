@@ -15,10 +15,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h>
 #include <soa4core/registry/Registry.h>
 #include "soa4core/discovery/static/StaticServiceDiscovery.h"
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
-//INET
 #include "inet/networklayer/common/L3AddressResolver.h"
 //STD
 #include <iostream>
@@ -70,12 +69,12 @@ void StaticServiceDiscovery::initialize(int stage)
 
 }
 
-void StaticServiceDiscovery::discover(QoSServiceIdentifier qosServiceIdentifier) {
+void StaticServiceDiscovery::discover(ServiceIdentifier serviceIdentifier) {
     Enter_Method("SD::discover()");
-    if (!(_discoveryAbstractionMap.count(qosServiceIdentifier.getServiceId()))) {
+    if (!(_discoveryAbstractionMap.count(serviceIdentifier.getServiceId()))) {
         throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }
-    PublisherApplicationInformation publisherApplicationInformation = _discoveryAbstractionMap[qosServiceIdentifier.getServiceId()];
+    PublisherApplicationInformation publisherApplicationInformation = _discoveryAbstractionMap[serviceIdentifier.getServiceId()];
     PublisherApplicationInformationNotification* publisherApplicationInformationNotification = new PublisherApplicationInformationNotification(publisherApplicationInformation);
     emit(_serviceOfferSignal, publisherApplicationInformationNotification);
 }

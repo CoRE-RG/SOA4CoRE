@@ -38,7 +38,7 @@ void Registry::addPublisherService(PublisherApplicationInformation publisherAppl
     _serviceRegistry[publisherApplicationInformation.getServiceId()] = publisherApplicationInformation;
 }
 
-PublisherApplicationInformation Registry::getService(QoSServiceIdentifier serviceIdentifier) {
+PublisherApplicationInformation Registry::getService(ServiceIdentifier serviceIdentifier) {
     PublisherApplicationInformation service;
     if (_serviceRegistry.count(serviceIdentifier.getServiceId())) {
         service = _serviceRegistry[serviceIdentifier.getServiceId()];
@@ -46,7 +46,7 @@ PublisherApplicationInformation Registry::getService(QoSServiceIdentifier servic
     return service;
 }
 
-bool Registry::containsService(QoSServiceIdentifier serviceIdentifier) {
+bool Registry::containsService(ServiceIdentifier serviceIdentifier) {
     return _serviceRegistry.count(serviceIdentifier.getServiceId());
 }
 

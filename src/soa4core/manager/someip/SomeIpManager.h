@@ -17,8 +17,8 @@
 #define __SOA4CORE_SOMEIPLOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
 #include <soa4core/manager/Manager.h>
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 
 using namespace omnetpp;
 namespace SOA4CoRE {
@@ -50,7 +50,7 @@ class SomeIpManager : public Manager
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
      * @param qosService the QoS service
      */
-    void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
+    void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
   protected:
     /**
      * Initializes the module and waits for find

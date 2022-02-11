@@ -19,13 +19,13 @@
 #define __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 
 #include <omnetpp.h>
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
+#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 #include <soa4core/applications/base/ServiceBase.h>
 #include <soa4core/connector/publisher/PublisherConnector.h>
 #include <soa4core/connector/subscriber/SubscriberConnector.h>
 #include <soa4core/manager/base/IManager.h>
 #include <soa4core/registry/base/IRegistry.h>
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
@@ -82,7 +82,7 @@ public:
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
      * @param subscriberApplicationInformation the subscriber application information
      */
-    virtual void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
+    virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
 
     /**
      * Finds the connector for the publisher
@@ -170,7 +170,7 @@ protected:
      * @param publisherServiceIdentifier the service id of the publisher service
      * @param qosService the QoS service
      */
-    void addSubscriberToPendingRequestsMap(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation);
+    void addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation);
 
 private:
 

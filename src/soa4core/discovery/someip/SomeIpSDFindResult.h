@@ -16,7 +16,7 @@
 #ifndef SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_
 #define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_
 
-#include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
+#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
 
 using namespace inet;
 namespace SOA4CoRE {

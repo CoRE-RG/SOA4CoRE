@@ -19,7 +19,8 @@
 #define __SOA4CORE_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 
 #include <omnetpp.h>
-#include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
+
+#include <soa4core/serviceidentifier/ServiceIdentifier.h>
 
 namespace SOA4CoRE {
 
@@ -36,7 +37,7 @@ class IServiceDiscovery {
      * Methods
      */
 public:
-    virtual void discover(QoSServiceIdentifier qosServiceIdentifier) = 0;
+    virtual void discover(ServiceIdentifier serviceIdentifier) = 0;
 protected:
 private:
 
