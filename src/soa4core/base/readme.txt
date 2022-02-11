@@ -1,1 +1,0 @@
-Base definitions for all soa4core modules.

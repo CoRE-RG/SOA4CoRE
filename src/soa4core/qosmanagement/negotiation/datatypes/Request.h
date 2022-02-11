@@ -18,8 +18,7 @@
 #ifndef SOA4CORE_QOSMANAGEMENT_NEGOTIATION_DATATYPES_REQUEST_H_
 #define SOA4CORE_QOSMANAGEMENT_NEGOTIATION_DATATYPES_REQUEST_H_
 
-#include "soa4core/base/EndpointDescription.h"
-//AUTO-GENERATED MESSAGES
+#include <soa4core/qosmanagement/negotiation/datatypes/EndpointDescription.h>
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 #include <string>
 #include <unordered_map>

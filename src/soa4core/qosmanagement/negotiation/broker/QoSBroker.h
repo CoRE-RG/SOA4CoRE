@@ -18,7 +18,7 @@
 #ifndef __SOA4CORE_QOSMANAGEMENT_NEGOTIATION_BROKER_QOSBROKER_H_
 #define __SOA4CORE_QOSMANAGEMENT_NEGOTIATION_BROKER_QOSBROKER_H_
 
-#include "soa4core/base/EndpointDescription.h"
+#include <soa4core/qosmanagement/negotiation/datatypes/EndpointDescription.h>
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/servicemanager/LocalServiceManager.h"
 #include <string>
