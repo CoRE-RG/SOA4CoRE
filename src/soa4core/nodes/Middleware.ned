@@ -47,7 +47,6 @@ module Middleware
         *.qosnpmoduleName = "qosnp";
         *.srmoduleName = "sr";
         bool hasQoSNP = default(true);
-        *.hasQoSNP = hasQoSNP;
 
         @display("i=block/layer");
     gates:
