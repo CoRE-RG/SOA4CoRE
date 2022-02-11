@@ -36,7 +36,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/endpoints
  *
- * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class EndpointBase: public ProcessingTimeSimulation {
 public:

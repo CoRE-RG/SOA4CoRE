@@ -40,7 +40,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/applications
  *
- * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class MiddlewareApplicationBase: public virtual cSimpleModule {
 /**

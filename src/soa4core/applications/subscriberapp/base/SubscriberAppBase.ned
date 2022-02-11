@@ -23,7 +23,7 @@ import soa4core.applications.base.MiddlewareApplicationBase;
 // The SubscriberAppBase provides a subscriber implementation of the middleware application base.
 // These modules realize a data subscriber service.
 //
-// @author Timo Haeckel & Mehmet Cakir for HAW Hamburg
+// @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
 simple SubscriberAppBase extends MiddlewareApplicationBase
 {

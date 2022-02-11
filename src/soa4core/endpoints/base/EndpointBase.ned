@@ -26,7 +26,7 @@ import soa4core.utility.processing.ProcessingTimeSimulation;
 // Endpoints are connected to a specific transport and a connector module (@see~ConnectorBase)
 // which loosely couples an endpoint to an application (@see~MiddlewareApplicationBase). 
 //
-// @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
+// @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
 simple EndpointBase extends ProcessingTimeSimulation like IEndpoint
 {

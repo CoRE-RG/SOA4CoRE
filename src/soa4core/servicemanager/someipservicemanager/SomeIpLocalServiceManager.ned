@@ -20,7 +20,7 @@ import soa4core.servicemanager.LocalServiceManager;
 //
 // The SomeIpLocalServiceManager.
 //
-// @author Mehmet Cakir
+// @author Mehmet Mueller for HAW Hamburg
 //
 
 simple SomeIpLocalServiceManager extends LocalServiceManager

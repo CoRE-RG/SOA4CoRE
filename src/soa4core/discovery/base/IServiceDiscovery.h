@@ -28,7 +28,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/discovery
  *
- * @author Timo Haeckel and Mehmet Cakir
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class IServiceDiscovery {
 

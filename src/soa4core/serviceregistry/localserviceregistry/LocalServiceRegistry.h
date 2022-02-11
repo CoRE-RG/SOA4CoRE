@@ -30,7 +30,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/serviceregistry
  *
- * @author Mehmet Cakir
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
 {

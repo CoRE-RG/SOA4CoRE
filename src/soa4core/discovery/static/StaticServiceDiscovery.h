@@ -36,7 +36,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/discovery
  *
- * @author Timo Haeckel and Mehmet Cakir for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class StaticServiceDiscovery: public IServiceDiscovery, public cSimpleModule {
 public:

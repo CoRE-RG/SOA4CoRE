@@ -28,7 +28,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/servicemanager
  *
- * @author Mehmet Cakir
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class QoSLocalServiceManager : public LocalServiceManager
 {
