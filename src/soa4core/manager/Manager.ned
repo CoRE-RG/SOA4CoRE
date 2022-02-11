@@ -15,25 +15,25 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.servicemanager;
+package soa4core.manager;
 
-import soa4core.servicemanager.base.ILocalServiceManager;
+import soa4core.manager.base.IManager;
 
 //
-// The LocalServiceManager.
+// The Manager.
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
-simple LocalServiceManager like ILocalServiceManager
+simple Manager like IManager
 {
     parameters:
-        @class(SOA4CoRE::LocalServiceManager);
+        @class(SOA4CoRE::Manager);
         @display("i=block/cogwheel");
         
         // paths to used modules.
         string sdmoduleName = default("sd");
         string qosnpmoduleName = default("qosnp");
-        string lsrmoduleName = default("lsr");
+        string srmoduleName = default("sr");
 
         string localAddress = default("");
 

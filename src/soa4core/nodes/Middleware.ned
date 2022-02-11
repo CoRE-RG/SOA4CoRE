@@ -20,8 +20,8 @@ package soa4core.nodes;
 import soa4core.qosmanagement.negotiation.QoSNegotiationProtocol;
 import soa4core.discovery.base.IServiceDiscovery;
 import soa4core.discovery.someip.SomeIpSD;
-import soa4core.servicemanager.base.ILocalServiceManager;
-import soa4core.serviceregistry.base.IServiceRegistry;
+import soa4core.manager.base.IManager;
+import soa4core.registry.base.IRegistry;
 
 import soa4core.connector.publisher.PublisherConnector;
 import soa4core.connector.subscriber.SubscriberConnector;
@@ -42,10 +42,10 @@ module Middleware
         *.interfaceTableModule = interfaceTableModule;
         string localAddress = default("");
         *.localAddress = localAddress;
-        *.lsmmoduleName = "lsm";
+        *.smmoduleName = "sm";
         *.sdmoduleName = "sd";
         *.qosnpmoduleName = "qosnp";
-        *.lsrmoduleName = "lsr";
+        *.srmoduleName = "sr";
         bool hasQoSNP = default(true);
         *.hasQoSNP = hasQoSNP;
 
@@ -67,11 +67,11 @@ module Middleware
             @display("p=160,50");
         }
 
-        lsm: <default("LocalServiceManager")> like ILocalServiceManager {
+        sm: <default("Manager")> like IManager {
             @display("p=100,50");
         }
 
-        lsr: <default("LocalServiceRegistry")> like IServiceRegistry {
+        sr: <default("Registry")> like IRegistry {
             @display("p=239,50");
         }
 

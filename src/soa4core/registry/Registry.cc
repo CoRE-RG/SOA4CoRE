@@ -13,32 +13,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "LocalServiceRegistry.h"
+#include <soa4core/registry/Registry.h>
 
 namespace SOA4CoRE {
 
-Define_Module(LocalServiceRegistry);
+Define_Module(Registry);
 
-LocalServiceRegistry::LocalServiceRegistry() {
+Registry::Registry() {
 
 }
 
-LocalServiceRegistry::~LocalServiceRegistry() {
+Registry::~Registry() {
 }
 
-void LocalServiceRegistry::initialize()
+void Registry::initialize()
 {
 }
 
-void LocalServiceRegistry::handleMessage(cMessage *msg)
+void Registry::handleMessage(cMessage *msg)
 {
 }
 
-void LocalServiceRegistry::addPublisherService(PublisherApplicationInformation publisherApplicationInformation) {
+void Registry::addPublisherService(PublisherApplicationInformation publisherApplicationInformation) {
     _serviceRegistry[publisherApplicationInformation.getServiceId()] = publisherApplicationInformation;
 }
 
-PublisherApplicationInformation LocalServiceRegistry::getService(QoSServiceIdentifier serviceIdentifier) {
+PublisherApplicationInformation Registry::getService(QoSServiceIdentifier serviceIdentifier) {
     PublisherApplicationInformation service;
     if (_serviceRegistry.count(serviceIdentifier.getServiceId())) {
         service = _serviceRegistry[serviceIdentifier.getServiceId()];
@@ -46,11 +46,11 @@ PublisherApplicationInformation LocalServiceRegistry::getService(QoSServiceIdent
     return service;
 }
 
-bool LocalServiceRegistry::containsService(QoSServiceIdentifier serviceIdentifier) {
+bool Registry::containsService(QoSServiceIdentifier serviceIdentifier) {
     return _serviceRegistry.count(serviceIdentifier.getServiceId());
 }
 
-std::unordered_map<LocalServiceRegistry::ServiceId,PublisherApplicationInformation> LocalServiceRegistry::getRegistry() {
+std::unordered_map<Registry::ServiceId,PublisherApplicationInformation> Registry::getRegistry() {
     return _serviceRegistry;
 }
 

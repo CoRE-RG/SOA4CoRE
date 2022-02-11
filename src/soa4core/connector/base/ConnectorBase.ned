@@ -19,7 +19,7 @@ package soa4core.connector.base;
 
 //
 // The ConnectorBase provides a common interface for all connctor modules.
-// Those modules are created by the LocalServiceManager module (@see~LocalServiceManager)
+// Those modules are created by the Manager module (@see~Manager)
 // during runtime to connect a service application to its protocol specific service endpoints.
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg

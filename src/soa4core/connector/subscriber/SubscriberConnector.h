@@ -27,7 +27,7 @@ namespace SOA4CoRE {
 
 /**
  * @brief The SubscriptionConnector implements the common interface for all connector modules @see~ConnectorBase.
- * This module is created by the LocalServiceManager module (@see~LocalServiceManager)
+ * This module is created by the Manager module (@see~Manager)
  * during runtime to connect a subscriber applications to its protocol specific subscriber endpoint.
  * Only allows traffic from one subscriber endpoint to the applications.
  *

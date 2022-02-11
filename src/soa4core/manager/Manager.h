@@ -15,20 +15,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOA4CORE_SERVICEMANAGER_LOCALSERVICEMANAGER_H_
-#define __SOA4CORE_SERVICEMANAGER_LOCALSERVICEMANAGER_H_
+#ifndef __SOA4CORE_SERVICEMANAGER_MANAGER_H_
+#define __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 
 #include <omnetpp.h>
 #include <soa4core/applications/base/ServiceBase.h>
 #include <soa4core/connector/publisher/PublisherConnector.h>
 #include <soa4core/connector/subscriber/SubscriberConnector.h>
+#include <soa4core/manager/base/IManager.h>
+#include <soa4core/registry/base/IRegistry.h>
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
-#include "soa4core/serviceregistry/base/IServiceRegistry.h"
-#include "soa4core/servicemanager/base/ILocalServiceManager.h"
 #include <atomic>
 #include <string>
 #include <map>
@@ -43,13 +43,13 @@ using namespace omnetpp;
 namespace SOA4CoRE {
 
 /**
- * @brief The LocalServiceManager creates, finds and removes local Services.
+ * @brief The Manager creates, finds and removes local Services.
  *
- * @ingroup soa4core/servicemanager
+ * @ingroup soa4core/manager
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class LocalServiceManager: public ILocalServiceManager, public cSimpleModule, public cListener {
+class Manager: public IManager, public cSimpleModule, public cListener {
 
     friend class QoSBroker;
 
@@ -57,11 +57,11 @@ class LocalServiceManager: public ILocalServiceManager, public cSimpleModule, pu
      * Methods
      */
 public:
-    LocalServiceManager();
-    virtual ~LocalServiceManager();
+    Manager();
+    virtual ~Manager();
 
     /**
-     * @brief This Method creates a new Publisher according to the QoSPolicies.
+     * @brief This Method registers a new Publisher according to its application information.
      *
      * @param publisherApplicationInformation The application informations of the Publisher application (e.g. "reifendruck/links")
      * @param executingModule The application publishing a service.
@@ -69,7 +69,8 @@ public:
     void registerPublisherService(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication);
 
     /**
-     * @brief This Method creates a new Subscriber for the publisher Service according to the QoSPolicies.
+     * @brief This Method registers a new Subscriber according to its application information.
+     * It adds the application to a possibly created or already present connector.
      *
      * @param subscriberApplicationInformation The application informations of the Subscriber application (e.g. "bordcomputer")
      * @param executingModule The application executing the request.
@@ -224,7 +225,7 @@ protected:
     /**
      * Contains pointers to the existing publisher connectors on a node.
      */
-    std::map<IServiceRegistry::ServiceId, PublisherConnector*> _publisherConnectors;
+    std::map<IRegistry::ServiceId, PublisherConnector*> _publisherConnectors;
 
     /**
      * Counter for publishing endpoints created.
@@ -237,7 +238,7 @@ protected:
      * Or we take the best QoS needed on device?
      * Update: We currently allow more than one subscriber connector
      */
-    std::map<IServiceRegistry::ServiceId, std::vector<SubscriberConnector*>> _subscriberConnectors;
+    std::map<IRegistry::ServiceId, std::vector<SubscriberConnector*>> _subscriberConnectors;
 
     /**
      * Counter for subscribing endpoints created.
@@ -247,7 +248,7 @@ protected:
     /**
      * A pointer to the local service registry.
      */
-    IServiceRegistry* _lsr;
+    IRegistry* _lsr;
 
     /**
      * Static ID for created Requests.
@@ -267,7 +268,7 @@ protected:
     /**
      * Contains pending requests
      */
-    std::map<IServiceRegistry::ServiceId, std::list<SubscriberApplicationInformation>> _pendingRequestsMap;
+    std::map<IRegistry::ServiceId, std::list<SubscriberApplicationInformation>> _pendingRequestsMap;
 private:
 
 };

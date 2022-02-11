@@ -13,20 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.servicemanager.qosservicemanager;
+package soa4core.registry;
 
-import soa4core.servicemanager.LocalServiceManager;
+import soa4core.registry.base.IRegistry;
 //
-// The QoSLocalServiceManager.
+// The Registry provides a local registry for services.
 //
 // @author Mehmet Mueller
 //
-simple QoSLocalServiceManager extends LocalServiceManager
+simple Registry like IRegistry
 {
-        parameters:
-        @class(SOA4CoRE::QoSLocalServiceManager);
-        @display("i=block/join");
-        
-        // The signal which is emitted when a requested service is found
-        @signal[findResultSignal];
+    parameters:
+        @class(SOA4CoRE::Registry);
 }

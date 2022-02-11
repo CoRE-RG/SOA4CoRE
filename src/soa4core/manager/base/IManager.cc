@@ -13,16 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.serviceregistry.localserviceregistry;
+#include <soa4core/manager/base/IManager.h>
 
-import soa4core.serviceregistry.base.IServiceRegistry;
-//
-// The LocalServiceRegistry provides a local registry for services.
-//
-// @author Mehmet Mueller
-//
-simple LocalServiceRegistry like IServiceRegistry
-{
-    parameters:
-        @class(SOA4CoRE::LocalServiceRegistry);
+namespace SOA4CoRE {
+
+IManager::~IManager() {
+
 }
+
+} /* namespace SOA4CoRE */

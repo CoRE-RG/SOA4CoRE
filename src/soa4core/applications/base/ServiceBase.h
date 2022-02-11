@@ -19,8 +19,8 @@
 #define __SOA4CORE_APPLICATIONS_BASE_SERVICEBASE_H_
 
 #include <omnetpp.h>
+#include <soa4core/manager/base/IManager.h>
 #include <string>
-#include "soa4core/servicemanager/base/ILocalServiceManager.h"
 
 /**
  * forward declarations
@@ -36,7 +36,7 @@ namespace SOA4CoRE {
 /**
  * @brief Base class for a Middleware-Application.
  *
- * contains the module connection to the LocalServiceManager
+ * contains the module connection to the Manager
  *
  * @ingroup soa4core/applications
  *
@@ -83,9 +83,9 @@ public:
 protected:
 
     /**
-     * Reference to the LocalServiceManager.
+     * Reference to the Manager.
      */
-    ILocalServiceManager* _localServiceManager;
+    IManager* _localServiceManager;
 
     /**
      * Reference to the Connector module to the endpoints of this service.

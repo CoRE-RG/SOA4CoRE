@@ -48,7 +48,7 @@ simple QoSNegotiationProtocol extends ProcessingTimeSimulation like IUDPApp
         //local specifics
         int protocolPort = default(5005);  // local port (-1: use ephemeral port)
         string localAddress = default("");
-        string lsmmoduleName = default("lsm");
+        string smmoduleName = default("sm");
 
         processingTime = default(0s);
         allowParallelProcessing = default(true);

@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "soa4core/servicemanager/LocalServiceManager.h"
+#include <soa4core/manager/Manager.h>
 #include "soa4core/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
@@ -40,32 +40,32 @@ using namespace CoRE4INET;
 
 namespace SOA4CoRE {
 
-Define_Module(LocalServiceManager);
+Define_Module(Manager);
 
-LocalServiceManager::LocalServiceManager() {
+Manager::Manager() {
     _requestID = 0;
 }
 
-LocalServiceManager::~LocalServiceManager() {
+Manager::~Manager() {
 }
 
-void LocalServiceManager::initialize(int stage) {
+void Manager::initialize(int stage) {
 
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
         _lsr =
-               dynamic_cast<IServiceRegistry*>(getParentModule()->getSubmodule(
-                       par("lsrmoduleName")));
+               dynamic_cast<IRegistry*>(getParentModule()->getSubmodule(
+                       par("srmoduleName")));
        WATCH_MAP(_publisherConnectors);
        // WATCH_MAP(_subscriberConnectors); TODO is it possible to watch a map with list as value?
     }
 }
 
-void LocalServiceManager::handleMessage(cMessage *msg) {
+void Manager::handleMessage(cMessage *msg) {
     delete msg;
 }
 
-void LocalServiceManager::handleParameterChange(const char* parname) {
+void Manager::handleParameterChange(const char* parname) {
 
     //read UDP Common Parameters
     if (!parname || !strcmp(parname, "localAddress")) {
@@ -75,7 +75,7 @@ void LocalServiceManager::handleParameterChange(const char* parname) {
 
 }
 
-void LocalServiceManager::registerPublisherService(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication) {
+void Manager::registerPublisherService(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication) {
     Enter_Method("LSM:registerPublisherService()");
 
     PublisherConnector* publisherConnector = getPublisherConnectorForServiceId(publisherApplicationInformation.getServiceId());
@@ -88,7 +88,7 @@ void LocalServiceManager::registerPublisherService(PublisherApplicationInformati
     }
 }
 
-PublisherConnector* LocalServiceManager::createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication) {
+PublisherConnector* Manager::createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication) {
     // create a connector for the publisher
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soa4core.connector.publisher.PublisherConnector");
@@ -107,7 +107,7 @@ PublisherConnector* LocalServiceManager::createPublisherConnector(PublisherAppli
     return module;
 }
 
-void LocalServiceManager::registerSubscriberService(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication)
+void Manager::registerSubscriberService(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication)
 {
     Enter_Method("LSM:registerSubscriberService()");
 
@@ -132,12 +132,12 @@ void LocalServiceManager::registerSubscriberService(SubscriberApplicationInforma
     }
 }
 
-void LocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
-    throw cRuntimeError("LocalServiceManager has no implementation of subscribeService. \n"
+void Manager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+    throw cRuntimeError("Manager has no implementation of subscribeService. \n"
             "Override or use ServiceManager which implements subscribeService");
 }
 
-void LocalServiceManager::addSubscriberToPendingRequestsMap(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void Manager::addSubscriberToPendingRequestsMap(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
         _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(subscriberApplicationInformation);
     } else {
@@ -147,13 +147,13 @@ void LocalServiceManager::addSubscriberToPendingRequestsMap(QoSServiceIdentifier
     }
 }
 
-void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, ServiceBase* executingApplication) {
+void Manager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, ServiceBase* executingApplication) {
     if(!(subscriberConnector->addApplication(executingApplication))){
         throw cRuntimeError("This Subscriber service already exists on this host...");
     }
 }
 
-SubscriberConnector* LocalServiceManager::createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication) {
+SubscriberConnector* Manager::createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication) {
     // create a connector for the subscriber
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soa4core.connector.subscriber.SubscriberConnector");
@@ -172,7 +172,7 @@ SubscriberConnector* LocalServiceManager::createSubscriberConnector(SubscriberAp
     return module;
 }
 
-PublisherConnector* LocalServiceManager::getPublisherConnectorForServiceId(
+PublisherConnector* Manager::getPublisherConnectorForServiceId(
         uint32_t publisherServiceId) {
     PublisherConnector* publisherConnector = nullptr;
     auto connector = _publisherConnectors.find(publisherServiceId);
@@ -183,7 +183,7 @@ PublisherConnector* LocalServiceManager::getPublisherConnectorForServiceId(
 }
 
 
-std::vector<SubscriberConnector*> LocalServiceManager::getSubscriberConnectorsForServiceId(
+std::vector<SubscriberConnector*> Manager::getSubscriberConnectorsForServiceId(
         uint32_t publisherServiceId) {
     vector<SubscriberConnector*> subscriberConnectors;
     auto connector = _subscriberConnectors.find(publisherServiceId);
@@ -193,7 +193,7 @@ std::vector<SubscriberConnector*> LocalServiceManager::getSubscriberConnectorsFo
     return subscriberConnectors;
 }
 
-PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
+PublisherEndpointBase* Manager::createOrFindPublisherFor(
         uint32_t publisherServiceId, QoSGroup qosGroup) {
 
     PublisherEndpointBase* pub = nullptr;
@@ -240,7 +240,7 @@ PublisherEndpointBase* LocalServiceManager::createOrFindPublisherFor(
     return pub;
 }
 
-SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
+SubscriberEndpointBase* Manager::createOrFindSubscriberFor(
         uint32_t publisherServiceId, ConnectionSpecificInformation* csi) {
 
     SubscriberEndpointBase* sub = nullptr;
@@ -287,7 +287,7 @@ SubscriberEndpointBase* LocalServiceManager::createOrFindSubscriberFor(
     return sub;
 }
 
-QoSGroup LocalServiceManager::getQoSGroupForConnectionType(ConnectionType connectionType){
+QoSGroup Manager::getQoSGroupForConnectionType(ConnectionType connectionType){
     switch(connectionType){
     case ConnectionType::ct_avb:
         return QoSGroup::RT;
@@ -313,7 +313,7 @@ QoSGroup LocalServiceManager::getQoSGroupForConnectionType(ConnectionType connec
     }
 }
 
-PublisherEndpointBase* LocalServiceManager::findPublisherLike(
+PublisherEndpointBase* Manager::findPublisherLike(
         uint32_t publisherServiceId, QoSGroup qosGroup) {
 
     // find fitting connectors
@@ -329,7 +329,7 @@ PublisherEndpointBase* LocalServiceManager::findPublisherLike(
     return nullptr;
 }
 
-SubscriberConnector* LocalServiceManager::findSubscriberConnectorLike(
+SubscriberConnector* Manager::findSubscriberConnectorLike(
         uint32_t publisherServiceId, QoSGroup qosGroup) {
 
     // find fitting connectors
@@ -345,7 +345,7 @@ SubscriberConnector* LocalServiceManager::findSubscriberConnectorLike(
     return subscriberConnector;
 }
 
-SubscriberEndpointBase* LocalServiceManager::findSubscriberLike(
+SubscriberEndpointBase* Manager::findSubscriberLike(
         uint32_t publisherServiceId, QoSGroup qosGroup) {
 
     // find fitting connectors
@@ -353,7 +353,7 @@ SubscriberEndpointBase* LocalServiceManager::findSubscriberLike(
     return connector->getEndpoint();
 }
 
-SubscriberEndpointBase* LocalServiceManager::createAVBSubscriberEndpoint(
+SubscriberEndpointBase* Manager::createAVBSubscriberEndpoint(
         ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
     SubscriberEndpointBase* ret = nullptr;
@@ -386,7 +386,7 @@ SubscriberEndpointBase* LocalServiceManager::createAVBSubscriberEndpoint(
 
 }
 
-SubscriberEndpointBase* LocalServiceManager::createTCPSubscriberEndpoint(
+SubscriberEndpointBase* Manager::createTCPSubscriberEndpoint(
         ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
     SubscriberEndpointBase* ret = nullptr;
@@ -420,7 +420,7 @@ SubscriberEndpointBase* LocalServiceManager::createTCPSubscriberEndpoint(
     return ret;
 }
 
-SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
+SubscriberEndpointBase* Manager::createUDPSubscriberEndpoint(
         ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
 
@@ -454,7 +454,7 @@ SubscriberEndpointBase* LocalServiceManager::createUDPSubscriberEndpoint(
 }
 
 
-SubscriberEndpointBase* LocalServiceManager::createSomeIpTCPSubscriberEndpoint(
+SubscriberEndpointBase* Manager::createSomeIpTCPSubscriberEndpoint(
         ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
     SubscriberEndpointBase* ret = nullptr;
@@ -488,7 +488,7 @@ SubscriberEndpointBase* LocalServiceManager::createSomeIpTCPSubscriberEndpoint(
     return ret;
 }
 
-SubscriberEndpointBase* LocalServiceManager::createSomeIpUDPSubscriberEndpoint(
+SubscriberEndpointBase* Manager::createSomeIpUDPSubscriberEndpoint(
         ConnectionSpecificInformation* csi,
         SubscriberConnector* connector) {
 
@@ -521,7 +521,7 @@ SubscriberEndpointBase* LocalServiceManager::createSomeIpUDPSubscriberEndpoint(
     return ret;
 }
 
-PublisherEndpointBase* LocalServiceManager::createAVBPublisherEndpoint(
+PublisherEndpointBase* Manager::createAVBPublisherEndpoint(
         QoSGroup qosGroup,
         PublisherConnector* connector) {
 
@@ -568,7 +568,7 @@ PublisherEndpointBase* LocalServiceManager::createAVBPublisherEndpoint(
     return ret;
 }
 
-PublisherEndpointBase* LocalServiceManager::createTCPPublisherEndpoint(
+PublisherEndpointBase* Manager::createTCPPublisherEndpoint(
         QoSGroup qosGroup,
         PublisherConnector* connector) {
 
@@ -599,7 +599,7 @@ PublisherEndpointBase* LocalServiceManager::createTCPPublisherEndpoint(
     return ret;
 }
 
-PublisherEndpointBase* LocalServiceManager::createUDPPublisherEndpoint(
+PublisherEndpointBase* Manager::createUDPPublisherEndpoint(
         QoSGroup qosGroup,
         PublisherConnector* connector) {
 
@@ -630,7 +630,7 @@ PublisherEndpointBase* LocalServiceManager::createUDPPublisherEndpoint(
     return ret;
 }
 
-PublisherEndpointBase* LocalServiceManager::createSomeIpTCPPublisherEndpoint(
+PublisherEndpointBase* Manager::createSomeIpTCPPublisherEndpoint(
         QoSGroup qosGroup,
         PublisherConnector* connector) {
 
@@ -660,7 +660,7 @@ PublisherEndpointBase* LocalServiceManager::createSomeIpTCPPublisherEndpoint(
     return ret;
 }
 
-PublisherEndpointBase* LocalServiceManager::createSomeIpUDPPublisherEndpoint(
+PublisherEndpointBase* Manager::createSomeIpUDPPublisherEndpoint(
         QoSGroup qosGroup,
         PublisherConnector* connector) {
 

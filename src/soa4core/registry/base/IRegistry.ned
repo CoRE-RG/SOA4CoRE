@@ -13,29 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOA4CORE_ILOCALSERVICEMANAGER_H_
-#define __SOA4CORE_ILOCALSERVICEMANAGER_H_
+package soa4core.registry.base;
 
-#include <omnetpp.h>
-#include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
-
-namespace SOA4CoRE {
-
-/**
- * @brief Interface for the local service manager module
- *
- * @ingroup soa4core/servicemanager
- *
- * @author Mehmet Mueller
- */
-class ILocalServiceManager
-{
-public:
-  virtual ~ILocalServiceManager();
-  virtual void subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) = 0;
-
-};
-
-} /*end namespace SOA4CoRE*/
-
-#endif
+moduleinterface IRegistry {
+}

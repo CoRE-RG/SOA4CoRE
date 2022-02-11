@@ -16,11 +16,10 @@
 //
 
 #include <soa4core/applications/subscriber/base/Subscriber.h>
+#include <soa4core/manager/Manager.h>
+#include <soa4core/manager/Manager.h>
 #include "soa4core/connector/base/ConnectorBase.h"
-#include "soa4core/servicemanager/LocalServiceManager.h"
 #include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
-#include "soa4core/servicemanager/LocalServiceManager.h"
-//AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //CORE4INET
 #include <core4inet/utilities/ConfigFunctions.h>
@@ -64,9 +63,9 @@ void Subscriber::handleMessage(cMessage *msg)
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
         setQoS();
         //create a subscriber
-        LocalServiceManager* localServiceManager = nullptr;
-        if (!(localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager))){
-            throw cRuntimeError("No LocalServiceManager found.");
+        Manager* localServiceManager = nullptr;
+        if (!(localServiceManager = dynamic_cast<Manager*>(_localServiceManager))){
+            throw cRuntimeError("No Manager found.");
         }
         localServiceManager->registerSubscriberService(_subscriberApplicationInformation, this);
         std::vector<SubscriberConnector*> connectors = localServiceManager->getSubscriberConnectorsForServiceId(this->_publisherServiceId);

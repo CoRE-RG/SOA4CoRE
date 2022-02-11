@@ -1,11 +1,11 @@
 /*
- * IServiceRegistry.cc
+ * IRegistry.cc
  *
  *  Created on: Apr 1, 2021
  *      Author: mehkir
  */
 
-#include "soa4core/serviceregistry/base/IServiceRegistry.h"
+#include <soa4core/registry/base/IRegistry.h>
 
 namespace SOA4CoRE {
 

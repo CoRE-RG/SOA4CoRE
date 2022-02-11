@@ -35,9 +35,9 @@ namespace SOA4CoRE {
 using namespace inet;
 using namespace std;
 
-QoSBroker::QoSBroker(UDPSocket* socket, LocalServiceManager* lsm, EndpointDescription local,
+QoSBroker::QoSBroker(UDPSocket* socket, Manager* sm, EndpointDescription local,
         EndpointDescription remote, Request* request) :
-        _socket(socket), _lsm(lsm), _local(local), _remote(remote), _request(request), _startTimestamp(-1), _finishTimestamp(-1) {
+        _socket(socket), _lsm(sm), _local(local), _remote(remote), _request(request), _startTimestamp(-1), _finishTimestamp(-1) {
     _negotiationFinished = false;
     if (request != nullptr) {
         _state = QoSBrokerStates_t::CLIENT_STARTUP;

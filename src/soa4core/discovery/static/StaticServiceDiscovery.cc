@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <soa4core/registry/Registry.h>
 #include "soa4core/discovery/static/StaticServiceDiscovery.h"
-#include "soa4core/serviceregistry/localserviceregistry/LocalServiceRegistry.h"
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 //INET
 #include "inet/networklayer/common/L3AddressResolver.h"

@@ -16,9 +16,8 @@
 // 
 
 #include <soa4core/applications/base/ServiceBase.h>
+#include <soa4core/manager/base/IManager.h>
 #include "soa4core/connector/base/ConnectorBase.h"
-#include "soa4core/servicemanager/base/ILocalServiceManager.h"
-
 #include <cstring>
 
 namespace SOA4CoRE {
@@ -35,7 +34,7 @@ void ServiceBase::initialize() {
     this->_subscriberName = "";
     this->_publisherName = "";
     _localServiceManager =
-            dynamic_cast<ILocalServiceManager*>(getParentModule()->getModuleByPath(par("serviceManagerModulePath")));
+            dynamic_cast<IManager*>(getParentModule()->getModuleByPath(par("serviceManagerModulePath")));
     if (!_localServiceManager) {
         throw cRuntimeError(
                 "Configuration problem of parameter serviceManagerModulePath in module %s.",

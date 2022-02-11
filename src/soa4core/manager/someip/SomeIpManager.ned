@@ -13,15 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.servicemanager.base;
+package soa4core.manager.someip;
+
+import soa4core.manager.Manager;
 
 //
-// The local service manager interface.
+// The SomeIpManager.
 //
 // @author Mehmet Mueller for HAW Hamburg
 //
 
-moduleinterface ILocalServiceManager
+simple SomeIpManager extends Manager
 {
-    
+    parameters:
+        @class(SOA4CoRE::SomeIpManager);
+        @display("i=block/join");
+        
+        // The signal which is emitted when a requested service is found
+        @signal[findResultSignal];
+        // The signal which is emitted when a service is subscribed
+        @signal[subscribeSignal];
+        // The signal which is emitted when a subscription has been acknowledged
+        @signal[subscribeAckSignal];
 }

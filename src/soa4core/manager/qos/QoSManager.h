@@ -13,24 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOA4CORE_QOSLOCALSERVICEMANAGER_H_
-#define __SOA4CORE_QOSLOCALSERVICEMANAGER_H_
+#ifndef __SOA4CORE_SERVICEMANAGER_QOS_QOSMANAGER_H_
+#define __SOA4CORE_SERVICEMANAGER_QOS_QOSMANAGER_H_
 
 #include <omnetpp.h>
-#include "soa4core/servicemanager/LocalServiceManager.h"
+#include <soa4core/manager/Manager.h>
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 
 using namespace omnetpp;
 namespace SOA4CoRE {
 /**
- * @brief The QoSLocalServiceManager is used to create, find and remove local Services.
+ * @brief The QoSManager is used to create, find and remove local Services.
  *
- * @ingroup soa4core/servicemanager
+ * @ingroup soa4core/manager
  *
  * @author Mehmet Mueller for HAW Hamburg
  */
-class QoSLocalServiceManager : public LocalServiceManager
+class QoSManager : public Manager
 {
 
     /**

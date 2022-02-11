@@ -13,7 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.serviceregistry.base;
+package soa4core.manager.base;
 
-moduleinterface IServiceRegistry {
+//
+// The local service manager interface.
+//
+// @author Mehmet Mueller for HAW Hamburg
+//
+
+moduleinterface IManager
+{
+    
 }

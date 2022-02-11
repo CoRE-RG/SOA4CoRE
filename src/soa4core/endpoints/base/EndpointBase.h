@@ -31,7 +31,7 @@ namespace SOA4CoRE {
 
 /**
  * @brief The EndpointBase provides a common interface for all endpoint modules.
- * Endpoints are created by the LocalServiceManager module (@see~LocalServiceManager)
+ * Endpoints are created by the Manager module (@see~Manager)
  * during runtime to connect a service application to its protocol specific service endpoints.
  *
  * @ingroup soa4core/endpoints

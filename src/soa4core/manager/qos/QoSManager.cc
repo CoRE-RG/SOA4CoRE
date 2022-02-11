@@ -16,7 +16,7 @@
 #include <soa4core/discovery/someip/SomeIpSD.h>
 #include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
 #include <soa4core/discovery/someip/SomeIpSDFindResult.h>
-#include "QoSLocalServiceManager.h"
+#include <soa4core/manager/qos/QoSManager.h>
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 #include <algorithm>
 //INET
@@ -24,11 +24,11 @@
 
 namespace SOA4CoRE {
 
-Define_Module(QoSLocalServiceManager);
+Define_Module(QoSManager);
 
-void QoSLocalServiceManager::initialize(int stage)
+void QoSManager::initialize(int stage)
 {
-    LocalServiceManager::initialize(stage);
+    Manager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
         if(!(_qosnp =
                dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
@@ -51,11 +51,11 @@ void QoSLocalServiceManager::initialize(int stage)
     }
 }
 
-void QoSLocalServiceManager::handleMessage(cMessage *msg) {
+void QoSManager::handleMessage(cMessage *msg) {
     // Nothing to do
 }
 
-void QoSLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
+void QoSManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
     if (!strcmp(getSignalName(signalID),"serviceOfferSignal")) {
         subscribeOfferedService(obj);
     } else if (!strcmp(getSignalName(signalID),"serviceFindSignal")) {
@@ -65,7 +65,7 @@ void QoSLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signa
     }
 }
 
-void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
+void QoSManager::subscribeOfferedService(cObject* obj) {
     if (PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj)) {
         PublisherApplicationInformation offeredService = publisherApplicationInformationNotification->getPublisherApplicationInformation();
         std::list<SubscriberApplicationInformation> subscriberApplicationInformationToBeRemoved;
@@ -89,7 +89,7 @@ void QoSLocalServiceManager::subscribeOfferedService(cObject* obj) {
 }
 
 // Publisher-side
-void QoSLocalServiceManager::lookForService(cObject* obj) {
+void QoSManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
     QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getServiceId(),
             someIpSDFindRequest->getInstanceId());
@@ -104,7 +104,7 @@ void QoSLocalServiceManager::lookForService(cObject* obj) {
     }
 }
 
-void QoSLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void QoSManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     //check if publisher is already discovered, and if so, start the negotiation with a request.
     if (_lsr->containsService(publisherServiceIdentifier)) {
         PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(publisherServiceIdentifier);
@@ -113,12 +113,12 @@ void QoSLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServ
         _qosnp->createQoSBroker(request);
     }
     else {
-        LocalServiceManager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
+        Manager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
         _sd->discover(publisherServiceIdentifier);
     }
 }
 
-Request* QoSLocalServiceManager::createNegotiationRequest(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
+Request* QoSManager::createNegotiationRequest(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
     EndpointDescription subscriber(publisherApplicationInformation.getServiceId(), _localAddress, _qosnp->getProtocolPort());
     EndpointDescription publisher(publisherApplicationInformation.getServiceId(), publisherApplicationInformation.getAddress(), _qosnp->getProtocolPort());
     Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);

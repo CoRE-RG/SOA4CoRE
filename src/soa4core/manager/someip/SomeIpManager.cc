@@ -18,7 +18,7 @@
 #include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
 #include <soa4core/discovery/someip/SomeIpSDFindResult.h>
 #include <soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h>
-#include "soa4core/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
+#include <soa4core/manager/someip/SomeIpManager.h>
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
@@ -26,10 +26,10 @@
 #include <algorithm>
 namespace SOA4CoRE {
 
-Define_Module(SomeIpLocalServiceManager);
+Define_Module(SomeIpManager);
 
-void SomeIpLocalServiceManager::initialize(int stage) {
-    LocalServiceManager::initialize(stage);
+void SomeIpManager::initialize(int stage) {
+    Manager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
         if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(par("sdmoduleName"))))) {
             throw cRuntimeError("No IServiceDiscovery found.");
@@ -49,12 +49,12 @@ void SomeIpLocalServiceManager::initialize(int stage) {
     }
 }
 
-void SomeIpLocalServiceManager::handleMessage(cMessage *msg) {
+void SomeIpManager::handleMessage(cMessage *msg) {
     // Does nothing here
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
+void SomeIpManager::processAcknowledgedSubscription(cObject* obj) {
     PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
     PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
     std::list<SubscriberApplicationInformation> subscriberApplicationInformationsToBeRemoved;
@@ -75,7 +75,7 @@ void SomeIpLocalServiceManager::processAcknowledgedSubscription(cObject* obj) {
     delete obj;
 }
 
-void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
+void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
     if (!strcmp(getSignalName(signalID),"serviceFindSignal")) {
         lookForService(obj);
     } else if(!strcmp(getSignalName(signalID),"serviceOfferSignal")) {
@@ -91,7 +91,7 @@ void SomeIpLocalServiceManager::receiveSignal(cComponent *source, simsignal_t si
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void SomeIpManager::subscribeService(QoSServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
     bool serviceFound = false;
     if (_lsr->containsService(publisherServiceIdentifier)) {
         PublisherApplicationInformation publisherService = _lsr->getService(publisherServiceIdentifier);
@@ -106,13 +106,13 @@ void SomeIpLocalServiceManager::subscribeService(QoSServiceIdentifier publisherS
         }
     }
     if (!serviceFound) {
-        LocalServiceManager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
+        Manager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
         _sd->discover(publisherServiceIdentifier);
     }
 }
 
 // Publisher-side
-void SomeIpLocalServiceManager::lookForService(cObject* obj) {
+void SomeIpManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
     QoSServiceIdentifier serviceIdentifier = QoSServiceIdentifier(someIpSDFindRequest->getServiceId(),
             someIpSDFindRequest->getInstanceId());
@@ -130,14 +130,14 @@ void SomeIpLocalServiceManager::lookForService(cObject* obj) {
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::addToLocalServiceRegistry(cObject* obj) {
+void SomeIpManager::addToLocalServiceRegistry(cObject* obj) {
     PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
     PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
     _lsr->addPublisherService(publisherApplicationInformation);
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
+void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
     PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
     PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
             dynamic_cast<PublisherApplicationInformationNotification*>(obj)->getPublisherApplicationInformation();
@@ -156,7 +156,7 @@ void SomeIpLocalServiceManager::subscribeServiceIfThereIsAPendingRequest(cObject
 }
 
 // Publisher-side
-void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
+void SomeIpManager::acknowledgeSubscription(cObject* obj) {
     SubscriberApplicationInformationNotification* subscriberApplicationInformationNotification = dynamic_cast<SubscriberApplicationInformationNotification*>(obj);
     SubscriberApplicationInformation subscriberApplicationInformation = subscriberApplicationInformationNotification->getSubscriberApplicationInformation();
     QoSServiceIdentifier qosServiceIdentifier = QoSServiceIdentifier(subscriberApplicationInformation.getServiceId(), subscriberApplicationInformation.getInstanceId());
@@ -206,7 +206,7 @@ void SomeIpLocalServiceManager::acknowledgeSubscription(cObject* obj) {
 }
 
 // Subscriber-side
-void SomeIpLocalServiceManager::createSubscriberEndpoint(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
+void SomeIpManager::createSubscriberEndpoint(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
     SubscriberEndpointBase* sub = nullptr;
     switch (qosGroup) {
         case QoSGroup::SOMEIP_TCP: {
@@ -234,7 +234,7 @@ void SomeIpLocalServiceManager::createSubscriberEndpoint(PublisherApplicationInf
     }
 }
 
-IPProtocolId SomeIpLocalServiceManager::getIPProtocolId(QoSGroup qosGroup) {
+IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
     IPProtocolId ipProtocolId = IPProtocolId::IP_PROT_ICMP;
     switch (qosGroup) {
         case QoSGroup::SOMEIP_TCP:

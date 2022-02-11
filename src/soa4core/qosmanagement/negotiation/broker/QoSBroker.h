@@ -18,9 +18,9 @@
 #ifndef __SOA4CORE_QOSMANAGEMENT_NEGOTIATION_BROKER_QOSBROKER_H_
 #define __SOA4CORE_QOSMANAGEMENT_NEGOTIATION_BROKER_QOSBROKER_H_
 
+#include <soa4core/manager/Manager.h>
 #include <soa4core/qosmanagement/negotiation/datatypes/EndpointDescription.h>
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
-#include "soa4core/servicemanager/LocalServiceManager.h"
 #include <string>
 //INET
 #include <inet/transportlayer/contract/udp/UDPSocket.h>
@@ -46,7 +46,7 @@ public:
      * @param remote The remote endpoint description.
      * @param isClient Is this the client?
      */
-    QoSBroker(inet::UDPSocket* socket, LocalServiceManager* lsm, EndpointDescription local,
+    QoSBroker(inet::UDPSocket* socket, Manager* sm, EndpointDescription local,
             EndpointDescription remote, Request* request);
     virtual ~QoSBroker();
 
@@ -197,7 +197,7 @@ private:
     /**
      * Reference to the local service manager.
      */
-    LocalServiceManager* _lsm;
+    Manager* _lsm;
 
     /**
      * My Endpoint.

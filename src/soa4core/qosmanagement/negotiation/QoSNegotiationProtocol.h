@@ -123,7 +123,7 @@ private:
     /**
      * Reference to the local service manager.
      */
-    LocalServiceManager* _lsm;
+    Manager* _lsm;
 
     /**
      * Signal to capture time points of negotiation messages.

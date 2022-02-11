@@ -30,7 +30,7 @@ simple ServiceBase like IService
 {
     parameters:
         // name of the serviceManager module
-        string serviceManagerModulePath = default (".middleware.lsm");
+        string serviceManagerModulePath = default (".middleware.sm");
     	// local IP address
     	string localAddress = default("");
     	// the tcp port for this service

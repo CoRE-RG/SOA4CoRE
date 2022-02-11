@@ -1,12 +1,12 @@
 /*
- * IServiceRegistry.h
+ * IRegistry.h
  *
  *  Created on: Apr 1, 2021
  *      Author: mehkir
  */
 
-#ifndef SOA4CORE_SERVICEREGISTRY_BASE_ISERVICEREGISTRY_H_
-#define SOA4CORE_SERVICEREGISTRY_BASE_ISERVICEREGISTRY_H_
+#ifndef SOA4CORE_REGISTRY_BASE_IREGISTRY_H_
+#define SOA4CORE_REGISTRY_BASE_IREGISTRY_H_
 
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 #include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
@@ -16,12 +16,12 @@ namespace SOA4CoRE {
 /**
  * @brief The interface for service registry.
  *
- * @ingroup soa4core/serviceregistry
+ * @ingroup soa4core/registry
  *
  * @author Mehmet Mueller for HAW Hamburg
  */
 
-class IServiceRegistry {
+class IRegistry {
 
 public:
     /**
@@ -51,4 +51,4 @@ public:
 
 } /* namespace SOA4CoRE */
 
-#endif /* SOA4CORE_SERVICEREGISTRY_BASE_ISERVICEREGISTRY_H_ */
+#endif /* SOA4CORE_REGISTRY_BASE_IREGISTRY_H_ */

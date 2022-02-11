@@ -15,9 +15,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <soa4core/manager/Manager.h>
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
-#include "soa4core/servicemanager/LocalServiceManager.h"
 #include "soa4core/messages/Envelope_m.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
@@ -52,8 +52,8 @@ void QoSNegotiationProtocol::initialize(int stage) {
     }
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
-        _lsm = dynamic_cast<LocalServiceManager*>(getParentModule()->getSubmodule(
-                               par("lsmmoduleName")));
+        _lsm = dynamic_cast<Manager*>(getParentModule()->getSubmodule(
+                               par("smmoduleName")));
         if (!isSocketBound()) {
             socketSetup();
         }

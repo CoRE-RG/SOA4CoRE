@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include <soa4core/registry/Registry.h>
 #include "StaticServiceDiscoveryTest.h"
-#include "soa4core/serviceregistry/localserviceregistry/LocalServiceRegistry.h"
 #include <string>
 
 namespace SOA4CoRE {
@@ -28,15 +28,15 @@ void StaticServiceDiscoveryTest::initialize() {
 
     scheduleAt(simTime() + 1, startSignal);
 
-    _sr = dynamic_cast<LocalServiceRegistry*>(getParentModule()->getSubmodule(
-            par("lsr")));
+    _sr = dynamic_cast<Registry*>(getParentModule()->getSubmodule(
+            par("sr")));
 
 }
 
 void StaticServiceDiscoveryTest::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg->isName("sdTest")) {
         std::cout << "Printing Registry from Test Module:" << endl;
-        for (auto& service : dynamic_cast<LocalServiceRegistry*>(_sr)->getRegistry()) {
+        for (auto& service : dynamic_cast<Registry*>(_sr)->getRegistry()) {
             std::cout << service.first << ": " << service.second.getAddress() << std::endl;
         }
     }

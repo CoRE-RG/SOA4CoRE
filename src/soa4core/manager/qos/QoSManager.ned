@@ -13,12 +13,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "ILocalServiceManager.h"
+package soa4core.manager.qos;
 
-namespace SOA4CoRE {
-
-ILocalServiceManager::~ILocalServiceManager() {
-
+import soa4core.manager.Manager;
+//
+// The QoSManager.
+//
+// @author Mehmet Mueller
+//
+simple QoSManager extends Manager
+{
+        parameters:
+        @class(SOA4CoRE::QoSManager);
+        @display("i=block/join");
+        
+        // The signal which is emitted when a requested service is found
+        @signal[findResultSignal];
 }
-
-} /* namespace SOA4CoRE */

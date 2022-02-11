@@ -21,7 +21,7 @@ import soa4core.connector.base.ConnectorBase;
 
 //
 // The SubscriberConnector implements the common interface for all connctor modules @see~ConnectorBase.
-// This module is created by the LocalServiceManager module (@see~LocalServiceManager)
+// This module is created by the Manager module (@see~Manager)
 // during runtime to connect a subscriber application to its protocol specific subscriper endpoints.
 //
 // @author Timo Haeckel for HAW Hamburg

@@ -16,7 +16,7 @@
 //
 
 #include <soa4core/applications/publisher/base/Publisher.h>
-#include "soa4core/servicemanager/LocalServiceManager.h"
+#include <soa4core/manager/Manager.h>
 #include "soa4core/connector/base/ConnectorBase.h"
 //CoRE4INET
 #include "core4inet/base/CoRE4INET_Defs.h"
@@ -143,9 +143,9 @@ void Publisher::createPublisherWithQoS() {
     //printQoS();
 
     //register this as new publisher app!
-    LocalServiceManager* localServiceManager = nullptr;
-    if (!(localServiceManager = dynamic_cast<LocalServiceManager*>(_localServiceManager))){
-        throw cRuntimeError("No LocalServiceManager found.");
+    Manager* localServiceManager = nullptr;
+    if (!(localServiceManager = dynamic_cast<Manager*>(_localServiceManager))){
+        throw cRuntimeError("No Manager found.");
     }
     localServiceManager->registerPublisherService(_publisherApplicationInformation, this);
     _connector = localServiceManager->getPublisherConnectorForServiceId(_publisherServiceId);

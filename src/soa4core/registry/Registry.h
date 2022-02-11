@@ -17,9 +17,8 @@
 #define SOA4CORE_SERVICEREGISTRY_LOCALSERVICEREGISTRY_H_
 
 #include <omnetpp.h>
+#include <soa4core/registry/base/IRegistry.h>
 #include <unordered_map>
-#include "soa4core/serviceregistry/base/IServiceRegistry.h"
-//INET
 #include <inet/networklayer/common/L3Address.h>
 
 using namespace omnetpp;
@@ -32,11 +31,11 @@ namespace SOA4CoRE {
  *
  * @author Mehmet Mueller for HAW Hamburg
  */
-class LocalServiceRegistry : public cSimpleModule, public IServiceRegistry
+class Registry : public cSimpleModule, public IRegistry
 {
   public:
-    ~LocalServiceRegistry();
-    LocalServiceRegistry();
+    ~Registry();
+    Registry();
 
     /**
      * Adds a published service
