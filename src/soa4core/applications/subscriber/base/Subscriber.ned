@@ -15,20 +15,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.applications.subscriberapp.base;
+package soa4core.applications.subscriber.base;
 
-import soa4core.applications.base.MiddlewareApplicationBase;
+import soa4core.applications.base.ServiceBase;
 
 //
-// The SubscriberAppBase provides a subscriber implementation of the middleware application base.
+// The Subscriber provides a subscriber implementation of the middleware application base.
 // These modules realize a data subscriber service.
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
-simple SubscriberAppBase extends MiddlewareApplicationBase
+simple Subscriber extends ServiceBase
 {
     parameters:
-        @class(SOA4CoRE::SubscriberAppBase);
+        @class(SOA4CoRE::Subscriber);
         @display("i=block/sink,blue");
         
         //Signal emitted when a frame is received, contains received EtherFrame

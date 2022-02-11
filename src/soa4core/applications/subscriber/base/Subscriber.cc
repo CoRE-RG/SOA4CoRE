@@ -15,18 +15,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
-#include "soa4core/applications/subscriberapp/base/SubscriberAppBase.h"
+#include <soa4core/applications/subscriber/base/Subscriber.h>
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/servicemanager/LocalServiceManager.h"
 #include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
 #include "soa4core/servicemanager/LocalServiceManager.h"
 //AUTO-GENERATED MESSAGES
-#include "core4inet/utilities/ConfigFunctions.h"
-#include "core4inet/base/avb/AVBDefs.h"
+#include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
+//CORE4INET
+#include <core4inet/utilities/ConfigFunctions.h>
+#include <core4inet/base/avb/AVBDefs.h>
 //INET
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
-#include "inet/networklayer/common/L3AddressResolver.h"
+#include <inet/linklayer/ethernet/EtherFrame_m.h>
+#include <inet/networklayer/common/L3AddressResolver.h>
 //STD
 #include <cstring>
 #include <iostream>
@@ -38,17 +39,17 @@ using namespace CoRE4INET;
 
 #define START_MSG_NAME "Start Message"
 
-Define_Module(SubscriberAppBase);
+Define_Module(Subscriber);
 
-SubscriberAppBase::SubscriberAppBase() {
+Subscriber::Subscriber() {
 }
 
-SubscriberAppBase::~SubscriberAppBase() {
+Subscriber::~Subscriber() {
 }
 
-void SubscriberAppBase::initialize()
+void Subscriber::initialize()
 {
-    MiddlewareApplicationBase::initialize();
+    ServiceBase::initialize();
     handleParameterChange(nullptr);
     this->_rxPkSignal = registerSignal("rxPk");
 
@@ -58,7 +59,7 @@ void SubscriberAppBase::initialize()
     }
 }
 
-void SubscriberAppBase::handleMessage(cMessage *msg)
+void Subscriber::handleMessage(cMessage *msg)
 {
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
         setQoS();
@@ -96,14 +97,14 @@ void SubscriberAppBase::handleMessage(cMessage *msg)
     delete msg;
 }
 
-void SubscriberAppBase::setQoS() {
+void Subscriber::setQoS() {
     _subscriberApplicationInformation = SubscriberApplicationInformation(_publisherServiceId, inet::L3AddressResolver().resolve(_localAddress.c_str()),
                                      _instanceId, _qosGroup, _tcpPort, _udpPort);
 }
 
-void SubscriberAppBase::handleParameterChange(const char* parname)
+void Subscriber::handleParameterChange(const char* parname)
 {
-    MiddlewareApplicationBase::handleParameterChange(parname);
+    ServiceBase::handleParameterChange(parname);
 
     if (!parname || !strcmp(parname, "publisherServiceId"))
     {

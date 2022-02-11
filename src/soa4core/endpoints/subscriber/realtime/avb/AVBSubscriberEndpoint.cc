@@ -15,9 +15,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/applications/base/ServiceBase.h>
 #include "AVBSubscriberEndpoint.h"
 
-#include "soa4core/applications/base/MiddlewareApplicationBase.h"
 #include "soa4core/connector/pubsub/reader/SubscriberConnector.h"
 
 //CoRE4INET
@@ -44,7 +44,7 @@ ConnectionSpecificInformation* AVBSubscriberEndpoint::getConnectionSpecificInfor
 void AVBSubscriberEndpoint::initialize() {
     _updateMessage = nullptr;
     // get owning app
-    MiddlewareApplicationBase* app = _subscriberConnector->getApplications()[0];
+    ServiceBase* app = _subscriberConnector->getApplications()[0];
     if (!app) {
         throw cRuntimeError(
                 "Owning application not found in init of publisher.");

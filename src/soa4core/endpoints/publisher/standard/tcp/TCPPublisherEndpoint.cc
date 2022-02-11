@@ -15,9 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/applications/base/ServiceBase.h>
 #include "TCPPublisherEndpoint.h"
-#include "soa4core/applications/base/MiddlewareApplicationBase.h"
-//INET
 #include <inet/networklayer/common/L3AddressResolver.h>
 
 using namespace inet;

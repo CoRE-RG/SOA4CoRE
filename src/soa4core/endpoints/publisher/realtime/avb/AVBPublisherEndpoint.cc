@@ -15,9 +15,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/applications/base/ServiceBase.h>
 #include "AVBPublisherEndpoint.h"
 
-#include "soa4core/applications/base/MiddlewareApplicationBase.h"
 #include "soa4core/connector/pubsub/writer/PublisherConnector.h"
 
 //STD
@@ -41,7 +41,7 @@ Define_Module(AVBPublisherEndpoint);
 
 void AVBPublisherEndpoint::initialize() {
     // get owning app
-    MiddlewareApplicationBase* app = _publisherConnector->getApplication();
+    ServiceBase* app = _publisherConnector->getApplication();
     if(!app){
         throw cRuntimeError("Owning application not found in init of publisher.");
     }

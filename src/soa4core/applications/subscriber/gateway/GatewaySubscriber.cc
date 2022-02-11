@@ -15,17 +15,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/applications/subscriberapp/gateway/GatewaySubscriberApp.h"
-//CoR4INET
-#include "core4inet/utilities/ConfigFunctions.h"
+#include "soa4core/applications/subscriber/gateway/GatewaySubscriber.h"
+//CORE4INET
+#include <core4inet/utilities/ConfigFunctions.h>
 //AUTO-GENERATED MESSAGES
-#include "core4inet/linklayer/ethernet/avb/AVBFrame_m.h"
+#include <core4inet/linklayer/ethernet/avb/AVBFrame_m.h>
 //SignalsAndGateways
-#include "signalsandgateways/applications/ethernet/EthernetGatewayApplication.h"
-#include "signalsandgateways/gateway/messages/GatewayAggregationMessage.h"
+#include <signalsandgateways/applications/ethernet/EthernetGatewayApplication.h>
+#include <signalsandgateways/gateway/messages/GatewayAggregationMessage.h>
 //INET
 //AUTO-GENERATED MESSAGES
-#include "inet/linklayer/ethernet/EtherFrame_m.h"
+#include <inet/linklayer/ethernet/EtherFrame_m.h>
 
 
 namespace SOA4CoRE {
@@ -33,17 +33,17 @@ using namespace std;
 using namespace SignalsAndGateways;
 using namespace CoRE4INET;
 
-Define_Module(GatewaySubscriberApp);
+Define_Module(GatewaySubscriber);
 
-GatewaySubscriberApp::GatewaySubscriberApp() {
+GatewaySubscriber::GatewaySubscriber() {
 }
 
-GatewaySubscriberApp::~GatewaySubscriberApp() {
+GatewaySubscriber::~GatewaySubscriber() {
 }
 
-void GatewaySubscriberApp::initialize()
+void GatewaySubscriber::initialize()
 {
-    SubscriberAppBase::initialize();
+    Subscriber::initialize();
     handleParameterChange(nullptr);
 
     //find the gateway to deliver messages
@@ -54,7 +54,7 @@ void GatewaySubscriberApp::initialize()
     }
 }
 
-void GatewaySubscriberApp::handleMessage(cMessage* msg) {
+void GatewaySubscriber::handleMessage(cMessage* msg) {
 
     if(msg->arrivedOn("connectorIn")){
 
@@ -68,7 +68,7 @@ void GatewaySubscriberApp::handleMessage(cMessage* msg) {
         }
     }
 
-    SubscriberAppBase::handleMessage(msg);
+    Subscriber::handleMessage(msg);
 }
 
 }/* end namespace SOA4CoRE */

@@ -25,7 +25,7 @@ import soa4core.endpoints.publisher.realtime.base.RTPublisherEndpointBase;
 // Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a publishing endpoint for a service. 
 // Publishers are connected to a specific transport and a publisher connector module (@see~PublisherConnector)
-// which loosely couples the publisher endpoint with a publisher application (@see~PublisherAppBase). 
+// which loosely couples the publisher endpoint with a publisher application (@see~Publisher). 
 //
 // @author Timo Haeckel for HAW Hamburg
 //

@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "soa4core/applications/publisherapp/base/PublisherAppBase.h"
+#include <soa4core/applications/publisher/base/Publisher.h>
 #include "soa4core/servicemanager/LocalServiceManager.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 //CoRE4INET
@@ -36,28 +36,28 @@ using namespace std;
 
 namespace SOA4CoRE {
 
-Define_Module(PublisherAppBase);
+Define_Module(Publisher);
 
-PublisherAppBase::PublisherAppBase() {
+Publisher::Publisher() {
     this->_enabled = true;
     this->_sigPayload = 0;
 }
 
-PublisherAppBase::~PublisherAppBase() {
+Publisher::~Publisher() {
 }
 
-bool PublisherAppBase::isEnabled() {
+bool Publisher::isEnabled() {
     return this->_enabled;
 }
 
-size_t PublisherAppBase::getPayloadBytes() {
+size_t Publisher::getPayloadBytes() {
     handleParameterChange("payload");
     emit(this->_sigPayload, static_cast<unsigned long>(this->_payload));
     return this->_payload;
 }
 
-void PublisherAppBase::initialize() {
-    MiddlewareApplicationBase::initialize();
+void Publisher::initialize() {
+    ServiceBase::initialize();
     handleParameterChange(nullptr);
 
     this->_msgSentSignal = registerSignal("msgSent");
@@ -85,8 +85,8 @@ void PublisherAppBase::initialize() {
     }
 }
 
-void PublisherAppBase::handleParameterChange(const char* parname) {
-    MiddlewareApplicationBase::handleParameterChange(parname);
+void Publisher::handleParameterChange(const char* parname) {
+    ServiceBase::handleParameterChange(parname);
 
     if (!parname || !strcmp(parname, "enabled")) {
         this->_enabled = par("enabled").boolValue();
@@ -138,7 +138,7 @@ void PublisherAppBase::handleParameterChange(const char* parname) {
     }
 }
 
-void PublisherAppBase::createPublisherWithQoS() {
+void Publisher::createPublisherWithQoS() {
     setQoS();
     //printQoS();
 
@@ -151,13 +151,13 @@ void PublisherAppBase::createPublisherWithQoS() {
     _connector = localServiceManager->getPublisherConnectorForServiceId(_publisherServiceId);
 }
 
-void PublisherAppBase::scheduleNextMessage() {
+void Publisher::scheduleNextMessage() {
     //schedule next send event
     scheduleAt(simTime() + (this->_interval / this->_intervalFrames),
             new cMessage(SEND_MSG_NAME));
 }
 
-void PublisherAppBase::handleMessage(cMessage *msg) {
+void Publisher::handleMessage(cMessage *msg) {
 
     if (msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)) {
 
@@ -193,7 +193,7 @@ void PublisherAppBase::handleMessage(cMessage *msg) {
 
 }
 
-void PublisherAppBase::setQoS() {
+void Publisher::setQoS() {
     std::set<QoSGroup> qosGroups;
     for (std::string qosGroup : _qosGroups) {
         if (qosGroup == "STD_TCP") {
@@ -218,7 +218,7 @@ void PublisherAppBase::setQoS() {
                              _instanceId, qosGroups, _tcpPort, _udpPort, _streamID, _srClass, _framesize, _intervalFrames);
 }
 
-void PublisherAppBase::printQoS() {
+void Publisher::printQoS() {
     cout << "printing offered qos services:" << endl;
     cout << "Service ID: " << _publisherApplicationInformation.getServiceId() <<endl;
     cout << "StreamID: " << _publisherApplicationInformation.getStreamId() << endl;

@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "MiddlewareApplicationBase.h"
+#include <soa4core/applications/base/ServiceBase.h>
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/servicemanager/base/ILocalServiceManager.h"
 
@@ -23,15 +23,15 @@
 
 namespace SOA4CoRE {
 
-MiddlewareApplicationBase::~MiddlewareApplicationBase()
+ServiceBase::~ServiceBase()
 {
 }
 
-void MiddlewareApplicationBase::handleMessage(cMessage *msg) {
-    throw cRuntimeError("MiddlewareApplicationBase does not handle messages. Implementations need to handle them.");
+void ServiceBase::handleMessage(cMessage *msg) {
+    throw cRuntimeError("ServiceBase does not handle messages. Implementations need to handle them.");
 }
 
-void MiddlewareApplicationBase::initialize() {
+void ServiceBase::initialize() {
     this->_subscriberName = "";
     this->_publisherName = "";
     _localServiceManager =
@@ -43,7 +43,7 @@ void MiddlewareApplicationBase::initialize() {
     }
 }
 
-std::string MiddlewareApplicationBase::getServiceName() {
+std::string ServiceBase::getServiceName() {
     std::string serviceName = "";
     if (this->_publisherName.length() > 0) {
         serviceName = this->_publisherName;
@@ -53,7 +53,7 @@ std::string MiddlewareApplicationBase::getServiceName() {
     return serviceName;
 }
 
-void MiddlewareApplicationBase::handleParameterChange(const char* parname) {
+void ServiceBase::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "applicationUDPPort")) {
         _udpPort = par("applicationUDPPort");
         if (_udpPort <= 0) {

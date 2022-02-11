@@ -15,12 +15,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __SOA4CORE_APPLICATIONS_SUBSCRIBERAPP_BASE_SUBSCRIBERAPPBASE_H_
-#define __SOA4CORE_APPLICATIONS_SUBSCRIBERAPP_BASE_SUBSCRIBERAPPBASE_H_
+#ifndef __SOA4CORE_APPLICATIONS_SUBSCRIBER_BASE_SUBSCRIBER_H_
+#define __SOA4CORE_APPLICATIONS_SUBSCRIBER_BASE_SUBSCRIBER_H_
 
-#include "soa4core/applications/base/MiddlewareApplicationBase.h"
-#include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
+#include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
+//AUTO-GENERATED MESSAGES
+#include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
+
 
 //STD
 #include <string>
@@ -37,7 +39,7 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class SubscriberAppBase: public virtual MiddlewareApplicationBase {
+class Subscriber: public virtual ServiceBase {
 private:
 
 
@@ -86,8 +88,8 @@ protected:
      void setQoS();
 
 public:
-    SubscriberAppBase();
-    virtual ~SubscriberAppBase();
+    Subscriber();
+    virtual ~Subscriber();
 
 private:
 

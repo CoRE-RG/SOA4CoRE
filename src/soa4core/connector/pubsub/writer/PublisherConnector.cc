@@ -92,11 +92,11 @@ PublisherEndpointBase* PublisherConnector::removeEndpoint(PublisherEndpointBase*
     return nullptr;
 }
 
-void PublisherConnector::setApplication(MiddlewareApplicationBase* middlewareApplicationBase) {
+void PublisherConnector::setApplication(ServiceBase* middlewareApplicationBase) {
     _middlewareApplicationBase = middlewareApplicationBase;
 }
 
-MiddlewareApplicationBase* PublisherConnector::getApplication() {
+ServiceBase* PublisherConnector::getApplication() {
     return _middlewareApplicationBase;
 }
 

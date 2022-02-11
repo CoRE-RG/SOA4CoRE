@@ -25,7 +25,7 @@ import soa4core.endpoints.subscriber.standard.base.STDSubscriberEndpointBase;
 // Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a subscribing endpoint for a service. 
 // Subscribers are connected to a specific transport and a subscriber connector module (@see~SubscriberConnector)
-// which loosely couples the subscriber endpoint with a subscriber application (@see~SubscriberAppBase). 
+// which loosely couples the subscriber endpoint with a subscriber application (@see~Subscriber). 
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //

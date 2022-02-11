@@ -18,10 +18,10 @@
 #ifndef __SOA4CORE_SUBSCRIPTIONCONNECTOR_H_
 #define __SOA4CORE_SUBSCRIPTIONCONNECTOR_H_
 
+#include <soa4core/applications/base/ServiceBase.h>
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
-#include "soa4core/applications/base/MiddlewareApplicationBase.h"
 
 namespace SOA4CoRE {
 
@@ -50,7 +50,7 @@ public:
      *
      * @return               true if the application has been added.
      */
-    bool addApplication(MiddlewareApplicationBase* middlewareApplicationBase);
+    bool addApplication(ServiceBase* middlewareApplicationBase);
 
     /**
      * Removes the application from this connector if present.
@@ -60,13 +60,13 @@ public:
      * @return  the application if it was removed (pointer no longer managed by this module)
      *          nullptr if the application is not registered.
      */
-    MiddlewareApplicationBase* removeApplication(MiddlewareApplicationBase* middlewareApplicationBase);
+    ServiceBase* removeApplication(ServiceBase* middlewareApplicationBase);
 
     /**
      * Returns the applications
      * @return the applications
      */
-    const std::vector<MiddlewareApplicationBase*>& getApplications() const;
+    const std::vector<ServiceBase*>& getApplications() const;
 
     /**
      * TODO should rather be ConnectorInformation
@@ -107,7 +107,7 @@ private:
     /**
      * Applications to connect to the endpoint.
      */
-    std::vector<MiddlewareApplicationBase*> _applications;
+    std::vector<ServiceBase*> _applications;
 
     /**
      * The maximum number of allowed applications connected to this connector.

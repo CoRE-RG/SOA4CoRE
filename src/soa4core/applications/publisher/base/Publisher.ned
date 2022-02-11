@@ -15,20 +15,20 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.applications.publisherapp.base;
+package soa4core.applications.publisher.base;
 
-import soa4core.applications.base.MiddlewareApplicationBase;
+import soa4core.applications.base.ServiceBase;
 
 //
-// The PublisherAppBase provides a publisher implementation of the middleware application base.
+// The Publisher provides a publisher implementation of the middleware application base.
 // These modules realize a data publisher service.
 //
 // @author Timo Haeckel for HAW Hamburg
 //
-simple PublisherAppBase extends MiddlewareApplicationBase
+simple Publisher extends ServiceBase
 {
     parameters:
-        @class(SOA4CoRE::PublisherAppBase);
+        @class(SOA4CoRE::Publisher);
         @display("i=block/source");
         
         // PublisherApp enabled or disabled

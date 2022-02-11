@@ -24,7 +24,7 @@ import soa4core.utility.processing.ProcessingTimeSimulation;
 // Endpoints are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a local endpoint for a service. 
 // Endpoints are connected to a specific transport and a connector module (@see~ConnectorBase)
-// which loosely couples an endpoint to an application (@see~MiddlewareApplicationBase). 
+// which loosely couples an endpoint to an application (@see~ServiceBase). 
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //

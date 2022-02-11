@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "soa4core/applications/publisherapp/gateway/GatewayPublisherApp.h"
+#include <soa4core/applications/publisher/gateway/GatewayPublisher.h>
 #include "soa4core/connector/base/ConnectorBase.h"
 //SignalsAndGateways
 #include "signalsandgateways/gateway/messages/GatewayAggregationMessage.h"
@@ -28,18 +28,18 @@ using namespace SignalsAndGateways;
 using namespace std;
 
 
-Define_Module(GatewayPublisherApp);
+Define_Module(GatewayPublisher);
 
-GatewayPublisherApp::GatewayPublisherApp() {
+GatewayPublisher::GatewayPublisher() {
 }
 
-GatewayPublisherApp::~GatewayPublisherApp() {
+GatewayPublisher::~GatewayPublisher() {
 }
 
-void GatewayPublisherApp::initialize(int stage) {
+void GatewayPublisher::initialize(int stage) {
     switch(stage){
     case INITSTAGE_LOCAL:
-        PublisherAppBase::initialize();
+        Publisher::initialize();
         handleParameterChange(nullptr);
         break;
 
@@ -59,8 +59,8 @@ void GatewayPublisherApp::initialize(int stage) {
     }
 }
 
-void GatewayPublisherApp::handleParameterChange(const char* parname) {
-    PublisherAppBase::handleParameterChange(parname);
+void GatewayPublisher::handleParameterChange(const char* parname) {
+    Publisher::handleParameterChange(parname);
 
     if(!parname || !strcmp(parname, "canIds")){
         if (par("canIds").stdstringValue() != "") {
@@ -71,7 +71,7 @@ void GatewayPublisherApp::handleParameterChange(const char* parname) {
     }
 }
 
-void GatewayPublisherApp::handleMessage(cMessage *msg) {
+void GatewayPublisher::handleMessage(cMessage *msg) {
 
     if(msg->arrivedOn("gwIn")){
         //msg is from gateway
@@ -90,12 +90,12 @@ void GatewayPublisherApp::handleMessage(cMessage *msg) {
             delete msg;
         }
     } else {
-        PublisherAppBase::handleMessage(msg);
+        Publisher::handleMessage(msg);
     }
 
 }
 
-void GatewayPublisherApp::scheduleNextMessage() {
+void GatewayPublisher::scheduleNextMessage() {
     //we do not send messages ourself!
 }
 

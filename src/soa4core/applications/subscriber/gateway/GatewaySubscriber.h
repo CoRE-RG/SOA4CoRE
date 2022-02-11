@@ -15,46 +15,32 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __SOA4CORE_APPLICATIONS_PUBLISHERAPP_GATEWAY_GWSOURCEAPPBASE_H_
-#define __SOA4CORE_APPLICATIONS_PUBLISHERAPP_GATEWAY_GWSOURCEAPPBASE_H_
+#ifndef __SOA4CORE_APPLICATIONS_SUBSCRIBER_GATEWAY_GATEWAYSUBSCRIBER_H_
+#define __SOA4CORE_APPLICATIONS_SUBSCRIBER_GATEWAY_GATEWAYSUBSCRIBER_H_
 
-#include "soa4core/applications/publisherapp/base/PublisherAppBase.h"
-#include "inet/common/InitStages.h"
-//STD
-#include <vector>
+#include "soa4core/applications/subscriber/base/Subscriber.h"
 
 using namespace omnetpp;
 
 namespace SOA4CoRE {
+
 /**
- * @brief A middleware gateway publisher application.
+ * @brief Base class for a middleware publisher application.
  *
  * @ingroup soa4core/applications
  *
  * @author Timo Haeckel for HAW Hamburg
  */
-class GatewayPublisherApp: public virtual PublisherAppBase {
+class GatewaySubscriber: public virtual Subscriber {
 private:
 
-    /**
-     * Caches the canIDs handled in this gateway app
-     */
-    std::vector<int> _canIds;
-
-public:
-    GatewayPublisherApp();
-
-    virtual ~GatewayPublisherApp();
+    cGate* _toGateway;
 
 protected:
-
     /**
      * Initialization of the module. Sends activator message
      */
-    virtual void initialize(int stage) override;
-    virtual int numInitStages() const override {
-        return inet::NUM_INIT_STAGES;
-    }
+    virtual void initialize() override;
 
     /**
      * This method should be called from subclasses unless the module
@@ -64,18 +50,13 @@ protected:
      */
     virtual void handleMessage(cMessage *msg) override;
 
-    /**
-     * Indicates a parameter has changed.
-     *
-     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
-     */
-    virtual void handleParameterChange(const char* parname) override;
-
-    virtual void scheduleNextMessage() override;
+public:
+    GatewaySubscriber();
+    virtual ~GatewaySubscriber();
 
 private:
 };
 
-} /* end namespace SOA4CoRE */
+}/* end namespace SOA4CoRE */
 
 #endif

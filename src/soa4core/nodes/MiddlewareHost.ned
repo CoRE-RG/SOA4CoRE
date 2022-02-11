@@ -20,7 +20,7 @@ package soa4core.nodes;
 import core4inet.nodes.inet.RTIPHost;
 
 import soa4core.nodes.Middleware;
-import soa4core.applications.base.IMiddlewareApplication;
+import soa4core.applications.base.IService;
 
 //
 // The MiddlewareHost module
@@ -41,7 +41,7 @@ module MiddlewareHost extends RTIPHost
         @display("i=device/device");
     submodules:
 
-        services[numServices]: <> like IMiddlewareApplication {
+        services[numServices]: <> like IService {
             @display("p=1071,65,m,5,50,50");
         }
 

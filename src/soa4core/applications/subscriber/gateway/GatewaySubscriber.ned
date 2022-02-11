@@ -1,5 +1,5 @@
 //
-// c Timo Haeckel for HAW Hamburg
+// c Timo Haeckel, for HAW Hamburg
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -15,24 +15,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.applications.publisherapp.gateway;
+package soa4core.applications.subscriber.gateway;
 
-import soa4core.applications.publisherapp.base.PublisherAppBase;
+import soa4core.applications.subscriber.base.Subscriber;
 
 //
-// The GatewayPublisherApp is a middleware application running on a gateway module.
+// The GatewaySubscriber is a middleware application running on a gateway module.
 // It is used to provide legacy bus data as a service.
 //
-// @author Timo Haeckel for HAW Hamburg
+// @author Timo Haeckel, for HAW Hamburg
 //
-simple GatewayPublisherApp extends PublisherAppBase
+simple GatewaySubscriber extends Subscriber
 {
     parameters:
-        @class(SOA4CoRE::GatewayPublisherApp);
-                
-        //The CAN Data Frame ID(s) - String parameter (int) separated with commas
-        string canIds = default("");		
-	gates:
-	    input gwIn;
-    
+        @class(SOA4CoRE::GatewaySubscriber);
+        
 }

@@ -57,7 +57,7 @@ void SubscriberConnector::handleParameterChange(const char* parname) {
     }
 }
 
-bool SubscriberConnector::addApplication(MiddlewareApplicationBase* middlewareApplicationBase) {
+bool SubscriberConnector::addApplication(ServiceBase* middlewareApplicationBase) {
     if(middlewareApplicationBase && (_maxApplications < 0 || (int)_applications.size() < _maxApplications)){
         //check if not already in the list, then add.
         auto it = find(_applications.begin(), _applications.end(), middlewareApplicationBase);
@@ -69,13 +69,13 @@ bool SubscriberConnector::addApplication(MiddlewareApplicationBase* middlewareAp
     return false;
 }
 
-MiddlewareApplicationBase* SubscriberConnector::removeApplication(
-        MiddlewareApplicationBase* middlewareApplicationBase) {
+ServiceBase* SubscriberConnector::removeApplication(
+        ServiceBase* middlewareApplicationBase) {
     //check if in the list, then remove.
     if(middlewareApplicationBase){
         auto it = find(_applications.begin(), _applications.end(), middlewareApplicationBase);
         if (it == _applications.end()){
-            MiddlewareApplicationBase* temp = *it;
+            ServiceBase* temp = *it;
             _applications.erase(it);
             return temp;
         }
@@ -92,7 +92,7 @@ void SubscriberConnector::setSubscriberApplicationInformation(SubscriberApplicat
 }
 
 
-const std::vector<MiddlewareApplicationBase*>& SubscriberConnector::getApplications() const {
+const std::vector<ServiceBase*>& SubscriberConnector::getApplications() const {
     return _applications;
 }
 
@@ -119,7 +119,7 @@ void SubscriberConnector::finish(){
         ss << "\"applications\":[";
         int elemCounter = 0;
         int listLength = this->_applications.size();
-        for (MiddlewareApplicationBase* application : this->_applications) {
+        for (ServiceBase* application : this->_applications) {
             // additional information on real application name
             ss << "\"" << application->getServiceName() << "\"";
             elemCounter++;

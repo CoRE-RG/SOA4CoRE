@@ -1,5 +1,5 @@
 //
-// c Timo Haeckel for HAW Hamburg
+// c Timo Haeckel, for HAW Hamburg
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -17,24 +17,29 @@
 
 package soa4core.applications.base;
 
+import soa4core.applications.base.IService;
+
 //
-// The IMiddlewareApplication provides a common interface for all middleware application modules.
+// The ServiceBase provides a base implementation of the common
+// interface for all soa4core application modules.
 // These modules realize a data publisher or subscriber service.
 //
 // @author Timo Haeckel for HAW Hamburg
 //
-moduleinterface IMiddlewareApplication {
+simple ServiceBase like IService
+{
     parameters:
-        @display("i=block/app");
         // name of the serviceManager module
-        string serviceManagerModulePath;
+        string serviceManagerModulePath = default (".middleware.lsm");
     	// local IP address
-    	string localAddress;
+    	string localAddress = default("");
     	// the tcp port for this service
     	int applicationTCPPort;
     	// the udp port for this service
     	int applicationUDPPort;
-    	
+    	// The instance id of the service that will be subscribed
+        int instanceID = default(0xFFFF); // see [PRS_SOMEIPSD_00268], [PRS_SOMEIPSD_00270], [PRS_SOMEIPSD_00351]
+        
     gates:
         // the connector gate to receive messages.
         input connectorIn @direct;

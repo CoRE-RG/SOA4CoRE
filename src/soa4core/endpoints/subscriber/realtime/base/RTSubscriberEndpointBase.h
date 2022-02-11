@@ -27,7 +27,7 @@ namespace SOA4CoRE {
  * Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a subscribing endpoint for a service.
  * Subscribers are connected to a specific transport and a subscriber connector module (@see~SubscriberConnector)
- * which loosely couples the subscriber endpoint with a subscriber application (@see~SubscriberAppBase).
+ * which loosely couples the subscriber endpoint with a subscriber application (@see~Subscriber).
  *
  * @ingroup soa4core/endpoints
  *

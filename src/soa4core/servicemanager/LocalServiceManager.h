@@ -19,6 +19,7 @@
 #define __SOA4CORE_SERVICEMANAGER_LOCALSERVICEMANAGER_H_
 
 #include <omnetpp.h>
+#include <soa4core/applications/base/ServiceBase.h>
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
@@ -26,7 +27,6 @@
 #include "soa4core/connector/pubsub/writer/PublisherConnector.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
-#include "soa4core/applications/base/MiddlewareApplicationBase.h"
 #include "soa4core/serviceregistry/base/IServiceRegistry.h"
 #include "soa4core/servicemanager/base/ILocalServiceManager.h"
 #include <atomic>
@@ -66,7 +66,7 @@ public:
      * @param publisherApplicationInformation The application informations of the Publisher application (e.g. "reifendruck/links")
      * @param executingModule The application publishing a service.
      */
-    void registerPublisherService(PublisherApplicationInformation publisherApplicationInformation, MiddlewareApplicationBase* executingApplication);
+    void registerPublisherService(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication);
 
     /**
      * @brief This Method creates a new Subscriber for the publisher Service according to the QoSPolicies.
@@ -74,7 +74,7 @@ public:
      * @param subscriberApplicationInformation The application informations of the Subscriber application (e.g. "bordcomputer")
      * @param executingModule The application executing the request.
      */
-    void registerSubscriberService(SubscriberApplicationInformation subscriberApplicationInformation, MiddlewareApplicationBase* executingApplication);
+    void registerSubscriberService(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication);
 
     /**
      * @brief Subscribes the given service
@@ -178,7 +178,7 @@ private:
      * @param subscriberConnector
      * @param executingApplication
      */
-    void addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, MiddlewareApplicationBase* executingApplication);
+    void addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, ServiceBase* executingApplication);
 
     /**
      * Creates a publisher connector
@@ -186,7 +186,7 @@ private:
      * @param executingApplication
      * @return the publisher connector module
      */
-    PublisherConnector* createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, MiddlewareApplicationBase* executingApplication);
+    PublisherConnector* createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication);
 
     /**
      * Creates a subscriber connector
@@ -194,7 +194,7 @@ private:
      * @param executingApplication
      * @return the subscriber connector module
      */
-    SubscriberConnector* createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, MiddlewareApplicationBase* executingApplication);
+    SubscriberConnector* createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication);
 
     /**
      * Matches the connection type to the qos group

@@ -15,12 +15,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __SOA4CORE_APPLICATIONS_PUBLISHERAPP_BASE_PUBLISHERAPP_H_
-#define __SOA4CORE_APPLICATIONS_PUBLISHERAPP_BASE_PUBLISHERAPP_H_
+#ifndef __SOA4CORE_APPLICATIONS_PUBLISHERA_BASE_PUBLISHER_H_
+#define __SOA4CORE_APPLICATIONS_PUBLISHERA_BASE_PUBLISHER_H_
 
+#include <soa4core/applications/base/ServiceBase.h>
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
-#include "soa4core/applications/base/MiddlewareApplicationBase.h"
-//CORE4INET
 #include <core4inet/base/avb/AVBDefs.h>
 //STD
 #include <cstdint>
@@ -41,12 +40,12 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class PublisherAppBase: public virtual MiddlewareApplicationBase {
+class Publisher: public virtual ServiceBase {
 
 public:
-    PublisherAppBase();
+    Publisher();
 
-    virtual ~PublisherAppBase();
+    virtual ~Publisher();
 
     /**
      * Indicated that PublisherApp is enabled

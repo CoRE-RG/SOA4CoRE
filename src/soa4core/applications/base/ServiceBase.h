@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOA4CORE_APPLICATIONS_BASE_MIDDLEWAREAPPLICATIONBASE_H_
-#define __SOA4CORE_APPLICATIONS_BASE_MIDDLEWAREAPPLICATIONBASE_H_
+#ifndef __SOA4CORE_APPLICATIONS_BASE_SERVICEBASE_H_
+#define __SOA4CORE_APPLICATIONS_BASE_SERVICEBASE_H_
 
 #include <omnetpp.h>
 #include <string>
@@ -42,12 +42,12 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class MiddlewareApplicationBase: public virtual cSimpleModule {
+class ServiceBase: public virtual cSimpleModule {
 /**
  * Methods
  */
 public:
-    virtual ~MiddlewareApplicationBase();
+    virtual ~ServiceBase();
 
     std::string getServiceName();
 

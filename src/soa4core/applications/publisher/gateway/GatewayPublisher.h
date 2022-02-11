@@ -15,32 +15,47 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#ifndef __SOA4CORE_APPLICATIONS_SUBSCRIBERAPP_GATEWAY_GWSINKAPPBASE_H_
-#define __SOA4CORE_APPLICATIONS_SUBSCRIBERAPP_GATEWAY_GWSINKAPPBASE_H_
+#ifndef __SOA4CORE_APPLICATIONS_PUBLISHER_GATEWAY_GATEWAYPUBLISHER_H_
+#define __SOA4CORE_APPLICATIONS_PUBLISHER_GATEWAY_GATEWAYPUBLISHER_H_
 
-#include "soa4core/applications/subscriberapp/base/SubscriberAppBase.h"
+#include <soa4core/applications/publisher/base/Publisher.h>
+
+#include "inet/common/InitStages.h"
+//STD
+#include <vector>
 
 using namespace omnetpp;
 
 namespace SOA4CoRE {
-
 /**
- * @brief Base class for a middleware publisher application.
+ * @brief A middleware gateway publisher application.
  *
  * @ingroup soa4core/applications
  *
  * @author Timo Haeckel for HAW Hamburg
  */
-class GatewaySubscriberApp: public virtual SubscriberAppBase {
+class GatewayPublisher: public virtual Publisher {
 private:
 
-    cGate* _toGateway;
+    /**
+     * Caches the canIDs handled in this gateway app
+     */
+    std::vector<int> _canIds;
+
+public:
+    GatewayPublisher();
+
+    virtual ~GatewayPublisher();
 
 protected:
+
     /**
      * Initialization of the module. Sends activator message
      */
-    virtual void initialize() override;
+    virtual void initialize(int stage) override;
+    virtual int numInitStages() const override {
+        return inet::NUM_INIT_STAGES;
+    }
 
     /**
      * This method should be called from subclasses unless the module
@@ -50,13 +65,18 @@ protected:
      */
     virtual void handleMessage(cMessage *msg) override;
 
-public:
-    GatewaySubscriberApp();
-    virtual ~GatewaySubscriberApp();
+    /**
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
+    virtual void handleParameterChange(const char* parname) override;
+
+    virtual void scheduleNextMessage() override;
 
 private:
 };
 
-}/* end namespace SOA4CoRE */
+} /* end namespace SOA4CoRE */
 
 #endif

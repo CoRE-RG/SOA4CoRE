@@ -75,7 +75,7 @@ void LocalServiceManager::handleParameterChange(const char* parname) {
 
 }
 
-void LocalServiceManager::registerPublisherService(PublisherApplicationInformation publisherApplicationInformation, MiddlewareApplicationBase* executingApplication) {
+void LocalServiceManager::registerPublisherService(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication) {
     Enter_Method("LSM:registerPublisherService()");
 
     PublisherConnector* publisherConnector = getPublisherConnectorForServiceId(publisherApplicationInformation.getServiceId());
@@ -88,7 +88,7 @@ void LocalServiceManager::registerPublisherService(PublisherApplicationInformati
     }
 }
 
-PublisherConnector* LocalServiceManager::createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, MiddlewareApplicationBase* executingApplication) {
+PublisherConnector* LocalServiceManager::createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication) {
     // create a connector for the publisher
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soa4core.connector.pubsub.writer.PublisherConnector");
@@ -107,7 +107,7 @@ PublisherConnector* LocalServiceManager::createPublisherConnector(PublisherAppli
     return module;
 }
 
-void LocalServiceManager::registerSubscriberService(SubscriberApplicationInformation subscriberApplicationInformation, MiddlewareApplicationBase* executingApplication)
+void LocalServiceManager::registerSubscriberService(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication)
 {
     Enter_Method("LSM:registerSubscriberService()");
 
@@ -147,13 +147,13 @@ void LocalServiceManager::addSubscriberToPendingRequestsMap(QoSServiceIdentifier
     }
 }
 
-void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, MiddlewareApplicationBase* executingApplication) {
+void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, ServiceBase* executingApplication) {
     if(!(subscriberConnector->addApplication(executingApplication))){
         throw cRuntimeError("This Subscriber service already exists on this host...");
     }
 }
 
-SubscriberConnector* LocalServiceManager::createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, MiddlewareApplicationBase* executingApplication) {
+SubscriberConnector* LocalServiceManager::createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication) {
     // create a connector for the subscriber
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soa4core.connector.pubsub.reader.SubscriberConnector");
