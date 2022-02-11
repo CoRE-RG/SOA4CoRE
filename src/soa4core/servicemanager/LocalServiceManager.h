@@ -26,10 +26,8 @@
 #include "soa4core/connector/pubsub/writer/PublisherConnector.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
-#include "soa4core/qosmanagement/negotiation/broker/QoSBroker.h"
 #include "soa4core/applications/base/MiddlewareApplicationBase.h"
 #include "soa4core/serviceregistry/base/IServiceRegistry.h"
-#include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 #include "soa4core/servicemanager/base/ILocalServiceManager.h"
 #include <atomic>
 #include <string>
@@ -53,9 +51,7 @@ namespace SOA4CoRE {
  */
 class LocalServiceManager: public ILocalServiceManager, public cSimpleModule, public cListener {
 
-    //TODO QoS dependencies should not be here anymore...
-    friend QoSNegotiationProtocol;
-    friend QoSBroker;
+    friend class QoSBroker;
 
     /**
      * Methods

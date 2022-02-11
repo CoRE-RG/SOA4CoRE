@@ -20,13 +20,10 @@
 
 #include "soa4core/base/EndpointDescription.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
+#include "soa4core/servicemanager/LocalServiceManager.h"
 #include <string>
 //INET
 #include <inet/transportlayer/contract/udp/UDPSocket.h>
-
-namespace SOA4CoRE {
-class LocalServiceManager;
-} /* namespace SOA4CoRE */
 
 using namespace omnetpp;
 

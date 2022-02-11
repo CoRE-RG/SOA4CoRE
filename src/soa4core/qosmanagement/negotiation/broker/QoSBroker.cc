@@ -18,7 +18,6 @@
 
 #include "soa4core/qosmanagement/negotiation/broker/QoSBroker.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
-#include "soa4core/servicemanager/LocalServiceManager.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"

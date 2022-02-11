@@ -39,10 +39,24 @@ namespace SOA4CoRE {
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class QoSNegotiationProtocol: public ProcessingTimeSimulation {
-    friend class QoSLocalServiceManager;
+    /**
+     * Methods
+     */
 public:
     QoSNegotiationProtocol();
     virtual ~QoSNegotiationProtocol();
+
+    /**
+     * Returns the QoS Negotiation Protocol port
+     * @return the QoS Negotiation Protocol port
+     */
+    int getProtocolPort();
+
+    /**
+     * Creates a QoS Broker for a given Request
+     * @param request
+     */
+    void createQoSBroker(Request* request);
 
 protected:
     using ProcessingTimeSimulation::initialize;
@@ -59,11 +73,6 @@ protected:
     virtual void processScheduledMessage(cMessage *msg) override;
 
 private:
-
-    int getProtocolPort();
-
-    void createQoSBroker(Request* request);
-
     /**
      * Sets up the UDP socket.
      */
@@ -80,6 +89,12 @@ private:
      */
     void socketClose();
 
+    /**
+     * Member variables
+     */
+public:
+protected:
+private:
     /**
      * Caches the localAddress parameter.
      */
@@ -119,6 +134,7 @@ private:
      * Signal to emit QOSNP frames.
      */
     simsignal_t _rxPkSignal;
+
 };
 
 } /* namespace SOA4CoRE */

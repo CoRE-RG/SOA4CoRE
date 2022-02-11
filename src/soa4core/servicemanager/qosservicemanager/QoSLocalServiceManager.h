@@ -19,6 +19,7 @@
 #include <omnetpp.h>
 #include "soa4core/servicemanager/LocalServiceManager.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
+#include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 
 using namespace omnetpp;
 namespace SOA4CoRE {
