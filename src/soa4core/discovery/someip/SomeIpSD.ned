@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.discovery.someipservicediscovery;
+package soa4core.discovery.someip;
 
 import inet.applications.udpapp.UDPBasicApp;
 import soa4core.discovery.base.IServiceDiscovery;

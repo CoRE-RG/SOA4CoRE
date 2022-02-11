@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDFindResult.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSD.h"
+#include <soa4core/discovery/someip/SomeIpSD.h>
+#include <soa4core/discovery/someip/SomeIpSDAcknowledgeSubscription.h>
+#include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
+#include <soa4core/discovery/someip/SomeIpSDFindResult.h>
+#include <soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h>
 #include "soa4core/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDAcknowledgeSubscription.h"
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"

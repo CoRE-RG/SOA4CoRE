@@ -13,16 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/discovery/someip/SomeIpSD.h>
+#include <soa4core/discovery/someip/SomeIpSDAcknowledgeSubscription.h>
+#include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
+#include <soa4core/discovery/someip/SomeIpSDFindResult.h>
+#include <soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h>
 #include "soa4core/service/qosserviceidentifier/QoSServiceIdentifier.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSD.h"
 #include "soa4core/servicemanager/someipservicemanager/SomeIpLocalServiceManager.h"
 #include "soa4core/servicemanager/qosservicemanager/QoSLocalServiceManager.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDSubscriptionInformation.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDAcknowledgeSubscription.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/networklayer/contract/ipv4/IPv4Address.h>
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDFindResult.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformationNotification.h"
 #include <list>

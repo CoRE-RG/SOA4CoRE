@@ -13,51 +13,35 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOA4CORE_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDREQUEST_H_
-#define SOA4CORE_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDREQUEST_H_
+#ifndef SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDSUBSCRIPTIONINFORMATION_H_
+#define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDSUBSCRIPTIONINFORMATION_H_
 
-#include <omnetpp.h>
+#include <stdint.h>
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 
+namespace SOA4CoRE {
+
 /**
- * @brief This class provides a container for a SOME/IP SD find request
+ * @brief This class provides holding the informations needed for subscription
  *
  * @ingroup soa4core/discovery/someipservicediscovery
  *
  * @author Mehmet Mueller
  */
-
-namespace SOA4CoRE {
-
-class SomeIpSDFindRequest : public cObject, noncopyable {
+class SomeIpSDSubscriptionInformation : public cObject, noncopyable {
 /**
  * Methods
  */
 public:
-    SomeIpSDFindRequest(uint16_t serviceId, uint16_t instanceId, inet::L3Address remoteAddress);
-    virtual ~SomeIpSDFindRequest();
+    SomeIpSDSubscriptionInformation(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation);
+    virtual ~SomeIpSDSubscriptionInformation();
 
-    /**
-     * Returns the service ID
-     * @return the service ID
-     */
-    uint16_t getServiceId() const;
+    const inet::L3Address& getRemoteAddress() const;
 
-    /**
-     * Returns the instance ID
-     * @return the instance ID
-     */
-    uint16_t getInstanceId() const;
-
-    /**
-     * Returns the remote ip address
-     * @return the remote address
-     */
-    inet::L3Address getRemoteAddress() const;
+    const SubscriberApplicationInformation& getSubscriberApplicationInformation() const;
 
 protected:
 private:
-
 /**
  * Member variables
  */
@@ -65,17 +49,7 @@ public:
 protected:
 private:
     /**
-     * The service ID
-     */
-    uint16_t _serviceId;
-
-    /**
-     * The instance ID
-     */
-    uint16_t _instanceId;
-
-    /**
-     * The remote ip address
+     * The remote address of the publisher
      */
     inet::L3Address _remoteAddress;
 
@@ -86,5 +60,4 @@ private:
 };
 
 } /* end namespace SOA4CoRE */
-
-#endif /* SOA4CORE_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDREQUEST_H_ */
+#endif /* SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDSUBSCRIPTIONINFORMATION_H_ */

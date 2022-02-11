@@ -91,7 +91,7 @@ void LocalServiceManager::registerPublisherService(PublisherApplicationInformati
 PublisherConnector* LocalServiceManager::createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication) {
     // create a connector for the publisher
     // 1. Find the factory object;
-    cModuleType *moduleType = cModuleType::get("soa4core.connector.pubsub.writer.PublisherConnector");
+    cModuleType *moduleType = cModuleType::get("soa4core.connector.publisher.PublisherConnector");
     // 2. Create the module;
     int vectorsize = _publisherConnectors.size();
     PublisherConnector *module = dynamic_cast<PublisherConnector*> (moduleType->create("publisherConnectors", this->getParentModule(), vectorsize + 1, vectorsize));
@@ -156,7 +156,7 @@ void LocalServiceManager::addSubscriberServiceToConnector(SubscriberConnector* s
 SubscriberConnector* LocalServiceManager::createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication) {
     // create a connector for the subscriber
     // 1. Find the factory object;
-    cModuleType *moduleType = cModuleType::get("soa4core.connector.pubsub.reader.SubscriberConnector");
+    cModuleType *moduleType = cModuleType::get("soa4core.connector.subscriber.SubscriberConnector");
     // 2. Create the module;
     int vectorsize  = _subscriberConnectors.size();
     SubscriberConnector *module = dynamic_cast<SubscriberConnector*> (moduleType->create("subscriberConnectors", this->getParentModule(), vectorsize + 1, vectorsize));

@@ -13,18 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOA4CORE_SOMEIPSDAPP_H_
-#define __SOA4CORE_SOMEIPSDAPP_H_
+#ifndef SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSD_H_
+#define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSD_H_
 
 #define BROADCASTADDRESS "255.255.255.255"
 
-#include "inet/applications/udpapp/UDPBasicApp.h"
+
 #include "soa4core/messages/someip/SomeIpSDHeader.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
-#include "soa4core/messages/someip/SomeIpSDEntry_m.h"
-#include "soa4core/discovery/someipservicediscovery/ExtractedQoSOptions.h"
+#include "soa4core/discovery/someip/ExtractedQoSOptions.h"
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
+//AUTO-GENERATED MESSAGES
+#include "soa4core/messages/someip/SomeIpSDEntry_m.h"
+//INET
+#include <inet/applications/udpapp/UDPBasicApp.h>
 
 namespace SOA4CoRE {
 

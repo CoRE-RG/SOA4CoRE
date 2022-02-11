@@ -13,10 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/discovery/someip/SomeIpSD.h>
+#include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
+#include <soa4core/discovery/someip/SomeIpSDFindResult.h>
 #include "QoSLocalServiceManager.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSD.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDFindRequest.h"
-#include "soa4core/discovery/someipservicediscovery/SomeIpSDFindResult.h"
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformationNotification.h"
 #include <algorithm>
 //INET

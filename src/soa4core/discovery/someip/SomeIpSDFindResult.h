@@ -13,8 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef SOA4CORE_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
-#define SOA4CORE_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_
+#ifndef SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_
+#define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_
 
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 
@@ -69,4 +69,4 @@ private:
     PublisherApplicationInformation _publisherApplicationInformation;
 };
 } /* end namespace SOA4CoRE */
-#endif /* SOA4CORE_DISCOVERY_SOMEIPSERVICEDISCOVERY_SOMEIPSDFINDRESULT_H_ */
+#endif /* SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_ */

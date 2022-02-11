@@ -13,28 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/discovery/someipservicediscovery/SomeIpSDFindRequest.h>
+#include <soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h>
 
 namespace SOA4CoRE {
 
-SomeIpSDFindRequest::SomeIpSDFindRequest(uint16_t serviceId, uint16_t instanceId, inet::L3Address remoteAddress) :
-                _serviceId(serviceId), _instanceId(instanceId), _remoteAddress(remoteAddress) {
+SomeIpSDSubscriptionInformation::SomeIpSDSubscriptionInformation(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation) :
+        _remoteAddress(remoteAddress), _subscriberApplicationInformation(subscriberApplicationInformation){
+
 }
 
-SomeIpSDFindRequest::~SomeIpSDFindRequest() {
+SomeIpSDSubscriptionInformation::~SomeIpSDSubscriptionInformation() {
 }
 
-uint16_t SomeIpSDFindRequest::getServiceId() const {
-    return _serviceId;
-}
-
-uint16_t SomeIpSDFindRequest::getInstanceId() const {
-    return _instanceId;
-}
-
-inet::L3Address SomeIpSDFindRequest::getRemoteAddress() const {
+const inet::L3Address& SomeIpSDSubscriptionInformation::getRemoteAddress() const {
     return _remoteAddress;
 }
 
+const SubscriberApplicationInformation& SomeIpSDSubscriptionInformation::getSubscriberApplicationInformation() const {
+    return _subscriberApplicationInformation;
+}
 
 } /* end namespace SOA4CoRE */

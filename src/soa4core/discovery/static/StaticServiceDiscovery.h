@@ -21,10 +21,9 @@
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/serviceregistry/base/IServiceRegistry.h"
-//#include <omnetpp.h>
 //INET
-#include "inet/networklayer/common/L3Address.h"
-#include "inet/common/InitStages.h"
+#include <inet/networklayer/common/L3Address.h>
+#include <inet/common/InitStages.h>
 //STD
 #include <string>
 #include <unordered_map>

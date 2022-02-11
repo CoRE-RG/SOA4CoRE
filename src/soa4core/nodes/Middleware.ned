@@ -19,7 +19,7 @@ package soa4core.nodes;
 
 import soa4core.qosmanagement.negotiation.QoSNegotiationProtocol;
 import soa4core.discovery.base.IServiceDiscovery;
-import soa4core.discovery.someipservicediscovery.SomeIpSD;
+import soa4core.discovery.someip.SomeIpSD;
 import soa4core.servicemanager.base.ILocalServiceManager;
 import soa4core.serviceregistry.base.IServiceRegistry;
 
