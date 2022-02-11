@@ -1,8 +1,8 @@
-# SOQoSMW
-SOQoSMW (Service-Oriented Quality-of-Service MiddleWare) is an open-source extension for the event-based simulation of service-oriented communication in real-time Ethernet networks in the [OMNEST/OMNeT++](https://omnetpp.org/) simulation system. It is based on the [INET-Framework](https://inet.omnetpp.org/), providing internet technologies, the [CoRE4INET Framework](https://github.com/CoRE-RG/CoRE4INET), providing real-time Ethernet protocols such as AS6802, AVB and TSN, and the SignalsAndGateway framework (https://github.com/CoRE-RG/SignalsAndGateways) providing gateways to legacy bus systems.
-SOQoSMW provides service-oriented middleware components, service applications and service endpoints for avb, tcp and udp. It was created by the [CoRE (Communication over Realtime Ethernet)](https://core-researchgroup.de/) at the [HAW-Hamburg (Hamburg University of Applied Sciences)](https://www.haw-hamburg.de/english.html).
+# SOA4CoRE
+SOA4CoRE (Service-Oriented Quality-of-Service MiddleWare) is an open-source extension for the event-based simulation of service-oriented communication in real-time Ethernet networks in the [OMNEST/OMNeT++](https://omnetpp.org/) simulation system. It is based on the [INET-Framework](https://inet.omnetpp.org/), providing internet technologies, the [CoRE4INET Framework](https://github.com/CoRE-RG/CoRE4INET), providing real-time Ethernet protocols such as AS6802, AVB and TSN, and the SignalsAndGateway framework (https://github.com/CoRE-RG/SignalsAndGateways) providing gateways to legacy bus systems.
+SOA4CoRE provides service-oriented middleware components, service applications and service endpoints for avb, tcp and udp. It was created by the [CoRE (Communication over Realtime Ethernet)](https://core-researchgroup.de/) at the [HAW-Hamburg (Hamburg University of Applied Sciences)](https://www.haw-hamburg.de/english.html).
 
-<img src="/doc/images/soqosmw.png" alt="SOQoSMW Environment" width="75%">
+<img src="/doc/images/soa4core.png" alt="SOA4CoRE Environment" width="75%">
 
 ## News
 * Switch to OMNeT++ 5.5.1 and INET 3.6.6
@@ -24,7 +24,7 @@ SOQoSMW provides service-oriented middleware components, service applications an
 5. Get CoRE frameworks (GitHub or CoRE Simulation Model Installer)
     * GitHub: Clone frameworks and import it in OMNEST/OMNeT++
     * CoRE Simulation Model Installer: OMNEST/OMNeT++ -> Help -> Install CoRE Simulation Models...
-6. Get SOQoSMW framework (GitHub)
+6. Get SOA4CoRE framework (GitHub)
 	* GitHub: Clone framework and import it in OMNEST/OMNeT++
 7. Working with the framework
     * See the documentation in [doc/](/doc)
@@ -35,9 +35,9 @@ SOQoSMW provides service-oriented middleware components, service applications an
 
 The build state of the master branch is monitored:
 * Building:
-<a><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOQoSMW/SOQoSMW"></a>
+<a><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE"></a>
 * Tests:
-<a><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOQoSMW/SOQoSMW_tests"></a>
+<a><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE_tests"></a>
 
 <table>
   <tr>
@@ -47,13 +47,13 @@ The build state of the master branch is monitored:
   </tr>
   <tr>
     <td>Building</td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOQoSMW/SOQoSMW/Nodes=Ubuntu_18.04"></td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOQoSMW/SOQoSMW/Nodes=Windows_10"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE/Nodes=Ubuntu_18.04"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE/Nodes=Windows_10"></td>
   </tr>
   <tr>
     <td>Tests</td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOQoSMW/SOQoSMW_tests/Nodes=Ubuntu_18.04"></td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOQoSMW/SOQoSMW_tests/Nodes=Windows_10"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE_tests/Nodes=Ubuntu_18.04"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE_tests/Nodes=Windows_10"></td>
   </tr>
 </table>
 
@@ -68,4 +68,4 @@ Please see [doc/](/doc)
 
 
 ## IMPORTANT
-The SOQoSMW model is under continuous development: new parts are added, bugs are corrected, and so on. We cannot assert that the implementation will work fully according to the specifications. YOU ARE RESPONSIBLE YOURSELF TO MAKE SURE THAT THE MODELS YOU USE IN YOUR SIMULATIONS WORK CORRECTLY, AND YOU'RE GETTING VALID RESULTS.
+The SOA4CoRE model is under continuous development: new parts are added, bugs are corrected, and so on. We cannot assert that the implementation will work fully according to the specifications. YOU ARE RESPONSIBLE YOURSELF TO MAKE SURE THAT THE MODELS YOU USE IN YOUR SIMULATIONS WORK CORRECTLY, AND YOU'RE GETTING VALID RESULTS.

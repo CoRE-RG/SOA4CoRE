@@ -15,18 +15,18 @@ General
 
 If you are building from command line:
 --------------------------------------
-3. Change to the SOQoSMW directory.
+3. Change to the SOA4CoRE directory.
 
 4. Type "make makefiles". This should generate the makefiles for you automatically.
 
-5. Type "make" to build the SOQoSMW executable (debug version). Use "make MODE=release"
+5. Type "make" to build the SOA4CoRE executable (debug version). Use "make MODE=release"
    to build release version.
 
 6. you can run specific examples by changing into the example's directory.
 
 If you are using the IDE:
 -------------------------
-3. Open the OMNeT++ IDE and choose the workspace where you have extracted the SOQoSMW directory.
+3. Open the OMNeT++ IDE and choose the workspace where you have extracted the SOA4CoRE directory.
    The extracted directory must be a subdirectory of the workspace dir.
 
 4. Import the project using: File | Import | General | Existing projects into Workspace.
@@ -41,7 +41,7 @@ If you are using the IDE:
 
 Note:
 -----
-- by default SOQoSMW is creating a shared library (libSOQoSMW.so etc.)
+- by default SOA4CoRE is creating a shared library (libSOA4CoRE.so etc.)
   in the "src" directory. To use the shared library you can use the "opp_run"
   command to load it dynamically.
 - If you add/remove files/directories later in the src directory, you MUST

@@ -1,7 +1,7 @@
 import os
 import sys
 SIMULATION = True
-NETWORK_PATH = '/home/mehkir/omnetpp-5.1.1/workspace/soqosmw/examples/MinimalEvaluationNetwork/large_network'
+NETWORK_PATH = '/home/mehkir/omnetpp-5.1.1/workspace/soa4core/examples/MinimalEvaluationNetwork/large_network'
 TAB = '    '
 SUBSCRIBER_NODE_COUNT = 10
 SERVICES_COUNT = 10
@@ -70,7 +70,7 @@ for nodes in range(1, SUBSCRIBER_NODE_COUNT+1):
         with open(xml_filename, 'w') as services_xml:
             services_xml.write('{}\n'.format(xml_fileString))
         if SIMULATION:
-            opp_run_ret = os.system('opp_run -r 0 -m -u Cmdenv -n ../..:../../../simulations:../../../src/soqosmw:../../../../SignalsAndGateways/examples:../../../../SignalsAndGateways/simulations:../../../../SignalsAndGateways/src:../../../../CoRE4INET/examples:../../../../CoRE4INET/simulations:../../../../CoRE4INET/src:../../../../inet/examples:../../../../inet/src:../../../../inet/tutorials:../../../../FiCo4OMNeT/examples:../../../../FiCo4OMNeT/examples_andl:../../../../FiCo4OMNeT/simulations:../../../../FiCo4OMNeT/src --image-path=../../../../CoRE4INET/images -l ../../../src/soqosmw -l ../../../../SignalsAndGateways/src/SignalsAndGateways -l ../../../../CoRE4INET/src/CoRE4INET -l ../../../../inet/src/INET -l ../../../../FiCo4OMNeT/src/FiCo4OMNeT --sim-time-limit=10ms omnetpp.ini')
+            opp_run_ret = os.system('opp_run -r 0 -m -u Cmdenv -n ../..:../../../simulations:../../../src/soa4core:../../../../SignalsAndGateways/examples:../../../../SignalsAndGateways/simulations:../../../../SignalsAndGateways/src:../../../../CoRE4INET/examples:../../../../CoRE4INET/simulations:../../../../CoRE4INET/src:../../../../inet/examples:../../../../inet/src:../../../../inet/tutorials:../../../../FiCo4OMNeT/examples:../../../../FiCo4OMNeT/examples_andl:../../../../FiCo4OMNeT/simulations:../../../../FiCo4OMNeT/src --image-path=../../../../CoRE4INET/images -l ../../../src/soa4core -l ../../../../SignalsAndGateways/src/SignalsAndGateways -l ../../../../CoRE4INET/src/CoRE4INET -l ../../../../inet/src/INET -l ../../../../FiCo4OMNeT/src/FiCo4OMNeT --sim-time-limit=10ms omnetpp.ini')
             if opp_run_ret is not 0:
                 print('opp_run error')
                 sys.exit(-1)

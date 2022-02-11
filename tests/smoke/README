@@ -1,4 +1,4 @@
-This folder contains smoke tests for the soqosmw framework. The 
+This folder contains smoke tests for the soa4core framework. The 
 
 $ ./smoketest examples.csv
 
