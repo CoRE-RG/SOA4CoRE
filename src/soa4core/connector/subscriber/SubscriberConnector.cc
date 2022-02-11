@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/connector/pubsub/reader/SubscriberConnector.h"
+#include <soa4core/connector/subscriber/SubscriberConnector.h>
 #include <algorithm>
 #include <fstream>
 

@@ -16,11 +16,9 @@
 // 
 
 #include <soa4core/applications/base/ServiceBase.h>
+#include <soa4core/connector/subscriber/SubscriberConnector.h>
 #include "AVBSubscriberEndpoint.h"
 
-#include "soa4core/connector/pubsub/reader/SubscriberConnector.h"
-
-//CoRE4INET
 #include "core4inet/base/NotifierConsts.h"
 #include "core4inet/utilities/ConfigFunctions.h"
 //AUTO-GENERATED MESSAGES

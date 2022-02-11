@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/connector/subscriber/SubscriberConnector.h>
 #include "SubscriberEndpointBase.h"
-#include "soa4core/connector/pubsub/reader/SubscriberConnector.h"
 
 
 namespace SOA4CoRE {

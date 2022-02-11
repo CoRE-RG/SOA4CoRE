@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.connector.pubsub.writer;
+package soa4core.connector.publisher;
 
 import soa4core.connector.base.ConnectorBase;
 

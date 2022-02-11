@@ -16,11 +16,9 @@
 // 
 
 #include <soa4core/applications/base/ServiceBase.h>
+#include <soa4core/connector/publisher/PublisherConnector.h>
 #include "AVBPublisherEndpoint.h"
 
-#include "soa4core/connector/pubsub/writer/PublisherConnector.h"
-
-//STD
 #include <string>
 //INET
 #include "inet/linklayer/ethernet/Ethernet.h"

@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.connector.pubsub.reader;
+package soa4core.connector.subscriber;
 
 import soa4core.connector.base.ConnectorBase;
 

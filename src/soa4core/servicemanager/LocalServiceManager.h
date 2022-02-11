@@ -20,11 +20,11 @@
 
 #include <omnetpp.h>
 #include <soa4core/applications/base/ServiceBase.h>
+#include <soa4core/connector/publisher/PublisherConnector.h>
+#include <soa4core/connector/subscriber/SubscriberConnector.h>
 #include "soa4core/service/publisherapplicationinformation/PublisherApplicationInformation.h"
 #include "soa4core/service/subscriberapplicationinformation/SubscriberApplicationInformation.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
-#include "soa4core/connector/pubsub/reader/SubscriberConnector.h"
-#include "soa4core/connector/pubsub/writer/PublisherConnector.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
 #include "soa4core/serviceregistry/base/IServiceRegistry.h"

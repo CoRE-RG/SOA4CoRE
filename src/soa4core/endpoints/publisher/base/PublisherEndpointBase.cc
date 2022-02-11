@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/connector/publisher/PublisherConnector.h>
 #include "PublisherEndpointBase.h"
-#include "soa4core/connector/pubsub/writer/PublisherConnector.h"
 
 
 namespace SOA4CoRE {

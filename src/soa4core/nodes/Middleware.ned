@@ -23,8 +23,8 @@ import soa4core.discovery.someipservicediscovery.SomeIpSD;
 import soa4core.servicemanager.base.ILocalServiceManager;
 import soa4core.serviceregistry.base.IServiceRegistry;
 
-import soa4core.connector.pubsub.writer.PublisherConnector;
-import soa4core.connector.pubsub.reader.SubscriberConnector;
+import soa4core.connector.publisher.PublisherConnector;
+import soa4core.connector.subscriber.SubscriberConnector;
 
 import soa4core.endpoints.base.IEndpoint;
 
