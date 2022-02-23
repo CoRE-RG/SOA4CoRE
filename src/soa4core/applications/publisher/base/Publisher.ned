@@ -63,7 +63,7 @@ simple Publisher extends ServiceBase
     	//Service ID
     	int serviceId = default(0);
     	
-    	//The QoS types this application can serve
+    	//The QoS types this application can serve (one space separated)
     	string qosGroups = default("");
     
 }

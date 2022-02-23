@@ -24,6 +24,8 @@ simple SOMEIPUDPPublisherEndpoint extends UDPPublisherEndpoint
 {
     parameters:
         @class(SOA4CoRE::SOMEIPUDPPublisherEndpoint);
+        // The endpoint path or name
         endpointPath = default("SOME/IP Publisher");
+        // The QoS group this endpoint serves
         qos = default("SOMEIP_UDP");
 }

@@ -18,12 +18,16 @@ package soa4core.endpoints.publisher.someip.tcp;
 import soa4core.endpoints.publisher.standard.tcp.TCPPublisherEndpoint;
 
 //
+// This module provides a SOME/IP TCP endpoint
+//
 // @author Mehmet Mueller for HAW Hamburg
 //
 simple SOMEIPTCPPublisherEndpoint extends TCPPublisherEndpoint
 {
     parameters:
         @class(SOA4CoRE::SOMEIPTCPPublisherEndpoint);
+        // The endpoint path or name
         endpointPath = default("SOME/IP Publisher");
+        // The QoS group this endpoint serves
         qos = default("SOMEIP_TCP");
 }

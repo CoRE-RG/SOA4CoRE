@@ -36,13 +36,13 @@ namespace SOA4CoRE {
  */
 class SOMEIPPublisherEndpointBase
 {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
 protected:
     /**
-     * Creates a SOME/IP packet with the specified parameters
+     * Encapsulates the payload in a SOME/IP packet with the specified parameters
      *
      * @param serviceID the service identifier
      * @param method_EventID the method or event identifier
@@ -62,9 +62,9 @@ protected:
             uint8_t interfaceVersion = SOA4CoRE::InterfaceVersion::IV_1, uint8_t messageType = SOA4CoRE::MessageType::REQUEST,
             uint8_t returnCode = SOA4CoRE::ReturnCode::E_OK);
 private:
-    /**
-     * Member variables
-     */
+/**
+ * Member variables
+ */
 public:
 protected:
 private:

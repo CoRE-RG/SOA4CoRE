@@ -37,18 +37,18 @@ namespace SOA4CoRE {
  */
 class SubscriberConnector : public ConnectorBase
 {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
     /**
      * Adds the application to this connector only if the application is not already in the list
      * and the list is not larger then max applications.
      * Implementing ConnectorClasses need to check for the correct type of application.
      *
-     * @param application    the application to add.
+     * @param middlewareApplicationBase    the application to add.
      *
-     * @return               true if the application has been added.
+     * @return                             true if the application has been added.
      */
     bool addApplication(ServiceBase* middlewareApplicationBase);
 
@@ -56,7 +56,7 @@ public:
      * Removes the application from this connector if present.
      * Implementing ConnectorClasses need to check for the correct type of application.
      *
-     * @param application    the endpoint to remove.
+     * @param   middlewareApplicationBase   the endpoint to remove.
      * @return  the application if it was removed (pointer no longer managed by this module)
      *          nullptr if the application is not registered.
      */
@@ -92,15 +92,33 @@ public:
      */
     void setEndpoint(SubscriberEndpointBase* subscriberEndpointBase);
 protected:
+    /**
+     * Initializes the module
+     */
     virtual void initialize() override;
+
+    /**
+     * Handles the incoming message
+     * @param msg the message
+     */
     virtual void handleMessage(cMessage *msg) override;
+
+    /**
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
     virtual void handleParameterChange(const char* parname) override;
+
+    /**
+     * This method is called when the simulation is finished
+     */
     virtual void finish() override;
 private:
 
-    /**
-     * Member variables
-     */
+/**
+ * Member variables
+ */
 public:
 protected:
 private:

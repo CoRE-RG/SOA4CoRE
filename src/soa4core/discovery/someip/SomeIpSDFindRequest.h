@@ -20,11 +20,11 @@
 #include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 
 /**
- * @brief This class provides a container for a SOME/IP SD find request
+ * @brief This class provides a container for a SOME/IP SD find request that is used as a notification object.
  *
- * @ingroup soa4core/discovery/someipservicediscovery
+ * @ingroup soa4core/discovery
  *
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
 
 namespace SOA4CoRE {
@@ -34,6 +34,12 @@ class SomeIpSDFindRequest : public cObject, noncopyable {
  * Methods
  */
 public:
+    /**
+     * Constructor
+     * @param serviceId the service ID
+     * @param instanceId the instance ID
+     * @param remoteAddress the remote address
+     */
     SomeIpSDFindRequest(uint16_t serviceId, uint16_t instanceId, inet::L3Address remoteAddress);
     virtual ~SomeIpSDFindRequest();
 

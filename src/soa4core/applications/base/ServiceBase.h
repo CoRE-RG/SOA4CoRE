@@ -49,6 +49,10 @@ class ServiceBase: public virtual cSimpleModule {
 public:
     virtual ~ServiceBase();
 
+    /**
+     * Returns the service name
+     * @return the service name
+     */
     std::string getServiceName();
 
 protected:

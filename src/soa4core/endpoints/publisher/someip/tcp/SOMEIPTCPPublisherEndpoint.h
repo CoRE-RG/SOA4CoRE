@@ -22,15 +22,18 @@
 namespace SOA4CoRE {
 
 /**
+ * @brief The SOMEIPTCPPublisherEndpoint implements a SOME/IP TCP endpoint which encapsulates a message in a SOME/IP header
+ * before it is published
+ *
  * @ingroup soa4core/endpoints
  *
  * @author Mehmet Mueller
  */
 class SOMEIPTCPPublisherEndpoint : public SOMEIPPublisherEndpointBase, public TCPPublisherEndpoint
 {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
     /**
      * Creates a connection specific information for this endpoint.
@@ -47,9 +50,9 @@ protected:
     virtual void publish(cPacket* msg) override;
 private:
 
-    /**
-     * Member variables
-     */
+/**
+ * Member variables
+ */
 public:
 protected:
 private:

@@ -20,10 +20,18 @@
 
 namespace SOA4CoRE {
 
+/**
+ * @brief This class provides a container for a SOME/IP SD acknowledge subscription that is used as a notification object.
+ *
+ * @ingroup soa4core/discovery
+ *
+ * @author Mehmet Mueller for HAW Hamburg
+ */
+
 class SomeIpSDAcknowledgeSubscription : public cObject, noncopyable {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
     SomeIpSDAcknowledgeSubscription(inet::L3Address remoteAddress, PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup);
     virtual ~SomeIpSDAcknowledgeSubscription();
@@ -49,9 +57,9 @@ public:
 protected:
 private:
 
-    /**
-     * Member variables
-     */
+/**
+ * Member variables
+ */
 public:
 protected:
 private:

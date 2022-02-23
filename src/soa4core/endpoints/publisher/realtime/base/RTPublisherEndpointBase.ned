@@ -31,6 +31,8 @@ import soa4core.endpoints.publisher.base.PublisherEndpointBase;
 simple RTPublisherEndpointBase extends PublisherEndpointBase
 {
     parameters:
+        // The endpoint path or name
         endpointPath = default("RTPublisher");
+        // The qos group this endpoint serves
     	qos = default("RT");
 }

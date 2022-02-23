@@ -31,6 +31,8 @@ import soa4core.endpoints.subscriber.base.SubscriberEndpointBase;
 simple RTSubscriberEndpointBase extends SubscriberEndpointBase
 {
     parameters:
+        // The endpoint path or name
         endpointPath = default("RTSubscriber");
+        // The QoS group this endpoint serves
     	qos = default("RT");
 }

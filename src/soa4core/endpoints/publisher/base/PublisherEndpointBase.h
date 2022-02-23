@@ -38,12 +38,21 @@ class PublisherConnector;
  */
 class PublisherEndpointBase : public EndpointBase
 {
-    /**
-     * Methods
-     */
+
+/**
+ * Methods
+ */
 public:
+    /**
+     * Returns the publisher connector to which this endpoint is connected
+     * @return the publisher connector to which this endpoint is connected
+     */
     const PublisherConnector* getPublisherConnector() const;
 
+    /**
+     * Sets the publisher connector to which this endpoint is connected
+     * @param publisherConnector the publisher connector to which this endpoint is connected
+     */
     void setPublisherConnector(PublisherConnector* publisherConnector);
 
 protected:
@@ -72,12 +81,11 @@ protected:
      * @param payload   the payload to be published.
      */
     virtual void publish(cPacket* msg) = 0;
-
 private:
 
-    /**
-     * Member variables
-     */
+/**
+ * Member variables
+ */
 public:
 protected:
     /**

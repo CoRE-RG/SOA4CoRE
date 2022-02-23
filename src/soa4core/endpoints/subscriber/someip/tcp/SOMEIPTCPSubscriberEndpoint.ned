@@ -24,7 +24,9 @@ simple SOMEIPTCPSubscriberEndpoint extends TCPSubscriberEndpoint
 {
     parameters:
         @class(SOA4CoRE::SOMEIPTCPSubscriberEndpoint);
+        // The endpoint path or name
         endpointPath = default("SOME/IP Subscriber");
+        // The QoS group this enpoint serves
         qos = default("SOMEIP_TCP");
         
 }

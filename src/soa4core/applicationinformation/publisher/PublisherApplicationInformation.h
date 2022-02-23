@@ -21,6 +21,14 @@
 
 namespace SOA4CoRE {
 
+/**
+ * @brief The PublisherApplicationInformation is a container for information about a publisher application.
+ *
+ * @ingroup soa4core/applicationinformation
+ *
+ * @author Mehmet Mueller
+ */
+
 class PublisherApplicationInformation: public ApplicationInformation {
     /**
      * Methods
@@ -28,6 +36,19 @@ class PublisherApplicationInformation: public ApplicationInformation {
 public:
     PublisherApplicationInformation();
 
+    /**
+     * Constructor
+     * @param serviceId the service id of the application
+     * @param address the IP address of the node where the application resides
+     * @param instanceId the instance id of the service instance
+     * @param qosGroups the QoS groups offered by this publisher
+     * @param tcpPort the TCP port of this service
+     * @param udpPort the UDP port of this service
+     * @param streamId the AVB stream ID
+     * @param srClass the stream reservation class of the AVB stream
+     * @param framesize the AVB frame size
+     * @param intervalFrames the AVB interval frames
+     */
     PublisherApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId = INSTANCE_ID, std::set<QoSGroup> qosGroups = {},
             int tcpPort = -1, int udpPort = -1, int streamId = -1, CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A,
             size_t framesize = -1, uint16_t intervalFrames = -1);

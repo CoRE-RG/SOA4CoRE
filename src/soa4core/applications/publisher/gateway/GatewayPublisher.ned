@@ -33,6 +33,7 @@ simple GatewayPublisher extends Publisher
         //The CAN Data Frame ID(s) - String parameter (int) separated with commas
         string canIds = default("");		
 	gates:
+	    // The input gate for messages from the gateway module
 	    input gwIn;
     
 }

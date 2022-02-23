@@ -50,7 +50,16 @@ public:
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 
 protected:
+    /**
+     * Initializes this module
+     */
     virtual void initialize() override;
+
+    /**
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
     virtual void handleParameterChange(const char* parname) override;
 
     /**

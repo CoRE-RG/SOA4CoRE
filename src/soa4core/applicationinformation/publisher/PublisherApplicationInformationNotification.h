@@ -19,15 +19,32 @@
 #include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
 
 namespace SOA4CoRE {
+
+/**
+ * @brief The PublisherApplicationInformationNotification is used as a notification class for the PublisherApplicationInformation.
+ *
+ * @ingroup soa4core/applicationinformation
+ *
+ * @author Mehmet Mueller
+ */
+
 class PublisherApplicationInformationNotification : public cObject, noncopyable {
 
 /**
  * Methods
  */
 public:
+    /**
+     * Constructor
+     * @param publisherApplicationInformation the publisher application information
+     */
     PublisherApplicationInformationNotification(PublisherApplicationInformation publisherApplicationInformation);
     virtual ~PublisherApplicationInformationNotification();
 
+    /**
+     * Returns the publisher application information
+     * @return the publisher application information
+     */
     PublisherApplicationInformation getPublisherApplicationInformation();
 protected:
 private:

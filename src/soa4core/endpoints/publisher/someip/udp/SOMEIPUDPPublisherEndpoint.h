@@ -30,9 +30,9 @@ namespace SOA4CoRE {
  */
 class SOMEIPUDPPublisherEndpoint : public SOMEIPPublisherEndpointBase, public UDPPublisherEndpoint
 {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
     /**
      * Creates a connection specific information for this endpoint.

@@ -31,5 +31,6 @@ import soa4core.endpoints.publisher.base.PublisherEndpointBase;
 simple STDPublisherEndpointBase extends PublisherEndpointBase
 {
     parameters:
+        // The endpoint path or name
         endpointPath = default("RTPublisher");
 }

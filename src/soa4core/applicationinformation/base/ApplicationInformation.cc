@@ -82,6 +82,4 @@ int ApplicationInformation::getStreamId() const {
     return _streamId;
 }
 
-
-
 } /* namespace SOA4CoRE */

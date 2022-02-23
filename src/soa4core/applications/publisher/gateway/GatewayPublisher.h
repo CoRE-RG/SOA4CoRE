@@ -32,27 +32,25 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/applications
  *
- * @author Timo Haeckel for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class GatewayPublisher: public virtual Publisher {
-private:
-
-    /**
-     * Caches the canIDs handled in this gateway app
-     */
-    std::vector<int> _canIds;
-
+/**
+ * Methods
+ */
 public:
     GatewayPublisher();
-
     virtual ~GatewayPublisher();
-
 protected:
-
     /**
      * Initialization of the module. Sends activator message
      */
     virtual void initialize(int stage) override;
+
+    /**
+     * Returns the maximum number of initialization stages
+     * @return the maximum number of initialization stages
+     */
     virtual int numInitStages() const override {
         return inet::NUM_INIT_STAGES;
     }
@@ -72,9 +70,23 @@ protected:
      */
     virtual void handleParameterChange(const char* parname) override;
 
+    /**
+     * Normally it schedules the next message to be published
+     * but not as a gateway
+     */
     virtual void scheduleNextMessage() override;
-
 private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
+private:
+    /**
+     * Caches the canIDs handled in this gateway app
+     */
+    std::vector<int> _canIds;
 };
 
 } /* end namespace SOA4CoRE */

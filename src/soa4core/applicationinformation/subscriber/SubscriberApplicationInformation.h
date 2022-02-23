@@ -21,6 +21,14 @@
 
 namespace SOA4CoRE {
 
+/**
+ * @brief The SubscriberApplicationInformation is a container for information about a subscriber application.
+ *
+ * @ingroup soa4core/applicationinformation
+ *
+ * @author Mehmet Mueller
+ */
+
 class SubscriberApplicationInformation: public ApplicationInformation {
     /**
      * Methods
@@ -28,11 +36,28 @@ class SubscriberApplicationInformation: public ApplicationInformation {
 public:
     SubscriberApplicationInformation();
 
+    /**
+     * Constructor
+     * @param serviceId the service id of the application
+     * @param address the IP address of the node where the application resides
+     * @param instanceId the instance id of the service instance
+     * @param qosGroup the QoS group requested/subscribed by this subscriber
+     * @param tcpPort the TCP port of this service
+     * @param udpPort the UDP port of this service
+     * @param streamId the AVB stream ID
+     * @param srClass the stream reservation class of the AVB stream
+     * @param framesize the AVB frame size
+     * @param intervalFrames the AVB interval frames
+     */
     SubscriberApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId = INSTANCE_ID, QoSGroup qosGroup = QoSGroup::RT,
             int tcpPort = -1, int udpPort = -1, int streamId = -1, CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A,
             size_t framesize = -1, uint16_t intervalFrames = -1);
     virtual ~SubscriberApplicationInformation();
 
+    /**
+     * Returns the QoS group
+     * @return the QoS group
+     */
     QoSGroup getQoSGroup() const;
 
     virtual bool operator==(const SubscriberApplicationInformation& subscriberApplicationInformation) const;
@@ -45,6 +70,10 @@ private:
 public:
 protected:
 private:
+
+    /**
+     * The QoS group requested/subscribed by this subscriber
+     */
     QoSGroup _qosGroup;
 };
 } /* end namespace SOA4CoRE */

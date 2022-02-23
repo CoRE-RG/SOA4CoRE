@@ -33,19 +33,22 @@ namespace SOA4CoRE {
  */
 class IServiceDiscovery {
 
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
+    /**
+     * Initiates the service discovery for the given service identifier
+     * @param serviceIdentifier the service identifier
+     */
     virtual void discover(ServiceIdentifier serviceIdentifier) = 0;
 protected:
 private:
 
-    /**
-     * Member variables
-     */
+/**
+ * Member variables
+ */
 public:
-
 protected:
     /**
      * The signal which is emitted when a offer is received

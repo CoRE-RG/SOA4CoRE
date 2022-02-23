@@ -45,6 +45,9 @@ namespace SOA4CoRE {
  */
 class UDPPublisherEndpoint : public STDPublisherEndpointBase
 {
+/**
+ * Methods
+ */
 public:
     /**
      * Creates a connection specific information for this endpoint.
@@ -82,6 +85,14 @@ protected:
      */
     virtual void publish(cPacket* msg) override;
 
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
+
     /**
      * UDP server socket
      */
@@ -101,6 +112,7 @@ protected:
      * Remotes.
      */
     std::vector<std::pair<inet::L3Address, int>> _remotes;
+private:
 };
 
 } /*end namespace SOA4CoRE*/

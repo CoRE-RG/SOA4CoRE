@@ -42,6 +42,9 @@ namespace SOA4CoRE {
  */
 class Publisher: public virtual ServiceBase {
 
+/**
+ * Methods
+ */
 public:
     Publisher();
 
@@ -61,6 +64,53 @@ public:
      */
     size_t getPayloadBytes();
 
+protected:
+    /**
+     * Initialization of the module. Sends activator message
+     */
+    virtual void initialize() override;
+
+    /**
+     * This method should be called from subclasses unless the module
+     * resets the bag on its own.
+     *
+     * @param msg Parameter must be forwarded from subclass
+     */
+    virtual void handleMessage(cMessage *msg) override;
+
+    /**
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
+    virtual void handleParameterChange(const char* parname) override;
+
+    /**
+     * Sets the QoS groups
+     */
+    void setQoS();
+
+    /**
+     * Prints the QoS groups
+     */
+    void printQoS();
+
+    /**
+     * Creates and registers this Publisher
+     */
+    void createPublisherWithQoS();
+
+    /**
+     * Schedules the next message to be published
+     */
+    virtual void scheduleNextMessage();
+
+private:
+
+/**
+ * Member variables
+ */
+public:
 protected:
     /**
      * Caches enabled parameter
@@ -116,32 +166,6 @@ protected:
      * Caches the QoS types this application can serve
      */
     std::set<std::string> _qosGroups;
-
-    /**
-     * Initialization of the module. Sends activator message
-     */
-    virtual void initialize() override;
-
-    /**
-     * This method should be called from subclasses unless the module
-     * resets the bag on its own.
-     *
-     * @param msg Parameter must be forwarded from subclass
-     */
-    virtual void handleMessage(cMessage *msg) override;
-
-    /**
-     * Indicates a parameter has changed.
-     *
-     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
-     */
-    virtual void handleParameterChange(const char* parname) override;
-
-    void setQoS();
-    void printQoS();
-    void createPublisherWithQoS();
-    virtual void scheduleNextMessage();
-
 private:
     /**
      * Signal that is emitted each time the payload is used.

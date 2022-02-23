@@ -38,8 +38,10 @@ namespace SOA4CoRE {
  */
 class TCPSubscriberEndpoint : public STDSubscriberEndpointBase
 {
+/**
+ * Methods
+ */
 public:
-
     /**
      * Creates a connection specific information for this endpoint.
      * @return  the connection specific information.
@@ -47,7 +49,6 @@ public:
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 
 protected:
-
     /**
      * @brief Indicates a parameter has changed.
      *
@@ -68,6 +69,13 @@ protected:
      */
     virtual void initializeTransportConnection() override;
 
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
     /**
      * The TCP socket to receive on.
      */
@@ -92,6 +100,7 @@ protected:
      * The remote TCP port.
      */
     int _remotePort;
+private:
 };
 
 } /*end namespace SOA4CoRE*/

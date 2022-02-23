@@ -32,9 +32,12 @@ namespace SOA4CoRE {
  * @author Timo Haeckel for HAW Hamburg
  */
 class GatewaySubscriber: public virtual Subscriber {
-private:
-
-    cGate* _toGateway;
+/**
+ * Methods
+ */
+public:
+    GatewaySubscriber();
+    virtual ~GatewaySubscriber();
 
 protected:
     /**
@@ -50,11 +53,18 @@ protected:
      */
     virtual void handleMessage(cMessage *msg) override;
 
-public:
-    GatewaySubscriber();
-    virtual ~GatewaySubscriber();
-
 private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
+private:
+    /**
+     * The gate to the gateway module
+     */
+    cGate* _toGateway;
 };
 
 }/* end namespace SOA4CoRE */

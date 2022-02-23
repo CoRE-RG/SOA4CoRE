@@ -34,7 +34,7 @@ simple EndpointBase extends ProcessingTimeSimulation like IEndpoint
         // indicates which qos is realized in this endpoint one of RT, STD_UDP, STD_TCP, WEB
         string qos = default("");  
         
-     	//The name of the endpoint as a path (e.g. "Reifendruck/links").
+     	// The name of the endpoint as a path (e.g. "Reifendruck/links").
     	string endpointPath = default("");
     	
     	processingTime = default(0s);
@@ -42,7 +42,7 @@ simple EndpointBase extends ProcessingTimeSimulation like IEndpoint
         
         // Signal emitted when connector will be created
         @signal[endpointCreationTime](type=simtime_t);
-        //Statistic of the simtime
+        // Statistic of the simtime
         @statistic[endpointCreatedAt](title="Endpoint creation time"; source=endpointCreationTime; record=sum; unit=s);
     
     gates:

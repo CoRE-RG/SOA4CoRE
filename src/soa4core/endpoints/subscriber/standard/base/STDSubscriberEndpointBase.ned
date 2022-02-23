@@ -31,5 +31,6 @@ import soa4core.endpoints.subscriber.base.SubscriberEndpointBase;
 simple STDSubscriberEndpointBase extends SubscriberEndpointBase
 {
     parameters:
+        // The endpoint path or name
         endpointPath = default("RTSubscriber");
 }

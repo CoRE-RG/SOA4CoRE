@@ -25,9 +25,9 @@ namespace SOA4CoRE {
  */
 class SOMEIPTCPSubscriberEndpoint : public TCPSubscriberEndpoint
 {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
     /**
      * Creates a connection specific information for this endpoint.

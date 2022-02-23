@@ -36,9 +36,9 @@ namespace SOA4CoRE {
  */
 class PublisherConnector : public ConnectorBase
 {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
     /**
      * Adds the endpoint to this connector only if the endpoint is not already in the list
@@ -77,14 +77,14 @@ public:
     ServiceBase* getApplication();
 
     /**
-     * Sets the application information
-     * @param qosGroups
+     * Sets the publisher application information
+     * @param publisherApplicationInformation the publisher application information
      */
     void setPublisherApplicationInformation(PublisherApplicationInformation publisherApplicationInformation);
 
     /**
-     * Returns the application information
-     * @return
+     * Returns the publisher application information
+     * @return the publisher application information
      */
     PublisherApplicationInformation getPublisherApplicationInformation();
 
@@ -94,15 +94,34 @@ public:
      */
     const std::vector<PublisherEndpointBase*>& getEndpoints() const;
 protected:
+
+    /**
+     * Initializes the module
+     */
     virtual void initialize() override;
+
+    /**
+     * Handles the incoming message
+     * @param msg the message
+     */
     virtual void handleMessage(cMessage *msg) override;
+
+    /**
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
     virtual void handleParameterChange(const char* parname) override;
+
+    /**
+     * This method is called when the simulation is finished
+     */
     virtual void finish() override;
 private:
 
-    /**
-     * Members
-     */
+/**
+ * Member variables
+ */
 public:
 protected:
 private:
@@ -112,6 +131,9 @@ private:
      */
     int _maxEndpoints = -1;
 
+    /**
+     * The middleware application
+     */
     ServiceBase* _middlewareApplicationBase = nullptr;
 
     /**

@@ -39,6 +39,10 @@ namespace SOA4CoRE {
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class EndpointBase: public ProcessingTimeSimulation {
+
+/**
+ * Methods
+ */
 public:
 
     /**
@@ -47,48 +51,71 @@ public:
      */
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() = 0;
 
+    /**
+     * Returns the state whether this endpoint is connected
+     * @return the state whether this endpoint is connected
+     */
     bool isIsConnected() const {
         return _isConnected;
     }
 
+    /**
+     * Sets the state for the endpoint whether it is connected
+     * @param isConnected the state whether this endpoint is connected
+     */
     void setIsConnected(bool isConnected = false) {
         _isConnected = isConnected;
     }
 
+    /**
+     * Returns the QoS group for which this endpoint serves
+     * @return the QoS group for which this endpoint serves
+     */
     QoSGroup getQos() const {
         return _qos;
     }
 
+    /**
+     * Returns the endpoint path or name of the service for which this endpoint serves
+     * @return the endpoint path or name of the service for which this endpoint serves
+     */
     const std::string& getEndpointPath() const {
         return _endpointPath;
     }
 
+    /**
+     * Sets the endpoint path or name of the service for which this endpoint serves
+     * @param path the endpoint path or name of the service for which this endpoint serves
+     */
     void setEndpointPath(const std::string& path) {
         _endpointPath = path;
     }
 
+    /**
+     * Returns the creation time of this endpoint
+     * @return the creation time of this endpoint
+     */
     simtime_t getCreationTime();
 
+    /**
+     * Returns the ID of the service for which this endpoint serves
+     * @return the ID of the service for which this endpoint serves
+     */
     int getServiceId() const {
         return _serviceId;
     }
 
+    /**
+     * Sets the service ID for which this endpoint serves
+     * @param serviceId the service ID for which this endpoint serves
+     */
     void setServiceId(int serviceId) {
         _serviceId = serviceId;
     }
-
-private:
-    /**
-     * Signal to emit creationTime
-     */
-    simsignal_t _creationTimeSignal;
-
-    /**
-     * The time the connector is created at.
-     */
-    simtime_t _creationTime;
-
 protected:
+    /**
+     * Initializes the module
+     */
     virtual void initialize() override;
 
     /**
@@ -138,7 +165,11 @@ protected:
      */
     virtual void handleConnectorIn(cMessage *msg) = 0;
 
-
+/**
+ * Member variables
+ */
+public:
+protected:
 
     /**
      * Is this endpoint connected to transport
@@ -184,6 +215,17 @@ protected:
      * Gate name for transport outputs
      */
     static const char TRANSPORT_MIDDLEWARE_OUT_GATE_NAME[]; //= "tpEndpointsOut";
+
+private:
+    /**
+     * Signal to emit creationTime
+     */
+    simsignal_t _creationTimeSignal;
+
+    /**
+     * The time the connector is created at.
+     */
+    simtime_t _creationTime;
 };
 
 } /*end namespace SOA4CoRE*/

@@ -38,21 +38,27 @@ namespace SOA4CoRE {
  */
 class ConnectorBase : public cSimpleModule
 {
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
-private:
-
-  protected:
+protected:
+    /**
+     * Initializes the module
+     */
     virtual void initialize() override;
-    virtual void handleParameterChange(const char* parname) override;
-
-private:
 
     /**
-     * Member variables
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
      */
+    virtual void handleParameterChange(const char* parname) override;
+private:
+
+/**
+ * Member variables
+ */
 public:
 protected:
     /**
@@ -64,7 +70,6 @@ protected:
      * Signal to emit messages which are dropped
      */
     simsignal_t _messageDroppedSignal;
-
 private:
 };
 

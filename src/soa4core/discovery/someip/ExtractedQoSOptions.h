@@ -25,13 +25,19 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/discovery
  *
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class ExtractedQoSOptions {
 /**
  * Methods
  */
 public:
+    /**
+     * Constructor
+     * @param qosGroup the QoS group
+     * @param udpPort the UDP port of this QoS group
+     * @param tcpPort the TCP port of this QoS group
+     */
     ExtractedQoSOptions(QoSGroup qosGroup, int udpPort, int tcpPort);
     virtual ~ExtractedQoSOptions();
 

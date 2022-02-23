@@ -37,29 +37,45 @@ namespace SOA4CoRE {
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class StaticServiceDiscovery: public IServiceDiscovery, public cSimpleModule {
+/**
+ * Methods
+ */
 public:
     virtual ~StaticServiceDiscovery();
 
     /**
-     * Discovers a service in the network
-     * @param serviceIdentifier
+     * Discovers a service for the given service identifier
+     * @param serviceIdentifier the given service identifier
      */
     void discover(ServiceIdentifier serviceIdentifier) override;
 
-    /**
-     * Check if the registry contains a service with the service identifier.
-     * @param serviceIdentifier The serviceIdentifier of the service to find
-     * @return True if the registry contains the service, otherwise false.
-     */
-    //bool contains(ServiceIdentifier serviceIdentifier);
-
 protected:
+    /**
+     * Initializes the module
+     * @param stage the initialization stage
+     */
     virtual void initialize(int stage) override;
+
+    /**
+     * Returns the maximum number of initialization stages
+     * @return the maximum number of initialization stages
+     */
     virtual int numInitStages() const override {
         return inet::NUM_INIT_STAGES;
     }
-    virtual void handleMessage(cMessage *msg) override;
 
+    /**
+     * Handles the incoming message
+     * @param msg the message
+     */
+    virtual void handleMessage(cMessage *msg) override;
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
 private:
     /**
      * Map used to abstract discovery of services

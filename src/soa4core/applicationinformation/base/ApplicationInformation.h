@@ -26,9 +26,9 @@ using namespace CoRE4INET;
 namespace SOA4CoRE {
 
 /**
- * @brief The service representation for apps
+ * @brief The ApplicationInformation is a container for information about applications.
  *
- * @ingroup soa4core/service
+ * @ingroup soa4core/applicationinformation
  *
  * @author Mehmet Mueller
  */
@@ -40,6 +40,18 @@ class ApplicationInformation {
 public:
     ApplicationInformation();
 
+    /**
+     * Constructor
+     * @param serviceId the service id of the application
+     * @param address the IP address of the node where the application resides
+     * @param instanceId the instance id of the service instance
+     * @param tcpPort the TCP port of this service
+     * @param udpPort the UDP port of this service
+     * @param streamId the AVB stream ID
+     * @param srClass the stream reservation class of the AVB stream
+     * @param framesize the AVB frame size
+     * @param intervalFrames the AVB interval frames
+     */
     ApplicationInformation(int serviceId, inet::L3Address address, uint16_t instanceId = INSTANCE_ID, int tcpPort = -1, int udpPort = -1, int streamId = -1,
             CoRE4INET::SR_CLASS srClass = CoRE4INET::SR_CLASS::A, size_t framesize = -1, uint16_t intervalFrames = -1);
     virtual ~ApplicationInformation();
@@ -155,8 +167,6 @@ protected:
      */
     uint16_t _intervalFrames;
 private:
-
-
 };
 
 } /* namespace SOA4CoRE */

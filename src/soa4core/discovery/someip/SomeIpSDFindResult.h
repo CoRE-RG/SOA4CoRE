@@ -23,10 +23,11 @@ namespace SOA4CoRE {
 
 /**
  * @brief This class provides a container for results resulting from SOME/IP SD header find entry
+ * that is used as a notification object.
  *
- * @ingroup soa4core/discovery/someipservicediscovery
+ * @ingroup soa4core/discovery
  *
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class SomeIpSDFindResult : public cObject, noncopyable {
 /**
@@ -47,11 +48,9 @@ public:
      * @return the PublisherApplicationInformation
      */
     PublisherApplicationInformation getPublisherApplicationInformation() const;
-
-
-
 protected:
 private:
+
 /**
  * Member variables
  */

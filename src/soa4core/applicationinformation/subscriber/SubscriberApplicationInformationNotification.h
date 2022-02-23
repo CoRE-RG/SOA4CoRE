@@ -19,6 +19,15 @@
 #include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 
 namespace SOA4CoRE {
+
+/**
+ * @brief The SubscriberApplicationInformationNotification is used as a notification class for the SubscriberApplicationInformation.
+ *
+ * @ingroup soa4core/applicationinformation
+ *
+ * @author Mehmet Mueller
+ */
+
 class SubscriberApplicationInformationNotification : public omnetpp::cObject, omnetpp::noncopyable {
     /**
      * Methods
@@ -27,6 +36,10 @@ public:
     SubscriberApplicationInformationNotification(SubscriberApplicationInformation subscriberApplicationInformation);
     virtual ~SubscriberApplicationInformationNotification();
 
+    /**
+     * Returns the subscriber application information
+     * @return the subscriber application information
+     */
     const SubscriberApplicationInformation& getSubscriberApplicationInformation() const;
 
 protected:
@@ -38,6 +51,9 @@ private:
 public:
 protected:
 private:
+    /**
+     * The subscriber application information
+     */
     SubscriberApplicationInformation _subscriberApplicationInformation;
 };
 } /* end namespace */

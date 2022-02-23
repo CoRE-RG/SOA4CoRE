@@ -22,22 +22,36 @@
 namespace SOA4CoRE {
 
 /**
- * @brief This class provides holding the informations needed for subscription
+ * @brief This class provides a container holding the informations needed for subscription that is used as a notification object.
  *
- * @ingroup soa4core/discovery/someipservicediscovery
+ * @ingroup soa4core/discovery
  *
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
+
 class SomeIpSDSubscriptionInformation : public cObject, noncopyable {
 /**
  * Methods
  */
 public:
+    /**
+     * Constructor
+     * @param remoteAddress the remote address of the publisher node
+     * @param subscriberApplicationInformation the application information of the subscriber
+     */
     SomeIpSDSubscriptionInformation(inet::L3Address remoteAddress, SubscriberApplicationInformation subscriberApplicationInformation);
     virtual ~SomeIpSDSubscriptionInformation();
 
+    /**
+     * Returns the remote address of the publisher node
+     * @return the remote address of the publisher node
+     */
     const inet::L3Address& getRemoteAddress() const;
 
+    /**
+     * Returns the application information of the subscriber
+     * @return the application information of the subscriber
+     */
     const SubscriberApplicationInformation& getSubscriberApplicationInformation() const;
 
 protected:

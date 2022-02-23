@@ -35,10 +35,13 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/endpoints
  *
- * @author Timo Haeckel for HAW Hamburg
+ * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class AVBSubscriberEndpoint : public RTSubscriberEndpointBase, public cListener
 {
+/**
+ * Methods
+ */
 public:
 
     /**
@@ -47,8 +50,16 @@ public:
      */
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 
-  protected:
+protected:
+    /**
+     * Initializes the module
+     */
     virtual void initialize() override;
+
+    /**
+     * Handles the incoming message
+     * @param msg the message
+     */
     virtual void handleMessage(cMessage *msg) override;
 
     /**
@@ -81,6 +92,13 @@ public:
      */
     virtual void scheduleUpdateMessage(SimTime at);
 
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
     /**
      * Cached reference to the SRP Table to register a talker and be notified about new listeners.
      */
@@ -110,6 +128,7 @@ public:
      * VLAN ID of the stream.
      */
     uint16_t _vlanID;
+private:
 };
 
 } /*end namespace SOA4CoRE*/

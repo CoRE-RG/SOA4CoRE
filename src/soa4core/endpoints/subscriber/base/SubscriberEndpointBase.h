@@ -37,15 +37,27 @@ class SubscriberConnector;
  */
 class SubscriberEndpointBase : public EndpointBase
 {
-    /**
-     * Methods
-     */
+
+/**
+ * Methods
+ */
 public:
+    /**
+     * Returns the subscriber connector to which this endpoint is connected
+     * @return the subscriber connector to which this endpoint is connected
+     */
     const SubscriberConnector* getSubscriberConnector() const;
 
+    /**
+     * Sets the subscriber connector to which this endpoint is connected
+     * @param subscriberConnector the subscriber connector to which this endpoint is connected
+     */
     void setSubscriberConnector(SubscriberConnector* subscriberConnector);
 
 protected:
+    /**
+     * Initializes this module
+     */
     virtual void initialize() override;
 
     /**
@@ -65,9 +77,9 @@ protected:
     virtual void handleConnectorIn(cMessage *msg) override;
 private:
 
-    /**
-     * Member variables
-     */
+/**
+ * Member variables
+ */
 public:
 protected:
     /**

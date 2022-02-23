@@ -33,7 +33,8 @@ simple TCPSubscriberEndpoint extends STDSubscriberEndpointBase
 {
     parameters:
         @class(SOA4CoRE::TCPSubscriberEndpoint);
-    	qos = default("STD_TCP"); // invalid...
+        // The QoS group this enpoint serves
+    	qos = default("STD_TCP");
     
         // Local IP address for TCP socket
         string localAddress;

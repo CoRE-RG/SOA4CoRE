@@ -32,11 +32,11 @@
 namespace SOA4CoRE {
 
 /**
- * @brief Basic SomeIpSD
+ * @brief A SOME/IP protocol implementation
  *
  * @ingroup soa4core/discovery
  *
- * @author Mehmet Mueller
+ * @author Mehmet Mueller for HAW Hamburg
  */
 class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, public cListener
 {

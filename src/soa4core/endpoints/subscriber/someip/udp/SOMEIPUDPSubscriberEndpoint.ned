@@ -24,6 +24,8 @@ simple SOMEIPUDPSubscriberEndpoint extends UDPSubscriberEndpoint
 {
     parameters:
         @class(SOA4CoRE::SOMEIPUDPSubscriberEndpoint);
+        // The endpoint path or name
         endpointPath = default("SOME/IP Subscriber");
+        // The QoS group this endpoint serves
         qos = default("SOMEIP_UDP");
 }

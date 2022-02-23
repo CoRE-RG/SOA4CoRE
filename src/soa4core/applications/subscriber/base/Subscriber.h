@@ -39,26 +39,11 @@ namespace SOA4CoRE {
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
 class Subscriber: public virtual ServiceBase {
-private:
-
-
-    /**
-     * Caches the start time parameter
-     */
-    double _startTime;
-
+/**
+ * Methods
+ */
+public:
 protected:
-
-    /**
-     * The application informations of this app
-     */
-    SubscriberApplicationInformation _subscriberApplicationInformation;
-
-    /**
-     * Caches the required QoS type
-     */
-    QoSGroup _qosGroup;
-
     /**
      * Initialization of the module. Sends activator message
      */
@@ -80,18 +65,38 @@ protected:
     virtual void handleParameterChange(const char* parname) override;
 
     /**
+     * Sets the QoS group this subscriber requests/subscribes
+     */
+    void setQoS();
+private:
+
+/**
+ * Member variables
+ */
+public:
+    Subscriber();
+    virtual ~Subscriber();
+protected:
+    /**
+     * The application informations of this app
+     */
+    SubscriberApplicationInformation _subscriberApplicationInformation;
+
+    /**
+     * Caches the required QoS type
+     */
+    QoSGroup _qosGroup;
+
+    /**
      * Signal that is emitted every time a frame was sent.
      */
      simsignal_t _rxPkSignal;
 
-     void setQoS();
-
-public:
-    Subscriber();
-    virtual ~Subscriber();
-
 private:
-
+    /**
+     * Caches the start time parameter
+     */
+    double _startTime;
 };
 
 }/* end namespace SOA4CoRE */

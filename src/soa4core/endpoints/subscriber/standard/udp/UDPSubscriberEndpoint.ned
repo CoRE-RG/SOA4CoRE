@@ -33,6 +33,7 @@ simple UDPSubscriberEndpoint extends STDSubscriberEndpointBase
 {
     parameters:
         @class(SOA4CoRE::UDPSubscriberEndpoint);
+        // The QoS group this endpoint serves
     	qos = default("STD_UDP");
     
         // Local IP address for TCP socket

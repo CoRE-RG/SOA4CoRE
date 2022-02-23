@@ -38,8 +38,10 @@ namespace SOA4CoRE {
  */
 class UDPSubscriberEndpoint : public STDSubscriberEndpointBase
 {
+/**
+ * Methods
+ */
 public:
-
     /**
      * Creates a connection specific information for this endpoint.
      * @return  the connection specific information.
@@ -47,7 +49,6 @@ public:
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 
 protected:
-
     /**
      * @brief Indicates a parameter has changed.
      *
@@ -59,7 +60,13 @@ protected:
      * Is called during module initialization to initialize the transport connection;
      */
     virtual void initializeTransportConnection() override;
+private:
 
+/**
+ * Member variables
+ */
+public:
+protected:
     /**
      * The UDP socket to receive on.
      */
@@ -74,6 +81,7 @@ protected:
      * The local UDP port.
      */
     int _localPort;
+private:
 };
 
 } /*end namespace SOA4CoRE*/

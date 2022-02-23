@@ -51,5 +51,6 @@ simple Subscriber extends ServiceBase
         //Service ID
     	int publisherServiceId = default(0);
         
-        string qosGroup = default("STD_TCP"); //RT, WEB, STD ( " " seperated list of policies each policy with structure type::value)
+        //The QoS group which is requestes/subscribed
+        string qosGroup = default("STD_TCP");
 }

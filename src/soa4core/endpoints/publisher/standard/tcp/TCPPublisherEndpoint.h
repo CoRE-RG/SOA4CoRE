@@ -44,6 +44,9 @@ namespace SOA4CoRE {
  */
 class TCPPublisherEndpoint : public STDPublisherEndpointBase, public inet::TCPSocketMap
 {
+/**
+ * Methods
+ */
 public:
     virtual ~TCPPublisherEndpoint();
 
@@ -53,7 +56,7 @@ public:
      */
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 
-  protected:
+protected:
     virtual void handleParameterChange(const char* parname) override;
 
     /**
@@ -77,6 +80,13 @@ public:
      */
     virtual void publish(cPacket* msg) override;
 
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
     /**
      * Local ip address for TCP socket
      */
@@ -91,6 +101,7 @@ public:
      * TCP server socket
      */
     inet::TCPSocket _serverSocket;
+private:
 };
 
 } /*end namespace SOA4CoRE*/
