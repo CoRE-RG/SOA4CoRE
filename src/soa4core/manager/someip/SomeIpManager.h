@@ -32,26 +32,26 @@ namespace SOA4CoRE {
  */
 class SomeIpManager : public Manager
 {
-    /**
-     * Methods
-     */
-  public:
+/**
+ * Methods
+ */
+public:
     /**
      * @brief Receives discovery response
-     * @param source
-     * @param signalID
-     * @param obj
-     * @param details
+     * @param source the source
+     * @param signalID the signal ID
+     * @param obj the object
+     * @param details the details
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 
     /**
      * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param qosService the QoS service
+     * @param subscriberApplicationInformation the application information of the subscriber
      */
     void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
-  protected:
+protected:
     /**
      * Initializes the module and waits for find
      *
@@ -65,7 +65,7 @@ class SomeIpManager : public Manager
      * @param msg the received message
      */
     virtual void handleMessage(cMessage *msg) override;
-  private:
+private:
     /**
      * Looks for a requested service in the local registry
      * @param obj the SomeIpSDFindRequest
@@ -104,17 +104,17 @@ class SomeIpManager : public Manager
     void createSubscriberEndpoint(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup);
 
     /**
-     * Returns the corresponding L4 protocol of the service
-     * @param service
-     * @return the corresponding L4 protocol of the service
+     * Returns the corresponding L4 protocol of the QoS group
+     * @param qosGroup the QoS group
+     * @return the corresponding L4 protocol of the QoS group
      */
     IPProtocolId getIPProtocolId(QoSGroup qosGroup);
 
-    /**
-     * Member variables
-     */
-  public:
-  protected:
+/**
+ * Member variables
+ */
+public:
+protected:
     /**
      * The signal which is emitted when a requested service is found
      */
@@ -129,8 +129,8 @@ class SomeIpManager : public Manager
      * The signal which is emitted when a subscription has been acknowledged
      */
     omnetpp::simsignal_t _subscribeAckSignal;
-  private:
 
+private:
     /**
      * The service discovery.
      */

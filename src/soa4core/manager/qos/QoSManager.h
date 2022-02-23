@@ -33,20 +33,20 @@ namespace SOA4CoRE {
 class QoSManager : public Manager
 {
 
-    /**
-     * Methods
-     */
-  public:
+/**
+ * Methods
+ */
+public:
     /**
      * @brief Receives discovery response
-     * @param source
-     * @param signalID
-     * @param obj
-     * @param details
+     * @param source the source
+     * @param signalID the signal ID
+     * @param obj the object
+     * @param details the object details
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
 
-  protected:
+protected:
     /**
      * Initializes the module and waits for find
      *
@@ -68,17 +68,18 @@ class QoSManager : public Manager
      */
     void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
 
-  private:
+private:
     /**
      * Creates a negotiation request
-     * @param publisherService
+     * @param publisherApplicationInformation the application information of the publisher
+     * @param qosGroup the QoS group
      * @return the negotiation request
      */
     Request* createNegotiationRequest(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup);
 
     /**
      * Subscribes to the offered service
-     * @param obj
+     * @param obj the publisher application information
      */
     void subscribeOfferedService(cObject* obj);
 
@@ -88,16 +89,16 @@ class QoSManager : public Manager
      */
     void lookForService(cObject* obj);
 
-    /**
-     * Member variables
-     */
-  public:
-  protected:
+/**
+ * Member variables
+ */
+public:
+protected:
     /**
      * The signal which is emitted when a requested service is found
      */
     omnetpp::simsignal_t _findResultSignal;
-  private:
+private:
     /**
      * The QoS Negotiation Protocol module.
      */

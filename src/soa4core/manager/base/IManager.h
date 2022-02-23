@@ -32,6 +32,11 @@ class IManager
 {
 public:
   virtual ~IManager();
+  /**
+   * Subscribes the service given in the publisher service identifier
+   * @param publisherServiceIdentifier the publisher service identifier
+   * @param subscriberApplicationInformation the application information of the subscriber application
+   */
   virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) = 0;
 
 };

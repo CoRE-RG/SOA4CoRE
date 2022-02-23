@@ -51,11 +51,11 @@ namespace SOA4CoRE {
  */
 class Manager: public IManager, public cSimpleModule, public cListener {
 
-    friend class QoSBroker;
+friend class QoSBroker;
 
-    /**
-     * Methods
-     */
+/**
+ * Methods
+ */
 public:
     Manager();
     virtual ~Manager();
@@ -85,14 +85,16 @@ public:
     virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
 
     /**
-     * Finds the connector for the publisher
+     * @brief Finds the connector for the publisher
+     *
      * @param publisherServiceId     the service id of the publisher
      * @return                       the connector if found, else nullptr
      */
     PublisherConnector* getPublisherConnectorForServiceId (uint32_t publisherServiceId);
 
     /**
-     * Finds the connector for the subscriber
+     * @brief Finds the connector for the subscriber
+     *
      * @param publisherServiceId     the service id of the publisher
      * @return                       the connectors if found, else empty vector
      */
@@ -101,8 +103,16 @@ public:
 protected:
     /**
      * @brief Initialization of the module.
+     *
+     * @param stage the initialization stage
      */
     virtual void initialize(int stage) override;
+
+    /**
+     * @brief Returns the maximum number of initialization stages
+     *
+     * @return the maximum number of initialization stages
+     */
     virtual int numInitStages() const override {
         return inet::NUM_INIT_STAGES;
     }
@@ -114,112 +124,199 @@ protected:
      */
     virtual void handleMessage(cMessage *msg) override;
 
+    /**
+     * @brief Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
     virtual void handleParameterChange(const char* parname) override;
 
     /**
-     * Searches for a subscriber connector on this node for the given name and QoS.
+     * @brief Searches for a subscriber connector on this node for the given service id and QoS group.
      *
      * @param publisherServiceId     the service id of the publisher.
-     * @param qosGroup               the QoS of the publisher.
+     * @param qosGroup               the QoS group of the publisher.
      * @return                       the subscriber if found, else nullptr.
      */
     SubscriberConnector* findSubscriberConnectorLike(uint32_t publisherServiceId, QoSGroup qosGroup);
 
     /**
-     * Tries to find a publisher on this node for the given name and QoS.
-     * If it can't be found a new one is created.
+     * @brief Tries to find a publisher on this node for the given name and QoS.
+     * If it can't be found, a new one is created.
      * The connector will be connected as well.
      *
      * @param publisherServiceId     the service id of the publisher.
      * @param qosGroup               the qosGroup of the publisher.
-     * @return                       the corresponding publisher
+     * @return                       the corresponding publisher if found, else nullptr.
      */
     PublisherEndpointBase* createOrFindPublisherFor(uint32_t publisherServiceId,  QoSGroup qosGroup);
 
     /**
-     * Tries to find a subscriber on this node for the given publisher name and QoS.
+     * @brief Tries to find a subscriber on this node for the given publisher service id and QoS group.
      * If it can't be found a new one is created.
      * The connector will be connected as well.
      *
-     * @param publisherPath     the service id of the publisher.
-     * @param csi               the csi of the publisher.
-     * @return                  the corresponding publisher
+     * @param publisherServiceId    the service id of the publisher.
+     * @param csi                   the csi of the publisher.
+     * @return                      the corresponding publisher, else nullptr.
      */
     SubscriberEndpointBase* createOrFindSubscriberFor(uint32_t publisherServiceId, ConnectionSpecificInformation* csi);
 
     /**
-     * Searches for a publisher on this node for the given name and QoS.
+     * @brief Searches for a publisher on this node for the given service id and QoS.
      *
      * @param publisherServiceId     the service id of the publisher.
-     * @param qosGroup               the QoS of the publisher.
+     * @param qosGroup               the QoS group of the publisher.
      * @return                       the publisher if found, else nullptr.
      */
     PublisherEndpointBase* findPublisherLike(uint32_t publisherServiceId, QoSGroup qosGroup);
 
     /**
-     * Searches for a subscriber on this node for the given name and QoS.
+     * @brief Searches for a subscriber on this node for the given service id and QoS.
      *
      * @param publisherServiceId     the service id of the publisher.
-     * @param qosGroup               the QoS of the publisher.
+     * @param qosGroup               the QoS group of the publisher.
      * @return                       the corresponding publisher
      */
     SubscriberEndpointBase* findSubscriberLike(uint32_t publisherServiceId, QoSGroup qosGroup);
 
     /**
-     * Adds an subscriber to the pendingRequestMap if the requested service is not known yet
-     * @param publisherServiceIdentifier the service id of the publisher service
-     * @param qosService the QoS service
+     * @brief Adds an subscriber to the pendingRequestMap if the requested service is not known yet.
+     *
+     * @param publisherServiceIdentifier the service id of the publisher service.
+     * @param subscriberApplicationInformation the application information of the subscriber.
      */
     void addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation);
 
 private:
-
     /**
-     * Adds subscriber service to a given subscriber connector
-     * @param subscriberConnector
-     * @param executingApplication
+     * @brief Adds a subscriber service to a given subscriber connector.
+     *
+     * @param subscriberConnector the subscriber connector.
+     * @param executingApplication the subscriber service application.
      */
     void addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, ServiceBase* executingApplication);
 
     /**
-     * Creates a publisher connector
-     * @param publisherApplicationInformation
-     * @param executingApplication
-     * @return the publisher connector module
+     * @brief Creates a publisher connector.
+     *
+     * @param publisherApplicationInformation the publisher application information.
+     * @param executingApplication the publisher service application.
+     * @return the publisher connector module.
      */
     PublisherConnector* createPublisherConnector(PublisherApplicationInformation publisherApplicationInformation, ServiceBase* executingApplication);
 
     /**
-     * Creates a subscriber connector
-     * @param qosService
-     * @param executingApplication
-     * @return the subscriber connector module
+     * @brief Creates a subscriber connector.
+     *
+     * @param subscriberApplicationInformation the subscriber application information.
+     * @param executingApplication the subscriber service application.
+     * @return the subscriber connector module.
      */
     SubscriberConnector* createSubscriberConnector(SubscriberApplicationInformation subscriberApplicationInformation, ServiceBase* executingApplication);
 
     /**
-     * Matches the connection type to the qos group
+     * Returns the QoS group for the given connection type
      * @param  connectionType @see~ConnectionType
      * @return the qos group. @see~QoSGroups
      */
     QoSGroup getQoSGroupForConnectionType(ConnectionType connectionType);
 
+    /**
+     * @brief Creates an AVB subscriber endpoint
+     *
+     * @param csi the csi
+     * @param connector the subscriber connector
+     * @return the AVB subscriber endpoint
+     */
     SubscriberEndpointBase* createAVBSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createSomeIpTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
-    SubscriberEndpointBase* createSomeIpUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
 
-    PublisherEndpointBase* createAVBPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
-    PublisherEndpointBase* createTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
-    PublisherEndpointBase* createUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
-    PublisherEndpointBase* createSomeIpTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
-    PublisherEndpointBase* createSomeIpUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
+    /**
+     * @brief Creates a TCP subscriber endpoint
+     *
+     * @param csi the csi
+     * @param connector the subscriber connector
+     * @return the TCP subscriber endpoint
+     */
+    SubscriberEndpointBase* createTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+
+    /**
+     * @brief Creates an UDP subscriber endpoint
+     *
+     * @param csi the csi
+     * @param connector the subscriber connector
+     * @return the UDP subscriber endpoint
+     */
+    SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+
+    /**
+     * @brief Creates a SOME/IP TCP subscriber endpoint
+     *
+     * @param csi the csi
+     * @param connector the subscriber connector
+     * @return the SOME/IP TCP subscriber endpoint
+     */
+    SubscriberEndpointBase* createSomeIpTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
+
+    /**
+     * @brief Creates a SOME/IP UDP subscriber endpoint
+     *
+     * @param csi the csi
+     * @param connector the subscriber connector
+     * @return the SOME/IP UDP subscriber endpoint
+     */
+    SubscriberEndpointBase* createSomeIpUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* connector);
 
 
     /**
-     * Member variables
+     * @brief Creates an AVB publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param connector the publisher connector
+     * @return the AVB publisher endpoint
      */
+    PublisherEndpointBase* createAVBPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
+
+    /**
+     * @brief Creates a TCP publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param connector the publisher connector
+     * @return the TCP publisher endpoint
+     */
+    PublisherEndpointBase* createTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
+
+    /**
+     * @brief Creates a UDP publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param connector the publisher connector
+     * @return the UDP publisher endpoint
+     */
+    PublisherEndpointBase* createUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
+
+    /**
+     * @brief Creates a SOME/IP TCP publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param connector the publisher connector
+     * @return the SOME/IP TCP publisher endpoint
+     */
+    PublisherEndpointBase* createSomeIpTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
+
+    /**
+     * @brief Creates a SOME/IP UDP publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param connector the publisher connector
+     * @return the SOME/IP UDP publisher endpoint
+     */
+    PublisherEndpointBase* createSomeIpUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* connector);
+
+
+/**
+ * Member variables
+ */
 public:
 protected:
     /**
