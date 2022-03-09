@@ -21,6 +21,10 @@
 namespace SOA4CoRE {
 
 /**
+ * @brief The SOMEIPUDPSubscriberEndpoint is a subscriber endpoint module for SOME/IP traffic via UDP.
+ *
+ * @ingroup soa4core/endpoints
+ *
  * @author Mehmet Mueller for HAW Hamburg
  */
 class SOMEIPUDPSubscriberEndpoint : public UDPSubscriberEndpoint

@@ -16,15 +16,16 @@
 #ifndef __SOA4CORE_SOMEIPLOCALSERVICEMANAGER_H_
 #define __SOA4CORE_SOMEIPLOCALSERVICEMANAGER_H_
 
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
+#include "soa4core/manager/Manager.h"
+//OMNETPP
 #include <omnetpp.h>
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
-#include <soa4core/manager/Manager.h>
 
 using namespace omnetpp;
 namespace SOA4CoRE {
 
 /**
- * @brief Base class for a SOME/IP local service manager.
+ * @brief The SOME/IP service manager creates, finds and removes local SOME/IP services.
  *
  * @ingroup soa4core/manager
  *

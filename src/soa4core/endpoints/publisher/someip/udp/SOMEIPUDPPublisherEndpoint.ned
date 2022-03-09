@@ -18,6 +18,8 @@ package soa4core.endpoints.publisher.someip.udp;
 import soa4core.endpoints.publisher.standard.udp.UDPPublisherEndpoint;
 
 //
+// The SOMEIPUDPPublisherEndpoint is a publisher endpoint module for SOME/IP traffic via UDP.
+//
 // @author Mehmet Mueller
 //
 simple SOMEIPUDPPublisherEndpoint extends UDPPublisherEndpoint

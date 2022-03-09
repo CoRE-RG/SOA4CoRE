@@ -13,17 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h>
-#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformationNotification.h>
-#include <soa4core/discovery/someip/SomeIpSD.h>
-#include <soa4core/discovery/someip/SomeIpSDAcknowledgeSubscription.h>
-#include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
-#include <soa4core/discovery/someip/SomeIpSDFindResult.h>
-#include <soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h>
-#include <soa4core/manager/someip/SomeIpManager.h>
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h"
+#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformationNotification.h"
+#include "soa4core/discovery/someip/SomeIpSD.h"
+#include "soa4core/discovery/someip/SomeIpSDAcknowledgeSubscription.h"
+#include "soa4core/discovery/someip/SomeIpSDFindRequest.h"
+#include "soa4core/discovery/someip/SomeIpSDFindResult.h"
+#include "soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h"
+#include "soa4core/manager/someip/SomeIpManager.h"
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
+//STD
 #include <algorithm>
+
 namespace SOA4CoRE {
 
 Define_Module(SomeIpManager);

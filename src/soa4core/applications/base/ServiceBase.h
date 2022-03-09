@@ -18,9 +18,11 @@
 #ifndef __SOA4CORE_APPLICATIONS_BASE_SERVICEBASE_H_
 #define __SOA4CORE_APPLICATIONS_BASE_SERVICEBASE_H_
 
-#include <omnetpp.h>
-#include <soa4core/manager/base/IManager.h>
+#include "soa4core/manager/base/IManager.h"
+//STD
 #include <string>
+//OMNETPP
+#include <omnetpp.h>
 
 /**
  * forward declarations

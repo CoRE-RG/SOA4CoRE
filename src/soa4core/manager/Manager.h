@@ -18,25 +18,27 @@
 #ifndef __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 #define __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 
-#include <omnetpp.h>
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
-#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
-#include <soa4core/applications/base/ServiceBase.h>
-#include <soa4core/connector/publisher/PublisherConnector.h>
-#include <soa4core/connector/subscriber/SubscriberConnector.h>
-#include <soa4core/manager/base/IManager.h>
-#include <soa4core/registry/base/IRegistry.h>
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
+#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
+#include "soa4core/applications/base/ServiceBase.h"
+#include "soa4core/connector/publisher/PublisherConnector.h"
+#include "soa4core/connector/subscriber/SubscriberConnector.h"
+#include "soa4core/manager/base/IManager.h"
+#include "soa4core/registry/base/IRegistry.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
+//AUTO-GENERATED MESSAGES
+#include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
+//OMNETPP
+#include <omnetpp.h>
+//INET
+#include <inet/common/InitStages.h>
+//STD
 #include <atomic>
 #include <string>
 #include <map>
 #include <vector>
-//AUTO-GENERATED MESSAGES
-#include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
-//INET
-#include "inet/common/InitStages.h"
 
 using namespace omnetpp;
 

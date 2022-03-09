@@ -22,7 +22,8 @@
 namespace SOA4CoRE {
 
 /**
- * @brief The SOME/IP Publisher endpoint using the UDP protocol.
+ * @brief The SOMEIPUDPPublisherEndpoint is a publisher endpoint module for SOME/IP traffic via UDP.
+ * It encapsulates a message in a SOME/IP header before it is published.
  *
  * @ingroup soa4core/endpoints
  *

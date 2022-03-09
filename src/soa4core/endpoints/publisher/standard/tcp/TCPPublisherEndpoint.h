@@ -19,7 +19,6 @@
 #define __SOA4CORE_TCPPUBLISHERENDPOINT_H_
 
 #include "soa4core/endpoints/publisher/standard/base/STDPublisherEndpointBase.h"
-
 //STD
 #include <unordered_map>
 #include <string>
@@ -31,7 +30,7 @@
 namespace SOA4CoRE {
 
 /**
- * @brief The AVBPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
+ * @brief The TCPPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
  * It realizes an TCP specific publishing endpoint.
  * Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a publishing endpoint for a service.

@@ -25,7 +25,7 @@ using namespace omnetpp;
 namespace SOA4CoRE {
 
 /**
- * @brief Base class for a middleware publisher application.
+ * @brief A middleware gateway subscriber application.
  *
  * @ingroup soa4core/applications
  *

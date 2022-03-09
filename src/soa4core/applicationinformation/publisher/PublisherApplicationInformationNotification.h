@@ -16,7 +16,7 @@
 #ifndef SOA4CORE_APPLICATIONINFORMATION_PUBLISHER_PUBLISHERAPPLICATIONINFORMATIONNOTIFICATION_H_
 #define SOA4CORE_APPLICATIONINFORMATION_PUBLISHER_PUBLISHERAPPLICATIONINFORMATIONNOTIFICATION_H_
 
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
 
 namespace SOA4CoRE {
 

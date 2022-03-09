@@ -15,9 +15,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/applications/base/ServiceBase.h>
-#include <soa4core/manager/base/IManager.h>
+#include "soa4core/applications/base/ServiceBase.h"
+#include "soa4core/manager/base/IManager.h"
 #include "soa4core/connector/base/ConnectorBase.h"
+//STD
 #include <cstring>
 
 namespace SOA4CoRE {

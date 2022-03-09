@@ -16,7 +16,7 @@
 #ifndef SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDACKNOWLEDGESUBSCRIPTION_H_
 #define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDACKNOWLEDGESUBSCRIPTION_H_
 
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
 
 namespace SOA4CoRE {
 

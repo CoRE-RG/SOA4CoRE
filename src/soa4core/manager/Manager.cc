@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/manager/Manager.h>
+#include "soa4core/manager/Manager.h"
 #include "soa4core/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
@@ -26,6 +26,7 @@
 #include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
+//INET
 #include <inet/networklayer/common/L3AddressResolver.h>
 //STD
 #include <algorithm>

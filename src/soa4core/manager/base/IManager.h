@@ -16,8 +16,9 @@
 #ifndef __SOA4CORE_SERVICEMANAGER_BASE_IMANAGER_H_
 #define __SOA4CORE_SERVICEMANAGER_BASE_IMANAGER_H_
 
+#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
+//OMNETPP
 #include <omnetpp.h>
-#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
 
 namespace SOA4CoRE {
 

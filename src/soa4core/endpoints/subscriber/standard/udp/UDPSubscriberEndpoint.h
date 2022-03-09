@@ -19,7 +19,6 @@
 #define __SOA4CORE_UDPSUBSCRIBERENDPOINT_H_
 
 #include "soa4core/endpoints/subscriber/standard/base/STDSubscriberEndpointBase.h"
-
 //INET
 #include <inet/transportlayer/contract/udp/UDPSocket.h>
 

@@ -18,7 +18,7 @@
 #ifndef __SOA4CORE_SUBSCRIPTIONCONNECTOR_H_
 #define __SOA4CORE_SUBSCRIPTIONCONNECTOR_H_
 
-#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
+#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"

@@ -15,9 +15,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/applications/base/ServiceBase.h>
+#include "soa4core/applications/base/ServiceBase.h"
 #include "TCPSubscriberEndpoint.h"
-
+//INET
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/transportlayer/contract/tcp/TCPCommand_m.h>
 

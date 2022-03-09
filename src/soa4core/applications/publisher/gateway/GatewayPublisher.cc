@@ -15,11 +15,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/applications/publisher/gateway/GatewayPublisher.h>
+#include "soa4core/applications/publisher/gateway/GatewayPublisher.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 //SignalsAndGateways
-#include "signalsandgateways/gateway/messages/GatewayAggregationMessage.h"
-#include "signalsandgateways/applications/ethernet/EthernetGatewayApplication.h"
+#include <signalsandgateways/gateway/messages/GatewayAggregationMessage.h>
+#include <signalsandgateways/applications/ethernet/EthernetGatewayApplication.h>
 
 namespace SOA4CoRE {
 using namespace inet;

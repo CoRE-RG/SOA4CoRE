@@ -18,8 +18,10 @@
 
 #define INSTANCE_ID 0xFFFF // see [PRS_SOMEIPSD_00268], [PRS_SOMEIPSD_00270], [PRS_SOMEIPSD_00351]
 
-#include <soa4core/serviceidentifier/ServiceIdentifier.h>
+#include "soa4core/serviceidentifier/ServiceIdentifier.h"
+//CORE4INET
 #include <core4inet/base/avb/AVBDefs.h>
+//INET
 #include <inet/networklayer/common/L3Address.h>
 
 using namespace CoRE4INET;

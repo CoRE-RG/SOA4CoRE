@@ -20,7 +20,6 @@
 
 #include "soa4core/endpoints/base/EndpointBase.h"
 
-
 namespace SOA4CoRE {
 
 class PublisherConnector;

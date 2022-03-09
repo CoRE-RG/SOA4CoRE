@@ -16,7 +16,7 @@
 #ifndef SOA4CORE_APPLICATIONINFORMATION_SUBSCRIBER_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_
 #define SOA4CORE_APPLICATIONINFORMATION_SUBSCRIBER_SUBSCRIBERAPPLICATIONINFORMATIONNOTIFICATION_H_
 
-#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
+#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 
 namespace SOA4CoRE {
 

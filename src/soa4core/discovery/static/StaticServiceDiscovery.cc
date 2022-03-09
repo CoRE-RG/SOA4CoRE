@@ -15,10 +15,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h>
-#include <soa4core/registry/Registry.h>
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h"
+#include "soa4core/registry/Registry.h"
 #include "soa4core/discovery/static/StaticServiceDiscovery.h"
-#include "inet/networklayer/common/L3AddressResolver.h"
+//INET
+#include <inet/networklayer/common/L3AddressResolver.h>
 //STD
 #include <iostream>
 #include <vector>

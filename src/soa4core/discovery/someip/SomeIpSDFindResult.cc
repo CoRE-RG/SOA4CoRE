@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/discovery/someip/SomeIpSDFindResult.h>
+#include "soa4core/discovery/someip/SomeIpSDFindResult.h"
 
 namespace SOA4CoRE {
 

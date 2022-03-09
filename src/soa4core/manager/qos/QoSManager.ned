@@ -17,7 +17,7 @@ package soa4core.manager.qos;
 
 import soa4core.manager.Manager;
 //
-// The QoSManager.
+// The QoSManager module creates, finds and removes local QoS services.
 //
 // @author Mehmet Mueller
 //

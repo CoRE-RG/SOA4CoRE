@@ -15,19 +15,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/applications/base/ServiceBase.h>
-#include <soa4core/connector/publisher/PublisherConnector.h>
+#include "soa4core/applications/base/ServiceBase.h"
+#include "soa4core/connector/publisher/PublisherConnector.h"
 #include "AVBPublisherEndpoint.h"
-
+//STD
 #include <string>
 //INET
-#include "inet/linklayer/ethernet/Ethernet.h"
+#include <inet/linklayer/ethernet/Ethernet.h>
 //CoRE4INET
-#include "core4inet/base/CoRE4INET_Defs.h"
-#include "core4inet/utilities/ConfigFunctions.h"
-#include "core4inet/base/NotifierConsts.h"
+#include <core4inet/base/CoRE4INET_Defs.h>
+#include <core4inet/utilities/ConfigFunctions.h>
+#include <core4inet/base/NotifierConsts.h>
 //AUTO-GENERATED MESSAGES
-#include "core4inet/linklayer/ethernet/avb/AVBFrame_m.h"
+#include <core4inet/linklayer/ethernet/avb/AVBFrame_m.h>
 
 using namespace std;
 using namespace CoRE4INET;

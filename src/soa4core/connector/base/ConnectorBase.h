@@ -18,8 +18,11 @@
 #ifndef __SOA4CORE_CONNECTORBASE_H_
 #define __SOA4CORE_CONNECTORBASE_H_
 
-#include <omnetpp.h>
+//STD
 #include <mutex>
+//OMNETPP
+#include <omnetpp.h>
+
 
 using namespace omnetpp;
 

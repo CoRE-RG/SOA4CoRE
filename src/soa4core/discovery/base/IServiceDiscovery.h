@@ -18,9 +18,9 @@
 #ifndef __SOA4CORE_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 #define __SOA4CORE_DISCOVERY_BASE_ISERVICEDISCOVERY_H_
 
+#include "soa4core/serviceidentifier/ServiceIdentifier.h"
+//OMNETPP
 #include <omnetpp.h>
-
-#include <soa4core/serviceidentifier/ServiceIdentifier.h>
 
 namespace SOA4CoRE {
 

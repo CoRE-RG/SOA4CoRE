@@ -19,8 +19,6 @@
 #define __SOA4CORE_AVBSUBSCRIBERENDPOINT_H_
 
 #include "soa4core/endpoints/subscriber/realtime/base/RTSubscriberEndpointBase.h"
-
-
 //CoRE4INET
 #include <core4inet/services/avb/SRP/SRPTable.h>
 

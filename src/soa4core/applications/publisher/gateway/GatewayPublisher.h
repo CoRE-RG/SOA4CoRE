@@ -18,9 +18,9 @@
 #ifndef __SOA4CORE_APPLICATIONS_PUBLISHER_GATEWAY_GATEWAYPUBLISHER_H_
 #define __SOA4CORE_APPLICATIONS_PUBLISHER_GATEWAY_GATEWAYPUBLISHER_H_
 
-#include <soa4core/applications/publisher/base/Publisher.h>
-
-#include "inet/common/InitStages.h"
+#include "soa4core/applications/publisher/base/Publisher.h"
+//INET
+#include <inet/common/InitStages.h>
 //STD
 #include <vector>
 

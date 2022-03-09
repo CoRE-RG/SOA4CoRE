@@ -17,7 +17,6 @@
 
 #include "RTSubscriberEndpointBase.h"
 
-
 namespace SOA4CoRE {
 
 

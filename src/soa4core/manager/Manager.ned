@@ -20,7 +20,7 @@ package soa4core.manager;
 import soa4core.manager.base.IManager;
 
 //
-// The Manager.
+// The Manager module creates, finds and removes local Services.
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //

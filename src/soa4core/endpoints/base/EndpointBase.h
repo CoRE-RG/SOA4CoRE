@@ -18,12 +18,14 @@
 #ifndef __SOA4CORE_ENDPOINTBASE_H_
 #define __SOA4CORE_ENDPOINTBASE_H_
 
-#include <omnetpp.h>
-#include <string>
 #include "soa4core/utility/processing/ProcessingTimeSimulation.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
+//OMNETPP
+#include <omnetpp.h>
+//STD
+#include <string>
 
 using namespace omnetpp;
 

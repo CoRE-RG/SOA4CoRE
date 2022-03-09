@@ -16,7 +16,8 @@
 #ifndef SOA4CORE_APPLICATIONINFORMATION_SUBSCRIBER_SUBSCRIBERAPPLICATIONINFORMATION_H_
 #define SOA4CORE_APPLICATIONINFORMATION_SUBSCRIBER_SUBSCRIBERAPPLICATIONINFORMATION_H_
 
-#include <soa4core/applicationinformation/base/ApplicationInformation.h>
+#include "soa4core/applicationinformation/base/ApplicationInformation.h"
+//AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 
 namespace SOA4CoRE {

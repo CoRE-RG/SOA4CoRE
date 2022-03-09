@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/discovery/someip/ExtractedQoSOptions.h>
+#include "soa4core/discovery/someip/ExtractedQoSOptions.h"
 
 namespace SOA4CoRE {
 

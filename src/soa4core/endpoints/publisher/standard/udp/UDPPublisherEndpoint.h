@@ -19,7 +19,6 @@
 #define __SOA4CORE_UDPPUBLISHERENDPOINT_H_
 
 #include "soa4core/endpoints/publisher/standard/base/STDPublisherEndpointBase.h"
-
 //STD
 #include <string>
 #include <vector>

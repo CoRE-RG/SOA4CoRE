@@ -18,6 +18,8 @@ package soa4core.endpoints.subscriber.someip.udp;
 import soa4core.endpoints.subscriber.standard.udp.UDPSubscriberEndpoint;
 
 //
+// The SOMEIPUDPSubscriberEndpoint is a subscriber endpoint module for SOME/IP traffic via UDP.
+//
 // @author Mehmet Mueller for HAW Hamburg
 //
 simple SOMEIPUDPSubscriberEndpoint extends UDPSubscriberEndpoint

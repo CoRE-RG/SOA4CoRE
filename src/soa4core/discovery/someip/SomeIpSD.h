@@ -18,12 +18,11 @@
 
 #define BROADCASTADDRESS "255.255.255.255"
 
-
 #include "soa4core/messages/someip/SomeIpSDHeader.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/discovery/someip/ExtractedQoSOptions.h"
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformation.h>
-#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
+#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpSDEntry_m.h"
 //INET

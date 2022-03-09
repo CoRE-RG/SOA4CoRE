@@ -13,11 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h>
-#include <soa4core/discovery/someip/SomeIpSD.h>
-#include <soa4core/discovery/someip/SomeIpSDFindRequest.h>
-#include <soa4core/discovery/someip/SomeIpSDFindResult.h>
-#include <soa4core/manager/qos/QoSManager.h>
+#include "soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h"
+#include "soa4core/discovery/someip/SomeIpSD.h"
+#include "soa4core/discovery/someip/SomeIpSDFindRequest.h"
+#include "soa4core/discovery/someip/SomeIpSDFindResult.h"
+#include "soa4core/manager/qos/QoSManager.h"
+//STD
 #include <algorithm>
 //INET
 #include <inet/networklayer/common/L3Address.h>

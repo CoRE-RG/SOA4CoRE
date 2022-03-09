@@ -19,7 +19,6 @@
 #define __SOA4CORE_TCPSUBSCRIBERENDPOINT_H_
 
 #include "soa4core/endpoints/subscriber/standard/base/STDSubscriberEndpointBase.h"
-
 //INET
 #include <inet/transportlayer/contract/tcp/TCPSocket.h>
 

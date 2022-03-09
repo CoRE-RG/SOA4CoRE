@@ -15,14 +15,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/applications/base/ServiceBase.h>
-#include <soa4core/connector/subscriber/SubscriberConnector.h>
+#include "soa4core/applications/base/ServiceBase.h"
+#include "soa4core/connector/subscriber/SubscriberConnector.h"
 #include "AVBSubscriberEndpoint.h"
-
-#include "core4inet/base/NotifierConsts.h"
-#include "core4inet/utilities/ConfigFunctions.h"
+//CORE4INET
+#include <core4inet/base/NotifierConsts.h>
+#include <core4inet/utilities/ConfigFunctions.h>
 //AUTO-GENERATED MESSAGES
-#include "core4inet/linklayer/ethernet/avb/AVBFrame_m.h"
+#include <core4inet/linklayer/ethernet/avb/AVBFrame_m.h>
 
 using namespace std;
 using namespace CoRE4INET;

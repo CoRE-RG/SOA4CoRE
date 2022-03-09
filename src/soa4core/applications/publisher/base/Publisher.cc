@@ -15,20 +15,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/applications/publisher/base/Publisher.h>
-#include <soa4core/manager/Manager.h>
+#include "soa4core/applications/publisher/base/Publisher.h"
+#include "soa4core/manager/Manager.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 //CoRE4INET
-#include "core4inet/base/CoRE4INET_Defs.h"
-#include "core4inet/utilities/ConfigFunctions.h"
+#include <core4inet/base/CoRE4INET_Defs.h>
+#include <core4inet/utilities/ConfigFunctions.h>
 //INET
-#include "inet/linklayer/ethernet/Ethernet.h"
-#include "inet/networklayer/common/L3AddressResolver.h"
+#include <inet/linklayer/ethernet/Ethernet.h>
+#include <inet/networklayer/common/L3AddressResolver.h>
 //STD
 #include <cstring>
 #include <iostream>
 #include <utility>
-
 
 using namespace inet;
 using namespace CoRE4INET;

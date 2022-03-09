@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include <soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h>
+#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 
 namespace SOA4CoRE {
 

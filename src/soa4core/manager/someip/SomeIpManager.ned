@@ -18,11 +18,10 @@ package soa4core.manager.someip;
 import soa4core.manager.Manager;
 
 //
-// The SomeIpManager.
+// The SOME/IP service manager module creates, finds and removes local SOME/IP services.
 //
 // @author Mehmet Mueller for HAW Hamburg
 //
-
 simple SomeIpManager extends Manager
 {
     parameters:

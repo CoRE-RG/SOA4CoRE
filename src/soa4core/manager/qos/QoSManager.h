@@ -16,15 +16,16 @@
 #ifndef __SOA4CORE_SERVICEMANAGER_QOS_QOSMANAGER_H_
 #define __SOA4CORE_SERVICEMANAGER_QOS_QOSMANAGER_H_
 
-#include <omnetpp.h>
-#include <soa4core/manager/Manager.h>
+#include "soa4core/manager/Manager.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
+//OMNETPP
+#include <omnetpp.h>
 
 using namespace omnetpp;
 namespace SOA4CoRE {
 /**
- * @brief The QoSManager is used to create, find and remove local Services.
+ * @brief The QoSManager creates, finds and removes local QoS services.
  *
  * @ingroup soa4core/manager
  *

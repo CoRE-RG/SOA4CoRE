@@ -15,10 +15,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/applications/subscriber/base/Subscriber.h>
-#include <soa4core/manager/Manager.h>
-#include <soa4core/manager/Manager.h>
-#include <soa4core/serviceidentifier/ServiceIdentifier.h>
+#include "soa4core/applications/subscriber/base/Subscriber.h"
+#include "soa4core/manager/Manager.h"
+#include "soa4core/manager/Manager.h"
+#include "soa4core/serviceidentifier/ServiceIdentifier.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //CORE4INET
@@ -30,7 +30,6 @@
 //STD
 #include <cstring>
 #include <iostream>
-
 
 namespace SOA4CoRE {
 using namespace std;

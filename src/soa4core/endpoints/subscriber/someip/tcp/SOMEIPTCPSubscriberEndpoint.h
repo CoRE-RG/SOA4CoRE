@@ -21,6 +21,11 @@
 namespace SOA4CoRE {
 
 /**
+ * @brief The SOMEIPTCPSubscriberEndpoint is a subscriber endpoint module for SOME/IP traffic via TCP.
+ * It encapsulates a message in a SOME/IP header before it is published.
+ *
+ * @ingroup soa4core/endpoints
+ *
  * @author Mehmet Mueller for HAW Hamburg
  */
 class SOMEIPTCPSubscriberEndpoint : public TCPSubscriberEndpoint
