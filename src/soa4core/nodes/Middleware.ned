@@ -29,7 +29,7 @@ import soa4core.connector.subscriber.SubscriberConnector;
 import soa4core.endpoints.base.IEndpoint;
 
 //
-// This compound module groups all SOA4CoRE Components into on module.
+// This compound module groups all SOA4CoRE Components into one module.
 // All modules created during runtime will be integrated to this compound module.
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
@@ -42,11 +42,11 @@ module Middleware
         *.interfaceTableModule = interfaceTableModule;
         string localAddress = default("");
         *.localAddress = localAddress;
-        *.smmoduleName = "sm";
-        *.sdmoduleName = "sd";
-        *.qosnpmoduleName = "qosnp";
-        *.srmoduleName = "sr";
-        bool hasQoSNP = default(true);
+        *.smmoduleName = "sm";         // The service manager module name
+        *.sdmoduleName = "sd";         // The service discovery module name
+        *.qosnpmoduleName = "qosnp";   // The QoS negotiation protocol module name
+        *.srmoduleName = "sr";         // The service registry module name
+        bool hasQoSNP = default(true); // Toggle to enable/disable the use of the QoS negotation protocol 
 
         @display("i=block/layer");
     gates:
@@ -61,19 +61,22 @@ module Middleware
         input sdUDPIn;
 
     submodules:
-
+        // QoS Negotiation Protocol
         qosnp: QoSNegotiationProtocol if hasQoSNP {
             @display("p=160,50");
         }
 
+        // Service Manager
         sm: <default("Manager")> like IManager {
             @display("p=100,50");
         }
 
+        // Service Registry
         sr: <default("Registry")> like IRegistry {
             @display("p=239,50");
         }
 
+        // Service Discovery
         sd: <default("StaticServiceDiscovery")> like IServiceDiscovery {
             @display("p=40,50");
         }
