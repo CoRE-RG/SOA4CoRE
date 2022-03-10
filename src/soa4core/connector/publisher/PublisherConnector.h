@@ -147,7 +147,7 @@ private:
     PublisherApplicationInformation _publisherApplicationInformation;
 
     /**
-     * Signal to emit messages which are forwarded to Endpoints
+     * Signal to emit messages which are forwarded to endpoints
      */
     simsignal_t _forwardedToEndpointsSignal;
 

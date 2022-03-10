@@ -18,7 +18,7 @@
 
 #define UNCOVEREDBYTESBYLENGTH 8
 
-//Std
+//STD
 #include <list>
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpSDHeader_m.h"
@@ -147,7 +147,14 @@ private:
 public:
 protected:
 private:
+    /**
+     * The SOME/IP SD entry list
+     */
     std::list<SomeIpSDEntry*> entryList;
+
+    /**
+     * The SOME/IP SD options list
+     */
     std::list<SomeIpSDOption*> optionList;
 };
 } /* end namespace SOA4CoRE */

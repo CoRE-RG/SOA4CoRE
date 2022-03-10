@@ -16,7 +16,6 @@
 // 
 
 #include "ConnectorBase.h"
-
 //STD
 #include <algorithm>
 #include <string>

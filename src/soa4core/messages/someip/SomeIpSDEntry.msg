@@ -14,7 +14,7 @@
 // 
 
 //
-// @brief The SOME/IP SD entry for the SOME/IP protocol. [RS_SOMEIP_00027]
+// @brief The SOME/IP SD entry for the SOME/IP protocol. (see [PRS_SOMEIPSD_00266])
 //
 // @ingroup soa4core/messages
 // 
@@ -23,6 +23,7 @@
 
 namespace SOA4CoRE;
 
+//SOME/IP SD entry type
 enum SomeIpSDEntryType{
     FIND                  = 0x00; // A Service SomeIpSDEntry
     OFFER                 = 0x01; // A Service SomeIpSDEntry
@@ -31,6 +32,7 @@ enum SomeIpSDEntryType{
     
 }
 
+//SOME/IP SD entry
 packet SomeIpSDEntry {
     byteLength = 12;
     uint8_t type @enum(SomeIpSDEntryType);
@@ -47,11 +49,13 @@ packet SomeIpSDEntry {
     uint32_t TTL; // actually 24Bit
 }
 
+//SOME/IP SD service entry
 packet ServiceEntry extends SomeIpSDEntry {
     byteLength = 16;
     uint32_t minorVersion;
 }
 
+//SOME/IP SD eventgroup entry 
 packet EventgroupEntry extends SomeIpSDEntry{
     byteLength = 16;
     uint8_t reserved = 0;

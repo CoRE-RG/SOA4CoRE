@@ -34,7 +34,7 @@ simple SubscriberConnector extends ConnectorBase
         // -1 = infinite
         int maxApplications = default(-1);
 
-        // Signal emitted when a message is forwarded to Applications
+        //Signal emitted when a message is forwarded to Applications
         @signal[forwardedToApps](type=omnetpp::cPacket);
         //Statistic of the amount of messages that were forwarded to applications
         @statistic[fwdToApps](title="Forwarded to Apps"; source=forwardedToApps; record=count; unit=packets);

@@ -38,8 +38,6 @@ namespace SOA4CoRE {
 /**
  * @brief Base class for a Middleware-Application.
  *
- * contains the module connection to the Manager
- *
  * @ingroup soa4core/applications
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg

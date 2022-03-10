@@ -53,6 +53,4 @@ void PublisherEndpointBase::handleConnectorIn(cMessage* msg) {
     delete msg;
 }
 
-
-
 } /*end namespace SOA4CoRE*/

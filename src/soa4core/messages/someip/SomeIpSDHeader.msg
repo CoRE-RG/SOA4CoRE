@@ -17,10 +17,19 @@ cplusplus {{
 #include "soa4core/messages/someip/SomeIpHeader_m.h"
 }}
 
+//
+// @brief The SOME/IP SD entry for the SOME/IP protocol. (see (RS_SOMEIPSD_00001))
+//
+// @ingroup soa4core/messages
+// 
+// @author Mehmet Mueller for HAW Hamburg
+//
+
 namespace SOA4CoRE;
 
 class SomeIpHeader;
 
+//SOME/IP header
 packet SomeIpSDHeader extends SomeIpHeader {
     @customize(true);
     byteLength = 28;

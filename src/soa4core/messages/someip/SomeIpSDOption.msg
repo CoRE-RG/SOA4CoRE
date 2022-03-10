@@ -21,6 +21,14 @@ cplusplus {{
 using namespace inet;
 }}
 
+//
+// @brief The SOME/IP SD option for the SOME/IP SD protocol. (see [PRS_SOMEIPSD_00273], [PRS_SOMEIPSD_00274])
+//
+// @ingroup soa4core/messages
+// 
+// @author Mehmet Mueller for HAW Hamburg
+//
+
 enum IPProtocolId;
 class noncobject IPv4Address;
 class noncobject IPv6Address;
@@ -29,6 +37,7 @@ namespace SOA4CoRE;
 
 enum SomeIpSDOptionType;
 
+//SOME/IP SD option type
 enum SomeIpSDOptionType {
     CONFIGURATION  = 0x01;
     LOADBALANCING  = 0x02;
@@ -40,6 +49,7 @@ enum SomeIpSDOptionType {
     IPV6SDENDPOINT = 0x26;
 }
 
+//SOME/IP SD option (see [PRS_SOMEIPSD_00273], [PRS_SOMEIPSD_00274])
 packet SomeIpSDOption {
     byteLength = 4;
     uint16_t length;
@@ -47,11 +57,13 @@ packet SomeIpSDOption {
     uint8_t reserved = 0;
 }
 
+//SOME/IP SD configuration option (see [PRS_SOMEIPSD_00276])
 packet ConfigurationOption extends SomeIpSDOption {
     type = CONFIGURATION;
     string configurationString;
 }
 
+//SOME/IP SD load balancing option (see [PRS_SOMEIPSD_00544])
 packet LoadBalancingOption extends SomeIpSDOption {
     byteLength = 8;
     length = 0x0005;
@@ -60,6 +72,7 @@ packet LoadBalancingOption extends SomeIpSDOption {
     uint16_t weight;
 }
 
+//SOME/IP SD IPv4 endpoint option (see [PRS_SOMEIPSD_00307])
 packet IPv4EndpointOption extends SomeIpSDOption {
     byteLength = 12;
     length = 0x0009;
@@ -70,6 +83,7 @@ packet IPv4EndpointOption extends SomeIpSDOption {
     uint16_t port;
 }
 
+//SOME/IP SD IPv6 endpoint option (see [PRS_SOMEIPSD_00315])
 packet IPv6EndpointOption extends SomeIpSDOption {
     byteLength = 24;
     length = 0x0015;
@@ -80,18 +94,22 @@ packet IPv6EndpointOption extends SomeIpSDOption {
     uint16_t port;
 }
 
+//SOME/IP SD IPv4 multicast option (see [PRS_SOMEIPSD_00326])
 packet IPv4MulticastOption extends IPv4EndpointOption {
     type = IPV4MULTICAST;
 }
 
+//SOME/IP SD IPv6 multicast option (see [[PRS_SOMEIPSD_00333])
 packet IPv6MulticastOption extends IPv6EndpointOption {
     type = IPV6MULTICAST;
 }
 
+//SOME/IP SD IPv4 SD endpoint option (see [PRS_SOMEIPSD_00552])
 packet IPv4SDEndpointOption extends IPv4EndpointOption {
     type = IPV4SDENDPOINT;
 }
 
+//SOME/IP SD IPv4 SD endpoint option (see [PRS_SOMEIPSD_00559])
 packet IPv6SDEndpointOption extends IPv6EndpointOption {
     type = IPV6SDENDPOINT;
 }

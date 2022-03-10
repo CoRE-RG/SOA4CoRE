@@ -103,6 +103,7 @@ protected:
 private:
 };
 
+
 } /*end namespace SOA4CoRE*/
 
 #endif

@@ -81,7 +81,7 @@ void StaticServiceDiscovery::discover(ServiceIdentifier serviceIdentifier) {
 }
 
 void StaticServiceDiscovery::handleMessage(cMessage *msg) {
-    // TODO - Generated method body
+    // Do nothing
 }
 
 } /*end namespace SOA4CoRE*/

@@ -34,7 +34,7 @@ simple StaticServiceDiscovery like IServiceDiscovery
         //this parameter holds the information of all services in the network,
         //so each node knows where the services are located.
         //Style:
-        //<service name="servicename" address="ip or node (if autoconfig)">
+        //<service name="servicename" address="ip or node (if autoconfig)" id="service id">
         //</service>
         xml services;
         @display("i=block/table2");

@@ -14,7 +14,7 @@
 //
 
 //
-// @brief The SOME/IP header for the SOME/IP protocol. [RS_SOMEIP_00027]
+// @brief The SOME/IP header for the SOME/IP protocol. (see (RS_SOMEIP_00027))
 //
 // @ingroup soa4core/messages
 // 
@@ -26,7 +26,7 @@ cplusplus {{
 #define ADDITIONAL_BYTES_TO_PAYLOADLENGTH 8 // see below SOME/IP Header from requestID (inclusive)
 }}
 
-//Type of message 
+//Type of message (see [PRS_SOMEIP_00055])
 enum MessageType{
     REQUEST              = 0x00;
     REQUEST_NO_RETURN    = 0x01;
@@ -40,7 +40,7 @@ enum MessageType{
     TP_ERROR             = 0x24;
 }
 
-//Return code
+//Return code (see (RS_SOMEIP_00008))
 enum ReturnCode{
     E_OK                      = 0x00;
     E_NOT_OK                  = 0x01;
@@ -55,14 +55,17 @@ enum ReturnCode{
     E_WRONG_MESSAGE_TYPE      = 0x0a;
 }
 
+//Protocol version (see [PRS_SOMEIP_00052])
 enum ProtocolVersion{
     PV_1 = 0x01;
 }
 
+//Interface version (see [PRS_SOMEIP_00053])
 enum InterfaceVersion{
     IV_1 = 0x01;
 }
 
+//SOME/IP header (see (RS_SOMEIP_00027))
 packet SomeIpHeader {
     byteLength = 16;
     uint32_t messageID;
