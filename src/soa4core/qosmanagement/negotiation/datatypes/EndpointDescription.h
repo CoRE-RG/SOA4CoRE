@@ -33,11 +33,14 @@ namespace SOA4CoRE {
  */
 class EndpointDescription {
 public:
+    /**
+     * Constructor
+     * @param serviceId The service id this endpoints wants to publish/subscribe
+     * @param networkAddr The network address of the endpoint
+     * @param networkPort The network port of the endpoint
+     */
     EndpointDescription(int serviceId, inet::L3Address networkAddr, int networkPort) : _serviceId(serviceId), _networkAddr (networkAddr), _networkPort(networkPort){
 
-    }
-
-    EndpointDescription() {
     }
 
     virtual ~EndpointDescription() {
@@ -62,30 +65,34 @@ public:
         return !(*this == other);
     }
 
+    /**
+     * Returns the network address
+     * @return the network address
+     */
     inet::L3Address& getNetworkAddr() {
         return _networkAddr;
     }
 
-    void setNetworkAddr(inet::L3Address& networkAddr) {
-        _networkAddr = networkAddr;
-    }
-
+    /**
+     * Returns the network port
+     * @return the network port
+     */
     int getNetworkPort() {
         return _networkPort;
     }
 
-    void setNetworkPort(int networkPort) {
-        _networkPort = networkPort;
-    }
-
+    /**
+     * Returns the service id
+     * @return the service id
+     */
     int getServiceId() {
         return _serviceId;
     }
 
-    void setServiceId(int serviceId) {
-        _serviceId = serviceId;
-    }
-
+    /**
+     * Returns the string representation of this endpoint
+     * @return the string representation of this endpoint
+     */
     std::string toString(){
         std::string ret = "EndpointDescription[";
         ret.append(" serviceId:").append(std::to_string(_serviceId));

@@ -31,6 +31,7 @@ simple QoSNegotiationProtocol extends ProcessingTimeSimulation like IUDPApp
     parameters:
         @class(SOA4CoRE::QoSNegotiationProtocol);
 
+        //Signal used for the measurement of the duration of the negotiation.
         @signal[qosNt](type=simtime_t);
         @statistic[NegotiationTime](title="QosNegotiation Time"; source="qosNt"; record=vector; interpolationmode=none);
 

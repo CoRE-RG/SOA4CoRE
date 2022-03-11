@@ -15,14 +15,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/manager/Manager.h>
+#include "soa4core/manager/Manager.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
-#include "soa4core/messages/Envelope_m.h"
 //AUTO-GENERATED MESSAGES
+#include "soa4core/messages/Envelope_m.h"
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //INET
-#include "inet/networklayer/common/L3AddressResolver.h"
+#include <inet/networklayer/common/L3AddressResolver.h>
 //STD
 #include <cstring>
 #include <iostream>
@@ -52,7 +52,7 @@ void QoSNegotiationProtocol::initialize(int stage) {
     }
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
-        _lsm = dynamic_cast<Manager*>(getParentModule()->getSubmodule(
+        _manager = dynamic_cast<Manager*>(getParentModule()->getSubmodule(
                                par("smmoduleName")));
         if (!isSocketBound()) {
             socketSetup();
@@ -67,7 +67,7 @@ void QoSNegotiationProtocol::processScheduledMessage(cMessage* msg) {
         Request* request = (Request*) msg->getContextPointer();
 
         //create broker as requested
-        QoSBroker* broker = new QoSBroker(&_socket, _lsm, request->getSubscriberEndpointDescription(), request->getPublisherEndpointDescription(), request);
+        QoSBroker* broker = new QoSBroker(&_socket, _manager, request->getSubscriberEndpointDescription(), request->getPublisherEndpointDescription(), request);
 
         //tell broker to start the request.
         bool handled = broker->startNegotiation();
@@ -107,7 +107,7 @@ void QoSNegotiationProtocol::processScheduledMessage(cMessage* msg) {
                 //check if message was handled, else we need a new broker.
                 if (!handled) {
                     //create new broker
-                    QoSBroker* broker = new QoSBroker(&_socket, _lsm,
+                    QoSBroker* broker = new QoSBroker(&_socket, _manager,
                             as_negotiation->getReceiver(),
                             as_negotiation->getSender(), nullptr);
 

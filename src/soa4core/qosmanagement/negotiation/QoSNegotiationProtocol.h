@@ -32,7 +32,7 @@ using namespace omnetpp;
 namespace SOA4CoRE {
 
 /**
- * @brief QoSNegotiationProtocol provides all functionality to negotiatiate the QoS Policies for a connection of to @class{IEndpoints}.
+ * @brief QoSNegotiationProtocol provides all functionality to negotiate the QoS Policies for a connection of to @class{IEndpoints}.
  *
  * @ingroup soa4core/qosmanagement
  *
@@ -54,16 +54,34 @@ public:
 
     /**
      * Creates a QoS Broker for a given Request
-     * @param request
+     * @param request The request to handle
      */
     void createQoSBroker(Request* request);
 
 protected:
     using ProcessingTimeSimulation::initialize;
+
+    /**
+     * Initializes module with stages
+     *
+     * @param stage indicates the initialization stage
+     */
     virtual void initialize(int stage) override;
+
+    /**
+     * Returns the maximum value of possible stages
+     *
+     * @return the maximum value of possible stages
+     */
     virtual int numInitStages() const override {
         return inet::NUM_INIT_STAGES;
     }
+
+    /**
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
     virtual void handleParameterChange(const char* parname) override;
 
     /**
@@ -123,7 +141,7 @@ private:
     /**
      * Reference to the local service manager.
      */
-    Manager* _lsm;
+    Manager* _manager;
 
     /**
      * Signal to capture time points of negotiation messages.
@@ -131,7 +149,7 @@ private:
     simsignal_t _qosNt;
 
     /**
-     * Signal to emit QOSNP frames.
+     * Signal to emit QoS NP frames.
      */
     simsignal_t _rxPkSignal;
 
