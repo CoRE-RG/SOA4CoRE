@@ -30,11 +30,27 @@ namespace SOA4CoRE {
 class ServiceIdentifier {
 public:
     ServiceIdentifier();
+
+    /**
+     * Contructor
+     * @param serviceId the service ID
+     * @param instanceId the instance ID
+     */
     ServiceIdentifier(int serviceId, int instanceId);
     virtual ~ServiceIdentifier();
     virtual bool operator==(const ServiceIdentifier& serviceIdentifier) const;
     virtual bool operator!=(const ServiceIdentifier& serviceIdentifier) const;
+
+    /**
+     * Returns the service ID
+     * @return the service ID
+     */
     int getServiceId() const;
+
+    /**
+     * Returns the instance ID
+     * @return the instance ID
+     */
     int getInstanceId() const;
 
 protected:

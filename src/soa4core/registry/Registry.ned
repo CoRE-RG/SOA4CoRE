@@ -19,7 +19,7 @@ import soa4core.registry.base.IRegistry;
 //
 // The Registry provides a local registry for services.
 //
-// @author Mehmet Mueller
+// @author Mehmet Mueller for HAW Hamburg
 //
 simple Registry like IRegistry
 {

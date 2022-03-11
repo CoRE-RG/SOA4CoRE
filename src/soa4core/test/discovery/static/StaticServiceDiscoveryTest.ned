@@ -18,7 +18,7 @@
 package soa4core.test.discovery.static;
 
 //
-// The StaticServiceDiscoveryTest module.
+// The test module for the static service discovery.
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //

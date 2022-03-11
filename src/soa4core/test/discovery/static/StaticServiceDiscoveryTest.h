@@ -18,8 +18,9 @@
 #ifndef __SOA4CORE_TEST_DISCOVERY_STATIC_STATICSERVICEDISCOVERYTEST_H_
 #define __SOA4CORE_TEST_DISCOVERY_STATIC_STATICSERVICEDISCOVERYTEST_H_
 
+#include "soa4core/registry/base/IRegistry.h"
+//OMNETPP
 #include <omnetpp.h>
-#include <soa4core/registry/base/IRegistry.h>
 
 using namespace omnetpp;
 

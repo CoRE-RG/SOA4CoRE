@@ -16,16 +16,20 @@
 #ifndef SOA4CORE_SERVICEREGISTRY_LOCALSERVICEREGISTRY_H_
 #define SOA4CORE_SERVICEREGISTRY_LOCALSERVICEREGISTRY_H_
 
-#include <omnetpp.h>
 #include <soa4core/registry/base/IRegistry.h>
-#include <unordered_map>
+//OMNETPP
+#include <omnetpp.h>
+//INET
 #include <inet/networklayer/common/L3Address.h>
+//STD
+#include <unordered_map>
+
 
 using namespace omnetpp;
 namespace SOA4CoRE {
 
 /**
- * @brief This class manages all registered publishers and subscribers
+ * @brief The registry stores all registered publishers and subscribers
  *
  * @ingroup soa4core/serviceregistry
  *

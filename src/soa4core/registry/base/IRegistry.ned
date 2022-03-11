@@ -15,5 +15,11 @@
 
 package soa4core.registry.base;
 
+//
+// The module interface for a registry
+//
+// @author Mehmet Mueller for HAW Hamburg
+//
+
 moduleinterface IRegistry {
 }

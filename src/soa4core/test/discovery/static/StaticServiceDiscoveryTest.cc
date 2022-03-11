@@ -15,8 +15,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <soa4core/registry/Registry.h>
+#include "soa4core/registry/Registry.h"
 #include "StaticServiceDiscoveryTest.h"
+//STD
 #include <string>
 
 namespace SOA4CoRE {

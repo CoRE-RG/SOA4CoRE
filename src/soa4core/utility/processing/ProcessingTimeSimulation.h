@@ -18,6 +18,7 @@
 #ifndef __SDN4CORE_PROCESSINGTIMESIMULATION_H_
 #define __SDN4CORE_PROCESSINGTIMESIMULATION_H_
 
+//OMNETPP
 #include <omnetpp.h>
 
 using namespace omnetpp;
@@ -38,8 +39,22 @@ public:
     virtual ~ProcessingTimeSimulation();
 
 protected:
+    /**
+     * Initializes the module
+     */
     virtual void initialize() override;
+
+    /**
+     * Handles the given message
+     * @param msg the given message
+     */
     virtual void handleMessage(cMessage *msg) override;
+
+    /**
+     * Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
     virtual void handleParameterChange(const char *parname) override;
 
     /**
