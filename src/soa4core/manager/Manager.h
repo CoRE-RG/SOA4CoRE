@@ -183,7 +183,7 @@ protected:
     SubscriberEndpointBase* findSubscriberLike(uint32_t publisherServiceId, QoSGroup qosGroup);
 
     /**
-     * @brief Adds an subscriber to the pendingRequestMap if the requested service is not known yet.
+     * @brief Adds an subscriber to the pendingRequestMap.
      *
      * @param publisherServiceIdentifier the service id of the publisher service.
      * @param subscriberApplicationInformation the application information of the subscriber.

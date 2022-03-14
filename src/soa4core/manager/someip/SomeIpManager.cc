@@ -251,4 +251,14 @@ IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
     return ipProtocolId;
 }
 
+void SomeIpManager::addSubscriberToPendingSubscriptionsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation, SubscriptionState subscriptionState) {
+    if (_pendingSubscriptionsMap.count(publisherServiceIdentifier.getServiceId())) {
+        _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()].push_back(std::make_pair(subscriberApplicationInformation,subscriptionState));
+    } else {
+        std::list<std::pair<SubscriberApplicationInformation, SubscriptionState>> subscriberApplicationInformations_subscriptionState;
+        subscriberApplicationInformations_subscriptionState.push_back(std::make_pair(subscriberApplicationInformation,subscriptionState));
+        _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()] = subscriberApplicationInformations_subscriptionState;
+    }
+}
+
 } /* end namespace SOA4CoRE */

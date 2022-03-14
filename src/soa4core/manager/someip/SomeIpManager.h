@@ -118,6 +118,15 @@ private:
      */
     IPProtocolId getIPProtocolId(QoSGroup qosGroup);
 
+    /**
+     * @brief Adds an subscriber to the pendingSubscriptionsMap.
+     *
+     * @param publisherServiceIdentifier the service id of the publisher service.
+     * @param subscriberApplicationInformation the application information of the subscriber.
+     * @param subscriptionState the subscription state of the subscriber
+     */
+    void addSubscriberToPendingSubscriptionsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation, SubscriptionState subscriptionState);
+
 /**
  * Member variables
  */
@@ -147,7 +156,7 @@ private:
     /**
      * Contains pending SOME/IP subscriptions
      */
-    std::map<IRegistry::ServiceId, std::list<SubscriberApplicationInformation>> _pendingRequestsMap;
+    std::map<IRegistry::ServiceId, std::list<std::pair<SubscriberApplicationInformation,SubscriptionState>>> _pendingSubscriptionsMap;
 };
 } /* end namespace SOA4CoRE */
 #endif
