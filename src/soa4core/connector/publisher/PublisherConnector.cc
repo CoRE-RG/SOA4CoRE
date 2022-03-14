@@ -84,7 +84,7 @@ PublisherEndpointBase* PublisherConnector::removeEndpoint(PublisherEndpointBase*
     //check if in the list, then remove.
     if(endpoint){
         auto it = find(_endpoints.begin(), _endpoints.end(), endpoint);
-        if (it == _endpoints.end()){
+        if (it != _endpoints.end()){
             PublisherEndpointBase* temp = *it;
             _endpoints.erase(it);
             return temp;

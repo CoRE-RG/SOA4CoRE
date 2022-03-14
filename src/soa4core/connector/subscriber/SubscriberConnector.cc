@@ -75,7 +75,7 @@ ServiceBase* SubscriberConnector::removeApplication(
     //check if in the list, then remove.
     if(middlewareApplicationBase){
         auto it = find(_applications.begin(), _applications.end(), middlewareApplicationBase);
-        if (it == _applications.end()){
+        if (it != _applications.end()){
             ServiceBase* temp = *it;
             _applications.erase(it);
             return temp;

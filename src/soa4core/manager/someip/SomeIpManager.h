@@ -31,6 +31,13 @@ namespace SOA4CoRE {
  *
  * @author Mehmet Mueller for HAW Hamburg
  */
+
+/**
+ * SubscriptionState provides states that are used to
+ * indicate the current progress of subscribing to a service.
+ */
+enum class SubscriptionState {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
+
 class SomeIpManager : public Manager
 {
 /**
@@ -136,6 +143,11 @@ private:
      * The service discovery.
      */
     IServiceDiscovery* _sd;
+
+    /**
+     * Contains pending SOME/IP subscriptions
+     */
+    std::map<IRegistry::ServiceId, std::list<SubscriberApplicationInformation>> _pendingRequestsMap;
 };
 } /* end namespace SOA4CoRE */
 #endif
