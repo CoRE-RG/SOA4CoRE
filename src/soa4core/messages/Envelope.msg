@@ -24,7 +24,7 @@
 //
 
 cplusplus {{
-#include "soa4core/base/EndpointDescription.h"
+#include "soa4core/qosmanagement/negotiation/datatypes/EndpointDescription.h"
 
 #define SOA4CORE sizeof(int) + 2*sizeof(EndpointDescription)
 }}

@@ -43,6 +43,12 @@ public:
 
     }
 
+    /**
+     * Default constructor
+     */
+    EndpointDescription() {
+    }
+
     virtual ~EndpointDescription() {
     }
 
