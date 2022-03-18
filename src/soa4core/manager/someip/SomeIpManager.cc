@@ -172,7 +172,7 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
             );
             switch (subscriberApplicationInformation.getQoSGroup()) {
                 case QoSGroup::SOMEIP_TCP: {
-                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherFor(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_TCP);
+                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_TCP);
                     if(!publisherEndpointBase) {
                         throw cRuntimeError("No SOME/IP TCP Publisher was created.");
                     }
@@ -183,7 +183,7 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
                     break;
                 }
                 case QoSGroup::SOMEIP_UDP: {
-                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherFor(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_UDP);
+                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_UDP);
                     if(!publisherEndpointBase) {
                         throw cRuntimeError("No SOME/IP UDP Publisher was created.");
                     }
@@ -215,7 +215,7 @@ void SomeIpManager::createSubscriberEndpoint(PublisherApplicationInformation pub
             CSI_SOMEIP_TCP* csi_someip_tcp = new CSI_SOMEIP_TCP();
             csi_someip_tcp->setAddress(publisherApplicationInformation.getAddress().str().c_str());
             csi_someip_tcp->setPort(publisherApplicationInformation.getTCPPort());
-            sub = createOrFindSubscriberFor(publisherApplicationInformation.getServiceId(), csi_someip_tcp);
+            sub = createOrFindSubscriberEndpoint(publisherApplicationInformation.getServiceId(), csi_someip_tcp);
             delete csi_someip_tcp;
             break;
         }
@@ -223,7 +223,7 @@ void SomeIpManager::createSubscriberEndpoint(PublisherApplicationInformation pub
             CSI_SOMEIP_UDP* csi_someip_udp = new CSI_SOMEIP_UDP();
             csi_someip_udp->setAddress(publisherApplicationInformation.getAddress().str().c_str());
             csi_someip_udp->setPort(publisherApplicationInformation.getUDPPort());
-            sub = createOrFindSubscriberFor(publisherApplicationInformation.getServiceId(), csi_someip_udp);
+            sub = createOrFindSubscriberEndpoint(publisherApplicationInformation.getServiceId(), csi_someip_udp);
             delete csi_someip_udp;
             break;
         }

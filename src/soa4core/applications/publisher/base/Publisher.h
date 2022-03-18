@@ -18,8 +18,8 @@
 #ifndef __SOA4CORE_APPLICATIONS_PUBLISHERA_BASE_PUBLISHER_H_
 #define __SOA4CORE_APPLICATIONS_PUBLISHERA_BASE_PUBLISHER_H_
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
 #include "soa4core/applications/base/ServiceBase.h"
+#include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //CORE4INET
 #include <core4inet/base/avb/AVBDefs.h>
 //STD
@@ -65,6 +65,36 @@ public:
      */
     size_t getPayloadBytes();
 
+    /**
+     * Returns the QoS groups
+     * @return the QoS groups
+     */
+    std::set<QoSGroup> getQoSGroups();
+
+    /**
+     * Returns the stream ID
+     * @return the stream ID
+     */
+    unsigned long getStreamId();
+
+    /**
+     * Returns the AVB SR class
+     * @return the AVB SR class
+     */
+    CoRE4INET::SR_CLASS getSrClass();
+
+    /**
+     * Returns the the ethernet frame size
+     * @return the ethernet frame size
+     */
+    size_t getFramesize();
+
+    /**
+     * Returns the interval frames
+     * @return the interval frames
+     */
+    int getIntervalFrames();
+
 protected:
     /**
      * Initialization of the module. Sends activator message
@@ -85,11 +115,6 @@ protected:
      * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
      */
     virtual void handleParameterChange(const char* parname) override;
-
-    /**
-     * Sets the QoS groups
-     */
-    void setQoS();
 
     /**
      * Prints the QoS groups
@@ -134,11 +159,6 @@ protected:
     simsignal_t _msgSentSignal;
 
     /**
-     * The application informations of this app
-     */
-    PublisherApplicationInformation _publisherApplicationInformation;
-
-    /**
      * Caches the start time parameter
      */
     double _startTime;
@@ -163,15 +183,16 @@ protected:
      */
     unsigned long _streamID;
 
-    /**
-     * Caches the QoS types this application can serve
-     */
-    std::set<std::string> _qosGroups;
 private:
     /**
      * Signal that is emitted each time the payload is used.
      */
     simsignal_t _sigPayload;
+
+    /**
+     * Caches the QoS types this application can serve
+     */
+    std::set<QoSGroup> _qosGroups;
 };
 
 } /* end namespace SOA4CoRE */

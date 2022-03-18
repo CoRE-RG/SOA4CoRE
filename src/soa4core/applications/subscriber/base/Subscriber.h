@@ -18,7 +18,6 @@
 #ifndef __SOA4CORE_APPLICATIONS_SUBSCRIBER_BASE_SUBSCRIBER_H_
 #define __SOA4CORE_APPLICATIONS_SUBSCRIBER_BASE_SUBSCRIBER_H_
 
-#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //STD
@@ -41,6 +40,12 @@ class Subscriber: public virtual ServiceBase {
  * Methods
  */
 public:
+    /**
+     * Returns the QoS group
+     * @return the QoS group
+     */
+    QoSGroup getQoSGroup();
+
 protected:
     /**
      * Initialization of the module. Sends activator message
@@ -62,10 +67,6 @@ protected:
      */
     virtual void handleParameterChange(const char* parname) override;
 
-    /**
-     * Sets the QoS group this subscriber requests/subscribes
-     */
-    void setQoS();
 private:
 
 /**
@@ -75,11 +76,6 @@ public:
     Subscriber();
     virtual ~Subscriber();
 protected:
-    /**
-     * The application informations of this app
-     */
-    SubscriberApplicationInformation _subscriberApplicationInformation;
-
     /**
      * Caches the required QoS type
      */

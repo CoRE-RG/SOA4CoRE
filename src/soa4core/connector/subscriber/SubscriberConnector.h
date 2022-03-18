@@ -18,7 +18,6 @@
 #ifndef __SOA4CORE_SUBSCRIPTIONCONNECTOR_H_
 #define __SOA4CORE_SUBSCRIPTIONCONNECTOR_H_
 
-#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
@@ -46,40 +45,27 @@ public:
      * and the list is not larger then max applications.
      * Implementing ConnectorClasses need to check for the correct type of application.
      *
-     * @param middlewareApplicationBase    the application to add.
+     * @param subscriberApplication        the subscriber application to add.
      *
      * @return                             true if the application has been added.
      */
-    bool addApplication(ServiceBase* middlewareApplicationBase);
+    bool addApplication(ServiceBase* subscriberApplication);
 
     /**
      * Removes the application from this connector if present.
      * Implementing ConnectorClasses need to check for the correct type of application.
      *
-     * @param   middlewareApplicationBase   the endpoint to remove.
+     * @param   subscriberApplication   the subscriber application to remove.
      * @return  the application if it was removed (pointer no longer managed by this module)
      *          nullptr if the application is not registered.
      */
-    ServiceBase* removeApplication(ServiceBase* middlewareApplicationBase);
+    ServiceBase* removeApplication(ServiceBase* subscriberApplication);
 
     /**
      * Returns the applications
      * @return the applications
      */
     const std::vector<ServiceBase*>& getApplications() const;
-
-    /**
-     * TODO should rather be ConnectorInformation
-     * Returns the subscriber application information
-     * @return the subscriber application information
-     */
-    SubscriberApplicationInformation getSubscriberApplicationInformation();
-
-    /**
-     * Sets the subscriber application information
-     * @param subscriberApplicationInformation the subscriber application information
-     */
-    void setSubscriberApplicationInformation(SubscriberApplicationInformation subscriberApplicationInformation);
 
     /**
      * Returns the endpoint to which the applications are connected
@@ -91,6 +77,43 @@ public:
      * Sets the endpoint
      */
     void setEndpoint(SubscriberEndpointBase* subscriberEndpointBase);
+
+    /**
+     * Returns the local IP address
+     * @return the IP address
+     */
+    const inet::L3Address& getAddress() const;
+
+    /**
+     * Sets the local IP address of this connector
+     * @param localAddress the local IP address
+     */
+    void setAddress(const inet::L3Address& localAddress);
+
+    /**
+     * Returns the TCP port
+     * @return the TCP port
+     */
+    int getTcpPort() const;
+
+    /**
+     * Sets the TCP port
+     * @param tcpPort the TCP port
+     */
+    void setTcpPort(int tcpPort);
+
+    /**
+     * Returns the UDP port
+     * @return the UDP port
+     */
+    int getUdpPort() const;
+
+    /**
+     * Sets the UDP port
+     * @param udpPort the UDP port
+     */
+    void setUdpPort(int udpPort);
+
 protected:
     /**
      * Initializes the module
@@ -139,11 +162,6 @@ private:
     SubscriberEndpointBase* _subscriberEndpointBase = nullptr;
 
     /**
-     * The subscriber application information
-     */
-    SubscriberApplicationInformation _subscriberApplicationInformation;
-
-    /**
      * Signal to emit messages which are forwarded to Applications
      */
     simsignal_t _forwardedToApplicationsSignal;
@@ -156,6 +174,21 @@ private:
      * Gate name for traffic from the endpoint module.
      */
     static const char ENDPOINT_IN_GATE_NAME []; //= "endpointIn";
+
+    /**
+     * TCP port used for TCP endpoints
+     */
+    int _tcpPort;
+
+    /**
+     * UDP port used for UDP endpoints
+     */
+    int _udpPort;
+
+    /**
+     * The local address.
+     */
+    inet::L3Address _localAddress;
 };
 
 } /*end namespace SOA4CoRE*/

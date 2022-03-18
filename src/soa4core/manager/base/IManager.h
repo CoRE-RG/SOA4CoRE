@@ -16,11 +16,12 @@
 #ifndef __SOA4CORE_SERVICEMANAGER_BASE_IMANAGER_H_
 #define __SOA4CORE_SERVICEMANAGER_BASE_IMANAGER_H_
 
-#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
+#include "soa4core/serviceidentifier/ServiceIdentifier.h"
 //OMNETPP
 #include <omnetpp.h>
 
 namespace SOA4CoRE {
+class ServiceBase;
 
 /**
  * @brief Interface for the service manager module
@@ -36,9 +37,9 @@ public:
   /**
    * Subscribes the service given in the publisher service identifier
    * @param publisherServiceIdentifier the publisher service identifier
-   * @param subscriberApplicationInformation the application information of the subscriber application
+   * @param subscriberApplication the subscriber application
    */
-  virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) = 0;
+  virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) = 0;
 
 };
 

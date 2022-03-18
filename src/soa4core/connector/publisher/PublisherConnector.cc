@@ -58,15 +58,6 @@ void PublisherConnector::handleParameterChange(const char* parname) {
     }
 }
 
-void PublisherConnector::setPublisherApplicationInformation(PublisherApplicationInformation publisherApplicationInformation) {
-    _publisherApplicationInformation = publisherApplicationInformation;
-}
-
-
-PublisherApplicationInformation PublisherConnector::getPublisherApplicationInformation() {
-    return _publisherApplicationInformation;
-}
-
 bool PublisherConnector::addEndpoint(PublisherEndpointBase* endpoint) {
     if(endpoint && (_maxEndpoints < 0 || (int)_endpoints.size() < _maxEndpoints)) {
         //check if not already in the list, then add.
@@ -93,12 +84,12 @@ PublisherEndpointBase* PublisherConnector::removeEndpoint(PublisherEndpointBase*
     return nullptr;
 }
 
-void PublisherConnector::setApplication(ServiceBase* middlewareApplicationBase) {
-    _middlewareApplicationBase = middlewareApplicationBase;
+void PublisherConnector::setApplication(ServiceBase* publisherApplication) {
+    _publisherApplication = publisherApplication;
 }
 
 ServiceBase* PublisherConnector::getApplication() {
-    return _middlewareApplicationBase;
+    return _publisherApplication;
 }
 
 const std::vector<PublisherEndpointBase*>& PublisherConnector::getEndpoints() const {
@@ -118,7 +109,7 @@ void PublisherConnector::finish(){
         }
         ss << ",";
         ss << "\"applications\":[";
-        ss << "\"" << _publisherApplicationInformation.getServiceId() << "\"";
+        ss << "\"" << _publisherApplication->getServiceId() << "\"";
         ss << "]";
         ss << ",";
         ss << "\"connectorName\":" << "\"" << this->getFullName() << "\""; // connector name

@@ -90,6 +90,14 @@ private:
      */
     void lookForService(cObject* obj);
 
+    /**
+     * @brief Adds an subscriber to the pendingRequestMap.
+     *
+     * @param publisherServiceIdentifier the service id of the publisher service.
+     * @param subscriberApplicationInformation the application information of the subscriber.
+     */
+    void addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation);
+
 /**
  * Member variables
  */
@@ -109,6 +117,11 @@ private:
      * The service discovery.
      */
     IServiceDiscovery* _sd;
+
+    /**
+     * Contains pending requests
+     */
+    std::map<IRegistry::ServiceId, std::list<SubscriberApplicationInformation>> _pendingRequestsMap;
 
 };
 } /* end namespace SOA4CoRE */

@@ -18,6 +18,8 @@
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/manager/base/IManager.h"
 #include "soa4core/connector/base/ConnectorBase.h"
+//INET
+#include <inet/networklayer/common/L3AddressResolver.h>
 //STD
 #include <cstring>
 
@@ -51,6 +53,26 @@ std::string ServiceBase::getServiceName() {
         serviceName = this->_subscriberName;
     }
     return serviceName;
+}
+
+int ServiceBase::getServiceId() {
+    return this->_publisherServiceId;
+}
+
+ inet::L3Address ServiceBase::getAddress() {
+    return inet::L3AddressResolver().resolve(this->_localAddress.c_str());
+}
+
+uint16_t ServiceBase::getInstanceId() {
+    return this->_instanceId;
+}
+
+int ServiceBase::getTcpPort() {
+    return this->_tcpPort;
+}
+
+int ServiceBase::getUdpPort() {
+    return this->_udpPort;
 }
 
 void ServiceBase::handleParameterChange(const char* parname) {

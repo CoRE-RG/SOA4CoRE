@@ -199,7 +199,7 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
                 case QoSGroup::SOMEIP_UDP: {
                     connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP_UDP();
                     // create or find the subscriber
-                    SubscriberEndpointBase* sub = _manager->createOrFindSubscriberFor(_remote.getServiceId(),connectionlessCSI);
+                    SubscriberEndpointBase* sub = _manager->createOrFindSubscriberEndpoint(_remote.getServiceId(),connectionlessCSI);
 
                     delete connectionlessCSI;
 
@@ -256,7 +256,7 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
             if (isEstablishAcceptable(establish)) {
 
                 // create or find the publisher
-                PublisherEndpointBase* pub = _manager->createOrFindPublisherFor(_local.getServiceId(), QoSGroup(establish->getQosClass()));
+                PublisherEndpointBase* pub = _manager->createOrFindPublisherEndpoint(_local.getServiceId(), QoSGroup(establish->getQosClass()));
 
                 if(pub){
                     // encapsulate the CSI into the packet.
@@ -342,7 +342,7 @@ bool QoSBroker::handleFinalise(QoSNegotiationFinalise* finalise) {
                         break;
                     default:
                         // create or find the subscriber
-                        SubscriberEndpointBase* sub = _manager->createOrFindSubscriberFor(_remote.getServiceId(),info);
+                        SubscriberEndpointBase* sub = _manager->createOrFindSubscriberEndpoint(_remote.getServiceId(),info);
 
                         if(!sub){
                             throw cRuntimeError("No subscriber was created...");

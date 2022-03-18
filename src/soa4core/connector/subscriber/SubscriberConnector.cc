@@ -58,12 +58,12 @@ void SubscriberConnector::handleParameterChange(const char* parname) {
     }
 }
 
-bool SubscriberConnector::addApplication(ServiceBase* middlewareApplicationBase) {
-    if(middlewareApplicationBase && (_maxApplications < 0 || (int)_applications.size() < _maxApplications)){
+bool SubscriberConnector::addApplication(ServiceBase* subscriberApplication) {
+    if(subscriberApplication && (_maxApplications < 0 || (int)_applications.size() < _maxApplications)){
         //check if not already in the list, then add.
-        auto it = find(_applications.begin(), _applications.end(), middlewareApplicationBase);
+        auto it = find(_applications.begin(), _applications.end(), subscriberApplication);
         if (it == _applications.end()){
-            _applications.push_back(middlewareApplicationBase);
+            _applications.push_back(subscriberApplication);
             return true;
         }
     }
@@ -71,10 +71,10 @@ bool SubscriberConnector::addApplication(ServiceBase* middlewareApplicationBase)
 }
 
 ServiceBase* SubscriberConnector::removeApplication(
-        ServiceBase* middlewareApplicationBase) {
+        ServiceBase* subscriberApplication) {
     //check if in the list, then remove.
-    if(middlewareApplicationBase){
-        auto it = find(_applications.begin(), _applications.end(), middlewareApplicationBase);
+    if(subscriberApplication){
+        auto it = find(_applications.begin(), _applications.end(), subscriberApplication);
         if (it != _applications.end()){
             ServiceBase* temp = *it;
             _applications.erase(it);
@@ -83,15 +83,6 @@ ServiceBase* SubscriberConnector::removeApplication(
     }
     return nullptr;
 }
-
-SubscriberApplicationInformation SubscriberConnector::getSubscriberApplicationInformation(){
-    return _subscriberApplicationInformation;
-}
-
-void SubscriberConnector::setSubscriberApplicationInformation(SubscriberApplicationInformation subscriberApplicationInformation) {
-    _subscriberApplicationInformation = subscriberApplicationInformation;
-}
-
 
 const std::vector<ServiceBase*>& SubscriberConnector::getApplications() const {
     return _applications;
@@ -103,6 +94,30 @@ SubscriberEndpointBase* SubscriberConnector::getEndpoint() {
 
 void SubscriberConnector::setEndpoint(SubscriberEndpointBase* subscriberEndpointBase) {
     _subscriberEndpointBase = subscriberEndpointBase;
+}
+
+const inet::L3Address& SubscriberConnector::getAddress() const {
+    return _localAddress;
+}
+
+void SubscriberConnector::setAddress(const inet::L3Address& localAddress) {
+    _localAddress = localAddress;
+}
+
+int SubscriberConnector::getTcpPort() const {
+    return _tcpPort;
+}
+
+void SubscriberConnector::setTcpPort(int tcpPort) {
+    _tcpPort = tcpPort;
+}
+
+int SubscriberConnector::getUdpPort() const {
+    return _udpPort;
+}
+
+void SubscriberConnector::setUdpPort(int udpPort) {
+    _udpPort = udpPort;
 }
 
 void SubscriberConnector::finish(){

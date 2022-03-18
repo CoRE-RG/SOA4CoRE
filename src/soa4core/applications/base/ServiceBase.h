@@ -21,6 +21,8 @@
 #include "soa4core/manager/base/IManager.h"
 //STD
 #include <string>
+//INET
+#include <inet/networklayer/common/L3Address.h>
 //OMNETPP
 #include <omnetpp.h>
 
@@ -54,6 +56,36 @@ public:
      * @return the service name
      */
     std::string getServiceName();
+
+    /**
+     * Returns the service ID
+     * @return the service ID
+     */
+    int getServiceId();
+
+    /**
+     * Returns the IP address
+     * @return the IP address
+     */
+    inet::L3Address getAddress();
+
+    /**
+     * Returns the instance ID
+     * @return the instance ID
+     */
+    uint16_t getInstanceId();
+
+    /**
+     * Returns the TCP port
+     * @return the TCP port
+     */
+    int getTcpPort();
+
+    /**
+     * Returns the UDP port
+     * @return the UDP port
+     */
+    int getUdpPort();
 
 protected:
     /**

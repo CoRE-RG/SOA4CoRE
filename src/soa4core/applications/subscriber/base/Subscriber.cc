@@ -60,26 +60,17 @@ void Subscriber::initialize()
 void Subscriber::handleMessage(cMessage *msg)
 {
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
-        setQoS();
         //create a subscriber
         Manager* localServiceManager = nullptr;
         if (!(localServiceManager = dynamic_cast<Manager*>(_localServiceManager))){
             throw cRuntimeError("No Manager found.");
         }
-        localServiceManager->registerSubscriberService(_subscriberApplicationInformation, this);
-        std::vector<SubscriberConnector*> connectors = localServiceManager->getSubscriberConnectorsForServiceId(this->_publisherServiceId);
-        _connector = nullptr;
-        for (SubscriberConnector* subscriberConnector : connectors) {
-            if (subscriberConnector->getSubscriberApplicationInformation().getQoSGroup() == _qosGroup) {
-                _connector = subscriberConnector;
-                break;
-            }
-        }
+        _connector = localServiceManager->registerSubscriberService(this);
         if (!_connector) {
             throw cRuntimeError("No subscriber connector created.");
         }
         ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId,this->_instanceId);
-        _localServiceManager->subscribeService(publisherServiceIdentifier, _subscriberApplicationInformation);
+        _localServiceManager->subscribeService(publisherServiceIdentifier, this);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }
@@ -93,11 +84,6 @@ void Subscriber::handleMessage(cMessage *msg)
         }
     }
     delete msg;
-}
-
-void Subscriber::setQoS() {
-    _subscriberApplicationInformation = SubscriberApplicationInformation(_publisherServiceId, inet::L3AddressResolver().resolve(_localAddress.c_str()),
-                                     _instanceId, _qosGroup, _tcpPort, _udpPort);
 }
 
 void Subscriber::handleParameterChange(const char* parname)

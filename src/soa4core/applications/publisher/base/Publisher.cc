@@ -55,6 +55,26 @@ size_t Publisher::getPayloadBytes() {
     return this->_payload;
 }
 
+std::set<QoSGroup> Publisher::getQoSGroups() {
+    return this->_qosGroups;
+}
+
+unsigned long Publisher::getStreamId() {
+    return this->_streamID;
+}
+
+CoRE4INET::SR_CLASS Publisher::getSrClass() {
+    return this->_srClass;
+}
+
+size_t Publisher::getFramesize() {
+    return this->_framesize;
+}
+
+int Publisher::getIntervalFrames() {
+    return this->_intervalFrames;
+}
+
 void Publisher::initialize() {
     ServiceBase::initialize();
     handleParameterChange(nullptr);
@@ -129,16 +149,33 @@ void Publisher::handleParameterChange(const char* parname) {
     }
 
     if (!parname || !strcmp(parname, "qosGroups")) {
+        std::set<std::string> qosGroups;
         cStringTokenizer stringTokenizer(par("qosGroups").stringValue()," ");
         while (stringTokenizer.hasMoreTokens()) {
             const char *token = stringTokenizer.nextToken();
-            this->_qosGroups.insert(std::string(token));
+            qosGroups.insert(std::string(token));
+        }
+        for (std::string qosGroup : qosGroups) {
+            if (qosGroup == "STD_TCP") {
+                this->_qosGroups.insert(QoSGroup::STD_TCP);
+            } else if (qosGroup == "STD_UDP") {
+                this->_qosGroups.insert(QoSGroup::STD_UDP);
+            } else if (qosGroup == "SOMEIP_TCP") {
+                this->_qosGroups.insert(QoSGroup::SOMEIP_TCP);
+            } else if (qosGroup == "SOMEIP_UDP") {
+                this->_qosGroups.insert(QoSGroup::SOMEIP_UDP);
+            } else if (qosGroup == "RT") {
+                this->_qosGroups.insert(QoSGroup::RT);
+            } else if (qosGroup == "WEB") {
+                throw cRuntimeError("WEB QoS is not implemented yet");
+            } else {
+                throw cRuntimeError("Unknown QoS");
+            }
         }
     }
 }
 
 void Publisher::createPublisherWithQoS() {
-    setQoS();
     //printQoS();
 
     //register this as new publisher app!
@@ -146,8 +183,10 @@ void Publisher::createPublisherWithQoS() {
     if (!(localServiceManager = dynamic_cast<Manager*>(_localServiceManager))){
         throw cRuntimeError("No Manager found.");
     }
-    localServiceManager->registerPublisherService(_publisherApplicationInformation, this);
-    _connector = localServiceManager->getPublisherConnectorForServiceId(_publisherServiceId);
+    _connector = localServiceManager->registerPublisherService(this);
+    if (!_connector) {
+        throw cRuntimeError("No publisher connector created.");
+    }
 }
 
 void Publisher::scheduleNextMessage() {
@@ -192,38 +231,13 @@ void Publisher::handleMessage(cMessage *msg) {
 
 }
 
-void Publisher::setQoS() {
-    std::set<QoSGroup> qosGroups;
-    for (std::string qosGroup : _qosGroups) {
-        if (qosGroup == "STD_TCP") {
-            qosGroups.insert(QoSGroup::STD_TCP);
-        } else if (qosGroup == "STD_UDP") {
-            qosGroups.insert(QoSGroup::STD_UDP);
-        } else if (qosGroup == "SOMEIP_TCP") {
-            qosGroups.insert(QoSGroup::SOMEIP_TCP);
-        } else if (qosGroup == "SOMEIP_UDP") {
-            qosGroups.insert(QoSGroup::SOMEIP_UDP);
-        } else if (qosGroup == "RT") {
-            qosGroups.insert(QoSGroup::RT);
-        } else if (qosGroup == "WEB") {
-            throw cRuntimeError("WEB QoS is not implemented yet");
-        } else {
-            throw cRuntimeError("Unknown QoS");
-        }
-    }
-
-    _publisherApplicationInformation = PublisherApplicationInformation(_publisherServiceId,
-                             inet::L3AddressResolver().resolve(_localAddress.c_str()),
-                             _instanceId, qosGroups, _tcpPort, _udpPort, _streamID, _srClass, _framesize, _intervalFrames);
-}
-
 void Publisher::printQoS() {
     cout << "printing offered qos services:" << endl;
-    cout << "Service ID: " << _publisherApplicationInformation.getServiceId() <<endl;
-    cout << "StreamID: " << _publisherApplicationInformation.getStreamId() << endl;
-    cout << "SRClass: " << CoRE4INET::SR_CLASStoString[_publisherApplicationInformation.getSrClass()] << endl;
-    cout << "Framesize: " << _publisherApplicationInformation.getFramesize() << endl;
-    cout << "IntervalFrames: " << _publisherApplicationInformation.getIntervalFrames() << endl;
+    cout << "Service ID: " << _publisherServiceId <<endl;
+    cout << "StreamID: " << _streamID << endl;
+    cout << "SRClass: " << CoRE4INET::SR_CLASStoString[_srClass] << endl;
+    cout << "Framesize: " << _framesize << endl;
+    cout << "IntervalFrames: " << _intervalFrames << endl;
 
 }
 

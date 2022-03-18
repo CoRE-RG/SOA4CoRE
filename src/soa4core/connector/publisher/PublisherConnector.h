@@ -18,7 +18,6 @@
 #ifndef __SOA4CORE_PUBLISHERCONNECTOR_H_
 #define __SOA4CORE_PUBLISHERCONNECTOR_H_
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
@@ -65,28 +64,16 @@ public:
      * Sets the application of this connector.
      * Implementing ConnectorClasses need to check for the correct type of application.
      *
-     * @param middlewareApplicationBase    the application to add.
+     * @param publisherApplication    the publisher application application
      */
-    void setApplication(ServiceBase* middlewareApplicationBase);
+    void setApplication(ServiceBase* publisherApplication);
 
     /**
      * Returns the application of this connector.
      *
-     * @return the application of this connector.
+     * @return the publisher application of this connector.
      */
     ServiceBase* getApplication();
-
-    /**
-     * Sets the publisher application information
-     * @param publisherApplicationInformation the publisher application information
-     */
-    void setPublisherApplicationInformation(PublisherApplicationInformation publisherApplicationInformation);
-
-    /**
-     * Returns the publisher application information
-     * @return the publisher application information
-     */
-    PublisherApplicationInformation getPublisherApplicationInformation();
 
     /**
      * Returns the endpoints on which the Publisher publishes
@@ -132,19 +119,14 @@ private:
     int _maxEndpoints = -1;
 
     /**
-     * The middleware application
+     * The publisher application
      */
-    ServiceBase* _middlewareApplicationBase = nullptr;
+    ServiceBase* _publisherApplication = nullptr;
 
     /**
      * Endpoints to connect to the applications.
      */
     std::vector<PublisherEndpointBase*> _endpoints;
-
-    /**
-     * The publisher application information
-     */
-    PublisherApplicationInformation _publisherApplicationInformation;
 
     /**
      * Signal to emit messages which are forwarded to endpoints

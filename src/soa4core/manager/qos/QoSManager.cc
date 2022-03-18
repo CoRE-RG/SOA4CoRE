@@ -114,7 +114,7 @@ void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, 
         _qosnp->createQoSBroker(request);
     }
     else {
-        Manager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
+        addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
         _sd->discover(publisherServiceIdentifier);
     }
 }
@@ -124,6 +124,16 @@ Request* QoSManager::createNegotiationRequest(PublisherApplicationInformation pu
     EndpointDescription publisher(publisherApplicationInformation.getServiceId(), publisherApplicationInformation.getAddress(), _qosnp->getProtocolPort());
     Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
     return request;
+}
+
+void Manager::addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+    if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
+        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(subscriberApplicationInformation);
+    } else {
+        std::list<SubscriberApplicationInformation> subscriberApplicationInformations;
+        subscriberApplicationInformations.push_back(subscriberApplicationInformation);
+        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()] = subscriberApplicationInformations;
+    }
 }
 
 } /* end namespace SOA4CoRE */
