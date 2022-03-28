@@ -56,9 +56,9 @@ public:
     /**
      * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param subscriberApplicationInformation the application information of the subscriber
+     * @param subscriberApplication the subscriber application
      */
-    void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
+    void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 protected:
     /**
      * Initializes the module and waits for find

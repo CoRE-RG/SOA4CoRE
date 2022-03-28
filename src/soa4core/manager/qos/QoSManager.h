@@ -63,11 +63,11 @@ protected:
     virtual void handleMessage(cMessage *msg) override;
 
     /**
-     * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
+     * @brief Subscribes the given service
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param subscriberApplicationInformation the application information about the subscriber
+     * @param subscriberApplication the subscriber application
      */
-    void subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) override;
+    virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 
 private:
     /**
@@ -94,9 +94,9 @@ private:
      * @brief Adds an subscriber to the pendingRequestMap.
      *
      * @param publisherServiceIdentifier the service id of the publisher service.
-     * @param subscriberApplicationInformation the application information of the subscriber.
+     * @param subscriberApplication the subscriber application.
      */
-    void addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation);
+    void addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, Subscriber* subscriberApplication);
 
 /**
  * Member variables
@@ -121,7 +121,7 @@ private:
     /**
      * Contains pending requests
      */
-    std::map<IRegistry::ServiceId, std::list<SubscriberApplicationInformation>> _pendingRequestsMap;
+    std::map<Registry::ServiceId, std::list<QoSGroup>> _pendingRequestsMap;
 
 };
 } /* end namespace SOA4CoRE */

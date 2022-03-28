@@ -89,10 +89,10 @@ PublisherConnector* Manager::registerPublisherService(ServiceBase* publisherAppl
     }
 
     PublisherConnector* publisherConnector = createPublisherConnector(publisherApplication_);
-    for (QoSGroup qosGroup : publisherApplication_->getQoSGroups()) {
-        _publisherConnectors[publisherApplication_->getServiceId()][qosGroup] = publisherConnector;
-    }
+    _publisherConnectors[publisherApplication_->getServiceId()] = publisherConnector;
+
     _lsr->addPublisherService(extractMembersIntoApplicationInformation(publisherApplication_));
+
     return publisherConnector;
 }
 

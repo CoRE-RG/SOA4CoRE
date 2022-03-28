@@ -19,14 +19,11 @@
 #define __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 
 #include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
-#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
 #include "soa4core/applications/subscriber/base/Subscriber.h"
-#include "soa4core/connector/publisher/PublisherConnector.h"
-#include "soa4core/connector/subscriber/SubscriberConnector.h"
 #include "soa4core/manager/base/IManager.h"
-#include "soa4core/registry/base/IRegistry.h"
+#include "soa4core/registry/base/Registry.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
@@ -300,9 +297,9 @@ private:
 public:
 protected:
     /**
-     * Contains pointers to the existing publisher connectors on a node.
+     * Counter for subscribing endpoints created.
      */
-    std::map<IRegistry::ServiceId, std::map<QoSGroup,PublisherConnector*>> _publisherConnectors;
+    int _subscriberEndpointCount = 0;
 
     /**
      * Counter for publishing endpoints created.
@@ -310,22 +307,9 @@ protected:
     int _publisherEndpointCount = 0;
 
     /**
-     * Contains pointers to the existing subscriber connectors on a node.
-     * TODO maybe we need to allow more than one subscriber connector per publisher service for different QoS?
-     * Or we take the best QoS needed on device?
-     * Update: We currently allow more than one subscriber connector
-     */
-    std::map<IRegistry::ServiceId, std::map<QoSGroup,SubscriberConnector*>> _subscriberConnectors;
-
-    /**
-     * Counter for subscribing endpoints created.
-     */
-    int _subscriberEndpointCount = 0;
-
-    /**
      * A pointer to the local service registry.
      */
-    IRegistry* _lsr;
+    Registry* _lsr;
 
     /**
      * Static ID for created Requests.

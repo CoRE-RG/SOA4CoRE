@@ -21,7 +21,7 @@ import soa4core.qosmanagement.negotiation.QoSNegotiationProtocol;
 import soa4core.discovery.base.IServiceDiscovery;
 import soa4core.discovery.someip.SomeIpSD;
 import soa4core.manager.base.IManager;
-import soa4core.registry.base.IRegistry;
+import soa4core.registry.base.Registry;
 
 import soa4core.connector.publisher.PublisherConnector;
 import soa4core.connector.subscriber.SubscriberConnector;
@@ -72,7 +72,7 @@ module Middleware
         }
 
         // Service Registry
-        sr: <default("Registry")> like IRegistry {
+        sr: Registry {
             @display("p=239,50");
         }
 

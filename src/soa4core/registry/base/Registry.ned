@@ -13,15 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.registry;
-
-import soa4core.registry.base.IRegistry;
+package soa4core.registry.base;
 //
 // The Registry provides a local registry for services.
 //
 // @author Mehmet Mueller for HAW Hamburg
 //
-simple Registry like IRegistry
+simple Registry
 {
     parameters:
         @class(SOA4CoRE::Registry);

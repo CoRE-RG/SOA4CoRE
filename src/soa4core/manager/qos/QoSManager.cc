@@ -105,16 +105,20 @@ void QoSManager::lookForService(cObject* obj) {
     }
 }
 
-void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
+    Subscriber* subscriberApplication_ = nullptr;
+    if (!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))) {
+        throw cRuntimeError("The subscriber application must be of type Subscriber");
+    }
     //check if publisher is already discovered, and if so, start the negotiation with a request.
     if (_lsr->containsService(publisherServiceIdentifier)) {
         PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(publisherServiceIdentifier);
-        Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplicationInformation.getQoSGroup());
+        Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplication_->getQoSGroup());
         //create qos broker for the request
         _qosnp->createQoSBroker(request);
     }
     else {
-        addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
+        addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplication_);
         _sd->discover(publisherServiceIdentifier);
     }
 }
@@ -126,13 +130,13 @@ Request* QoSManager::createNegotiationRequest(PublisherApplicationInformation pu
     return request;
 }
 
-void Manager::addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
+void QoSManager::addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, Subscriber* subscriberApplication) {
     if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
-        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(subscriberApplicationInformation);
+        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(subscriberApplication);
     } else {
-        std::list<SubscriberApplicationInformation> subscriberApplicationInformations;
-        subscriberApplicationInformations.push_back(subscriberApplicationInformation);
-        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()] = subscriberApplicationInformations;
+        std::list<Subscriber*> subscriberApplications;
+        subscriberApplications.push_back(subscriberApplication);
+        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()] = subscriberApplications;
     }
 }
 
