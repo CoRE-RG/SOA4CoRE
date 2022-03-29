@@ -69,7 +69,15 @@ class Registry : public cSimpleModule
      * Returns a publisher connector for a given service identifier
      * @return the publisher connector for the given service identifier, null if not present
      */
-    PublisherConnector* getPublisherConnector(ServiceId serviceId);
+
+    /**
+     * Returns a publisher connector for a given service ID and QoS group
+     *
+     * @param serviceId the service ID
+     * @param qosGroup the QoS group
+     * @return the publisher connector for the given service identifier, null if not present
+     */
+    PublisherConnector* getPublisherConnector(ServiceId serviceId, QoSGroup qosGroup);
 
     /**
      * Returns a subscriber connector for a given service identifier

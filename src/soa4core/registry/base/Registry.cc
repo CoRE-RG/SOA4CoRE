@@ -34,20 +34,24 @@ void Registry::handleMessage(cMessage *msg)
 {
 }
 
-void Registry::addPublisherService(PublisherApplicationInformation publisherApplicationInformation) {
-    _serviceRegistry[publisherApplicationInformation.getServiceId()] = publisherApplicationInformation;
+void Registry::addPublisherServiceConnector(ServiceId serviceId, PublisherConnector* publisherConnector) {
+    _publisherConnectors[serviceId] = publisherConnector;
 }
 
-PublisherApplicationInformation Registry::getService(ServiceIdentifier serviceIdentifier) {
-    PublisherApplicationInformation service;
-    if (_serviceRegistry.count(serviceIdentifier.getServiceId())) {
-        service = _serviceRegistry[serviceIdentifier.getServiceId()];
+void Registry::addSubscriberServiceConnector(ServiceId serviceId, SubscriberConnector* subscriberConnector) {
+    if (!(_subscriberConnectors.count(serviceId))) {
+        _subscriberConnectors[serviceId] = std::list<SubscriberConnector*>;
     }
-    return service;
+    _subscriberConnectors[serviceId].push_back(subscriberConnector);
 }
 
-bool Registry::containsService(ServiceIdentifier serviceIdentifier) {
-    return _serviceRegistry.count(serviceIdentifier.getServiceId());
+PublisherConnector* Registry::getPublisherConnector(ServiceId serviceId) {
+    PublisherConnector* publisherConnector = nullptr;
+    if (_publisherConnectors.count()
+}
+
+SubscriberConnector* Registry::getSubscriberConnector(ServiceId serviceId) {
+
 }
 
 std::unordered_map<Registry::ServiceId,PublisherApplicationInformation> Registry::getRegistry() {
