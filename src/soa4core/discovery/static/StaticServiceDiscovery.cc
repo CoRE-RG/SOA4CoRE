@@ -60,7 +60,7 @@ void StaticServiceDiscovery::initialize(int stage)
 
             //add entry to map
             if (!_discoveryAbstractionMap.count(id)) {
-                _discoveryAbstractionMap[id] = PublisherApplicationInformation(id, address);
+                _discoveryAbstractionMap[id] = address;
             } else {
                 throw cRuntimeError("There can not be multiple publishers with the same service id.");
             }

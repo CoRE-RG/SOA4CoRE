@@ -19,7 +19,7 @@
 #define __SOA4CORE_DISCOVERY_STATIC_STATICSERVICEDISCOVERY_H_
 
 #include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
-#include "soa4core/registry/base/IRegistry.h"
+#include "soa4core/registry/base/Registry.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 //INET
 #include <inet/networklayer/common/L3Address.h>
@@ -81,7 +81,7 @@ private:
     /**
      * Map used to abstract discovery of services
      */
-    std::unordered_map<IRegistry::ServiceId,PublisherApplicationInformation> _discoveryAbstractionMap;
+    std::unordered_map<Registry::ServiceId, inet::L3Address> _discoveryAbstractionMap;
 };
 
 } /*end namespace SOA4CoRE*/

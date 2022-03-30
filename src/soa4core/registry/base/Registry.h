@@ -80,25 +80,22 @@ class Registry : public cSimpleModule
     PublisherConnector* getPublisherConnector(ServiceId serviceId, QoSGroup qosGroup);
 
     /**
-     * Returns a subscriber connector for a given service identifier
-     * @return the subscriber connector for the given service identifier, null if not present
+     * Returns a list of subscriber connectors for a given service identifier
+     * @return the subscriber connectors for the given service identifier, null if not present
      */
-    SubscriberConnector* getSubscriberConnector(ServiceId serviceId);
+    std::list<SubscriberConnector*> getSubscriberConnector(ServiceId serviceId);
 
     /**
-     * Returns the service registry as a map
-     * @return registry map
+     * Returns the publisher connectors
+     * @return the publisher connectors
      */
-    std::unordered_map<ServiceId,PublisherApplicationInformation> getRegistry();
+    std::unordered_map<ServiceId, PublisherConnector*> getPublisherConnectos();
 
     /**
-     * Returns true if the service registry contains a service for the given service identifier
-     * @param serviceIdentifier
-     * @return true if a service for the given service identifier is present, else false
+     * Returns the subscriber connectors
+     * @return the subscriber connectors
      */
-    bool containsService(ServiceIdentifier serviceIdentifier);
-
-
+    std::unordered_map<ServiceId, std::list<SubscriberConnector*>> getSubscriberConnectors();
 
   protected:
     virtual void initialize() override;

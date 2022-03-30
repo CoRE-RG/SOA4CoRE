@@ -47,11 +47,26 @@ void Registry::addSubscriberServiceConnector(ServiceId serviceId, SubscriberConn
 
 PublisherConnector* Registry::getPublisherConnector(ServiceId serviceId) {
     PublisherConnector* publisherConnector = nullptr;
-    if (_publisherConnectors.count()
+    if (_publisherConnectors.count(serviceId)) {
+        publisherConnector = _publisherConnectors[serviceId];
+    }
+    return publisherConnector;
 }
 
-SubscriberConnector* Registry::getSubscriberConnector(ServiceId serviceId) {
+std::list<SubscriberConnector*> Registry::getSubscriberConnector(ServiceId serviceId) {
+    std::list<SubscriberConnector*> subscriberConnectors;
+    if (_subscriberConnectors.count(serviceId)) {
+        subscriberConnectors = _subscriberConnectors[serviceId];
+    }
+    return subscriberConnectors;
+}
 
+std::unordered_map<ServiceId, PublisherConnector*> Registry::getPublisherConnectos() {
+    return _publisherConnectors;
+}
+
+std::unordered_map<ServiceId, std::list<SubscriberConnector*>> Registry::getSubscriberConnectors() {
+    return _subscriberConnectors;
 }
 
 std::unordered_map<Registry::ServiceId,PublisherApplicationInformation> Registry::getRegistry() {
