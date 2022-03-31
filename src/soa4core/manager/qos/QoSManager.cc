@@ -111,8 +111,8 @@ void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, 
         throw cRuntimeError("The subscriber application must be of type Subscriber");
     }
     //check if publisher is already discovered, and if so, start the negotiation with a request.
-    if (_lsr->containsService(publisherServiceIdentifier)) {
-        PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(publisherServiceIdentifier);
+    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(publisherServiceIdentifier.getServiceId())) {
+        Publisher* publisher = publisherConnector->getApplication();
         Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplication_->getQoSGroup());
         //create qos broker for the request
         _qosnp->createQoSBroker(request);

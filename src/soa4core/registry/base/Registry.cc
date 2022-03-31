@@ -28,6 +28,8 @@ Registry::~Registry() {
 
 void Registry::initialize()
 {
+    //WATCH_MAP(_publisherConnectors);
+    //WATCH_MAP(_subscriberConnectors);
 }
 
 void Registry::handleMessage(cMessage *msg)
@@ -40,7 +42,7 @@ void Registry::addPublisherServiceConnector(ServiceId serviceId, PublisherConnec
 
 void Registry::addSubscriberServiceConnector(ServiceId serviceId, SubscriberConnector* subscriberConnector) {
     if (!(_subscriberConnectors.count(serviceId))) {
-        _subscriberConnectors[serviceId] = std::list<SubscriberConnector*>;
+        _subscriberConnectors[serviceId] = std::list<SubscriberConnector*>();
     }
     _subscriberConnectors[serviceId].push_back(subscriberConnector);
 }
@@ -53,7 +55,7 @@ PublisherConnector* Registry::getPublisherConnector(ServiceId serviceId) {
     return publisherConnector;
 }
 
-std::list<SubscriberConnector*> Registry::getSubscriberConnector(ServiceId serviceId) {
+std::list<SubscriberConnector*> Registry::getSubscriberConnectors(ServiceId serviceId) {
     std::list<SubscriberConnector*> subscriberConnectors;
     if (_subscriberConnectors.count(serviceId)) {
         subscriberConnectors = _subscriberConnectors[serviceId];
@@ -61,16 +63,12 @@ std::list<SubscriberConnector*> Registry::getSubscriberConnector(ServiceId servi
     return subscriberConnectors;
 }
 
-std::unordered_map<ServiceId, PublisherConnector*> Registry::getPublisherConnectos() {
+std::unordered_map<Registry::ServiceId, PublisherConnector*> Registry::getPublisherConnectors() {
     return _publisherConnectors;
 }
 
-std::unordered_map<ServiceId, std::list<SubscriberConnector*>> Registry::getSubscriberConnectors() {
+std::unordered_map<Registry::ServiceId, std::list<SubscriberConnector*>> Registry::getSubscriberConnectors() {
     return _subscriberConnectors;
-}
-
-std::unordered_map<Registry::ServiceId,PublisherApplicationInformation> Registry::getRegistry() {
-    return _serviceRegistry;
 }
 
 } /* end namespace SOA4CoRE */

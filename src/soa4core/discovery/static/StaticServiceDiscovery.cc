@@ -16,7 +16,7 @@
 //
 
 #include <soa4core/registry/base/Registry.h>
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h"
+#include "soa4core/discovery/DiscoveryNotification.h"
 #include "soa4core/discovery/static/StaticServiceDiscovery.h"
 //INET
 #include <inet/networklayer/common/L3AddressResolver.h>
@@ -75,9 +75,9 @@ void StaticServiceDiscovery::discover(ServiceIdentifier serviceIdentifier) {
     if (!(_discoveryAbstractionMap.count(serviceIdentifier.getServiceId()))) {
         throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }
-    PublisherApplicationInformation publisherApplicationInformation = _discoveryAbstractionMap[serviceIdentifier.getServiceId()];
-    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = new PublisherApplicationInformationNotification(publisherApplicationInformation);
-    emit(_serviceOfferSignal, publisherApplicationInformationNotification);
+   inet::L3Address address = _discoveryAbstractionMap[serviceIdentifier.getServiceId()];
+    DiscoveryNotification* discoveryNotification = new DiscoveryNotification(address);
+    emit(_serviceOfferSignal, discoveryNotification);
 }
 
 void StaticServiceDiscovery::handleMessage(cMessage *msg) {

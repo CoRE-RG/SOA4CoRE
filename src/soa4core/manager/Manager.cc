@@ -56,10 +56,8 @@ void Manager::initialize(int stage) {
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
         _lsr =
-               dynamic_cast<IRegistry*>(getParentModule()->getSubmodule(
+               dynamic_cast<Registry*>(getParentModule()->getSubmodule(
                        par("srmoduleName")));
-       WATCH_MAP(_publisherConnectors);
-       // WATCH_MAP(_subscriberConnectors); TODO is it possible to watch a map with list as value?
     }
 }
 

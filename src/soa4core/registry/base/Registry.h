@@ -74,22 +74,23 @@ class Registry : public cSimpleModule
      * Returns a publisher connector for a given service ID and QoS group
      *
      * @param serviceId the service ID
-     * @param qosGroup the QoS group
      * @return the publisher connector for the given service identifier, null if not present
      */
-    PublisherConnector* getPublisherConnector(ServiceId serviceId, QoSGroup qosGroup);
+    PublisherConnector* getPublisherConnector(ServiceId serviceId);
 
     /**
      * Returns a list of subscriber connectors for a given service identifier
+     *
+     * @param serviceId the service ID
      * @return the subscriber connectors for the given service identifier, null if not present
      */
-    std::list<SubscriberConnector*> getSubscriberConnector(ServiceId serviceId);
+    std::list<SubscriberConnector*> getSubscriberConnectors(ServiceId serviceId);
 
     /**
      * Returns the publisher connectors
      * @return the publisher connectors
      */
-    std::unordered_map<ServiceId, PublisherConnector*> getPublisherConnectos();
+    std::unordered_map<ServiceId, PublisherConnector*> getPublisherConnectors();
 
     /**
      * Returns the subscriber connectors
