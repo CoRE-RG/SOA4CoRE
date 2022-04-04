@@ -85,11 +85,6 @@ private:
      * The remote ip address
      */
     inet::L3Address _remoteAddress;
-
-    /**
-     * The subscriber application information
-     */
-    SubscriberApplicationInformation _subscriberApplicationInformation;
 };
 
 } /* end namespace SOA4CoRE */

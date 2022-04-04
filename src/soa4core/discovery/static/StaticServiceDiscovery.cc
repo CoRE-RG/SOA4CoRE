@@ -76,7 +76,7 @@ void StaticServiceDiscovery::discover(ServiceIdentifier serviceIdentifier) {
         throw cRuntimeError("The publisher you are requesting is unknown and has no entry in the ServiceRegistry.");
     }
    inet::L3Address address = _discoveryAbstractionMap[serviceIdentifier.getServiceId()];
-    DiscoveryNotification* discoveryNotification = new DiscoveryNotification(address);
+    DiscoveryNotification* discoveryNotification = new DiscoveryNotification(serviceIdentifier.getServiceId(), address);
     emit(_serviceOfferSignal, discoveryNotification);
 }
 

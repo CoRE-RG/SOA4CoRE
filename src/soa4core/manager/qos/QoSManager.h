@@ -72,11 +72,12 @@ protected:
 private:
     /**
      * Creates a negotiation request
-     * @param publisherApplicationInformation the application information of the publisher
+     * @param serviceId the service ID
+     * @param publisherAddress the publisher ip address on the remote node
      * @param qosGroup the QoS group
      * @return the negotiation request
      */
-    Request* createNegotiationRequest(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup);
+    Request* createNegotiationRequest(Registry::ServiceId serviceId, inet::L3Address publisherAddress, QoSGroup qosGroup);
 
     /**
      * Subscribes to the offered service
@@ -121,7 +122,7 @@ private:
     /**
      * Contains pending requests
      */
-    std::map<Registry::ServiceId, std::list<QoSGroup>> _pendingRequestsMap;
+    std::list<std::pair<Registry::ServiceId, QoSGroup>> _pendingRequests;
 
 };
 } /* end namespace SOA4CoRE */

@@ -35,8 +35,14 @@ class DiscoveryNotification: public cObject, noncopyable {
      * Methods
      */
 public:
-    DiscoveryNotification(inet::L3Address address);
+    DiscoveryNotification(int serviceId, inet::L3Address address);
     virtual ~DiscoveryNotification();
+
+    /**
+     * Returns the service ID
+     * @return the service ID
+     */
+    int getServiceId() const;
 
     /**
      * Returns the IP address
@@ -54,11 +60,16 @@ public:
 protected:
 private:
     /**
+     * The service ID
+     */
+    int _serviceId;
+
+    /**
      * The IP address
      */
     inet::L3Address _address;
 };
 
-}
+} /* end namespace SOA4CoRE */
 
 #endif /* SOA4CORE_DISCOVERY_DISCOVERYNOTIFICATION_H_ */

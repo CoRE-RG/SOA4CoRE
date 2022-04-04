@@ -21,7 +21,7 @@
 #include "soa4core/messages/someip/SomeIpSDHeader.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/discovery/someip/ExtractedQoSOptions.h"
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
+#include "soa4core/applications/publisher/base/Publisher.h"
 #include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpSDEntry_m.h"
@@ -89,10 +89,10 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
 
     /**
      * Offers a service
-     * @param publisherApplicationInformation the application information of the publisher service
+     * @param publisherApplication the publisher application
      * @param remoteAddress the remote address to which the offer is sent
      */
-    void offer(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress);
+    void offer(Publisher* publisherApplication, inet::L3Address remoteAddress);
 
     /**
      * Subscribes a service

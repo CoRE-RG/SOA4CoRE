@@ -82,15 +82,12 @@ PublisherConnector* Manager::registerPublisherService(ServiceBase* publisherAppl
     if(!(publisherApplication_ = dynamic_cast<Publisher*>(publisherApplication))){
         throw cRuntimeError("Given publisher application must be of type Publisher");
     }
-    if (_publisherConnectors.count(publisherApplication_->getServiceId())) {
+    if (_lsr->getPublisherConnector(publisherApplication_->getServiceId())) {
         throw cRuntimeError("There can not be multiple publisher services with same ID");
     }
 
     PublisherConnector* publisherConnector = createPublisherConnector(publisherApplication_);
-    _publisherConnectors[publisherApplication_->getServiceId()] = publisherConnector;
-
-    _lsr->addPublisherService(extractMembersIntoApplicationInformation(publisherApplication_));
-
+    _lsr->addPublisherServiceConnector(publisherApplication_->getServiceId(), publisherConnector);
     return publisherConnector;
 }
 
@@ -99,7 +96,7 @@ PublisherConnector* Manager::createPublisherConnector(Publisher* publisherApplic
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soa4core.connector.publisher.PublisherConnector");
     // 2. Create the module;
-    int vectorsize = _publisherConnectors.size();
+    int vectorsize = _lsr->getPublisherConnectorsCount();
     PublisherConnector *module = dynamic_cast<PublisherConnector*> (moduleType->create("publisherConnectors", this->getParentModule(), vectorsize + 1, vectorsize));
     // 3. Set up its parameters and gate sizes as needed;
     module->setApplication(publisherApplication);
@@ -112,23 +109,38 @@ PublisherConnector* Manager::createPublisherConnector(Publisher* publisherApplic
     return module;
 }
 
-SubscriberConnector* Manager::registerSubscriberService(ServiceBase* subscriberApplication)
+SubscriberConnector* Manager::registerSubscriberServiceAndSubscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication)
 {
     Enter_Method("LSM:registerSubscriberService()");
     Subscriber* subscriberApplication_ = nullptr;
+    SubscriberConnector* validSubscriberConnector = nullptr;
     if(!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))){
         throw cRuntimeError("Given subscriber application must be of type Subscriber");
     }
-    SubscriberConnector* subscriberConnector = nullptr;
-    if (_subscriberConnectors.count(subscriberApplication_->getServiceId())
-        && _subscriberConnectors[subscriberApplication_->getServiceId()].count(subscriberApplication_->getQoSGroup())) {
-        subscriberConnector = _subscriberConnectors[subscriberApplication_->getServiceId()][subscriberApplication_->getQoSGroup()];
-    } else {
-        subscriberConnector = createSubscriberConnector(subscriberApplication_);
-        _subscriberConnectors[subscriberApplication_->getServiceId()][subscriberApplication_->getQoSGroup()] = subscriberConnector;
+    std::list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(publisherServiceIdentifier.getServiceId());
+    for (SubscriberConnector* subscriberConnector : subscriberConnectors) {
+        std::vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
+        Subscriber* connectedSubscriberApplication = nullptr;
+        if (subscriberApplications.empty()) {
+            throw cRuntimeError("Empty subscriber connector without applications!");
+        }
+        if (!(connectedSubscriberApplication = dynamic_cast<Subscriber*>(subscriberApplications[0]))) {
+            throw cRuntimeError("The subscriber application must be of type Subscriber");
+        }
+        if (connectedSubscriberApplication->getQoSGroup() == subscriberApplication_->getQoSGroup()) {
+            validSubscriberConnector = subscriberConnector;
+            break;
+        }
     }
-    addSubscriberServiceToConnector(subscriberConnector, subscriberApplication_);
-    return subscriberConnector;
+
+    if (!validSubscriberConnector) {
+        validSubscriberConnector = createSubscriberConnector(subscriberApplication_);
+        _lsr->addSubscriberServiceConnector(publisherServiceIdentifier.getServiceId(), validSubscriberConnector);
+        subscribeService(publisherServiceIdentifier, subscriberApplication_);
+    } else {
+        addSubscriberServiceToConnector(validSubscriberConnector, subscriberApplication_);
+    }
+    return validSubscriberConnector;
 }
 
 void Manager::subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
@@ -147,7 +159,7 @@ SubscriberConnector* Manager::createSubscriberConnector(ServiceBase* subscriberA
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soa4core.connector.subscriber.SubscriberConnector");
     // 2. Create the module;
-    int vectorsize  = _subscriberConnectors.size();
+    int vectorsize  = _lsr->getSubscriberConnectorsCount();
     SubscriberConnector *module = dynamic_cast<SubscriberConnector*> (moduleType->create("subscriberConnectors", this->getParentModule(), vectorsize + 1, vectorsize));
     // 3. Set up its parameters and gate sizes as needed;
     module->setAddress(subscriberApplication->getAddress());
@@ -170,11 +182,7 @@ PublisherEndpointBase* Manager::createOrFindPublisherEndpoint(
 
     pub = findPublisherEndpoint(publisherServiceId, qosGroup);
     if(!pub){
-        PublisherConnector* publisherConnector = nullptr;
-        if (_publisherConnectors.count(publisherServiceId) && _publisherConnectors[publisherServiceId].count(qosGroup)) {
-            publisherConnector = _publisherConnectors[publisherServiceId][qosGroup];
-        }
-
+        PublisherConnector* publisherConnector = _lsr->getPublisherConnector(publisherServiceId);
         if(publisherConnector){
             //create according endpoint
             switch(qosGroup){
@@ -221,8 +229,21 @@ SubscriberEndpointBase* Manager::createOrFindSubscriberEndpoint(
     sub = findSubscriberEndpoint(publisherServiceId, qosGroup);
     if(!sub){
         SubscriberConnector* subscriberConnector = nullptr;
-        if (_subscriberConnectors.count(publisherServiceId) && _subscriberConnectors[publisherServiceId].count(qosGroup)) {
-            subscriberConnector = _subscriberConnectors[publisherServiceId][qosGroup];
+        std::list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(publisherServiceId);
+        for (SubscriberConnector* subscriberConnector_ : subscriberConnectors) {
+            std::vector<ServiceBase*> subscriberApplications = subscriberConnector_->getApplications();
+            if (subscriberApplications.empty()) {
+                throw cRuntimeError("Found empty subscriber connector without subscriber applications.");
+            }
+            Subscriber* subscriberApplication = nullptr;
+            if (!(subscriberApplication = dynamic_cast<Subscriber*>(subscriberApplications[0]))) {
+                throw cRuntimeError("The subscriber application must be of the type Subscriber.");
+            }
+
+            if (subscriberApplication->getQoSGroup() == qosGroup) {
+                subscriberConnector = subscriberConnector_;
+                break;
+            }
         }
 
         if(subscriberConnector){
@@ -293,10 +314,7 @@ PublisherEndpointBase* Manager::findPublisherEndpoint(
         uint32_t publisherServiceId, QoSGroup qosGroup) {
 
     // find fitting publisher connector
-    PublisherConnector* publisherConnector = nullptr;
-    if (_publisherConnectors.count(publisherServiceId) && _publisherConnectors[publisherServiceId].count(qosGroup)) {
-        publisherConnector = _publisherConnectors[publisherServiceId][qosGroup];
-    }
+    PublisherConnector* publisherConnector = _lsr->getPublisherConnector(publisherServiceId);
     PublisherEndpointBase* publisherEndpointBase = nullptr;
     if(publisherConnector){
         for (auto endpoint: publisherConnector->getEndpoints()){
@@ -313,12 +331,24 @@ PublisherEndpointBase* Manager::findPublisherEndpoint(
 SubscriberEndpointBase* Manager::findSubscriberEndpoint(
         uint32_t publisherServiceId, QoSGroup qosGroup) {
 
+    SubscriberEndpointBase* subscriberEndpoint = nullptr;
     // find fitting subscriber connector
-    SubscriberConnector* subscriberConnector = nullptr;
-    if (_subscriberConnectors.count(publisherServiceId) && _subscriberConnectors[publisherServiceId].count(qosGroup)) {
-        subscriberConnector = _subscriberConnectors[publisherServiceId][qosGroup];
+    std::list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(publisherServiceId);
+    for (SubscriberConnector* subscriberConnector : subscriberConnectors) {
+        std::vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
+        if (subscriberApplications.empty()) {
+            throw cRuntimeError("Found empty subscriber connector without subscriber applications.");
+        }
+        Subscriber* subscriberApplication = nullptr;
+        if (!(subscriberApplication = dynamic_cast<Subscriber*>(subscriberApplications[0]))) {
+            throw cRuntimeError("The subscriber application must be of the type Subscriber.");
+        }
+
+        if (subscriberApplication->getQoSGroup() == qosGroup && (subscriberEndpoint = subscriberConnector->getEndpoint())) {
+            break;
+        }
     }
-    return subscriberConnector ? subscriberConnector->getEndpoint() : nullptr;
+    return subscriberEndpoint;
 }
 
 SubscriberEndpointBase* Manager::createAVBSubscriberEndpoint(
@@ -676,19 +706,6 @@ PublisherEndpointBase* Manager::createSomeIpUDPPublisherEndpoint(
         publisherConnector->addEndpoint(ret);
     }
     return ret;
-}
-
-PublisherApplicationInformation Manager::extractMembersIntoApplicationInformation(Publisher* publisherApplication) {
-    return PublisherApplicationInformation(publisherApplication->getServiceId(),
-                                           publisherApplication->getAddress(),
-                                           publisherApplication->getInstanceId(),
-                                           publisherApplication->getQoSGroups(),
-                                           publisherApplication->getTcpPort(),
-                                           publisherApplication->getUdpPort(),
-                                           publisherApplication->getStreamId(),
-                                           publisherApplication->getSrClass(),
-                                           publisherApplication->getFramesize(),
-                                           publisherApplication->getIntervalFrames());
 }
 
 } /* end namespace  */

@@ -37,9 +37,9 @@ void StaticServiceDiscoveryTest::initialize() {
 void StaticServiceDiscoveryTest::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && msg->isName("sdTest")) {
         std::cout << "Printing Registry from Test Module:" << endl;
-        for (std::unordered_map<Registry::ServiceId, PublisherConnector*>::iterator iter : dynamic_cast<Registry*>(_sr)->getPublisherConnectors()) {
-            for(std::vector<PublisherEndpointBase*>::iterator &endpoints : iter.second->getEndpoints()) {
-                std::cout << iter.first << ": " << endpoints.par("localAddress") << std::endl;
+        for (auto pciter : _sr->getPublisherConnectors()) {
+            for(auto epiter : pciter.second->getEndpoints()) {
+                std::cout << pciter.first << ": " << epiter->par("localAddress").str() << std::endl;
             }
 
         }

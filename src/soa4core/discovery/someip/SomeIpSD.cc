@@ -113,7 +113,7 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
     socket.sendTo(someIpSDHeader, inet::IPv4Address(BROADCASTADDRESS), destPort);
 }
 
-void SomeIpSD::offer(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress) {
+void SomeIpSD::offer(Publisher* publisherApplication, inet::L3Address remoteAddress) {
     Enter_Method("SomeIpSD::offer");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - OFFER");
 
@@ -121,34 +121,34 @@ void SomeIpSD::offer(PublisherApplicationInformation publisherApplicationInforma
     offerEntry->setType(SOA4CoRE::SomeIpSDEntryType::OFFER);
     offerEntry->setIndex1stOptions(0);
     offerEntry->setIndex2ndOptions(0);
-    offerEntry->setNum1stOptions(publisherApplicationInformation.getQosGroups().size());
+    offerEntry->setNum1stOptions(publisherApplication->getQoSGroups().size());
     offerEntry->setNum2ndOptions(0);
-    offerEntry->setServiceID(publisherApplicationInformation.getServiceId());
-    offerEntry->setInstanceID(publisherApplicationInformation.getInstanceId());
+    offerEntry->setServiceID(publisherApplication->getServiceId());
+    offerEntry->setInstanceID(publisherApplication->getInstanceId());
     offerEntry->setMajorVersion(MAJOR_VERSION);
     offerEntry->setTTL(TTL);
     offerEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(offerEntry);
 
     if (!_hasQoSNP) {
-        for (QoSGroup qosGroup : publisherApplicationInformation.getQosGroups()) {
+        for (QoSGroup qosGroup : publisherApplication->getQoSGroups()) {
             IPProtocolId ipProtocolId;
             uint16_t publisherPort;
             switch (qosGroup) {
                 case QoSGroup::SOMEIP_TCP:
                     ipProtocolId = IPProtocolId::IP_PROT_TCP;
-                    publisherPort = publisherApplicationInformation.getTCPPort();
+                    publisherPort = publisherApplication->getTcpPort();
                     break;
                 case QoSGroup::SOMEIP_UDP:
                     ipProtocolId = IPProtocolId::IP_PROT_UDP;
-                    publisherPort = publisherApplicationInformation.getUDPPort();
+                    publisherPort = publisherApplication->getUdpPort();
                     break;
                 default:
                     throw cRuntimeError("Unknown QoSGroup");
             }
 
             IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-            ipv4EndpointOption->setIpv4Address(publisherApplicationInformation.getAddress().toIPv4());
+            ipv4EndpointOption->setIpv4Address(publisherApplication->getAddress().toIPv4());
             ipv4EndpointOption->setL4Protocol(ipProtocolId);
             ipv4EndpointOption->setPort(publisherPort);
             someIpSDHeader->encapOption(ipv4EndpointOption);
@@ -156,7 +156,7 @@ void SomeIpSD::offer(PublisherApplicationInformation publisherApplicationInforma
     } else {
         offerEntry->setNum1stOptions(QOS_NP_OPTIONS_COUNT);
         IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-        ipv4EndpointOption->setIpv4Address(publisherApplicationInformation.getAddress().toIPv4());
+        ipv4EndpointOption->setIpv4Address(publisherApplication->getAddress().toIPv4());
         someIpSDHeader->encapOption(ipv4EndpointOption);
     }
 
@@ -278,8 +278,8 @@ void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIp
 
 void SomeIpSD::processFindResult(cObject* obj) {
     SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
-    PublisherApplicationInformation publisherApplicationInformation = someIpSDFindResult->getPublisherApplicationInformation();
-    offer(publisherApplicationInformation, someIpSDFindResult->getRemoteAddress());
+    Publisher* publisherApplication = someIpSDFindResult->getPublisherApplication();
+    offer(publisherApplication, someIpSDFindResult->getRemoteAddress());
     delete(obj);
 }
 

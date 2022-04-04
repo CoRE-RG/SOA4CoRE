@@ -70,19 +70,11 @@ public:
     PublisherConnector* registerPublisherService(ServiceBase* publisherApplication);
 
     /**
-     * @brief Registers a new Subscriber and adds it to a possibly created or already present connector.
-     *
-     * @param subscriberApplication The subscriber application executing the request.
-     * @return the subscriber connector
-     */
-    SubscriberConnector* registerSubscriberService(ServiceBase* subscriberApplication);
-
-    /**
-     * @brief Subscribes the given service
-     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
+     * Registers the given Subscriber application and subscribes the service given in the publisher service identifier
+     * @param publisherServiceIdentifier the publisher service identifier
      * @param subscriberApplication the subscriber application
      */
-    virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
+    virtual SubscriberConnector* registerSubscriberServiceAndSubscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 
 protected:
     /**
@@ -155,6 +147,13 @@ protected:
      * @return                       the subscriber endpoint if found, else nullptr.
      */
     SubscriberEndpointBase* findSubscriberEndpoint(uint32_t publisherServiceId, QoSGroup qosGroup);
+
+    /**
+     * @brief Subscribes the given service
+     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
+     * @param subscriberApplication the subscriber application
+     */
+    virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 
 private:
     /**
@@ -278,17 +277,6 @@ private:
      * @return the SOME/IP UDP publisher endpoint
      */
     PublisherEndpointBase* createSomeIpUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
-    /**
-     * @brief Extracts member variables from the Publisher application into the
-     * PublisherApplicationInformation type to get local applications also represented
-     * as PublisherApplicationInformation in the registry, since remote Publisher
-     * applications are represented as PublisherApplicationInformation.
-     *
-     * @param publisherApplication the publisher application information
-     * @return the publisher application information
-     */
-    PublisherApplicationInformation extractMembersIntoApplicationInformation(Publisher* publisherApplication);
 
 
 /**

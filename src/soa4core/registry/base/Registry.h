@@ -90,13 +90,25 @@ class Registry : public cSimpleModule
      * Returns the publisher connectors
      * @return the publisher connectors
      */
-    std::unordered_map<ServiceId, PublisherConnector*> getPublisherConnectors();
+    std::unordered_map<ServiceId, PublisherConnector*> getPublisherConnectors() const;
 
     /**
      * Returns the subscriber connectors
      * @return the subscriber connectors
      */
-    std::unordered_map<ServiceId, std::list<SubscriberConnector*>> getSubscriberConnectors();
+    std::unordered_map<ServiceId, std::list<SubscriberConnector*>> getSubscriberConnectors() const;
+
+    /**
+     * Returns the count of subscriber connectors
+     * @return the count of subscriber connectors
+     */
+    int getSubscriberConnectorsCount();
+
+    /**
+     * Returns the count of publisher connectors
+     * @return the count of publisher connectors
+     */
+    int getPublisherConnectorsCount();
 
   protected:
     virtual void initialize() override;

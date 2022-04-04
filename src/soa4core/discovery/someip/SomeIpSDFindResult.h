@@ -16,7 +16,7 @@
 #ifndef SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_
 #define SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
+#include "soa4core/applications/publisher/base/Publisher.h"
 
 using namespace inet;
 namespace SOA4CoRE {
@@ -34,7 +34,7 @@ class SomeIpSDFindResult : public cObject, noncopyable {
  * Methods
  */
 public:
-    SomeIpSDFindResult(L3Address remoteAddress, PublisherApplicationInformation publisherApplicationInformation);
+    SomeIpSDFindResult(L3Address remoteAddress, Publisher* publisherApplication);
     virtual ~SomeIpSDFindResult();
 
     /**
@@ -47,7 +47,7 @@ public:
      * Getter for the PublisherApplicationInformation
      * @return the PublisherApplicationInformation
      */
-    PublisherApplicationInformation getPublisherApplicationInformation() const;
+    Publisher* getPublisherApplication() const;
 protected:
 private:
 
@@ -63,9 +63,9 @@ private:
     inet::L3Address _remoteAddress;
 
     /**
-     * The service
+     * The publisher application
      */
-    PublisherApplicationInformation _publisherApplicationInformation;
+    Publisher* _publisherApplication;
 };
 } /* end namespace SOA4CoRE */
 #endif /* SOA4CORE_DISCOVERY_SOMEIP_SOMEIPSDFINDRESULT_H_ */

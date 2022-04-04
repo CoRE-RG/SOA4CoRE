@@ -63,12 +63,24 @@ std::list<SubscriberConnector*> Registry::getSubscriberConnectors(ServiceId serv
     return subscriberConnectors;
 }
 
-std::unordered_map<Registry::ServiceId, PublisherConnector*> Registry::getPublisherConnectors() {
+std::unordered_map<Registry::ServiceId, PublisherConnector*> Registry::getPublisherConnectors() const {
     return _publisherConnectors;
 }
 
-std::unordered_map<Registry::ServiceId, std::list<SubscriberConnector*>> Registry::getSubscriberConnectors() {
+std::unordered_map<Registry::ServiceId, std::list<SubscriberConnector*>> Registry::getSubscriberConnectors() const {
     return _subscriberConnectors;
+}
+
+int Registry::getPublisherConnectorsCount() {
+    return _publisherConnectors.size();
+}
+
+int Registry::getSubscriberConnectorsCount() {
+    int subscriberConnectorsCount = 0;
+    for (std::unordered_map<Registry::ServiceId, std::list<SubscriberConnector*>>::iterator it = _subscriberConnectors.begin(); it != _subscriberConnectors.end(); it++) {
+        subscriberConnectorsCount += it->second.size();
+    }
+    return subscriberConnectorsCount;
 }
 
 } /* end namespace SOA4CoRE */

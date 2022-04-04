@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h"
+#include "soa4core/discovery/DiscoveryNotification.h"
 #include "soa4core/discovery/someip/SomeIpSD.h"
 #include "soa4core/discovery/someip/SomeIpSDFindRequest.h"
 #include "soa4core/discovery/someip/SomeIpSDFindResult.h"
@@ -67,42 +67,42 @@ void QoSManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject
 }
 
 void QoSManager::subscribeOfferedService(cObject* obj) {
-    if (PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj)) {
-        PublisherApplicationInformation offeredService = publisherApplicationInformationNotification->getPublisherApplicationInformation();
-        std::list<SubscriberApplicationInformation> subscriberApplicationInformationToBeRemoved;
-        for (SubscriberApplicationInformation subscriberApplicationInformation : _pendingRequestsMap[offeredService.getServiceId()]) {
-            Request* request = createNegotiationRequest(offeredService, subscriberApplicationInformation.getQoSGroup());
+    DiscoveryNotification* discoveryNotification = nullptr;
+    if (!(discoveryNotification = dynamic_cast<DiscoveryNotification*>(obj))) {
+        throw cRuntimeError("Given object is not of type DiscoveryNotification.");
+    }
+    std::list<std::pair<Registry::ServiceId, QoSGroup>> pendingRequestsToBeRemoved;
+    Registry::ServiceId offeredServiceId = discoveryNotification->getServiceId();
+    inet::L3Address discoveredAddress = discoveryNotification->getAddress();
+    for (std::pair<Registry::ServiceId, QoSGroup> pendingRequest : _pendingRequests) {
+        Registry::ServiceId requestedServiceId = pendingRequest.first;
+        QoSGroup requestedQosGroup = pendingRequest.second;
+        if (offeredServiceId == requestedServiceId) {
+            Request* request = createNegotiationRequest(offeredServiceId, discoveredAddress, requestedQosGroup);
             //create qos broker for the request
             _qosnp->createQoSBroker(request);
-            subscriberApplicationInformationToBeRemoved.push_back(subscriberApplicationInformation);
+            pendingRequestsToBeRemoved.push_back(std::make_pair(requestedServiceId, requestedQosGroup));
         }
-        for (SubscriberApplicationInformation subscriberApplicationInformation : subscriberApplicationInformationToBeRemoved) {
-            _pendingRequestsMap[subscriberApplicationInformation.getServiceId()].remove(subscriberApplicationInformation);
-            if(_pendingRequestsMap[subscriberApplicationInformation.getServiceId()].empty()) {
-                _pendingRequestsMap.erase(subscriberApplicationInformation.getServiceId());
-            }
-        }
-        _lsr->addPublisherService(offeredService);
-        delete obj;
-    } else {
-        throw cRuntimeError("Given object is not type of PublisherApplicationInformation.");
     }
+    for (std::pair<Registry::ServiceId, QoSGroup> pendingRequestToBeRemoved : pendingRequestsToBeRemoved) {
+        _pendingRequests.remove(pendingRequestToBeRemoved);
+    }
+    delete obj;
 }
 
 // Publisher-side
 void QoSManager::lookForService(cObject* obj) {
     SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
-    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId(),
-            someIpSDFindRequest->getInstanceId());
-    if (_lsr->containsService(serviceIdentifier)){
-        PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
-        SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
-                someIpSDFindRequest->getRemoteAddress(),
-                foundPublisherApplicationInformation
-        );
-        delete(someIpSDFindRequest);
-        emit(_findResultSignal,someIpSDFindResult);
+    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(someIpSDFindRequest->getServiceId())) {
+        if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication())) {
+            SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
+                            someIpSDFindRequest->getRemoteAddress(),
+                            publisher
+            );
+            emit(_findResultSignal,someIpSDFindResult);
+        }
     }
+    delete(someIpSDFindRequest);
 }
 
 void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
@@ -112,7 +112,10 @@ void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, 
     }
     //check if publisher is already discovered, and if so, start the negotiation with a request.
     if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(publisherServiceIdentifier.getServiceId())) {
-        Publisher* publisher = publisherConnector->getApplication();
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application must be of type Subscriber");
+        }
         Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplication_->getQoSGroup());
         //create qos broker for the request
         _qosnp->createQoSBroker(request);
@@ -123,9 +126,9 @@ void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, 
     }
 }
 
-Request* QoSManager::createNegotiationRequest(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
-    EndpointDescription subscriber(publisherApplicationInformation.getServiceId(), _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription publisher(publisherApplicationInformation.getServiceId(), publisherApplicationInformation.getAddress(), _qosnp->getProtocolPort());
+Request* QoSManager::createNegotiationRequest(Registry::ServiceId serviceId, inet::L3Address publisherAddress, QoSGroup qosGroup) {
+    EndpointDescription subscriber(serviceId, _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription publisher(serviceId, publisherAddress, _qosnp->getProtocolPort());
     Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
     return request;
 }

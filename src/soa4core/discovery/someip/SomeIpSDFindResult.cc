@@ -18,8 +18,8 @@
 namespace SOA4CoRE {
 
 SomeIpSDFindResult::SomeIpSDFindResult(L3Address remoteAddress,
-        PublisherApplicationInformation publisherApplicationInformation) :
-        _remoteAddress(remoteAddress), _publisherApplicationInformation(publisherApplicationInformation) {
+        Publisher* publisherApplication) :
+        _remoteAddress(remoteAddress), _publisherApplication(publisherApplication) {
 }
 
 SomeIpSDFindResult::~SomeIpSDFindResult() {
@@ -29,8 +29,8 @@ inet::L3Address SomeIpSDFindResult::getRemoteAddress() const {
     return _remoteAddress;
 }
 
-PublisherApplicationInformation SomeIpSDFindResult::getPublisherApplicationInformation() const {
-    return _publisherApplicationInformation;
+Publisher* SomeIpSDFindResult::getPublisherApplication() const {
+    return _publisherApplication;
 }
 
 } /* end namespace SOA4CoRE */

@@ -156,7 +156,7 @@ private:
     /**
      * Contains pending SOME/IP subscriptions
      */
-    std::map<IRegistry::ServiceId, std::list<std::pair<SubscriberApplicationInformation,SubscriptionState>>> _pendingSubscriptionsMap;
+    std::unordered_map<Registry::ServiceId, std::unordered_map<Subscriber*, SubscriptionState>> _pendingSubscriptionsMap;
 };
 } /* end namespace SOA4CoRE */
 #endif

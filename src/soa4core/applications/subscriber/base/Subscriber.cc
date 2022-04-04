@@ -65,12 +65,11 @@ void Subscriber::handleMessage(cMessage *msg)
         if (!(localServiceManager = dynamic_cast<Manager*>(_localServiceManager))){
             throw cRuntimeError("No Manager found.");
         }
-        _connector = localServiceManager->registerSubscriberService(this);
+        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId,this->_instanceId);
+        _connector = dynamic_cast<ConnectorBase*>(localServiceManager->registerSubscriberServiceAndSubscribeService(publisherServiceIdentifier, this));
         if (!_connector) {
             throw cRuntimeError("No subscriber connector created.");
         }
-        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId,this->_instanceId);
-        _localServiceManager->subscribeService(publisherServiceIdentifier, this);
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
         }
