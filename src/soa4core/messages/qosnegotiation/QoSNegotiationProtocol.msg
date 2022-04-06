@@ -34,6 +34,7 @@ namespace SOA4CoRE;
 
 //Groups of QoS Requirements
 enum QoSGroup {
+    UNDEFINED = -1; // Introduced for SOME/IP DiscoveryNotification (TODO May be there is a better solution ...)
     RT = 0; // RealTime Requirements --> AVB / TSN
     STD_TCP = 1; // Standard Requirements --> TCP IP
     STD_UDP = 2; // Standard Requirements --> UDP IP

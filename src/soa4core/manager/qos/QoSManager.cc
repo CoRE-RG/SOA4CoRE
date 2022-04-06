@@ -13,10 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/discovery/DiscoveryNotification.h"
+#include "soa4core/discovery/SomeIpDiscoveryNotification.h"
 #include "soa4core/discovery/someip/SomeIpSD.h"
-#include "soa4core/discovery/someip/SomeIpSDFindRequest.h"
-#include "soa4core/discovery/someip/SomeIpSDFindResult.h"
 #include "soa4core/manager/qos/QoSManager.h"
 //STD
 #include <algorithm>
@@ -66,6 +64,7 @@ void QoSManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject
     }
 }
 
+// Subscriber-side
 void QoSManager::subscribeOfferedService(cObject* obj) {
     DiscoveryNotification* discoveryNotification = nullptr;
     if (!(discoveryNotification = dynamic_cast<DiscoveryNotification*>(obj))) {
@@ -92,38 +91,31 @@ void QoSManager::subscribeOfferedService(cObject* obj) {
 
 // Publisher-side
 void QoSManager::lookForService(cObject* obj) {
-    SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
-    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(someIpSDFindRequest->getServiceId())) {
+    DiscoveryNotification* discoveryNotification = nullptr;
+    if (!(discoveryNotification = dynamic_cast<DiscoveryNotification*>(obj))) {
+        throw cRuntimeError("Notification must be of type DiscoveryNotification");
+    }
+    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(discoveryNotification->getServiceId())) {
         if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication())) {
-            SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
-                            someIpSDFindRequest->getRemoteAddress(),
-                            publisher
+            SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(publisher->getServiceId(),
+                    discoveryNotification->getAddress(), publisher->getInstanceId(), publisher->getQoSGroups(), QoSGroup::UNDEFINED,
+                    publisher->getTcpPort(), publisher->getUdpPort()
             );
-            emit(_findResultSignal,someIpSDFindResult);
+            emit(_findResultSignal,someIpDiscoveryNotification);
         }
     }
-    delete(someIpSDFindRequest);
+    delete(discoveryNotification);
 }
 
-void QoSManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
+
+
+void QoSManager::discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
     Subscriber* subscriberApplication_ = nullptr;
     if (!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))) {
-        throw cRuntimeError("The subscriber application must be of type Subscriber");
+        throw cRuntimeError("Subscriber application must be of type Subscriber.");
     }
-    //check if publisher is already discovered, and if so, start the negotiation with a request.
-    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(publisherServiceIdentifier.getServiceId())) {
-        Publisher* publisherApplication = nullptr;
-        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
-            throw cRuntimeError("The publisher application must be of type Subscriber");
-        }
-        Request* request = createNegotiationRequest(publisherApplicationInformation, subscriberApplication_->getQoSGroup());
-        //create qos broker for the request
-        _qosnp->createQoSBroker(request);
-    }
-    else {
-        addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplication_);
-        _sd->discover(publisherServiceIdentifier);
-    }
+    _pendingRequests.push_back(std::make_pair(publisherServiceIdentifier.getServiceId(), subscriberApplication_->getQoSGroup()));
+    _sd->discover(publisherServiceIdentifier);
 }
 
 Request* QoSManager::createNegotiationRequest(Registry::ServiceId serviceId, inet::L3Address publisherAddress, QoSGroup qosGroup) {
@@ -131,16 +123,6 @@ Request* QoSManager::createNegotiationRequest(Registry::ServiceId serviceId, ine
     EndpointDescription publisher(serviceId, publisherAddress, _qosnp->getProtocolPort());
     Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
     return request;
-}
-
-void QoSManager::addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, Subscriber* subscriberApplication) {
-    if (_pendingRequestsMap.count(publisherServiceIdentifier.getServiceId())) {
-        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()].push_back(subscriberApplication);
-    } else {
-        std::list<Subscriber*> subscriberApplications;
-        subscriberApplications.push_back(subscriberApplication);
-        _pendingRequestsMap[publisherServiceIdentifier.getServiceId()] = subscriberApplications;
-    }
 }
 
 } /* end namespace SOA4CoRE */

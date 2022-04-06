@@ -46,12 +46,12 @@ public:
 
 protected:
   /**
-   * @brief Subscribes the given service
+   * @brief Initiates a service discovery for the given service
    *
    * @param publisherServiceIdentifier service identifier of the service to be subscribed to
    * @param subscriberApplication the subscriber application
    */
-  virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) = 0;
+  virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) = 0;
 
 };
 

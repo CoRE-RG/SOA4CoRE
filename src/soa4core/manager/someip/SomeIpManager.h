@@ -16,7 +16,6 @@
 #ifndef __SOA4CORE_SOMEIPLOCALSERVICEMANAGER_H_
 #define __SOA4CORE_SOMEIPLOCALSERVICEMANAGER_H_
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
 #include "soa4core/manager/Manager.h"
 //OMNETPP
 #include <omnetpp.h>
@@ -52,13 +51,6 @@ public:
      * @param details the details
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
-
-    /**
-     * @brief Subscribes the given service if it is already discovered otherwise a service discovery is initiated
-     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param subscriberApplication the subscriber application
-     */
-    void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 protected:
     /**
      * Initializes the module and waits for find
@@ -73,18 +65,20 @@ protected:
      * @param msg the received message
      */
     virtual void handleMessage(cMessage *msg) override;
+
+    /**
+     * @brief Initiates a service discovery for the given service
+     *
+     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
+     * @param subscriberApplication the subscriber application
+     */
+    virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 private:
     /**
      * Looks for a requested service in the local registry
      * @param obj the SomeIpSDFindRequest
      */
     void lookForService(cObject* obj);
-
-    /**
-     * Adds a service into the local service registry
-     * @param obj the service
-     */
-    void addToLocalServiceRegistry(cObject* obj);
 
     /**
      * Subscribes a service if there is a pending request for it
@@ -106,10 +100,10 @@ private:
 
     /**
      * Creates a subscriber endpoint for a service
-     * @param publisherApplicationInformation the publisher application information
+     * @param someIpDiscoveryNotification the SOME/IP discovery notification containing the publisher's information
      * @param qosGroup the QoS group
      */
-    void createSubscriberEndpoint(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup);
+    void createSubscriberEndpoint(SomeIpDiscoveryNotification* someIpDiscoveryNotification, QoSGroup qosGroup);
 
     /**
      * Returns the corresponding L4 protocol of the QoS group
@@ -117,15 +111,6 @@ private:
      * @return the corresponding L4 protocol of the QoS group
      */
     IPProtocolId getIPProtocolId(QoSGroup qosGroup);
-
-    /**
-     * @brief Adds an subscriber to the pendingSubscriptionsMap.
-     *
-     * @param publisherServiceIdentifier the service id of the publisher service.
-     * @param subscriberApplicationInformation the application information of the subscriber.
-     * @param subscriptionState the subscription state of the subscriber
-     */
-    void addSubscriberToPendingSubscriptionsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation, SubscriptionState subscriptionState);
 
 /**
  * Member variables
@@ -156,7 +141,7 @@ private:
     /**
      * Contains pending SOME/IP subscriptions
      */
-    std::unordered_map<Registry::ServiceId, std::unordered_map<Subscriber*, SubscriptionState>> _pendingSubscriptionsMap;
+    std::unordered_map<Registry::ServiceId, std::unordered_map<QoSGroup, SubscriptionState>> _pendingSubscriptionsMap;
 };
 } /* end namespace SOA4CoRE */
 #endif

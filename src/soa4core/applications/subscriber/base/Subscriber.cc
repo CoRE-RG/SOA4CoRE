@@ -124,7 +124,10 @@ void Subscriber::handleParameterChange(const char* parname)
         }
 
     }
+}
 
+QoSGroup Subscriber::getQoSGroup() {
+    return _qosGroup;
 }
 
 }/* end namespace SOA4CoRE */

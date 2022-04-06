@@ -136,16 +136,16 @@ SubscriberConnector* Manager::registerSubscriberServiceAndSubscribeService(Servi
     if (!validSubscriberConnector) {
         validSubscriberConnector = createSubscriberConnector(subscriberApplication_);
         _lsr->addSubscriberServiceConnector(publisherServiceIdentifier.getServiceId(), validSubscriberConnector);
-        subscribeService(publisherServiceIdentifier, subscriberApplication_);
+        discoverService(publisherServiceIdentifier, subscriberApplication_);
     } else {
         addSubscriberServiceToConnector(validSubscriberConnector, subscriberApplication_);
     }
     return validSubscriberConnector;
 }
 
-void Manager::subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
-    throw cRuntimeError("Manager has no implementation of subscribeService. \n"
-            "Override or use ServiceManager which implements subscribeService");
+void Manager::discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
+    throw cRuntimeError("Manager has no implementation of discoverService. \n"
+            "Use other Manager (e.g. QoSManager, SomeIpManager which implements discoverService");
 }
 
 void Manager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, ServiceBase* subscriberApplication) {

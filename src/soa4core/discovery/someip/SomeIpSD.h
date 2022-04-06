@@ -22,7 +22,6 @@
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/discovery/someip/ExtractedQoSOptions.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
-#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformation.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpSDEntry_m.h"
 //INET
@@ -89,25 +88,21 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
 
     /**
      * Offers a service
-     * @param publisherApplication the publisher application
-     * @param remoteAddress the remote address to which the offer is sent
+     * @param someIpDiscoveryNotification the SOME/IP discovery notification containing the publisher's information
      */
-    void offer(Publisher* publisherApplication, inet::L3Address remoteAddress);
+    void offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification);
 
     /**
      * Subscribes a service
-     * @param subscriberApplicationInformation the subscriber application information
-     * @param remoteAddress the remote address of the publisher
+     * @param someIpDiscoveryNotification the SOME/IP discovery notification containing the subscriber's information
      */
-    void subscribeEventgroup(SubscriberApplicationInformation subscriberApplicationInformation, inet::L3Address remoteAddress);
+    void subscribeEventgroup(SomeIpDiscoveryNotification* someIpDiscoveryNotification);
 
     /**
      * Acknowledges a subscription
-     * @param subscriberApplicationInformation the application information of the subscriber
-     * @param remoteAddress the remote address of the subscriber
-     * @param qosGroup the QoS group
+     * @param someIpDiscoveryNotification the SOME/IP discovery notification containing the publisher's information
      */
-    void subscribeEventgroupAck(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress, QoSGroup qosGroup);
+    void subscribeEventgroupAck(SomeIpDiscoveryNotification* someIpDiscoveryNotification);
 
     /**
      * Processes a SOME/IP SD Header

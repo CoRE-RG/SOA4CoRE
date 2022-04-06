@@ -29,14 +29,38 @@ namespace SOA4CoRE {
  * @author Mehmet Mueller
  */
 
-class DiscoveryNotification: public cObject, noncopyable {
+class DiscoveryNotification: public cObject {
 
     /**
      * Methods
      */
 public:
+    /**
+     * Constructor
+     * @param serviceId the service id of the application
+     * @param address the IP address of the node where the application resides
+     */
     DiscoveryNotification(int serviceId, inet::L3Address address);
     virtual ~DiscoveryNotification();
+
+    /**
+     * Copy constructor
+     * @param discoveryNotification the other discovery notification
+     */
+    DiscoveryNotification(const DiscoveryNotification& discoveryNotification);
+
+    /**
+     * Assignment operator
+     * @param other the discovery notification which is assigned to this discovery notification
+     * @return this discovery notification
+     */
+    DiscoveryNotification& operator=(const DiscoveryNotification& other);
+
+    /**
+     * Returns a duplicate of this discovery notification
+     * @return a duplicate of this discovery notification
+     */
+    virtual DiscoveryNotification* dup() const override;
 
     /**
      * Returns the service ID
@@ -50,6 +74,9 @@ public:
      */
     inet::L3Address getAddress() const;
 
+    virtual bool operator==(const DiscoveryNotification& discoveryNotification) const;
+    virtual bool operator!=(const DiscoveryNotification& discoveryNotification) const;
+
 protected:
 private:
 
@@ -58,7 +85,6 @@ private:
      */
 public:
 protected:
-private:
     /**
      * The service ID
      */
@@ -68,6 +94,7 @@ private:
      * The IP address
      */
     inet::L3Address _address;
+private:
 };
 
 } /* end namespace SOA4CoRE */

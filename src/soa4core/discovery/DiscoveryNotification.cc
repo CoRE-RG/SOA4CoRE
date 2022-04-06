@@ -23,6 +23,20 @@ DiscoveryNotification::DiscoveryNotification(int serviceId, inet::L3Address addr
 DiscoveryNotification::~DiscoveryNotification() {
 }
 
+DiscoveryNotification::DiscoveryNotification(const DiscoveryNotification& discoveryNotification) :
+    _serviceId(discoveryNotification._serviceId), _address(discoveryNotification._address) {
+}
+
+DiscoveryNotification& DiscoveryNotification::operator=(const DiscoveryNotification& other) {
+    _serviceId = other._serviceId;
+    _address = other._address;
+    return *this;
+}
+
+DiscoveryNotification* DiscoveryNotification::dup() const {
+    return new DiscoveryNotification(*this);
+}
+
 int DiscoveryNotification::getServiceId() const {
     return _serviceId;
 }
@@ -30,6 +44,15 @@ int DiscoveryNotification::getServiceId() const {
 
 inet::L3Address DiscoveryNotification::getAddress() const {
        return _address;
+}
+
+bool DiscoveryNotification::operator==(const DiscoveryNotification& discoveryNotification) const {
+    return _serviceId == discoveryNotification._serviceId
+            && _address == discoveryNotification._address;
+}
+
+bool DiscoveryNotification::operator!=(const DiscoveryNotification& discoveryNotification) const {
+    return !(*this == discoveryNotification);
 }
 
 } /* end namespace SOA4CoRE */

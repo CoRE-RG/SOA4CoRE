@@ -18,7 +18,6 @@
 #ifndef __SOA4CORE_DISCOVERY_STATIC_STATICSERVICEDISCOVERY_H_
 #define __SOA4CORE_DISCOVERY_STATIC_STATICSERVICEDISCOVERY_H_
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
 #include "soa4core/registry/base/Registry.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 //INET

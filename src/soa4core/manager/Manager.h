@@ -18,7 +18,6 @@
 #ifndef __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 #define __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformation.h"
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
 #include "soa4core/applications/subscriber/base/Subscriber.h"
@@ -149,11 +148,12 @@ protected:
     SubscriberEndpointBase* findSubscriberEndpoint(uint32_t publisherServiceId, QoSGroup qosGroup);
 
     /**
-     * @brief Subscribes the given service
+     * @brief Initiates a service discovery for the given service
+     *
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
      * @param subscriberApplication the subscriber application
      */
-    virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
+    virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 
 private:
     /**

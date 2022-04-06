@@ -63,11 +63,12 @@ protected:
     virtual void handleMessage(cMessage *msg) override;
 
     /**
-     * @brief Subscribes the given service
+     * @brief Initiates a service discovery for the given service
+     *
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
      * @param subscriberApplication the subscriber application
      */
-    virtual void subscribeService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
+    virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 
 private:
     /**
@@ -90,14 +91,6 @@ private:
      * @param obj the SomeIpSDFindRequest
      */
     void lookForService(cObject* obj);
-
-    /**
-     * @brief Adds an subscriber to the pendingRequestMap.
-     *
-     * @param publisherServiceIdentifier the service id of the publisher service.
-     * @param subscriberApplication the subscriber application.
-     */
-    void addSubscriberToPendingRequestsMap(ServiceIdentifier publisherServiceIdentifier, Subscriber* subscriberApplication);
 
 /**
  * Member variables

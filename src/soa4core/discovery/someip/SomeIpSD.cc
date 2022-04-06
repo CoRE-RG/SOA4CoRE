@@ -13,13 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h"
-#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformationNotification.h"
+#include <soa4core/discovery/SomeIpDiscoveryNotification.h>
 #include "soa4core/discovery/someip/SomeIpSD.h"
-#include "soa4core/discovery/someip/SomeIpSDAcknowledgeSubscription.h"
-#include "soa4core/discovery/someip/SomeIpSDFindRequest.h"
-#include "soa4core/discovery/someip/SomeIpSDFindResult.h"
-#include "soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h"
 #include "soa4core/manager/qos/QoSManager.h"
 #include "soa4core/manager/someip/SomeIpManager.h"
 #include "soa4core/serviceidentifier/ServiceIdentifier.h"
@@ -113,7 +108,7 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
     socket.sendTo(someIpSDHeader, inet::IPv4Address(BROADCASTADDRESS), destPort);
 }
 
-void SomeIpSD::offer(Publisher* publisherApplication, inet::L3Address remoteAddress) {
+void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
     Enter_Method("SomeIpSD::offer");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - OFFER");
 
@@ -121,34 +116,34 @@ void SomeIpSD::offer(Publisher* publisherApplication, inet::L3Address remoteAddr
     offerEntry->setType(SOA4CoRE::SomeIpSDEntryType::OFFER);
     offerEntry->setIndex1stOptions(0);
     offerEntry->setIndex2ndOptions(0);
-    offerEntry->setNum1stOptions(publisherApplication->getQoSGroups().size());
+    offerEntry->setNum1stOptions(someIpDiscoveryNotification->getQoSGroups().size());
     offerEntry->setNum2ndOptions(0);
-    offerEntry->setServiceID(publisherApplication->getServiceId());
-    offerEntry->setInstanceID(publisherApplication->getInstanceId());
+    offerEntry->setServiceID(someIpDiscoveryNotification->getServiceId());
+    offerEntry->setInstanceID(someIpDiscoveryNotification->getInstanceId());
     offerEntry->setMajorVersion(MAJOR_VERSION);
     offerEntry->setTTL(TTL);
     offerEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(offerEntry);
 
     if (!_hasQoSNP) {
-        for (QoSGroup qosGroup : publisherApplication->getQoSGroups()) {
+        for (QoSGroup qosGroup : someIpDiscoveryNotification->getQoSGroups()) {
             IPProtocolId ipProtocolId;
             uint16_t publisherPort;
             switch (qosGroup) {
                 case QoSGroup::SOMEIP_TCP:
                     ipProtocolId = IPProtocolId::IP_PROT_TCP;
-                    publisherPort = publisherApplication->getTcpPort();
+                    publisherPort = someIpDiscoveryNotification->getTcpPort();
                     break;
                 case QoSGroup::SOMEIP_UDP:
                     ipProtocolId = IPProtocolId::IP_PROT_UDP;
-                    publisherPort = publisherApplication->getUdpPort();
+                    publisherPort = someIpDiscoveryNotification->getUdpPort();
                     break;
                 default:
                     throw cRuntimeError("Unknown QoSGroup");
             }
 
             IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-            ipv4EndpointOption->setIpv4Address(publisherApplication->getAddress().toIPv4());
+            ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
             ipv4EndpointOption->setL4Protocol(ipProtocolId);
             ipv4EndpointOption->setPort(publisherPort);
             someIpSDHeader->encapOption(ipv4EndpointOption);
@@ -156,14 +151,14 @@ void SomeIpSD::offer(Publisher* publisherApplication, inet::L3Address remoteAddr
     } else {
         offerEntry->setNum1stOptions(QOS_NP_OPTIONS_COUNT);
         IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-        ipv4EndpointOption->setIpv4Address(publisherApplication->getAddress().toIPv4());
+        ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
         someIpSDHeader->encapOption(ipv4EndpointOption);
     }
 
-    socket.sendTo(someIpSDHeader, remoteAddress, destPort);
+    socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
 }
 
-void SomeIpSD::subscribeEventgroup(SubscriberApplicationInformation subscriberApplicationInformation, inet::L3Address remoteAddress) {
+void SomeIpSD::subscribeEventgroup(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
     Enter_Method("SomeIpSD::subscribeEventgroup");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - SUBSCRIBEEVENTGROUP");
 
@@ -173,37 +168,37 @@ void SomeIpSD::subscribeEventgroup(SubscriberApplicationInformation subscriberAp
     subscribeEventgroupEntry->setIndex2ndOptions(0);
     subscribeEventgroupEntry->setNum1stOptions(1);
     subscribeEventgroupEntry->setNum2ndOptions(0);
-    subscribeEventgroupEntry->setServiceID(subscriberApplicationInformation.getServiceId());
-    subscribeEventgroupEntry->setInstanceID(subscriberApplicationInformation.getInstanceId());
+    subscribeEventgroupEntry->setServiceID(someIpDiscoveryNotification->getServiceId());
+    subscribeEventgroupEntry->setInstanceID(someIpDiscoveryNotification->getInstanceId());
     subscribeEventgroupEntry->setMajorVersion(MAJOR_VERSION);
     subscribeEventgroupEntry->setTTL(TTL);
     someIpSDHeader->encapEntry(subscribeEventgroupEntry);
 
     IPProtocolId ipProtocolId;
     uint16_t subscriberPort;
-    switch (subscriberApplicationInformation.getQoSGroup()) {
+    switch (someIpDiscoveryNotification->getQoSGroup()) {
         case QoSGroup::SOMEIP_TCP:
             ipProtocolId = IPProtocolId::IP_PROT_TCP;
-            subscriberPort = subscriberApplicationInformation.getTCPPort();
+            subscriberPort = someIpDiscoveryNotification->getTcpPort();
             break;
         case QoSGroup::SOMEIP_UDP:
             ipProtocolId = IPProtocolId::IP_PROT_UDP;
-            subscriberPort = subscriberApplicationInformation.getUDPPort();
+            subscriberPort = someIpDiscoveryNotification->getUdpPort();
             break;
         default:
             throw cRuntimeError("Unknown QoSGroup");
     }
 
     IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Subscriber");
-    ipv4EndpointOption->setIpv4Address(subscriberApplicationInformation.getAddress().toIPv4());
+    ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
     ipv4EndpointOption->setL4Protocol(ipProtocolId);
     ipv4EndpointOption->setPort(subscriberPort);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
-    socket.sendTo(someIpSDHeader, remoteAddress, destPort);
+    socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
 }
 
-void SomeIpSD::subscribeEventgroupAck(PublisherApplicationInformation publisherApplicationInformation, inet::L3Address remoteAddress, QoSGroup qosGroup) {
+void SomeIpSD::subscribeEventgroupAck(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
     Enter_Method("SomeIpSD::subscribeEventgroupAck");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - SUBSCRIBEEVENTGROUPACK");
 
@@ -213,34 +208,34 @@ void SomeIpSD::subscribeEventgroupAck(PublisherApplicationInformation publisherA
     subscribeEventgroupAckEntry->setIndex2ndOptions(0);
     subscribeEventgroupAckEntry->setNum1stOptions(1);
     subscribeEventgroupAckEntry->setNum2ndOptions(0);
-    subscribeEventgroupAckEntry->setServiceID(publisherApplicationInformation.getServiceId());
-    subscribeEventgroupAckEntry->setInstanceID(publisherApplicationInformation.getInstanceId());
+    subscribeEventgroupAckEntry->setServiceID(someIpDiscoveryNotification->getServiceId());
+    subscribeEventgroupAckEntry->setInstanceID(someIpDiscoveryNotification->getInstanceId());
     subscribeEventgroupAckEntry->setMajorVersion(MAJOR_VERSION);
     subscribeEventgroupAckEntry->setTTL(TTL);
     someIpSDHeader->encapEntry(subscribeEventgroupAckEntry);
 
     IPProtocolId ipProtocolId;
     uint16_t publisherPort;
-    switch (qosGroup) {
+    switch (someIpDiscoveryNotification->getQoSGroup()) {
         case QoSGroup::SOMEIP_TCP:
             ipProtocolId = IPProtocolId::IP_PROT_TCP;
-            publisherPort = publisherApplicationInformation.getTCPPort();
+            publisherPort = someIpDiscoveryNotification->getTcpPort();
             break;
         case QoSGroup::SOMEIP_UDP:
             ipProtocolId = IPProtocolId::IP_PROT_UDP;
-            publisherPort = publisherApplicationInformation.getUDPPort();
+            publisherPort = someIpDiscoveryNotification->getUdpPort();
             break;
         default:
             throw cRuntimeError("Unknown QoSGroup");
     }
 
     IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-    ipv4EndpointOption->setIpv4Address(publisherApplicationInformation.getAddress().toIPv4());
+    ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
     ipv4EndpointOption->setL4Protocol(ipProtocolId);
     ipv4EndpointOption->setPort(publisherPort);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
-    socket.sendTo(someIpSDHeader, remoteAddress, destPort);
+    socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
 }
 
 void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
@@ -272,14 +267,17 @@ void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
     inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
-    SomeIpSDFindRequest* someIpSDFindRequest = new SomeIpSDFindRequest(findEntry->getServiceID(), findEntry->getInstanceID(), udpDataIndication->getSrcAddr());
-    emit(_serviceFindSignal, someIpSDFindRequest);
+    SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(findEntry->getServiceID(),
+            udpDataIndication->getSrcAddr(), findEntry->getInstanceID(), std::set<QoSGroup>{}, QoSGroup::UNDEFINED, -1, -1);
+    emit(_serviceFindSignal, someIpDiscoveryNotification);
 }
 
 void SomeIpSD::processFindResult(cObject* obj) {
-    SomeIpSDFindResult* someIpSDFindResult = dynamic_cast<SomeIpSDFindResult*>(obj);
-    Publisher* publisherApplication = someIpSDFindResult->getPublisherApplication();
-    offer(publisherApplication, someIpSDFindResult->getRemoteAddress());
+    SomeIpDiscoveryNotification* someIpDiscoveryNotification = nullptr;
+    if (!(someIpDiscoveryNotification = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
+        throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification.");
+    }
+    offer(someIpDiscoveryNotification);
     delete(obj);
 }
 
@@ -307,12 +305,9 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
             qosGroups.insert(extractedQoSOptions.getQosGroup());
         }
     }
-
-    PublisherApplicationInformation publisherApplicationInformation = PublisherApplicationInformation(offerEntry->getServiceID(), ipAddress,
-                                         offerEntry->getInstanceID(), qosGroups, tcpPort,
-                                         udpPort);
-    PublisherApplicationInformationNotification *publisherApplicationInformationNotification = new PublisherApplicationInformationNotification(publisherApplicationInformation);
-    emit(_serviceOfferSignal,publisherApplicationInformationNotification);
+    SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(offerEntry->getServiceID(), ipAddress,
+            offerEntry->getInstanceID(), qosGroups, QoSGroup::UNDEFINED, tcpPort, udpPort);
+    emit(_serviceOfferSignal,someIpDiscoveryNotification);
 }
 
 void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader) {
@@ -329,10 +324,9 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
         }
         ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
         qosGroup = extractedQoSOptions.getQosGroup();
-        SubscriberApplicationInformation subscriberApplicationInformation = SubscriberApplicationInformation(subscribeEventGroupEntry->getServiceID(),
-                ipv4EndpointOption->getIpv4Address(), subscribeEventGroupEntry->getInstanceID(), qosGroup, extractedQoSOptions.getTcpPort(), extractedQoSOptions.getUdpPort());
-        SubscriberApplicationInformationNotification* subscriberApplicationInformationNotification = new SubscriberApplicationInformationNotification(subscriberApplicationInformation);
-        emit(_subscribeEventGroupSignal, subscriberApplicationInformationNotification);
+        SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
+                subscribeEventGroupEntry->getInstanceID(), std::set<QoSGroup>{}, qosGroup, extractedQoSOptions.getTcpPort(), extractedQoSOptions.getUdpPort());
+        emit(_subscribeEventGroupSignal, someIpDiscoveryNotification);
     }
 }
 
@@ -358,11 +352,9 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
         udpPort = extractedQoSOptions.getUdpPort() != -1 ? extractedQoSOptions.getUdpPort() : udpPort;
         qosGroups.insert(extractedQoSOptions.getQosGroup());
     }
-
-    PublisherApplicationInformation publisherApplicationInformation = PublisherApplicationInformation(subscribeEventGroupAckEntry->getServiceID(), ipAddress,
-            subscribeEventGroupAckEntry->getInstanceID(), qosGroups, tcpPort, udpPort);
-    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = new PublisherApplicationInformationNotification(publisherApplicationInformation);
-    emit(_subscribeEventGroupAckSignal, publisherApplicationInformationNotification);
+    SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(subscribeEventGroupAckEntry->getServiceID(), ipAddress,
+            subscribeEventGroupAckEntry->getInstanceID(), qosGroups, QoSGroup::UNDEFINED, tcpPort, udpPort);
+    emit(_subscribeEventGroupAckSignal, someIpDiscoveryNotification);
 }
 
 void SomeIpSD::discover(ServiceIdentifier serviceIdentifier) {
@@ -370,16 +362,20 @@ void SomeIpSD::discover(ServiceIdentifier serviceIdentifier) {
 }
 
 void SomeIpSD::processSubscription(cObject* obj) {
-    SomeIpSDSubscriptionInformation* someIpSDSubscriptionInformation = dynamic_cast<SomeIpSDSubscriptionInformation*>(obj);
-    SubscriberApplicationInformation subscriberApplicationInformation = someIpSDSubscriptionInformation->getSubscriberApplicationInformation();
-    subscribeEventgroup(subscriberApplicationInformation, someIpSDSubscriptionInformation->getRemoteAddress());
+    SomeIpDiscoveryNotification* someIpdiscoveryNotificationSubscription = nullptr;
+    if (!(someIpdiscoveryNotificationSubscription = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
+        throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
+    }
+    subscribeEventgroup(someIpdiscoveryNotificationSubscription);
     delete obj;
 }
 
 void SomeIpSD::processAcknowledgment(cObject *obj) {
-    SomeIpSDAcknowledgeSubscription* someIpSDAcknowledgeSubscription = dynamic_cast<SomeIpSDAcknowledgeSubscription*>(obj);
-    subscribeEventgroupAck(someIpSDAcknowledgeSubscription->getPublisherApplicationInformation(), someIpSDAcknowledgeSubscription->getRemoteAddress(),
-            someIpSDAcknowledgeSubscription->getQosGroup());
+    SomeIpDiscoveryNotification* someIpDiscoveryNotificationAcknowledge = nullptr;
+    if (!(someIpDiscoveryNotificationAcknowledge = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
+        throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
+    }
+    subscribeEventgroupAck(someIpDiscoveryNotificationAcknowledge);
     delete obj;
 }
 

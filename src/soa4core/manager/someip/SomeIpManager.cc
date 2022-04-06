@@ -13,13 +13,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/applicationinformation/publisher/PublisherApplicationInformationNotification.h"
-#include "soa4core/applicationinformation/subscriber/SubscriberApplicationInformationNotification.h"
+#include "soa4core/discovery/SomeIpDiscoveryNotification.h"
 #include "soa4core/discovery/someip/SomeIpSD.h"
-#include "soa4core/discovery/someip/SomeIpSDAcknowledgeSubscription.h"
-#include "soa4core/discovery/someip/SomeIpSDFindRequest.h"
-#include "soa4core/discovery/someip/SomeIpSDFindResult.h"
-#include "soa4core/discovery/someip/SomeIpSDSubscriptionInformation.h"
 #include "soa4core/manager/someip/SomeIpManager.h"
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
@@ -57,20 +52,19 @@ void SomeIpManager::handleMessage(cMessage *msg) {
 
 // Subscriber-side
 void SomeIpManager::processAcknowledgedSubscription(cObject* obj) {
-    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
-    PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
-    std::list<SubscriberApplicationInformation> subscriberApplicationInformationsToBeRemoved;
-    if (_pendingRequestsMap.count(publisherApplicationInformation.getServiceId())) {
-        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation.getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation.getServiceId()].end(); ++it){
-            if (publisherApplicationInformation.containsQoSGroup(it->getQoSGroup())) {
-                createSubscriberEndpoint(publisherApplicationInformation, it->getQoSGroup());
-                subscriberApplicationInformationsToBeRemoved.push_back(*it);
-            }
-        }
-        for (SubscriberApplicationInformation subscriberApplicationInformation : subscriberApplicationInformationsToBeRemoved) {
-            _pendingRequestsMap[subscriberApplicationInformation.getServiceId()].remove(subscriberApplicationInformation);
-            if (_pendingRequestsMap[subscriberApplicationInformation.getServiceId()].empty()) {
-                _pendingRequestsMap.erase(subscriberApplicationInformation.getServiceId());
+    SomeIpDiscoveryNotification* someIpDiscoveryNotification = nullptr;
+    if (!(someIpDiscoveryNotification = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
+        throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
+    }
+    std::set<QoSGroup> qosGroups = someIpDiscoveryNotification->getQoSGroups();
+    for (QoSGroup qosGroup : qosGroups) {
+        if (_pendingSubscriptionsMap.count(someIpDiscoveryNotification->getServiceId())
+            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].count(qosGroup)
+            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()][qosGroup] == SubscriptionState::WAITING_FOR_SUBACK) {
+            createSubscriberEndpoint(someIpDiscoveryNotification, qosGroup);
+            _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].erase(qosGroup);
+            if (_pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].empty()) {
+                _pendingSubscriptionsMap.erase(someIpDiscoveryNotification->getServiceId());
             }
         }
     }
@@ -81,7 +75,6 @@ void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObj
     if (!strcmp(getSignalName(signalID),"serviceFindSignal")) {
         lookForService(obj);
     } else if(!strcmp(getSignalName(signalID),"serviceOfferSignal")) {
-        addToLocalServiceRegistry(obj);
         subscribeServiceIfThereIsAPendingRequest(obj);
     } else if(!strcmp(getSignalName(signalID),"subscribeEventGroupSignal")){
         acknowledgeSubscription(obj);
@@ -93,64 +86,65 @@ void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObj
 }
 
 // Subscriber-side
-void SomeIpManager::subscribeService(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation) {
-    bool serviceFound = false;
-    if (_lsr->containsService(publisherServiceIdentifier)) {
-        PublisherApplicationInformation publisherService = _lsr->getService(publisherServiceIdentifier);
-        if (publisherService.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
-            PublisherApplicationInformationNotification* publisherApplicationInformationNotification =
-                    new PublisherApplicationInformationNotification(publisherService);
-            subscribeServiceIfThereIsAPendingRequest(publisherApplicationInformationNotification);
-            serviceFound = true;
-        } else {
-            throw cRuntimeError("The service id = %d is not provided with the requested QoS group = %d",
-                    publisherServiceIdentifier.getServiceId(), subscriberApplicationInformation.getQoSGroup());
-        }
+void SomeIpManager::discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
+    Subscriber* subscriberApplication_ = nullptr;
+    if (!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))) {
+        throw cRuntimeError("Subscriber application must be of type Subscriber.");
     }
-    if (!serviceFound) {
-        Manager::addSubscriberToPendingRequestsMap(publisherServiceIdentifier, subscriberApplicationInformation);
-        _sd->discover(publisherServiceIdentifier);
-    }
+    _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()][subscriberApplication_->getQoSGroup()] = SubscriptionState::WAITING_FOR_OFFER;
+    _sd->discover(publisherServiceIdentifier);
 }
 
 // Publisher-side
 void SomeIpManager::lookForService(cObject* obj) {
-    SomeIpSDFindRequest* someIpSDFindRequest = dynamic_cast<SomeIpSDFindRequest*>(obj);
-    ServiceIdentifier serviceIdentifier = ServiceIdentifier(someIpSDFindRequest->getServiceId(),
-            someIpSDFindRequest->getInstanceId());
-    if (_lsr->containsService(serviceIdentifier)){
-        PublisherApplicationInformation foundPublisherApplicationInformation = _lsr->getService(serviceIdentifier);
-        if(foundPublisherApplicationInformation.getAddress() == _localAddress) {
-            SomeIpSDFindResult* someIpSDFindResult = new SomeIpSDFindResult(
-                    someIpSDFindRequest->getRemoteAddress(),
-                    foundPublisherApplicationInformation
+    SomeIpDiscoveryNotification* someIpDiscoveryNotificationFindRequest = dynamic_cast<SomeIpDiscoveryNotification*>(obj);
+    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(someIpDiscoveryNotificationFindRequest->getServiceId())) {
+        if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication())) {
+            SomeIpDiscoveryNotification* someIpDiscoveryNotificationFindResponse = new SomeIpDiscoveryNotification(publisher->getServiceId(),
+                    someIpDiscoveryNotificationFindRequest->getAddress(), publisher->getInstanceId(), publisher->getQoSGroups(),
+                    QoSGroup::UNDEFINED, publisher->getTcpPort(), publisher->getUdpPort()
             );
-            emit(_findResultSignal,someIpSDFindResult);
+            emit(_findResultSignal,someIpDiscoveryNotificationFindResponse);
         }
     }
-    delete(someIpSDFindRequest);
-}
-
-// Subscriber-side
-void SomeIpManager::addToLocalServiceRegistry(cObject* obj) {
-    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
-    PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
-    _lsr->addPublisherService(publisherApplicationInformation);
+    delete(someIpDiscoveryNotificationFindRequest);
 }
 
 // Subscriber-side
 void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
-    PublisherApplicationInformationNotification* publisherApplicationInformationNotification = dynamic_cast<PublisherApplicationInformationNotification*>(obj);
-    PublisherApplicationInformation publisherApplicationInformation = publisherApplicationInformationNotification->getPublisherApplicationInformation();
-            dynamic_cast<PublisherApplicationInformationNotification*>(obj)->getPublisherApplicationInformation();
-    if (_pendingRequestsMap.count(publisherApplicationInformation.getServiceId())) {
-        for(std::list<SubscriberApplicationInformation>::const_iterator it = _pendingRequestsMap[publisherApplicationInformation.getServiceId()].begin(); it != _pendingRequestsMap[publisherApplicationInformation.getServiceId()].end(); ++it){
-            if (publisherApplicationInformation.containsQoSGroup(it->getQoSGroup())) {
-                SomeIpSDSubscriptionInformation* someIpSDSubscriptionInformation = new SomeIpSDSubscriptionInformation(
-                        publisherApplicationInformation.getAddress(),
-                        *it
-                );
-                emit(_subscribeSignal,someIpSDSubscriptionInformation);
+    SomeIpDiscoveryNotification* someIpdiscoveryNotificationOffer = nullptr;
+    if (!(someIpdiscoveryNotificationOffer = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
+        throw cRuntimeError("Notification must be of type SomeIpDiscoveryNotification.");
+    }
+    if (_pendingSubscriptionsMap.count(someIpdiscoveryNotificationOffer->getServiceId())) {
+        std::set<QoSGroup> offeredQoSGroups = someIpdiscoveryNotificationOffer->getQoSGroups();
+        std::list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(someIpdiscoveryNotificationOffer->getServiceId());
+
+        for (QoSGroup offeredQoSGroup : offeredQoSGroups) {
+            if (_pendingSubscriptionsMap.count(someIpdiscoveryNotificationOffer->getServiceId())
+                && _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()].count(offeredQoSGroup)
+                && _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] == SubscriptionState::WAITING_FOR_OFFER) {
+                _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] = SubscriptionState::WAITING_FOR_SUBACK;
+                // Find the appropriate connector to the QoSGroup
+                for (SubscriberConnector* subscriberConnector: subscriberConnectors) {
+                    std::vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
+                    if (subscriberApplications.empty()) {
+                        throw cRuntimeError("Empty subscriber connector without applications!.");
+                    }
+                    Subscriber* subscriberApplication = nullptr;
+                    if (!(subscriberApplication = dynamic_cast<Subscriber*>(subscriberApplications[0]))) {
+                        throw cRuntimeError("The subscriber application must be of the type Subscriber.");
+                    }
+                    if (subscriberApplication->getQoSGroup() == offeredQoSGroup) {
+                        SomeIpDiscoveryNotification* someIpdiscoveryNotificationSubscription = new SomeIpDiscoveryNotification(someIpdiscoveryNotificationOffer->getServiceId(),
+                                someIpdiscoveryNotificationOffer->getAddress(), someIpdiscoveryNotificationOffer->getInstanceId(), std::set<QoSGroup>{}, offeredQoSGroup, subscriberConnector->getTcpPort(),
+                                subscriberConnector->getUdpPort()
+                        );
+                        emit(_subscribeSignal, someIpdiscoveryNotificationSubscription);
+                        // Break here because there can be only one connector for a service ID and QoS Group pair
+                        break;
+                    }
+                }
             }
         }
     }
@@ -159,20 +153,22 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
 
 // Publisher-side
 void SomeIpManager::acknowledgeSubscription(cObject* obj) {
-    SubscriberApplicationInformationNotification* subscriberApplicationInformationNotification = dynamic_cast<SubscriberApplicationInformationNotification*>(obj);
-    SubscriberApplicationInformation subscriberApplicationInformation = subscriberApplicationInformationNotification->getSubscriberApplicationInformation();
-    ServiceIdentifier serviceIdentifier = ServiceIdentifier(subscriberApplicationInformation.getServiceId(), subscriberApplicationInformation.getInstanceId());
-    if (_lsr->containsService(serviceIdentifier)) {
-        PublisherApplicationInformation publisherApplicationInformation = _lsr->getService(serviceIdentifier);
-        if (publisherApplicationInformation.containsQoSGroup(subscriberApplicationInformation.getQoSGroup())) {
-            SomeIpSDAcknowledgeSubscription* someIpSDAcknowledgeSubscription = new SomeIpSDAcknowledgeSubscription(
-                    subscriberApplicationInformation.getAddress(),
-                    publisherApplicationInformation,
-                    subscriberApplicationInformation.getQoSGroup()
-            );
-            switch (subscriberApplicationInformation.getQoSGroup()) {
+    SomeIpDiscoveryNotification* someIpDiscoveryNotification = nullptr;
+    if (!(someIpDiscoveryNotification = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
+        throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
+    }
+
+    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(someIpDiscoveryNotification->getServiceId())) {
+        Publisher* publisher = nullptr;
+        if ((publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The application must not null and must be of type Publisher");
+        }
+        if (std::find(publisher->getQoSGroups().begin(), publisher->getQoSGroups().end(), someIpDiscoveryNotification->getQoSGroup()) != publisher->getQoSGroups().end()) {
+            SomeIpDiscoveryNotification* someIpDiscoveryNotificationAcknowledge = new SomeIpDiscoveryNotification(someIpDiscoveryNotification->getServiceId(), someIpDiscoveryNotification->getAddress(),
+                    publisher->getInstanceId(), std::set<QoSGroup>{}, someIpDiscoveryNotification->getQoSGroup(), publisher->getTcpPort(), publisher->getUdpPort());
+            switch (someIpDiscoveryNotification->getQoSGroup()) {
                 case QoSGroup::SOMEIP_TCP: {
-                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_TCP);
+                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(someIpDiscoveryNotification->getServiceId(), QoSGroup::SOMEIP_TCP);
                     if(!publisherEndpointBase) {
                         throw cRuntimeError("No SOME/IP TCP Publisher was created.");
                     }
@@ -183,7 +179,7 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
                     break;
                 }
                 case QoSGroup::SOMEIP_UDP: {
-                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(subscriberApplicationInformation.getServiceId(),QoSGroup::SOMEIP_UDP);
+                    PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(someIpDiscoveryNotification->getServiceId(),QoSGroup::SOMEIP_UDP);
                     if(!publisherEndpointBase) {
                         throw cRuntimeError("No SOME/IP UDP Publisher was created.");
                     }
@@ -192,8 +188,8 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
                         throw cRuntimeError("Endpoint is no SOMEIPUDPPublisherEndpoint.");
                     }
                     CSI_SOMEIP_UDP* csi_udp_someip = new CSI_SOMEIP_UDP();
-                    csi_udp_someip->setAddress(subscriberApplicationInformation.getAddress().str().c_str());
-                    csi_udp_someip->setPort(subscriberApplicationInformation.getUDPPort());
+                    csi_udp_someip->setAddress(someIpDiscoveryNotification->getAddress().str().c_str());
+                    csi_udp_someip->setPort(someIpDiscoveryNotification->getUdpPort());
                     someipUdpPublisherEndpoint->addRemote(csi_udp_someip);
                     delete csi_udp_someip;
                     break;
@@ -201,29 +197,29 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
                 default:
                     throw cRuntimeError("Unknown QoS group");
             }
-            emit(_subscribeAckSignal,someIpSDAcknowledgeSubscription);
+            emit(_subscribeAckSignal,someIpDiscoveryNotificationAcknowledge);
         }
     }
     delete obj;
 }
 
 // Subscriber-side
-void SomeIpManager::createSubscriberEndpoint(PublisherApplicationInformation publisherApplicationInformation, QoSGroup qosGroup) {
+void SomeIpManager::createSubscriberEndpoint(SomeIpDiscoveryNotification* someIpDiscoveryNotification, QoSGroup qosGroup) {
     SubscriberEndpointBase* sub = nullptr;
     switch (qosGroup) {
         case QoSGroup::SOMEIP_TCP: {
             CSI_SOMEIP_TCP* csi_someip_tcp = new CSI_SOMEIP_TCP();
-            csi_someip_tcp->setAddress(publisherApplicationInformation.getAddress().str().c_str());
-            csi_someip_tcp->setPort(publisherApplicationInformation.getTCPPort());
-            sub = createOrFindSubscriberEndpoint(publisherApplicationInformation.getServiceId(), csi_someip_tcp);
+            csi_someip_tcp->setAddress(someIpDiscoveryNotification->getAddress().str().c_str());
+            csi_someip_tcp->setPort(someIpDiscoveryNotification->getTcpPort());
+            sub = createOrFindSubscriberEndpoint(someIpDiscoveryNotification->getServiceId(), csi_someip_tcp);
             delete csi_someip_tcp;
             break;
         }
         case QoSGroup::SOMEIP_UDP: {
             CSI_SOMEIP_UDP* csi_someip_udp = new CSI_SOMEIP_UDP();
-            csi_someip_udp->setAddress(publisherApplicationInformation.getAddress().str().c_str());
-            csi_someip_udp->setPort(publisherApplicationInformation.getUDPPort());
-            sub = createOrFindSubscriberEndpoint(publisherApplicationInformation.getServiceId(), csi_someip_udp);
+            csi_someip_udp->setAddress(someIpDiscoveryNotification->getAddress().str().c_str());
+            csi_someip_udp->setPort(someIpDiscoveryNotification->getUdpPort());
+            sub = createOrFindSubscriberEndpoint(someIpDiscoveryNotification->getServiceId(), csi_someip_udp);
             delete csi_someip_udp;
             break;
         }
@@ -249,16 +245,6 @@ IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
             throw cRuntimeError("Unknown QoS group.");
     }
     return ipProtocolId;
-}
-
-void SomeIpManager::addSubscriberToPendingSubscriptionsMap(ServiceIdentifier publisherServiceIdentifier, SubscriberApplicationInformation subscriberApplicationInformation, SubscriptionState subscriptionState) {
-    if (_pendingSubscriptionsMap.count(publisherServiceIdentifier.getServiceId())) {
-        _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()].push_back(std::make_pair(subscriberApplicationInformation,subscriptionState));
-    } else {
-        std::list<std::pair<SubscriberApplicationInformation, SubscriptionState>> subscriberApplicationInformations_subscriptionState;
-        subscriberApplicationInformations_subscriptionState.push_back(std::make_pair(subscriberApplicationInformation,subscriptionState));
-        _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()] = subscriberApplicationInformations_subscriptionState;
-    }
 }
 
 } /* end namespace SOA4CoRE */
