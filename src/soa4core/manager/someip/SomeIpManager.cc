@@ -160,7 +160,7 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
 
     if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(someIpDiscoveryNotification->getServiceId())) {
         Publisher* publisher = nullptr;
-        if ((publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+        if (!(publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
             throw cRuntimeError("The application must not null and must be of type Publisher");
         }
         if (std::find(publisher->getQoSGroups().begin(), publisher->getQoSGroups().end(), someIpDiscoveryNotification->getQoSGroup()) != publisher->getQoSGroups().end()) {

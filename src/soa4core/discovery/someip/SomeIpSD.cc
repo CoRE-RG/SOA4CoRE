@@ -53,6 +53,7 @@ void SomeIpSD::initialize(int stage) {
         if (!(par("localAddress").stdstringValue().length())) {
             throw cRuntimeError("Please define a local ip address");
         }
+        _localAddress = inet::L3AddressResolver().resolve(par("localAddress").stdstringValue().c_str());
         processStart();
         IServiceDiscovery::_serviceOfferSignal = omnetpp::cComponent::registerSignal("serviceOfferSignal");
         _serviceFindSignal = omnetpp::cComponent::registerSignal("serviceFindSignal");
@@ -154,6 +155,8 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
         ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
         someIpSDHeader->encapOption(ipv4EndpointOption);
     }
+
+    std::string moin = this->_localAddress.str();
 
     socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
 }
