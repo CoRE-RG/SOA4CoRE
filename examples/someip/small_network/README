@@ -7,3 +7,6 @@ After the service discovery publishers send messages to their subscribers.
   So all hosts can communicate with each other over the switch.
 
 - Currently the QoS groups are limited to SOMEIP_TCP and SOMEIP_UDP.
+
+- node 3 receives update from the service at node1 via udp and node 2 via tcp
+	- in the UDP_only config both services receive UDP messages

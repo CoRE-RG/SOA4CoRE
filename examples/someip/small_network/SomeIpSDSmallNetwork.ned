@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.examples.SomeIpSDSmallTestNetwork;
+package soa4core.examples.someip.small_network;
 
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 
-network SomeIpSDSmallTestNetwork
+network SomeIpSDSmallNetwork
 {
     parameters:
     types:
@@ -40,7 +40,7 @@ network SomeIpSDSmallTestNetwork
             @display("p=315,30");
         }
 
-        switch: switch {
+        Switch: Switch {
             @display("p=172,62");
         }
 
@@ -49,7 +49,7 @@ network SomeIpSDSmallTestNetwork
         }
 
     connections:
-        Node1.ethg <--> ETH_100MBIT <--> switch.ethg++;
-        Node2.ethg <--> ETH_100MBIT <--> switch.ethg++;
-        Node3.ethg <--> ETH_100MBIT <--> switch.ethg++;
+        Node1.ethg <--> ETH_100MBIT <--> Switch.ethg++;
+        Node2.ethg <--> ETH_100MBIT <--> Switch.ethg++;
+        Node3.ethg <--> ETH_100MBIT <--> Switch.ethg++;
 }
