@@ -1,8 +1,0 @@
-<rtIpConfig>
-	<node id="Subscriber">
-	</node>
-
-	<node id="Publisher">
-	</node>
-
-</rtIpConfig>

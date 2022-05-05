@@ -1,5 +1,0 @@
-<services>
-	<service name="PublisherService" node="Publisher" />
-	<service name="TCPSubscriberService" node="STDSubscriber" />
-	<service name="AVBSubscriberService" node="RTSubscriber" />
-</services>
