@@ -1,0 +1,5 @@
+Evaluates the QoS middleware performance in a small network.
+
+- The small network consists of a publisher, a subscriber and 2 App nodes which send cross-traffic.
+
+- in each config the setup times can be analyzed

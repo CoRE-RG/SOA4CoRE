@@ -1,9 +1,9 @@
-package soa4core.examples.MinimalEvaluationNetwork.small_network;
+package soa4core.examples.minimal_evaluation.small_network;
 
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 
-network small_network
+network MinimalEvaluationSmallNetwork
 {
 parameters:
      @display("bgb=,,white");

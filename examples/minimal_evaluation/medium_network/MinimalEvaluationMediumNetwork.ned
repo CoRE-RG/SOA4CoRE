@@ -1,10 +1,10 @@
-package soa4core.examples.MinimalEvaluationNetwork.small_network_all_ethernet_protocols;
+package soa4core.examples.minimal_evaluation.medium_network;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 
-network MinimalEvaluationNetworkAllEthernet
+network MinimalEvaluationMediumNetwork
 {
     parameters:
         @display("bgb=,,white");

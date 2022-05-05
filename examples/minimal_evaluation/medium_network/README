@@ -1,0 +1,5 @@
+Evaluates the QoS middleware performance in a medium network.
+
+The small network consists of 2 App nodes which send cross-traffic, a Publisher, and three a subscriber.
+
+The subscriber nodes use different QoS which allows to analyze the end-to-end latency guarantees.

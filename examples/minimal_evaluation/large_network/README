@@ -1,0 +1,7 @@
+Evaluates the QoS middleware performance in a large network.
+
+The network consists of 2 App nodes which send cross-traffic, a Publishing node with 10 published services, and 10 subscriber nodes with 10 subscriber services each.
+
+Each subscriber node subscribes to all published services.
+
+This example shows how the QoS Negotiation scales with a growing number of services.

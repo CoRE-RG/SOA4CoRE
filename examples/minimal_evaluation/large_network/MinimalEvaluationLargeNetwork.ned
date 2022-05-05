@@ -1,10 +1,10 @@
-package soa4core.examples.MinimalEvaluationNetwork.large_network;
+package soa4core.examples.minimal_evaluation.large_network;
 
 import core4inet.nodes.ethernet.avb_AS6802.TTEAVBEtherHost;
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 
-network large_network
+network MinimalEvaluationLargeNetwork
 {
 parameters:
      @display("bgb=,,white");

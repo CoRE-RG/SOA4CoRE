@@ -1,6 +1,3 @@
 <services>
-	<service name="service1Subscriber" node="SubscriberAVB"/>
-	<service name="service1Subscriber" node="SubscriberTCP"/>
-	<service name="service1Subscriber" node="SubscriberUDP"/>
-	<service name="service1Publisher" node="Publisher"/>
+	<service name="service1Publisher" node="Publisher" id="1"/>
 </services>
