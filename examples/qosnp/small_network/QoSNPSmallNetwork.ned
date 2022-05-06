@@ -13,12 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.examples.QoSNPSomeIpSDSmallTestNetwork;
+package soa4core.examples.qosnp.small_network;
 
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
-
-network QoSNPSomeIpSDSmallTestNetwork
+ 
+network QoSNPSmallNetwork
 {
     parameters:
     types:

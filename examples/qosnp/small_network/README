@@ -1,0 +1,16 @@
+Demonstrates a small network which negotiates the QoS via the QoSNP.
+
+- The small network consists of the three hosts: node1, node2, node3.
+
+- Next to that there is one switch that connects every node with each other.
+
+- There are to options for Service Discovery in this example:
+	- The default option uses the static discovery, where all publishers are defined offline in the services.xml file.
+	- The second option is to use the SOME/IP SD FIND and OFFER messages to locate the publisher.
+	
+- After the service is discovered the QoSNP negotiates the endpoint protocols to be used for publishing
+
+- When using SOME/IP discovery the connection is established via 
+
+- After the service discovery and QoS negotiation publisher sends messages to its subscribers.
+
