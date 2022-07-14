@@ -32,6 +32,7 @@ void SOMEIPUDPSubscriberEndpoint::handleTransportIn(cMessage* msg) {
     if (SomeIpHeader* someip = dynamic_cast<SomeIpHeader*>(msg)) {
         //todo check for service ID!
         UDPSubscriberEndpoint::handleTransportIn(someip->decapsulate());
+        delete someip;
     }
 }
 

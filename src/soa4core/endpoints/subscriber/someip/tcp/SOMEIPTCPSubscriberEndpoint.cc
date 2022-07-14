@@ -32,6 +32,7 @@ void SOMEIPTCPSubscriberEndpoint::handleTransportIn(cMessage* msg) {
     if (SomeIpHeader* someip = dynamic_cast<SomeIpHeader*>(msg)) {
         //todo check for service ID!
         TCPSubscriberEndpoint::handleTransportIn(someip->decapsulate());
+        delete someip;
     } else {
         TCPSubscriberEndpoint::handleTransportIn(msg);
     }
