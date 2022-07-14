@@ -9,9 +9,9 @@
 /examples/performance_evaluation/large_network,                 -f omnetpp.ini -c General -r 0,                 1s,              652e-b452
 /examples/performance_evaluation/large_network,                 -f omnetpp.ini -c With_CT -r 0,                 1s,              cd03-70ae
 
-/examples/qosnp/small_network,                                  -f omnetpp.ini -c General -r 0,                 50ms,            3f76-494e
-/examples/qosnp/small_network,                                  -f omnetpp.ini -c SomeIP_ServiceDiscovery -r 0, 50ms,            77f5-5b73
+/examples/qosnp/small_network,                                  -f omnetpp.ini -c General -r 0,                 50ms,            a00b-a292
+/examples/qosnp/small_network,                                  -f omnetpp.ini -c SomeIP_ServiceDiscovery -r 0, 50ms,            93c1-3455
 
-/examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            3dde-8bcd
-/examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            463f-4f37
-/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              e008-b949
+/examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            6422-1d70
+/examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            8218-364e
+/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              3785-8637
