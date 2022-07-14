@@ -20,10 +20,10 @@ import core4inet.incoming.AS6802.TTIncoming;
 import core4inet.buffer.AS6802.TTQueueBuffer;
 import core4inet.incoming.AS6802.RCIncoming;
 import core4inet.buffer.AS6802.RCQueueBuffer;
-import soa4core.nodes.MiddlewareHost;
+import soa4core.nodes.MiddlewareTSNHost;
 
 
-module Node3 extends MiddlewareHost
+module Node3 extends MiddlewareTSNHost
 {
 	submodules:
 	connections: 
