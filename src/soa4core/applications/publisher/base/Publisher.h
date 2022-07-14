@@ -95,6 +95,22 @@ public:
      */
     int getIntervalFrames();
 
+    /**
+     * Returns the vlan id
+     * @return the vlan id
+     */
+    uint16_t getVlanId() const {
+        return _vlan_id;
+    }
+
+    /**
+     * Returns the vlan pcp
+     * @return the vlan pcp
+     */
+    uint8_t getPcp() const {
+        return _pcp;
+    }
+
 protected:
     /**
      * Initialization of the module. Sends activator message
@@ -182,6 +198,16 @@ protected:
      * Caches the stream ID.
      */
     unsigned long _streamID;
+
+    /**
+     * Caches the vlan ID.
+     */
+    uint16_t _vlan_id;
+
+    /**
+     * Caches the vlan pcp.
+     */
+    uint8_t _pcp;
 
 private:
     /**

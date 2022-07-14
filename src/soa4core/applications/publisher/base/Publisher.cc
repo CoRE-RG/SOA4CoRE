@@ -135,8 +135,14 @@ void Publisher::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "srClass")) {
         if (strcmp(par("srClass").stringValue(), "A") == 0) {
             this->_srClass = SR_CLASS::A;
+            if(par("pcp").intValue() == -1){
+                this->_pcp = PCP_DEFAULT_SRCLASSA;
+            }
         } else if (strcmp(par("srClass").stringValue(), "B") == 0) {
             this->_srClass = SR_CLASS::B;
+            if(par("pcp").intValue() == -1){
+                this->_pcp = PCP_DEFAULT_SRCLASSB;
+            }
         } else {
             throw cRuntimeError(
                     "Parameter srClass of %s is %s and is only allowed to be A or B",
@@ -146,6 +152,16 @@ void Publisher::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "streamID")) {
         this->_streamID = parameterULongCheckRange(par("streamID"), 0,
                 static_cast<unsigned long>(MAX_STREAM_ID));
+    }
+    if (!parname || !strcmp(parname, "vlan_id"))
+    {
+        this->_vlan_id = static_cast<uint16_t>(parameterULongCheckRange(par("vlan_id"), 0, MAX_VLAN_ID));
+    }
+    if (!parname || !strcmp(parname, "pcp"))
+    {
+        if(par("pcp").intValue() != -1){
+            this->_pcp = static_cast<uint8_t>(parameterULongCheckRange(par("pcp"), 0, MAX_Q_PRIORITY));
+        }
     }
 
     if (!parname || !strcmp(parname, "qosGroups")) {

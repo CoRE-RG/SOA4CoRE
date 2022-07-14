@@ -49,7 +49,7 @@ network QoSNPSmallNetwork
         }
 
     connections:
-        Node1.ethg <--> ETH_100MBIT <--> switch.ethg++;
-        Node2.ethg <--> ETH_100MBIT <--> switch.ethg++;
-        Node3.ethg <--> ETH_100MBIT <--> switch.ethg++;
+        Node1.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        Node2.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
+        Node3.ethg++ <--> ETH_100MBIT <--> switch.ethg++;
 }

@@ -42,6 +42,8 @@ simple AVBPublisherEndpoint extends RTPublisherEndpointBase
         int intervalFrames = default(1);        
         // VLAN identifier of the AVB Stream
         int vlan_id = default(2);
+        // Priority code point of the AVB Stream
+        int pcp = default(-1); // -1 = use srClass default priority
         // payload size to calculate reserved bandwidth
         int payload @unit(Byte) = default(46Byte);
 }

@@ -554,8 +554,11 @@ PublisherEndpointBase* Manager::createAVBPublisherEndpoint(
         auto intervalFrames = publisherApplication->getIntervalFrames();
         avbEndpoint->par("intervalFrames").setIntValue(intervalFrames);
 
-        auto vlanID = publisherApplication->getIntervalFrames();
+        auto vlanID = publisherApplication->getVlanId();
         avbEndpoint->par("vlan_id").setIntValue(vlanID);
+
+        auto pcp = publisherApplication->getPcp();
+        avbEndpoint->par("pcp").setIntValue(pcp);
 
         auto payload = publisherApplication->getFramesize();
         avbEndpoint->par("payload").setIntValue(payload);
