@@ -16,8 +16,8 @@
 //
 
 #include "soa4core/applications/subscriber/base/Subscriber.h"
-#include "soa4core/manager/Manager.h"
-#include "soa4core/manager/Manager.h"
+#include "soa4core/manager/base/Manager.h"
+#include "soa4core/manager/base/Manager.h"
 #include "soa4core/serviceidentifier/ServiceIdentifier.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"

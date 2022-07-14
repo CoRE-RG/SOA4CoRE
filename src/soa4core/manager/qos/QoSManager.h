@@ -16,7 +16,7 @@
 #ifndef __SOA4CORE_SERVICEMANAGER_QOS_QOSMANAGER_H_
 #define __SOA4CORE_SERVICEMANAGER_QOS_QOSMANAGER_H_
 
-#include "soa4core/manager/Manager.h"
+#include "soa4core/manager/base/Manager.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 //OMNETPP

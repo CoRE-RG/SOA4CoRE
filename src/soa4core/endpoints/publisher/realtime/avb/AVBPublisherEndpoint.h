@@ -118,7 +118,7 @@ protected:
     /**
      * The pcp of the stream.
      */
-    uint16_t _pcp;
+    uint8_t _pcp;
 
     /**
      * Calculated framesize.

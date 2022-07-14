@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.manager;
+package soa4core.manager.base;
 
 import soa4core.manager.base.IManager;
 

@@ -16,7 +16,7 @@
 #ifndef __SOA4CORE_SOMEIPLOCALSERVICEMANAGER_H_
 #define __SOA4CORE_SOMEIPLOCALSERVICEMANAGER_H_
 
-#include "soa4core/manager/Manager.h"
+#include "soa4core/manager/base/Manager.h"
 //OMNETPP
 #include <omnetpp.h>
 

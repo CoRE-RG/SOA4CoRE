@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "soa4core/manager/Manager.h"
+#include "soa4core/manager/base/Manager.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 //AUTO-GENERATED MESSAGES

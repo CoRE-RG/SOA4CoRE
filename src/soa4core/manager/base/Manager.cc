@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "soa4core/manager/Manager.h"
+#include "soa4core/manager/base/Manager.h"
 #include "soa4core/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"

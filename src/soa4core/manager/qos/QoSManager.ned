@@ -15,7 +15,7 @@
 
 package soa4core.manager.qos;
 
-import soa4core.manager.Manager;
+import soa4core.manager.base.Manager;
 //
 // The QoSManager module creates, finds and removes local QoS services.
 //

@@ -16,7 +16,7 @@
 //
 
 #include "soa4core/applications/publisher/base/Publisher.h"
-#include "soa4core/manager/Manager.h"
+#include "soa4core/manager/base/Manager.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 //CoRE4INET
 #include <core4inet/base/CoRE4INET_Defs.h>
