@@ -49,7 +49,7 @@ network SomeIpSDSmallNetwork
         }
 
     connections:
-        Node1.ethg <--> ETH_100MBIT <--> Switch.ethg++;
-        Node2.ethg <--> ETH_100MBIT <--> Switch.ethg++;
-        Node3.ethg <--> ETH_100MBIT <--> Switch.ethg++;
+        Node1.ethg++ <--> ETH_100MBIT <--> Switch.ethg++;
+        Node2.ethg++ <--> ETH_100MBIT <--> Switch.ethg++;
+        Node3.ethg++ <--> ETH_100MBIT <--> Switch.ethg++;
 }
