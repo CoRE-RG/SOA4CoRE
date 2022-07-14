@@ -17,6 +17,7 @@ package soa4core.examples.someip.large_network;
 
 import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
+import soa4core.nodes.MiddlewareTSNHost;
 
 network SomeIpSDLargeNetwork
 {
@@ -29,35 +30,35 @@ network SomeIpSDLargeNetwork
         }
 
     submodules:
-        HostNorth: HostNorth {
+        HostNorth: MiddlewareTSNHost {
             @display("p=493,50");
         }
         
-        HostSouth: HostSouth {
+        HostSouth: MiddlewareTSNHost {
             @display("p=493,376");
         }
 
-        HostEast: HostEast {
+        HostEast: MiddlewareTSNHost {
             @display("p=935,213");
         }
 
-        HostWest: HostWest {
+        HostWest: MiddlewareTSNHost {
             @display("p=71,213");
         }
         
-        HostNorthWest: HostNorthWest {
+        HostNorthWest: MiddlewareTSNHost {
             @display("p=253,50");
         }
         
-        HostNorthEast: HostNorthEast {
+        HostNorthEast: MiddlewareTSNHost {
             @display("p=734,50");
         }
         
-        HostSouthWest: HostSouthWest {
+        HostSouthWest: MiddlewareTSNHost {
             @display("p=253,376");
         }
         
-        HostSouthEast: HostSouthEast {
+        HostSouthEast: MiddlewareTSNHost {
             @display("p=734,376");
         }
         
@@ -78,16 +79,16 @@ network SomeIpSDLargeNetwork
         }
         
     connections:
-        HostNorthWest.ethg <--> ETH_100MBIT <--> SwitchWest.ethg++;
-        HostWest.ethg <--> ETH_100MBIT <--> SwitchWest.ethg++;
-        HostSouthWest.ethg <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostNorthWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
+        HostSouthWest.ethg++ <--> ETH_100MBIT <--> SwitchWest.ethg++;
 
-        HostNorth.ethg <--> ETH_100MBIT <--> SwitchCenter.ethg++;
-        HostSouth.ethg <--> ETH_100MBIT <--> SwitchCenter.ethg++;
+        HostNorth.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
+        HostSouth.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
 
-        HostNorthEast.ethg <--> ETH_100MBIT <--> SwitchEast.ethg++;
-        HostEast.ethg <--> ETH_100MBIT <--> SwitchEast.ethg++;
-        HostSouthEast.ethg <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostNorthEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
+        HostSouthEast.ethg++ <--> ETH_100MBIT <--> SwitchEast.ethg++;
         
         SwitchWest.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
         SwitchEast.ethg++ <--> ETH_100MBIT <--> SwitchCenter.ethg++;
