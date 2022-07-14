@@ -14,6 +14,8 @@
 // 
 
 #include "SOMEIPUDPSubscriberEndpoint.h"
+//AUTO-GENERATED MESSAGES
+#include "soa4core/messages/someip/SomeIpHeader_m.h"
 
 namespace SOA4CoRE {
 
@@ -24,6 +26,13 @@ ConnectionSpecificInformation* SOMEIPUDPSubscriberEndpoint::getConnectionSpecifi
     connection->setAddress(_localAddress.c_str());
     connection->setPort(_localPort);
     return connection;
+}
+
+void SOMEIPUDPSubscriberEndpoint::handleTransportIn(cMessage* msg) {
+    if (SomeIpHeader* someip = dynamic_cast<SomeIpHeader*>(msg)) {
+        //todo check for service ID!
+        UDPSubscriberEndpoint::handleTransportIn(someip->decapsulate());
+    }
 }
 
 } /* end namespace SOA4CoRE */

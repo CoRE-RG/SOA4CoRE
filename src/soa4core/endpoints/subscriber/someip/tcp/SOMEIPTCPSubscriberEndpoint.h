@@ -40,6 +40,15 @@ public:
      */
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 protected:
+
+    /**
+     * Handles messages incoming from transport gate and
+     * forwards them to the connector if they are for applications.
+     *
+     * @param msg   the message to handle.
+     */
+    virtual void handleTransportIn(cMessage *msg) override;
+
 private:
 
     /**
