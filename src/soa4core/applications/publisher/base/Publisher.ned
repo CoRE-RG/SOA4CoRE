@@ -49,6 +49,10 @@ simple Publisher extends ServiceBase
         int vlan_id = default(2);
         // Priority code point of the AVB Stream
         int pcp = default(-1); // -1 = use srClass default priority
+        // IPv4 Multicast destination address
+        string mcastDestAddr = default(""); // Requires a valid IP Mcast address (prefix 224/4), format "XXX.XXX.XXX.XXX", if empty no mcast is supported by publisher 
+        // Multicast destination port for UDP mcast
+        int mcastDestPort = default(-1); // Requires a valid UDP port, if -1 no udp mcast is supported by publisher 
         
         @signal[payloadSignal];
         

@@ -113,12 +113,16 @@ void Subscriber::handleParameterChange(const char* parname)
             _qosGroup = QoSGroup::STD_TCP;
         } else if(group == "STD_UDP"){
             _qosGroup = QoSGroup::STD_UDP;
+        } else if(group == "STD_UDP_MCAST"){
+            _qosGroup = QoSGroup::STD_UDP_MCAST;
         } else if(group == "RT"){
             _qosGroup = QoSGroup::RT;
         } else if(group == "SOMEIP_TCP"){
             _qosGroup = QoSGroup::SOMEIP_TCP;
         } else if(group == "SOMEIP_UDP") {
             _qosGroup = QoSGroup::SOMEIP_UDP;
+        } else if(group == "SOMEIP_UDP_MCAST") {
+            _qosGroup = QoSGroup::SOMEIP_UDP_MCAST;
         } else {
             throw cRuntimeError("Unknown QoS");
         }

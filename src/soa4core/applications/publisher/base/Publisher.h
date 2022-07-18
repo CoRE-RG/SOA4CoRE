@@ -111,6 +111,22 @@ public:
         return _pcp;
     }
 
+    /**
+     * Returns the multicast destination address
+     * @return the multicast destination address
+     */
+    const inet::L3Address& getMcastDestAddr() const {
+        return _mcastDestAddr;
+    }
+
+    /**
+     * Returns the multicast destination port
+     * @return the multicast destination port
+     */
+    int getMcastDestPort() const {
+        return _mcastDestPort;
+    }
+
 protected:
     /**
      * Initialization of the module. Sends activator message
@@ -208,6 +224,16 @@ protected:
      * Caches the vlan pcp.
      */
     uint8_t _pcp;
+
+    /**
+     * Caches the multicast IP destination address.
+     */
+    inet::L3Address _mcastDestAddr;
+
+    /**
+     * Caches the multicast destination UDP port.
+     */
+    int _mcastDestPort;
 
 private:
     /**

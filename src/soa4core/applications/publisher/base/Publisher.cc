@@ -163,6 +163,12 @@ void Publisher::handleParameterChange(const char* parname) {
             this->_pcp = static_cast<uint8_t>(parameterULongCheckRange(par("pcp"), 0, MAX_Q_PRIORITY));
         }
     }
+    if (!parname || !strcmp(parname, "mcastDestAddr")) {
+        _mcastDestAddr = L3Address(par("mcastDestAddr").stringValue());
+    }
+    if (!parname || !strcmp(parname, "mcastDestPort")) {
+        _mcastDestPort = par("mcastDestPort");
+    }
 
     if (!parname || !strcmp(parname, "qosGroups")) {
         std::set<std::string> qosGroups;
@@ -176,10 +182,14 @@ void Publisher::handleParameterChange(const char* parname) {
                 this->_qosGroups.insert(QoSGroup::STD_TCP);
             } else if (qosGroup == "STD_UDP") {
                 this->_qosGroups.insert(QoSGroup::STD_UDP);
+            } else if (qosGroup == "STD_UDP_MCAST") {
+                this->_qosGroups.insert(QoSGroup::STD_UDP_MCAST);
             } else if (qosGroup == "SOMEIP_TCP") {
                 this->_qosGroups.insert(QoSGroup::SOMEIP_TCP);
             } else if (qosGroup == "SOMEIP_UDP") {
                 this->_qosGroups.insert(QoSGroup::SOMEIP_UDP);
+            } else if (qosGroup == "SOMEIP_UDP_MCAST") {
+                this->_qosGroups.insert(QoSGroup::SOMEIP_UDP_MCAST);
             } else if (qosGroup == "RT") {
                 this->_qosGroups.insert(QoSGroup::RT);
             } else if (qosGroup == "WEB") {

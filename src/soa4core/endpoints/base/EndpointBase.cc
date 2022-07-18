@@ -68,10 +68,14 @@ void EndpointBase::handleParameterChange(const char* parname) {
             _qos = QoSGroup::STD_TCP;
         } else if (!strcmp(par("qos"), "STD_UDP")) {
             _qos = QoSGroup::STD_UDP;
+        } else if (!strcmp(par("qos"), "STD_UDP_MCAST")) {
+            _qos = QoSGroup::STD_UDP_MCAST;
         } else if (!strcmp(par("qos"), "SOMEIP_TCP")) {
             _qos = QoSGroup::SOMEIP_TCP;
         } else if(!strcmp(par("qos"), "SOMEIP_UDP")) {
             _qos = QoSGroup::SOMEIP_UDP;
+        } else if(!strcmp(par("qos"), "SOMEIP_UDP_MCAST")) {
+            _qos = QoSGroup::SOMEIP_UDP_MCAST;
         } else {
             throw cRuntimeError("Endpoint QoS parameter set to unknown value");
         }

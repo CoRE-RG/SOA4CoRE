@@ -38,9 +38,11 @@ enum QoSGroup {
     RT = 0; // RealTime Requirements --> AVB / TSN
     STD_TCP = 1; // Standard Requirements --> TCP IP
     STD_UDP = 2; // Standard Requirements --> UDP IP
-    WEB = 3; // Web Requirements --> HTTP
-    SOMEIP_UDP = 4; // SOME/IP UDP IP
+    STD_UDP_MCAST = 3; // Standard Requirements --> UDP IP multicast
+    WEB = 4; // Web Requirements --> HTTP
     SOMEIP_TCP = 5; // SOME/IP TCP IP
+    SOMEIP_UDP = 6; // SOME/IP UDP IP
+    SOMEIP_UDP_MCAST = 7; // SOME/IP UDP IP multicast
 }
 
 //Type of Negotiation message for @see QoSNegotiationProtocol
