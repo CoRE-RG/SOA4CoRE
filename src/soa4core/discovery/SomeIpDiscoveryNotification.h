@@ -44,9 +44,11 @@ public:
      * @param qosGroup the QoS group requested in case of a SOME/IP subscriber
      * @param tcpPort the TCP port of this service
      * @param udpPort the UDP port of this service
+     * @param mcastDestAddr the IP multicast destination address of this service
+     * @param mcastDestPort the multicast destination port of this service
      */
     SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId, std::set<QoSGroup> qosGroups,
-                                QoSGroup qosGroup, int tcpPort, int udpPort);
+                                QoSGroup qosGroup, int tcpPort, int udpPort, inet::L3Address mcastDestAddr = inet::L3Address(), int _mcastDestPort = -1);
     virtual ~SomeIpDiscoveryNotification();
 
     /**
@@ -98,6 +100,18 @@ public:
      */
     int getUdpPort() const;
 
+    /**
+     * Returns the multicast destination port
+     * @return the multicast destination port
+     */
+    int getMcastDestPort() const;
+
+    /**
+     * Returns the multicast destination address
+     * @return the multicast destination address
+     */
+    inet::L3Address getMcastDestAddr() const;
+
     virtual bool operator==(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const;
     virtual bool operator!=(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const;
 
@@ -135,6 +149,15 @@ private:
      */
     int _udpPort;
 
+    /**
+     * IP multicast destination address used for IPv4MulticastEndpoints
+     */
+    inet::L3Address _mcastDestAddr;
+
+    /**
+     * UDP multicast destination port used for IPv4MulticastEndpoints
+     */
+    int _mcastDestPort;
 
 };
 } /* end namespace SOA4CoRE */

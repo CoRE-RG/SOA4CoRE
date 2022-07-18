@@ -128,25 +128,7 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
 
     if (!_hasQoSNP) {
         for (QoSGroup qosGroup : someIpDiscoveryNotification->getQoSGroups()) {
-            IPProtocolId ipProtocolId;
-            uint16_t publisherPort;
-            switch (qosGroup) {
-                case QoSGroup::SOMEIP_TCP:
-                    ipProtocolId = IPProtocolId::IP_PROT_TCP;
-                    publisherPort = someIpDiscoveryNotification->getTcpPort();
-                    break;
-                case QoSGroup::SOMEIP_UDP:
-                    ipProtocolId = IPProtocolId::IP_PROT_UDP;
-                    publisherPort = someIpDiscoveryNotification->getUdpPort();
-                    break;
-                default:
-                    throw cRuntimeError("Unknown QoSGroup");
-            }
-
-            IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-            ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
-            ipv4EndpointOption->setL4Protocol(ipProtocolId);
-            ipv4EndpointOption->setPort(publisherPort);
+            IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(someIpDiscoveryNotification,qosGroup);
             someIpSDHeader->encapOption(ipv4EndpointOption);
         }
     } else {
@@ -155,8 +137,6 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
         ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
         someIpSDHeader->encapOption(ipv4EndpointOption);
     }
-
-    std::string moin = this->_localAddress.str();
 
     socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
 }
@@ -177,25 +157,7 @@ void SomeIpSD::subscribeEventgroup(SomeIpDiscoveryNotification* someIpDiscoveryN
     subscribeEventgroupEntry->setTTL(TTL);
     someIpSDHeader->encapEntry(subscribeEventgroupEntry);
 
-    IPProtocolId ipProtocolId;
-    uint16_t subscriberPort;
-    switch (someIpDiscoveryNotification->getQoSGroup()) {
-        case QoSGroup::SOMEIP_TCP:
-            ipProtocolId = IPProtocolId::IP_PROT_TCP;
-            subscriberPort = someIpDiscoveryNotification->getTcpPort();
-            break;
-        case QoSGroup::SOMEIP_UDP:
-            ipProtocolId = IPProtocolId::IP_PROT_UDP;
-            subscriberPort = someIpDiscoveryNotification->getUdpPort();
-            break;
-        default:
-            throw cRuntimeError("Unknown QoSGroup");
-    }
-
-    IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Subscriber");
-    ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
-    ipv4EndpointOption->setL4Protocol(ipProtocolId);
-    ipv4EndpointOption->setPort(subscriberPort);
+    IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(someIpDiscoveryNotification);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
     socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
@@ -217,25 +179,7 @@ void SomeIpSD::subscribeEventgroupAck(SomeIpDiscoveryNotification* someIpDiscove
     subscribeEventgroupAckEntry->setTTL(TTL);
     someIpSDHeader->encapEntry(subscribeEventgroupAckEntry);
 
-    IPProtocolId ipProtocolId;
-    uint16_t publisherPort;
-    switch (someIpDiscoveryNotification->getQoSGroup()) {
-        case QoSGroup::SOMEIP_TCP:
-            ipProtocolId = IPProtocolId::IP_PROT_TCP;
-            publisherPort = someIpDiscoveryNotification->getTcpPort();
-            break;
-        case QoSGroup::SOMEIP_UDP:
-            ipProtocolId = IPProtocolId::IP_PROT_UDP;
-            publisherPort = someIpDiscoveryNotification->getUdpPort();
-            break;
-        default:
-            throw cRuntimeError("Unknown QoSGroup");
-    }
-
-    IPv4EndpointOption *ipv4EndpointOption = new IPv4EndpointOption("IPv4EndpointOption of Publisher");
-    ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
-    ipv4EndpointOption->setL4Protocol(ipProtocolId);
-    ipv4EndpointOption->setPort(publisherPort);
+    IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(someIpDiscoveryNotification);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
     socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
@@ -266,7 +210,6 @@ void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
         }
     }
 }
-
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
     inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
@@ -392,6 +335,42 @@ void SomeIpSD::receiveSignal(cComponent *source, simsignal_t signalID, cObject *
     } else {
         throw cRuntimeError("Unknown signal.");
     }
+}
+
+IPv4EndpointOption* SomeIpSD::createIpv4Endpoint(
+        SomeIpDiscoveryNotification* someIpDiscoveryNotification,
+        QoSGroup qosGroup) {
+    if (qosGroup == QoSGroup::UNDEFINED) {
+        qosGroup = someIpDiscoveryNotification->getQoSGroup();
+    }
+    IPv4EndpointOption *ipv4EndpointOption;
+    switch (qosGroup) {
+        case QoSGroup::SOMEIP_TCP:
+            ipv4EndpointOption = new IPv4EndpointOption();
+            ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
+            ipv4EndpointOption->setL4Protocol(IPProtocolId::IP_PROT_TCP);
+            ipv4EndpointOption->setPort(someIpDiscoveryNotification->getTcpPort());
+            break;
+        case QoSGroup::SOMEIP_UDP:
+            ipv4EndpointOption = new IPv4EndpointOption();
+            ipv4EndpointOption->setIpv4Address(this->_localAddress.toIPv4());
+            ipv4EndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
+            ipv4EndpointOption->setPort(someIpDiscoveryNotification->getUdpPort());
+            break;
+        case QoSGroup::SOMEIP_UDP_MCAST:
+            if(someIpDiscoveryNotification->getMcastDestAddr().isUnspecified()
+                    || someIpDiscoveryNotification->getMcastDestPort() < 0) {
+                throw cRuntimeError("MCast QoS selected but no mcast endpoint information set.");
+            }
+            ipv4EndpointOption = new IPv4MulticastOption();
+            ipv4EndpointOption->setIpv4Address(someIpDiscoveryNotification->getMcastDestAddr().toIPv4());
+            ipv4EndpointOption->setL4Protocol(IPProtocolId::IP_PROT_UDP);
+            ipv4EndpointOption->setPort(someIpDiscoveryNotification->getMcastDestPort());
+            break;
+        default:
+            throw cRuntimeError("Unknown QoSGroup");
+    }
+    return ipv4EndpointOption;
 }
 
 ExtractedQoSOptions SomeIpSD::getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption) {

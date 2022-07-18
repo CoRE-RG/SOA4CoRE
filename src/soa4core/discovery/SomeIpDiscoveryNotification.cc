@@ -18,9 +18,10 @@
 namespace SOA4CoRE {
 
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
-                                                         std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort) :
+                                                         std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
+                                                         inet::L3Address mcastDestAddr, int _mcastDestPort) :
                              DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
-                             _tcpPort(tcpPort), _udpPort(udpPort) {
+                             _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(_mcastDestPort) {
 }
 
 SomeIpDiscoveryNotification::~SomeIpDiscoveryNotification() {
@@ -40,6 +41,8 @@ SomeIpDiscoveryNotification& SomeIpDiscoveryNotification::operator=(const SomeIp
     _qosGroup = other._qosGroup;
     _tcpPort = other._tcpPort;
     _udpPort = other._udpPort;
+    _mcastDestAddr = other._mcastDestAddr;
+    _mcastDestPort = other._mcastDestPort;
     return *this;
 }
 
@@ -67,12 +70,22 @@ int SomeIpDiscoveryNotification::getUdpPort() const {
     return _udpPort;
 }
 
+int SomeIpDiscoveryNotification::getMcastDestPort() const {
+    return _mcastDestPort;
+}
+
+inet::L3Address SomeIpDiscoveryNotification::getMcastDestAddr() const {
+    return _mcastDestAddr;
+}
+
 bool SomeIpDiscoveryNotification::operator==(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const {
     return static_cast<DiscoveryNotification>(*this) == static_cast<DiscoveryNotification>(someIpDiscoveryNotification)
             && _instanceId == someIpDiscoveryNotification._instanceId
             && (_qosGroups == someIpDiscoveryNotification._qosGroups || _qosGroup == someIpDiscoveryNotification._qosGroup)
             && _tcpPort == someIpDiscoveryNotification._tcpPort
-            && _udpPort == someIpDiscoveryNotification._udpPort;
+            && _udpPort == someIpDiscoveryNotification._udpPort
+            && _mcastDestAddr == someIpDiscoveryNotification._mcastDestAddr
+            && _mcastDestPort == someIpDiscoveryNotification._mcastDestPort;
 }
 
 bool SomeIpDiscoveryNotification::operator!=(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const {

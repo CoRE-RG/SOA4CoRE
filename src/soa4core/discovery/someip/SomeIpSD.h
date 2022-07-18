@@ -157,6 +157,14 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
     void processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader);
 
     /**
+     * Create an IPv4 endpoint option for the discovery notification
+     * @param someIpDiscoveryNotification the discovery information
+     * @param qosGroup the qos group to be used, if < 0 getQoSGroup() is used.
+     * @return The created IPv4EndpointOption
+     */
+    IPv4EndpointOption* createIpv4Endpoint(SomeIpDiscoveryNotification* someIpDiscoveryNotification, QoSGroup qosGroup = QoSGroup::UNDEFINED);
+
+    /**
      * Returns the extracted QoSOptions from an IPv4EndpointOption
      * @param ipv4EndpointOption
      * @return the extracted QoSOptions from an IPv4EndpointOption
