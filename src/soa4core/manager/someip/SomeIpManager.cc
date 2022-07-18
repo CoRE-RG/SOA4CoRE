@@ -194,6 +194,7 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
                     delete csi_udp_someip;
                     break;
                 }
+                // TODO
                 default:
                     throw cRuntimeError("Unknown QoS group");
             }
@@ -223,6 +224,7 @@ void SomeIpManager::createSubscriberEndpoint(SomeIpDiscoveryNotification* someIp
             delete csi_someip_udp;
             break;
         }
+        // TODO
         default:
             throw cRuntimeError("Unknown QoS group.");
     }

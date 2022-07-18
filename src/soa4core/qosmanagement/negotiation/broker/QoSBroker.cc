@@ -196,6 +196,8 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
                 switch (response->getQosClass()) {
                 case QoSGroup::STD_UDP:
                     connectionlessCSI = new CSI_UDP();
+                    // TODO SOMEIP_UDP_MCAST
+                    // TODO STD_UDP_MCAST
                 case QoSGroup::SOMEIP_UDP: {
                     connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP_UDP();
                     // create or find the subscriber

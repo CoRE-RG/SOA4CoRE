@@ -195,6 +195,9 @@ PublisherEndpointBase* Manager::createOrFindPublisherEndpoint(
             case QoSGroup::STD_UDP:
                 pub = createUDPPublisherEndpoint(qosGroup, publisherConnector);
                 break;
+            case QoSGroup::STD_UDP_MCAST:
+                // TODO STD_UDP_MCAST
+                break;
             case QoSGroup::WEB:
                 throw cRuntimeError("The web QoS Group is not yet available");
                 break;
@@ -203,6 +206,9 @@ PublisherEndpointBase* Manager::createOrFindPublisherEndpoint(
                 break;
             case QoSGroup::SOMEIP_UDP:
                 pub = createSomeIpUDPPublisherEndpoint(qosGroup, publisherConnector);
+                break;
+            case QoSGroup::SOMEIP_UDP_MCAST:
+                //TODO SOMEIP_UDP_MCAST
                 break;
             default:
                 throw cRuntimeError("Unknown connection type.");
