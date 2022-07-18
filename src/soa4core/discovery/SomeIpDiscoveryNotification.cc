@@ -119,6 +119,53 @@ bool SomeIpDiscoveryNotification::addQoSGroup(QoSGroup qosGroup) {
     return false;
 }
 
+bool SomeIpDiscoveryNotification::updateFromEndpointOption(
+        SomeIpSDOption* option) {
+    bool changed = false;
+    IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*option);
+    if(!ipv4EndpointOption) {
+        throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
+    }
+    bool isMcast = false;
+    if(dynamic_cast<IPv4MulticastOption*>(*option)) {
+        isMcast = true;
+    } else {
+        if (_address.isUnspecified() || _address != ipv4EndpointOption->getIpv4Address()){
+            changed = true;
+            this->setAddress(ipv4EndpointOption->getIpv4Address());
+        }
+    }
+    switch(ipv4EndpointOption->getL4Protocol()) {
+        case IPProtocolId::IP_PROT_UDP:
+            if(isMcast) {
+                if(!this->addQoSGroup(QoSGroup::SOMEIP_UDP_MCAST)){
+                    throw cRuntimeError("Already parsed another UDP Option for this offer");
+                }
+                changed = true;
+                this->setMcastDestAddr(ipv4EndpointOption->getIpv4Address());
+                this->setMcastDestPort(ipv4EndpointOption->getPort());
+            } else {
+                if(!this->addQoSGroup(QoSGroup::SOMEIP_UDP)){
+                    throw cRuntimeError("Already parsed another Mcast Option for this offer");
+                }
+                changed = true;
+                this->setUdpPort(ipv4EndpointOption->getPort());
+            }
+            break;
+        case IPProtocolId::IP_PROT_TCP:
+            if(!this->addQoSGroup(QoSGroup::SOMEIP_TCP)){
+                throw cRuntimeError("Already parsed another TCP Option for this offer");
+            }
+            changed = true;
+            this->setUdpPort(ipv4EndpointOption->getPort());
+            this->setTcpPort(ipv4EndpointOption->getPort());
+            break;
+        default:
+            throw cRuntimeError("Unknown L4 Protocol.");
+    }
+    return changed;
+}
+
 bool SomeIpDiscoveryNotification::operator==(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const {
     return static_cast<DiscoveryNotification>(*this) == static_cast<DiscoveryNotification>(someIpDiscoveryNotification)
             && _instanceId == someIpDiscoveryNotification._instanceId

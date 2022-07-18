@@ -17,7 +17,11 @@
 #define SOA4CORE_DISCOVERY_SOMEIPDISCOVERYNOTIFICATION_H_
 
 #include "soa4core/discovery/DiscoveryNotification.h"
+//AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
+#include "soa4core/messages/someip/SomeIpSDOption_m.h"
+//INET
+#include <inet/networklayer/common/L3Address.h>
 
 namespace SOA4CoRE {
 
@@ -131,6 +135,14 @@ public:
      * @return true if the QoS group has been inserted
      */
     bool addQoSGroup(QoSGroup qosGroup);
+
+    /**
+     * Updated information from a given endpoint option.
+     * Only updated if qos group not already exists.
+     * @param option the endpoint option to pars
+     * @return true if updated
+     */
+    bool updateFromEndpointOption(SomeIpSDOption* option);
 
 protected:
 private:

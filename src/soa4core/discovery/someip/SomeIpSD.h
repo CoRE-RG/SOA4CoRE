@@ -164,13 +164,6 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      */
     IPv4EndpointOption* createIpv4Endpoint(SomeIpDiscoveryNotification* someIpDiscoveryNotification, QoSGroup qosGroup = QoSGroup::UNDEFINED);
 
-    /**
-     * Returns the extracted QoSOptions from an IPv4EndpointOption
-     * @param ipv4EndpointOption
-     * @return the extracted QoSOptions from an IPv4EndpointOption
-     */
-    ExtractedQoSOptions getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption);
-
 /**
  * Member variables
  */

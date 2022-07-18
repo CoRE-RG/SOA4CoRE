@@ -231,48 +231,67 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
     std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
-    std::set<QoSGroup> qosGroups;
-    L3Address ipAddress;
-    uint16_t tcpPort;
-    uint16_t udpPort;
+    SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
+    notification->setServiceId(offerEntry->getServiceID());
+    notification->setInstanceId(offerEntry->getInstanceID());
 
     std::advance(optionsListIterator, offerEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < offerEntry->getNum1stOptions(); firstOptionsIdx++) {
         std::advance(optionsListIterator, firstOptionsIdx);
+
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
         if(!ipv4EndpointOption) {
-            throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
+            throw cRuntimeError("SomeIpSDOption is not of type IPv4EndpointOption");
         }
-        ipAddress = ipv4EndpointOption->getIpv4Address();
-        if (!_hasQoSNP) {
-            ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-            tcpPort = extractedQoSOptions.getTcpPort() != -1 ? extractedQoSOptions.getTcpPort() : tcpPort;
-            udpPort = extractedQoSOptions.getUdpPort() != -1 ? extractedQoSOptions.getUdpPort() : udpPort;
-            qosGroups.insert(extractedQoSOptions.getQosGroup());
+        if (_hasQoSNP) {
+            if(!dynamic_cast<IPv4MulticastOption*>(ipv4EndpointOption)) {
+                notification->setAddress(ipv4EndpointOption->getIpv4Address());
+            }
+        } else {
+            notification->updateFromEndpointOption(ipv4EndpointOption);
         }
     }
-    SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(offerEntry->getServiceID(), ipAddress,
-            offerEntry->getInstanceID(), qosGroups, QoSGroup::UNDEFINED, tcpPort, udpPort);
-    emit(_serviceOfferSignal,someIpDiscoveryNotification);
+
+    if(notification->getAddress().isUnspecified()) {
+        // check if this is mcast endpoint
+        if(notification->getMcastDestAddr().isUnspecified()) {
+            throw cRuntimeError("No address found in non mcast options");
+        }
+        // use udp src of someip sd message instead
+        if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
+            notification->setAddress(udpDataIndication->getSrcAddr());
+        } else {
+            throw cRuntimeError("Could not determine any address for service");
+        }
+    }
+
+    emit(_serviceOfferSignal,notification);
 }
 
 void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader) {
     std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
     std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
-    QoSGroup qosGroup;
     std::advance(optionsListIterator, subscribeEventGroupEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupEntry->getNum1stOptions(); firstOptionsIdx++) {
         std::advance(optionsListIterator, firstOptionsIdx);
-        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
-        if(!ipv4EndpointOption) {
-            throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
+
+        SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
+        notification->setServiceId(subscribeEventGroupEntry->getServiceID());
+        notification->setInstanceId(subscribeEventGroupEntry->getInstanceID());
+        notification->updateFromEndpointOption(*optionsListIterator);
+        notification->setQosGroup(notification->getQoSGroups()[0]);
+
+        if(notification->getAddress().isUnspecified()) {
+            // use udp src of someip sd message instead
+            if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
+                notification->setAddress(udpDataIndication->getSrcAddr());
+            } else {
+                throw cRuntimeError("Could not determine any address for service");
+            }
         }
-        ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-        qosGroup = extractedQoSOptions.getQosGroup();
-        SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(subscribeEventGroupEntry->getServiceID(), ipv4EndpointOption->getIpv4Address(),
-                subscribeEventGroupEntry->getInstanceID(), std::set<QoSGroup>{}, qosGroup, extractedQoSOptions.getTcpPort(), extractedQoSOptions.getUdpPort());
-        emit(_subscribeEventGroupSignal, someIpDiscoveryNotification);
+
+        emit(_subscribeEventGroupSignal, notification);
     }
 }
 
@@ -280,27 +299,26 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
     std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
     std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
-    std::set<QoSGroup> qosGroups;
-    L3Address ipAddress;
-    uint16_t tcpPort;
-    uint16_t udpPort;
+    SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
+    notification->setServiceId(offerEntry->getServiceID());
+    notification->setInstanceId(offerEntry->getInstanceID());
 
     std::advance(optionsListIterator, subscribeEventGroupAckEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupAckEntry->getNum1stOptions(); firstOptionsIdx++) {
         std::advance(optionsListIterator, firstOptionsIdx);
-        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
-        if(!ipv4EndpointOption) {
-            throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
-        }
-        ipAddress = ipv4EndpointOption->getIpv4Address();
-        ExtractedQoSOptions extractedQoSOptions = getExtractedQoSOptions(ipv4EndpointOption);
-        tcpPort = extractedQoSOptions.getTcpPort() != -1 ? extractedQoSOptions.getTcpPort() : tcpPort;
-        udpPort = extractedQoSOptions.getUdpPort() != -1 ? extractedQoSOptions.getUdpPort() : udpPort;
-        qosGroups.insert(extractedQoSOptions.getQosGroup());
+
+        notification->updateFromEndpointOption(*optionsListIterator);
     }
-    SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(subscribeEventGroupAckEntry->getServiceID(), ipAddress,
-            subscribeEventGroupAckEntry->getInstanceID(), qosGroups, QoSGroup::UNDEFINED, tcpPort, udpPort);
-    emit(_subscribeEventGroupAckSignal, someIpDiscoveryNotification);
+
+    if(notification->getAddress().isUnspecified()) {
+        // use udp src of someip sd message instead
+        if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
+            notification->setAddress(udpDataIndication->getSrcAddr());
+        } else {
+            throw cRuntimeError("Could not determine any address for service");
+        }
+    }
+    emit(_subscribeEventGroupAckSignal, notification);
 }
 
 void SomeIpSD::discover(ServiceIdentifier serviceIdentifier) {
@@ -371,25 +389,6 @@ IPv4EndpointOption* SomeIpSD::createIpv4Endpoint(
             throw cRuntimeError("Unknown QoSGroup");
     }
     return ipv4EndpointOption;
-}
-
-ExtractedQoSOptions SomeIpSD::getExtractedQoSOptions(IPv4EndpointOption* ipv4EndpointOption) {
-    QoSGroup qosGroup = QoSGroup::RT;
-    int tcpPort = -1;
-    int udpPort = -1;
-    switch(ipv4EndpointOption->getL4Protocol()) {
-        case IPProtocolId::IP_PROT_UDP:
-            qosGroup = QoSGroup::SOMEIP_UDP;
-            udpPort = ipv4EndpointOption->getPort();
-            break;
-        case IPProtocolId::IP_PROT_TCP:
-            qosGroup = QoSGroup::SOMEIP_TCP;
-            tcpPort = ipv4EndpointOption->getPort();
-            break;
-        default:
-            throw cRuntimeError("Unknown L4 Protocol.");
-    }
-    return ExtractedQoSOptions(qosGroup, udpPort, tcpPort);
 }
 
 } /* end namespace SOA4CoRE */
