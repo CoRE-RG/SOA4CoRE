@@ -280,7 +280,7 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
         notification->setServiceId(subscribeEventGroupEntry->getServiceID());
         notification->setInstanceId(subscribeEventGroupEntry->getInstanceID());
         notification->updateFromEndpointOption(*optionsListIterator);
-        notification->setQosGroup(notification->getQoSGroups()[0]);
+        notification->setQosGroup(*(notification->getQoSGroups().begin()));
 
         if(notification->getAddress().isUnspecified()) {
             // use udp src of someip sd message instead
@@ -300,8 +300,8 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
     std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
     SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
-    notification->setServiceId(offerEntry->getServiceID());
-    notification->setInstanceId(offerEntry->getInstanceID());
+    notification->setServiceId(subscribeEventGroupAckEntry->getServiceID());
+    notification->setInstanceId(subscribeEventGroupAckEntry->getInstanceID());
 
     std::advance(optionsListIterator, subscribeEventGroupAckEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupAckEntry->getNum1stOptions(); firstOptionsIdx++) {

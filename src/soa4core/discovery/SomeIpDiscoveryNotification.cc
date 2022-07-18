@@ -122,12 +122,12 @@ bool SomeIpDiscoveryNotification::addQoSGroup(QoSGroup qosGroup) {
 bool SomeIpDiscoveryNotification::updateFromEndpointOption(
         SomeIpSDOption* option) {
     bool changed = false;
-    IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*option);
+    IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(option);
     if(!ipv4EndpointOption) {
         throw cRuntimeError("SomeIpSDOption is not type of IPv4EndpointOption");
     }
     bool isMcast = false;
-    if(dynamic_cast<IPv4MulticastOption*>(*option)) {
+    if(dynamic_cast<IPv4MulticastOption*>(option)) {
         isMcast = true;
     } else {
         if (_address.isUnspecified() || _address != ipv4EndpointOption->getIpv4Address()){
