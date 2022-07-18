@@ -49,6 +49,10 @@ public:
      */
     SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId, std::set<QoSGroup> qosGroups,
                                 QoSGroup qosGroup, int tcpPort, int udpPort, inet::L3Address mcastDestAddr = inet::L3Address(), int _mcastDestPort = -1);
+    /**
+     * Default Constructor. Set all values manually!
+     */
+    SomeIpDiscoveryNotification();
     virtual ~SomeIpDiscoveryNotification();
 
     /**
@@ -114,6 +118,19 @@ public:
 
     virtual bool operator==(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const;
     virtual bool operator!=(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const;
+
+    void setMcastDestAddr(const inet::L3Address& mcastDestAddr);
+    void setMcastDestPort(int mcastDestPort);
+    void setQosGroup(QoSGroup qosGroup);
+    void setTcpPort(int tcpPort);
+    void setUdpPort(int udpPort);
+    void setInstanceId(uint16_t instanceId);
+
+    /**
+     * Inserts the QoS Group if not already in the set.
+     * @return true if the QoS group has been inserted
+     */
+    bool addQoSGroup(QoSGroup qosGroup);
 
 protected:
 private:

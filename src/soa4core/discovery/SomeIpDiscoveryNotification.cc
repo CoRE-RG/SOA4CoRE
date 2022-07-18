@@ -14,6 +14,8 @@
 // 
 
 #include <soa4core/discovery/SomeIpDiscoveryNotification.h>
+//STD
+#include <algorithm>
 
 namespace SOA4CoRE {
 
@@ -22,6 +24,11 @@ SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3
                                                          inet::L3Address mcastDestAddr, int _mcastDestPort) :
                              DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
                              _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(_mcastDestPort) {
+}
+
+SomeIpDiscoveryNotification::SomeIpDiscoveryNotification() :
+                             DiscoveryNotification(), _instanceId(0xFFFF), _qosGroup(QoSGroup::UNDEFINED),
+                             _tcpPort(-1), _udpPort(-1), _mcastDestPort(-1){
 }
 
 SomeIpDiscoveryNotification::~SomeIpDiscoveryNotification() {
@@ -76,6 +83,40 @@ int SomeIpDiscoveryNotification::getMcastDestPort() const {
 
 inet::L3Address SomeIpDiscoveryNotification::getMcastDestAddr() const {
     return _mcastDestAddr;
+}
+
+void SomeIpDiscoveryNotification::setInstanceId(uint16_t instanceId) {
+    _instanceId = instanceId;
+}
+
+void SomeIpDiscoveryNotification::setMcastDestAddr(
+        const inet::L3Address& mcastDestAddr) {
+    _mcastDestAddr = mcastDestAddr;
+}
+
+void SomeIpDiscoveryNotification::setMcastDestPort(
+        int mcastDestPort) {
+    _mcastDestPort = mcastDestPort;
+}
+
+void SomeIpDiscoveryNotification::setQosGroup(QoSGroup qosGroup) {
+    _qosGroup = qosGroup;
+}
+
+void SomeIpDiscoveryNotification::setTcpPort(int tcpPort) {
+    _tcpPort = tcpPort;
+}
+
+void SomeIpDiscoveryNotification::setUdpPort(int udpPort) {
+    _udpPort = udpPort;
+}
+
+bool SomeIpDiscoveryNotification::addQoSGroup(QoSGroup qosGroup) {
+    if(std::find(_qosGroups.begin(), _qosGroups.end(), qosGroup) == _qosGroups.end()) {
+        _qosGroups.insert(qosGroup);
+        return true;
+    }
+    return false;
 }
 
 bool SomeIpDiscoveryNotification::operator==(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) const {

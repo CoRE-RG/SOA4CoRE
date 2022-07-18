@@ -20,6 +20,9 @@ namespace SOA4CoRE {
 DiscoveryNotification::DiscoveryNotification(int serviceId, inet::L3Address address): _serviceId(serviceId), _address(address)  {
 }
 
+DiscoveryNotification::DiscoveryNotification() : _serviceId(0xFFFF), _address(inet::L3Address()) {
+}
+
 DiscoveryNotification::~DiscoveryNotification() {
 }
 
@@ -44,6 +47,15 @@ int DiscoveryNotification::getServiceId() const {
 
 inet::L3Address DiscoveryNotification::getAddress() const {
        return _address;
+}
+
+void DiscoveryNotification::setAddress(
+        const inet::L3Address& address) {
+    _address = address;
+}
+
+void DiscoveryNotification::setServiceId(int serviceId) {
+    _serviceId = serviceId;
 }
 
 bool DiscoveryNotification::operator==(const DiscoveryNotification& discoveryNotification) const {

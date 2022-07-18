@@ -41,6 +41,10 @@ public:
      * @param address the IP address of the node where the application resides
      */
     DiscoveryNotification(int serviceId, inet::L3Address address);
+    /**
+     * Default Constructor. Set all values manually!
+     */
+    DiscoveryNotification();
     virtual ~DiscoveryNotification();
 
     /**
@@ -73,6 +77,9 @@ public:
      * @return the IP address
      */
     inet::L3Address getAddress() const;
+
+    void setAddress(const inet::L3Address& address);
+    void setServiceId(int serviceId);
 
     virtual bool operator==(const DiscoveryNotification& discoveryNotification) const;
     virtual bool operator!=(const DiscoveryNotification& discoveryNotification) const;
