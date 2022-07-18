@@ -239,6 +239,7 @@ IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
             ipProtocolId = IPProtocolId::IP_PROT_TCP;
             break;
         case QoSGroup::SOMEIP_UDP:
+        case QoSGroup::SOMEIP_UDP_MCAST:
             ipProtocolId = IPProtocolId::IP_PROT_UDP;
             break;
         default:

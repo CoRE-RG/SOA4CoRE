@@ -295,6 +295,9 @@ QoSGroup Manager::getQoSGroupForConnectionType(ConnectionType connectionType){
     case ConnectionType::ct_udp:
         return QoSGroup::STD_UDP;
         break;
+    case ConnectionType::ct_udp_mcast:
+        return QoSGroup::STD_UDP_MCAST;
+        break;
     case ConnectionType::ct_http:
         return QoSGroup::WEB;
         break;
@@ -303,6 +306,9 @@ QoSGroup Manager::getQoSGroupForConnectionType(ConnectionType connectionType){
         break;
     case ConnectionType::ct_someip_udp:
         return QoSGroup::SOMEIP_UDP;
+        break;
+    case ConnectionType::ct_someip_udp_mcast:
+        return QoSGroup::SOMEIP_UDP_MCAST;
         break;
     default:
         throw cRuntimeError("Unknown connection type.");

@@ -33,6 +33,8 @@ enum ConnectionType{
     ct_avb			= 3;
     ct_someip_udp	= 4;
     ct_someip_tcp	= 5;
+    ct_someip_udp_mcast	= 6;
+    ct_udp_mcast	= 7;
 }
 
 packet ConnectionSpecificInformation {
