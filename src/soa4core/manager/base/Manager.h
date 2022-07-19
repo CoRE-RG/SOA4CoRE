@@ -148,6 +148,40 @@ protected:
     SubscriberEndpointBase* findSubscriberEndpoint(uint32_t publisherServiceId, QoSGroup qosGroup);
 
     /**
+     * @brief Searches for a subscriber connector on this node for the given service id and QoS.
+     *
+     * @param publisherServiceId     the service id of the publisher.
+     * @param qosGroup               the QoS group of the publisher.
+     * @return                       the subscriber connector if found, else nullptr.
+     */
+    SubscriberConnector* findSubscriberConnector(uint32_t publisherServiceId, QoSGroup qosGroup);
+
+    /**
+     * @brief Dispatcher method that calls the correct QoS dependent create subscriber function.
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the subscriber endpoint
+     */
+    virtual SubscriberEndpointBase* createConnectionSpecificSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+
+    /**
+     * @brief Dispatcher method that calls the correct QoS dependent create publisher function.
+     *
+     * @param qosGroup the QoS group
+     * @param publisherConnector the publisher connector
+     * @return the publisher endpoint
+     */
+    virtual PublisherEndpointBase* createQoSSpecificPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+
+    /**
+     * Returns the QoS group for the given connection type
+     * @param  connectionType @see~ConnectionType
+     * @return the qos group. @see~QoSGroups
+     */
+    virtual QoSGroup getQoSGroupForConnectionType(ConnectionType connectionType);
+
+    /**
      * @brief Initiates a service discovery for the given service
      *
      * @param publisherServiceIdentifier service identifier of the service to be subscribed to
@@ -181,13 +215,6 @@ private:
     SubscriberConnector* createSubscriberConnector(ServiceBase* subscriberApplication);
 
     /**
-     * Returns the QoS group for the given connection type
-     * @param  connectionType @see~ConnectionType
-     * @return the qos group. @see~QoSGroups
-     */
-    QoSGroup getQoSGroupForConnectionType(ConnectionType connectionType);
-
-    /**
      * @brief Creates an AVB subscriber endpoint
      *
      * @param csi the csi
@@ -215,25 +242,6 @@ private:
     SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
 
     /**
-     * @brief Creates a SOME/IP TCP subscriber endpoint
-     *
-     * @param csi the csi
-     * @param subscriberConnector the subscriber connector
-     * @return the SOME/IP TCP subscriber endpoint
-     */
-    SubscriberEndpointBase* createSomeIpTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
-
-    /**
-     * @brief Creates a SOME/IP UDP subscriber endpoint
-     *
-     * @param csi the csi
-     * @param subscriberConnector the subscriber connector
-     * @return the SOME/IP UDP subscriber endpoint
-     */
-    SubscriberEndpointBase* createSomeIpUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
-
-
-    /**
      * @brief Creates an AVB publisher endpoint
      *
      * @param qosGroup the QoS group
@@ -259,25 +267,6 @@ private:
      * @return the UDP publisher endpoint
      */
     PublisherEndpointBase* createUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
-    /**
-     * @brief Creates a SOME/IP TCP publisher endpoint
-     *
-     * @param qosGroup the QoS group
-     * @param publisherConnector the publisher connector
-     * @return the SOME/IP TCP publisher endpoint
-     */
-    PublisherEndpointBase* createSomeIpTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
-    /**
-     * @brief Creates a SOME/IP UDP publisher endpoint
-     *
-     * @param qosGroup the QoS group
-     * @param publisherConnector the publisher connector
-     * @return the SOME/IP UDP publisher endpoint
-     */
-    PublisherEndpointBase* createSomeIpUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
 
 /**
  * Member variables

@@ -18,8 +18,12 @@
 #include "soa4core/manager/someip/SomeIpManager.h"
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/tcp/SOMEIPTCPPublisherEndpoint.h"
+#include "soa4core/endpoints/subscriber/someip/tcp/SOMEIPTCPSubscriberEndpoint.h"
+#include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPSubscriberEndpoint.h"
 //STD
 #include <algorithm>
+
+using namespace std;
 
 namespace SOA4CoRE {
 
@@ -56,7 +60,7 @@ void SomeIpManager::processAcknowledgedSubscription(cObject* obj) {
     if (!(someIpDiscoveryNotification = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
         throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
     }
-    std::set<QoSGroup> qosGroups = someIpDiscoveryNotification->getQoSGroups();
+    set<QoSGroup> qosGroups = someIpDiscoveryNotification->getQoSGroups();
     for (QoSGroup qosGroup : qosGroups) {
         if (_pendingSubscriptionsMap.count(someIpDiscoveryNotification->getServiceId())
             && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].count(qosGroup)
@@ -85,6 +89,64 @@ void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObj
     }
 }
 
+SubscriberEndpointBase* SomeIpManager::createConnectionSpecificSubscriberEndpoint(ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+    SubscriberEndpointBase* sub = nullptr;
+    //create according endpoint
+    switch(csi->getConnectionType()){
+    case ConnectionType::ct_someip_tcp:
+        sub = createSomeIpTCPSubscriberEndpoint(csi, subscriberConnector);
+        break;
+    case ConnectionType::ct_someip_udp:
+        sub = createSomeIpUDPSubscriberEndpoint(csi, subscriberConnector);
+        break;
+    case ConnectionType::ct_someip_udp_mcast:
+        //TODO SOMEIP_UDP_MCAST
+        break;
+    default:
+        sub = Manager::createConnectionSpecificSubscriberEndpoint(csi, subscriberConnector);
+        break;
+    }
+    return sub;
+}
+
+PublisherEndpointBase* SomeIpManager::createQoSSpecificPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector) {
+    PublisherEndpointBase* pub = nullptr;
+    //create according endpoint
+    switch(qosGroup){
+    case QoSGroup::SOMEIP_TCP:
+        pub = createSomeIpTCPPublisherEndpoint(qosGroup, publisherConnector);
+        break;
+    case QoSGroup::SOMEIP_UDP:
+        pub = createSomeIpUDPPublisherEndpoint(qosGroup, publisherConnector);
+        break;
+    case QoSGroup::SOMEIP_UDP_MCAST:
+        //TODO SOMEIP_UDP_MCAST
+        break;
+    default:
+        pub = Manager::createQoSSpecificPublisherEndpoint(qosGroup,publisherConnector);
+        break;
+    }
+    return pub;
+}
+
+QoSGroup SomeIpManager::getQoSGroupForConnectionType(ConnectionType connectionType){
+    switch(connectionType){
+    case ConnectionType::ct_someip_tcp:
+        return QoSGroup::SOMEIP_TCP;
+        break;
+    case ConnectionType::ct_someip_udp:
+        return QoSGroup::SOMEIP_UDP;
+        break;
+    case ConnectionType::ct_someip_udp_mcast:
+        return QoSGroup::SOMEIP_UDP_MCAST;
+        break;
+    default:
+        return Manager::getQoSGroupForConnectionType(connectionType);
+        break;
+    }
+}
+
 // Subscriber-side
 void SomeIpManager::discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
     Subscriber* subscriberApplication_ = nullptr;
@@ -93,6 +155,141 @@ void SomeIpManager::discoverService(ServiceIdentifier publisherServiceIdentifier
     }
     _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()][subscriberApplication_->getQoSGroup()] = SubscriptionState::WAITING_FOR_OFFER;
     _sd->discover(publisherServiceIdentifier);
+}
+
+SubscriberEndpointBase* SomeIpManager::createSomeIpTCPSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_SOMEIP_TCP* csi_someip = dynamic_cast<CSI_SOMEIP_TCP*>(csi);
+
+    if(csi_someip){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.subscriber.someip.tcp.SOMEIPTCPSubscriberEndpoint");
+        // 2. Create the module;
+        SOMEIPTCPSubscriberEndpoint* someipTcpEndpoint =
+                            dynamic_cast<SOMEIPTCPSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = subscriberConnector->getAddress().str();
+        someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = subscriberConnector->getTcpPort();
+        someipTcpEndpoint->par("localPort").setIntValue(localPort);
+        someipTcpEndpoint->par("remoteAddress").setStringValue(csi_someip->getAddress());
+        someipTcpEndpoint->par("remotePort").setIntValue(csi_someip->getPort());
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(someipTcpEndpoint);
+        //connect endpoint to the reader
+        ret->setSubscriberConnector(subscriberConnector);
+        subscriberConnector->setEndpoint(ret);
+    }
+
+    return ret;
+}
+
+SubscriberEndpointBase* SomeIpManager::createSomeIpUDPSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_SOMEIP_UDP* csi_someip = dynamic_cast<CSI_SOMEIP_UDP*>(csi);
+
+    if(csi_someip){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.subscriber.someip.udp.SOMEIPUDPSubscriberEndpoint");
+        // 2. Create the module;
+        SOMEIPUDPSubscriberEndpoint* someipUdpEndpoint =
+                            dynamic_cast<SOMEIPUDPSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = subscriberConnector->getAddress().str();
+        someipUdpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = subscriberConnector->getUdpPort();
+        someipUdpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(someipUdpEndpoint);
+        //connect endpoint to the reader
+        ret->setSubscriberConnector(subscriberConnector);
+        subscriberConnector->setEndpoint(ret);
+    }
+
+    return ret;
+}
+
+PublisherEndpointBase* SomeIpManager::createSomeIpTCPPublisherEndpoint(
+        QoSGroup qosGroup,
+        PublisherConnector* publisherConnector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qosGroup == QoSGroup::SOMEIP_TCP){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.publisher.someip.tcp.SOMEIPTCPPublisherEndpoint");
+        // 2. Create the module;
+        SOMEIPTCPPublisherEndpoint* someipTcpEndpoint =
+                            dynamic_cast<SOMEIPTCPPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
+        }
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = publisherApplication->getAddress().str();
+        someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = publisherApplication->getTcpPort();
+        someipTcpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(someipTcpEndpoint);
+        //connect endpoint to the reader
+        ret->setPublisherConnector(publisherConnector);
+        publisherConnector->addEndpoint(ret);
+    }
+    return ret;
+}
+
+PublisherEndpointBase* SomeIpManager::createSomeIpUDPPublisherEndpoint(
+        QoSGroup qosGroup,
+        PublisherConnector* publisherConnector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qosGroup == QoSGroup::SOMEIP_UDP){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.publisher.someip.udp.SOMEIPUDPPublisherEndpoint");
+        // 2. Create the module;
+        SOMEIPUDPPublisherEndpoint* someipUdpEndpoint =
+                            dynamic_cast<SOMEIPUDPPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
+        }
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = publisherApplication->getAddress().str();
+        someipUdpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = publisherApplication->getUdpPort();
+        someipUdpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(someipUdpEndpoint);
+        //connect endpoint to the reader
+        ret->setPublisherConnector(publisherConnector);
+        publisherConnector->addEndpoint(ret);
+    }
+    return ret;
 }
 
 // Publisher-side
@@ -117,8 +314,8 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
         throw cRuntimeError("Notification must be of type SomeIpDiscoveryNotification.");
     }
     if (_pendingSubscriptionsMap.count(someIpdiscoveryNotificationOffer->getServiceId())) {
-        std::set<QoSGroup> offeredQoSGroups = someIpdiscoveryNotificationOffer->getQoSGroups();
-        std::list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(someIpdiscoveryNotificationOffer->getServiceId());
+        set<QoSGroup> offeredQoSGroups = someIpdiscoveryNotificationOffer->getQoSGroups();
+        list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(someIpdiscoveryNotificationOffer->getServiceId());
 
         for (QoSGroup offeredQoSGroup : offeredQoSGroups) {
             if (_pendingSubscriptionsMap.count(someIpdiscoveryNotificationOffer->getServiceId())
@@ -127,7 +324,7 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
                 _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] = SubscriptionState::WAITING_FOR_SUBACK;
                 // Find the appropriate connector to the QoSGroup
                 for (SubscriberConnector* subscriberConnector: subscriberConnectors) {
-                    std::vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
+                    vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
                     if (subscriberApplications.empty()) {
                         throw cRuntimeError("Empty subscriber connector without applications!.");
                     }
@@ -137,7 +334,7 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
                     }
                     if (subscriberApplication->getQoSGroup() == offeredQoSGroup) {
                         SomeIpDiscoveryNotification* someIpdiscoveryNotificationSubscription = new SomeIpDiscoveryNotification(someIpdiscoveryNotificationOffer->getServiceId(),
-                                someIpdiscoveryNotificationOffer->getAddress(), someIpdiscoveryNotificationOffer->getInstanceId(), std::set<QoSGroup>{}, offeredQoSGroup, subscriberConnector->getTcpPort(),
+                                someIpdiscoveryNotificationOffer->getAddress(), someIpdiscoveryNotificationOffer->getInstanceId(), set<QoSGroup>{}, offeredQoSGroup, subscriberConnector->getTcpPort(),
                                 subscriberConnector->getUdpPort()
                         );
                         emit(_subscribeSignal, someIpdiscoveryNotificationSubscription);
@@ -163,9 +360,9 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
         if (!(publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
             throw cRuntimeError("The application must not null and must be of type Publisher");
         }
-        if (std::find(publisher->getQoSGroups().begin(), publisher->getQoSGroups().end(), someIpDiscoveryNotification->getQoSGroup()) != publisher->getQoSGroups().end()) {
+        if (find(publisher->getQoSGroups().begin(), publisher->getQoSGroups().end(), someIpDiscoveryNotification->getQoSGroup()) != publisher->getQoSGroups().end()) {
             SomeIpDiscoveryNotification* someIpDiscoveryNotificationAcknowledge = new SomeIpDiscoveryNotification(someIpDiscoveryNotification->getServiceId(), someIpDiscoveryNotification->getAddress(),
-                    publisher->getInstanceId(), std::set<QoSGroup>{}, someIpDiscoveryNotification->getQoSGroup(), publisher->getTcpPort(), publisher->getUdpPort());
+                    publisher->getInstanceId(), set<QoSGroup>{}, someIpDiscoveryNotification->getQoSGroup(), publisher->getTcpPort(), publisher->getUdpPort());
             switch (someIpDiscoveryNotification->getQoSGroup()) {
                 case QoSGroup::SOMEIP_TCP: {
                     PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(someIpDiscoveryNotification->getServiceId(), QoSGroup::SOMEIP_TCP);
@@ -194,7 +391,7 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
                     delete csi_udp_someip;
                     break;
                 }
-                // TODO
+                //TODO SOMEIP_UDP_MCAST
                 default:
                     throw cRuntimeError("Unknown QoS group");
             }
@@ -206,22 +403,29 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
 
 // Subscriber-side
 void SomeIpManager::createSubscriberEndpoint(SomeIpDiscoveryNotification* someIpDiscoveryNotification, QoSGroup qosGroup) {
-    SubscriberEndpointBase* sub = nullptr;
+    ConnectionSpecificInformation* csi;
     switch (qosGroup) {
         case QoSGroup::SOMEIP_TCP: {
             CSI_SOMEIP_TCP* csi_someip_tcp = new CSI_SOMEIP_TCP();
             csi_someip_tcp->setAddress(someIpDiscoveryNotification->getAddress().str().c_str());
             csi_someip_tcp->setPort(someIpDiscoveryNotification->getTcpPort());
-            sub = createOrFindSubscriberEndpoint(someIpDiscoveryNotification->getServiceId(), csi_someip_tcp);
-            delete csi_someip_tcp;
+            csi = csi_someip_tcp;
             break;
         }
         case QoSGroup::SOMEIP_UDP: {
             CSI_SOMEIP_UDP* csi_someip_udp = new CSI_SOMEIP_UDP();
             csi_someip_udp->setAddress(someIpDiscoveryNotification->getAddress().str().c_str());
             csi_someip_udp->setPort(someIpDiscoveryNotification->getUdpPort());
-            sub = createOrFindSubscriberEndpoint(someIpDiscoveryNotification->getServiceId(), csi_someip_udp);
-            delete csi_someip_udp;
+            csi = csi_someip_udp;
+            break;
+        }
+        case QoSGroup::SOMEIP_UDP_MCAST: {
+            CSI_SOMEIP_UDP_MCAST* csi_someip_udp_mcast = new CSI_SOMEIP_UDP_MCAST();
+            csi_someip_udp_mcast->setAddress(someIpDiscoveryNotification->getAddress().str().c_str());
+            csi_someip_udp_mcast->setPort(someIpDiscoveryNotification->getUdpPort());
+            csi_someip_udp_mcast->setDestAddress(someIpDiscoveryNotification->getMcastDestAddr().str().c_str());
+            csi_someip_udp_mcast->setDestPort(someIpDiscoveryNotification->getMcastDestPort());
+            csi = csi_someip_udp_mcast;
             break;
         }
         // TODO
@@ -229,9 +433,11 @@ void SomeIpManager::createSubscriberEndpoint(SomeIpDiscoveryNotification* someIp
             throw cRuntimeError("Unknown QoS group.");
     }
 
+    SubscriberEndpointBase* sub = createOrFindSubscriberEndpoint(someIpDiscoveryNotification->getServiceId(), csi);
     if(!sub) {
         throw cRuntimeError("No subscriber was created...");
     }
+    delete csi;
 }
 
 IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {

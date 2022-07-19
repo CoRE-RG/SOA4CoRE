@@ -27,14 +27,14 @@ namespace SOA4CoRE;
 
 //Type of ConenctionSpecificInformation
 enum ConnectionType{
-    ct_udp			= 0;
-    ct_tcp			= 1;
-    ct_http			= 2;
-    ct_avb			= 3;
-    ct_someip_udp	= 4;
+    ct_tcp			= 0;
+    ct_udp			= 1;
+    ct_udp_mcast	= 2;
+    ct_http			= 3;
+    ct_avb			= 4;
     ct_someip_tcp	= 5;
-    ct_someip_udp_mcast	= 6;
-    ct_udp_mcast	= 7;
+    ct_someip_udp	= 6;
+    ct_someip_udp_mcast	= 7;
 }
 
 packet ConnectionSpecificInformation {
@@ -53,6 +53,12 @@ packet CSI_UDP extends ConnectionSpecificInformation {
     int port;
 }
 
+packet CSI_UDP_MCAST extends CSI_UDP {
+    connectionType = ConnectionType::ct_someip_udp;
+    string destAddress;
+    int destPort;
+}
+
 packet CSI_AVB extends ConnectionSpecificInformation {
     connectionType = ConnectionType::ct_avb;
     long streamID;
@@ -65,4 +71,8 @@ packet CSI_SOMEIP_UDP extends CSI_UDP {
 
 packet CSI_SOMEIP_TCP extends CSI_TCP {
     connectionType = ConnectionType::ct_someip_tcp;
+}
+
+packet CSI_SOMEIP_UDP_MCAST extends CSI_UDP_MCAST {
+    connectionType = ConnectionType::ct_someip_udp_mcast;
 }
