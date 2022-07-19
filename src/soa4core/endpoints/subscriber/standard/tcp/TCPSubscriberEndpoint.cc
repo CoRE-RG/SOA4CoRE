@@ -66,14 +66,6 @@ void TCPSubscriberEndpoint::initializeTransportConnection() {
 void TCPSubscriberEndpoint::handleParameterChange(const char* parname) {
     STDSubscriberEndpointBase::handleParameterChange(parname);
 
-    if (!parname || !strcmp(parname, "localAddress"))
-    {
-        _localAddress = par("localAddress").stdstringValue();
-    }
-    if (!parname || !strcmp(parname, "localPort"))
-    {
-        _localPort = par("localPort");
-    }
     if (!parname || !strcmp(parname, "remoteAddress"))
     {
         _remoteAddress = par("remoteAddress").stdstringValue();

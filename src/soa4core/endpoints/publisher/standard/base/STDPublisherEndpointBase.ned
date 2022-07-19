@@ -32,5 +32,11 @@ simple STDPublisherEndpointBase extends PublisherEndpointBase
 {
     parameters:
         // The endpoint path or name
-        endpointPath = default("RTPublisher");
+        endpointPath = default("STDPublisher");
+    
+        // Local ip address for socket
+        string localAddress;
+    
+        // Local port for socket
+        int localPort;
 }

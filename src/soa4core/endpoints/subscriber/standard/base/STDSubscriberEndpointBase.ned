@@ -32,5 +32,10 @@ simple STDSubscriberEndpointBase extends SubscriberEndpointBase
 {
     parameters:
         // The endpoint path or name
-        endpointPath = default("RTSubscriber");
+        endpointPath = default("STDSubscriber");
+    
+        // Local IP address for socket
+        string localAddress;
+        // Local port for socket
+        int localPort;
 }

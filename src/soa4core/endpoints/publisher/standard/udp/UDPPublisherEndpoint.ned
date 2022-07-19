@@ -34,10 +34,4 @@ simple UDPPublisherEndpoint extends STDPublisherEndpointBase
     parameters:
         @class(SOA4CoRE::UDPPublisherEndpoint);
     	qos = default("STD_UDP");
-    
-        // Local ip address for TCP socket
-        string localAddress;
-    
-        // Local port for TCP socket
-        int localPort;
 }

@@ -34,10 +34,4 @@ simple TCPPublisherEndpoint extends STDPublisherEndpointBase
     parameters:
         @class(SOA4CoRE::TCPPublisherEndpoint);
     	qos = default("STD_TCP");
-    
-        // Local ip address for TCP socket
-        string localAddress;
-    
-        // Local port for TCP socket
-        int localPort;
 }

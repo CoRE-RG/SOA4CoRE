@@ -36,8 +36,4 @@ simple UDPSubscriberEndpoint extends STDSubscriberEndpointBase
         // The QoS group this endpoint serves
     	qos = default("STD_UDP");
     
-        // Local IP address for TCP socket
-        string localAddress;
-        // Local port for TCP socket
-        int localPort;
 }

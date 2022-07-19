@@ -34,19 +34,6 @@ ConnectionSpecificInformation* UDPPublisherEndpoint::getConnectionSpecificInform
     return connection;
 }
 
-void UDPPublisherEndpoint::handleParameterChange(const char* parname) {
-    STDPublisherEndpointBase::handleParameterChange(parname);
-
-    if (!parname || !strcmp(parname, "localAddress"))
-    {
-        _localAddress = par("localAddress").stdstringValue();
-    }
-    if (!parname || !strcmp(parname, "localPort"))
-    {
-        _localPort = par("localPort");
-    }
-}
-
 void UDPPublisherEndpoint::handleTransportIn(cMessage* msg) {
     UDPControlInfo *ind = dynamic_cast<UDPControlInfo *>(msg->getControlInfo());
     if (!ind) {

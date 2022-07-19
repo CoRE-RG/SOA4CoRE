@@ -61,7 +61,6 @@ public:
     void addRemote(ConnectionSpecificInformation* csi);
 
 protected:
-    virtual void handleParameterChange(const char* parname) override;
 
     /**
      * Handles messages incoming from transport gate and
@@ -96,16 +95,6 @@ protected:
      * UDP server socket
      */
     inet::UDPSocket _serverSocket;
-
-    /**
-     * Local ip address for UDP socket
-     */
-    std::string _localAddress;
-
-    /**
-     * Local port for UDP socket
-     */
-    int _localPort;
 
     /**
      * Remotes.

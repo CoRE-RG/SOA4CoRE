@@ -49,17 +49,4 @@ void UDPSubscriberEndpoint::initializeTransportConnection() {
     _isConnected = true;
 }
 
-void UDPSubscriberEndpoint::handleParameterChange(const char* parname) {
-    STDSubscriberEndpointBase::handleParameterChange(parname);
-
-    if (!parname || !strcmp(parname, "localAddress"))
-    {
-        _localAddress = par("localAddress").stdstringValue();
-    }
-    if (!parname || !strcmp(parname, "localPort"))
-    {
-        _localPort = par("localPort");
-    }
-}
-
 } /*end namespace SOA4CoRE*/

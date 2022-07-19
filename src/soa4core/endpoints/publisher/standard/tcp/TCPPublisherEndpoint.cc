@@ -30,17 +30,6 @@ TCPPublisherEndpoint::~TCPPublisherEndpoint() {
     this->deleteSockets();
 }
 
-void TCPPublisherEndpoint::handleParameterChange(const char* parname) {
-    STDPublisherEndpointBase::handleParameterChange(parname);
-
-    if (!parname || !strcmp(parname, "localAddress")) {
-        _localAddress = par("localAddress").stdstringValue();
-    }
-    if (!parname || !strcmp(parname, "localPort")) {
-        _localPort = par("localPort");
-    }
-}
-
 ConnectionSpecificInformation* TCPPublisherEndpoint::getConnectionSpecificInformation() {
     CSI_TCP* connection = new CSI_TCP();
     connection->setAddress(_localAddress.c_str());

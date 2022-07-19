@@ -35,6 +35,30 @@ namespace SOA4CoRE {
  */
 class STDPublisherEndpointBase : public PublisherEndpointBase
 {
+/**
+ * Methods
+ */
+public:
+protected:
+    virtual void handleParameterChange(const char* parname) override;
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
+
+    /**
+     * Local ip address for UDP socket
+     */
+    std::string _localAddress;
+
+    /**
+     * Local port for UDP socket
+     */
+    int _localPort;
+private:
 };
 
 } /*end namespace SOA4CoRE*/

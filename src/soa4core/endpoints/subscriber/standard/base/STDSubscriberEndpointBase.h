@@ -35,6 +35,34 @@ namespace SOA4CoRE {
  */
 class STDSubscriberEndpointBase : public SubscriberEndpointBase
 {
+/**
+ * Methods
+ */
+public:
+protected:
+    /**
+     * @brief Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
+    virtual void handleParameterChange(const char* parname) override;
+private:
+
+/**
+ * Member variables
+ */
+public:
+protected:
+    /**
+     * The local IP address.
+     */
+    std::string _localAddress;
+
+    /**
+     * The local TCP port.
+     */
+    int _localPort;
+private:
 };
 
 } /*end namespace SOA4CoRE*/

@@ -70,25 +70,10 @@ protected:
 
 private:
 
-/**
- * Member variables
- */
-public:
-protected:
     /**
      * The TCP socket to receive on.
      */
     inet::TCPSocket _socket;
-
-    /**
-     * The local IP address.
-     */
-    std::string _localAddress;
-
-    /**
-     * The local TCP port.
-     */
-    int _localPort;
 
     /**
      * The remote IP address.

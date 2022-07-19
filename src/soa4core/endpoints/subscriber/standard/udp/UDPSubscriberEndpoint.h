@@ -48,12 +48,6 @@ public:
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 
 protected:
-    /**
-     * @brief Indicates a parameter has changed.
-     *
-     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
-     */
-    virtual void handleParameterChange(const char* parname) override;
 
     /**
      * Is called during module initialization to initialize the transport connection;
@@ -70,16 +64,6 @@ protected:
      * The UDP socket to receive on.
      */
     inet::UDPSocket _socket;
-
-    /**
-     * The local IP address.
-     */
-    std::string _localAddress;
-
-    /**
-     * The local UDP port.
-     */
-    int _localPort;
 private:
 };
 

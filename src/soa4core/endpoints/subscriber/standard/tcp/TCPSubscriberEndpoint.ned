@@ -35,11 +35,6 @@ simple TCPSubscriberEndpoint extends STDSubscriberEndpointBase
         @class(SOA4CoRE::TCPSubscriberEndpoint);
         // The QoS group this enpoint serves
     	qos = default("STD_TCP");
-    
-        // Local IP address for TCP socket
-        string localAddress;
-        // Local port for TCP socket
-        int localPort;
         
         // Remote IP address for TCP socket
         string remoteAddress;

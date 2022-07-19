@@ -56,7 +56,6 @@ public:
     virtual ConnectionSpecificInformation* getConnectionSpecificInformation() override;
 
 protected:
-    virtual void handleParameterChange(const char* parname) override;
 
     /**
      * Handles messages incoming from transport gate and
@@ -86,15 +85,6 @@ private:
  */
 public:
 protected:
-    /**
-     * Local ip address for TCP socket
-     */
-    std::string _localAddress;
-
-    /**
-     * Local port for TCP socket
-     */
-    int _localPort;
 
     /**
      * TCP server socket
