@@ -163,8 +163,8 @@ void Publisher::handleParameterChange(const char* parname) {
             this->_pcp = static_cast<uint8_t>(parameterULongCheckRange(par("pcp"), 0, MAX_Q_PRIORITY));
         }
     }
-    if (!parname || !strcmp(parname, "mcastDestAddr")) {
-        _mcastDestAddr = L3Address(par("mcastDestAddr").stringValue());
+    if (!parname || !strcmp(parname, "mcastDestAddress")) {
+        _mcastDestAddr = par("mcastDestAddress").stringValue();
     }
     if (!parname || !strcmp(parname, "mcastDestPort")) {
         _mcastDestPort = par("mcastDestPort");

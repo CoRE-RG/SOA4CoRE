@@ -19,9 +19,11 @@
 #include "soa4core/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
+#include "soa4core/endpoints/subscriber/standard/udp/UDPMcastSubscriberEndpoint.h"
 #include "soa4core/endpoints/publisher/realtime/avb/AVBPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/standard/tcp/TCPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
+#include "soa4core/endpoints/publisher/standard/udp/UDPMcastPublisherEndpoint.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
 //INET
 #include <inet/networklayer/common/L3AddressResolver.h>
@@ -297,7 +299,7 @@ SubscriberEndpointBase* Manager::createConnectionSpecificSubscriberEndpoint(Conn
         sub = createUDPSubscriberEndpoint(csi, subscriberConnector);
         break;
     case ConnectionType::ct_udp_mcast:
-        // TODO STD_UDP_MCAST
+        sub = createUDPMcastSubscriberEndpoint(csi, subscriberConnector);
         break;
     case ConnectionType::ct_http:
         throw cRuntimeError("The HTTP connection is not yet available");
@@ -323,7 +325,7 @@ PublisherEndpointBase* Manager::createQoSSpecificPublisherEndpoint(QoSGroup qosG
         pub = createUDPPublisherEndpoint(qosGroup, publisherConnector);
         break;
     case QoSGroup::STD_UDP_MCAST:
-        // TODO STD_UDP_MCAST
+        pub = createUDPMcastPublisherEndpoint(qosGroup, publisherConnector);
         break;
     case QoSGroup::WEB:
         throw cRuntimeError("The web QoS Group is not yet available");
@@ -458,6 +460,39 @@ SubscriberEndpointBase* Manager::createUDPSubscriberEndpoint(
     return ret;
 }
 
+SubscriberEndpointBase* Manager::createUDPMcastSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_UDP_MCAST* csi_udp = dynamic_cast<CSI_UDP_MCAST*>(csi);
+
+    if(csi_udp){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.subscriber.standard.udp.UDPMcastSubscriberEndpoint");
+        // 2. Create the module;
+        UDPMcastSubscriberEndpoint* udpEndpoint =
+                            dynamic_cast<UDPMcastSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = subscriberConnector->getAddress().str();
+        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = subscriberConnector->getUdpPort();
+        udpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(udpEndpoint);
+        //connect endpoint to the reader
+        ret->setSubscriberConnector(subscriberConnector);
+        subscriberConnector->setEndpoint(ret);
+    }
+
+    return ret;
+}
+
 PublisherEndpointBase* Manager::createAVBPublisherEndpoint(
         QoSGroup qosGroup,
         PublisherConnector* publisherConnector) {
@@ -571,6 +606,45 @@ PublisherEndpointBase* Manager::createUDPPublisherEndpoint(
         udpEndpoint->par("localAddress").setStringValue(localAddr);
         int localPort = publisherApplication->getUdpPort();
         udpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
+        //connect endpoint to the reader
+        ret->setPublisherConnector(publisherConnector);
+        publisherConnector->addEndpoint(ret);
+    }
+
+    return ret;
+}
+
+PublisherEndpointBase* Manager::createUDPMcastPublisherEndpoint(
+        QoSGroup qosGroup,
+        PublisherConnector* publisherConnector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qosGroup == QoSGroup::STD_UDP_MCAST){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.publisher.standard.udp.UDPMcastPublisherEndpoint");
+        // 2. Create the module;
+        UDPMcastPublisherEndpoint* udpEndpoint =
+                            dynamic_cast<UDPMcastPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
+        }
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = publisherApplication->getAddress().str();
+        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = publisherApplication->getUdpPort();
+        udpEndpoint->par("localPort").setIntValue(localPort);
+        string mcastAddr = publisherApplication->getMcastDestAddr();
+        udpEndpoint->par("mcastDestAddress").setStringValue(mcastAddr);
+        int mcastPort = publisherApplication->getMcastDestPort();
+        udpEndpoint->par("mcastDestPort").setIntValue(mcastPort);
 
         // cast back.
         ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);

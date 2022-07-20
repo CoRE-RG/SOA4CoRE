@@ -242,6 +242,15 @@ private:
     SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
 
     /**
+     * @brief Creates an UDP multicast subscriber endpoint
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the UDP mcast subscriber endpoint
+     */
+    SubscriberEndpointBase* createUDPMcastSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+
+    /**
      * @brief Creates an AVB publisher endpoint
      *
      * @param qosGroup the QoS group
@@ -267,6 +276,15 @@ private:
      * @return the UDP publisher endpoint
      */
     PublisherEndpointBase* createUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+
+    /**
+     * @brief Creates a UDP multicast publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param publisherConnector the publisher connector
+     * @return the UDP mcast publisher endpoint
+     */
+    PublisherEndpointBase* createUDPMcastPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
 
 /**
  * Member variables

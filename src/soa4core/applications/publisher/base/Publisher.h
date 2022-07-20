@@ -115,7 +115,7 @@ public:
      * Returns the multicast destination address
      * @return the multicast destination address
      */
-    const inet::L3Address& getMcastDestAddr() const {
+    const std::string getMcastDestAddr() const {
         return _mcastDestAddr;
     }
 
@@ -228,7 +228,7 @@ protected:
     /**
      * Caches the multicast IP destination address.
      */
-    inet::L3Address _mcastDestAddr;
+    std::string _mcastDestAddr;
 
     /**
      * Caches the multicast destination UDP port.

@@ -196,8 +196,6 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
                 switch (response->getQosClass()) {
                 case QoSGroup::STD_UDP:
                     connectionlessCSI = new CSI_UDP();
-                    // TODO SOMEIP_UDP_MCAST
-                    // TODO STD_UDP_MCAST
                 case QoSGroup::SOMEIP_UDP: {
                     connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP_UDP();
                     // create or find the subscriber
@@ -265,19 +263,13 @@ bool QoSBroker::handleEstablish(QoSNegotiationEstablish* establish) {
                     ConnectionSpecificInformation* info = pub->getConnectionSpecificInformation();
                     if(info){
                         finalise->encapsulate(info);
-
-                        if (CSI_UDP* csiUdp = dynamic_cast<CSI_UDP*>(info)) {
+                        CSI_UDP* csiUdp = dynamic_cast<CSI_UDP*>(info);
+                        if (csiUdp != nullptr
+                                && (info->getConnectionType() == ConnectionType::ct_udp
+                                        || info->getConnectionType() == ConnectionType::ct_someip_udp)) {
                             if(ConnectionSpecificInformation* subConnection = dynamic_cast<ConnectionSpecificInformation*>( establish->decapsulate())){
                                 if (UDPPublisherEndpoint* udpPublisher = dynamic_cast<UDPPublisherEndpoint*> (pub)) {
-                                    switch (info->getConnectionType()) {
-                                    case ConnectionType::ct_udp:
                                         udpPublisher->addRemote(subConnection);
-                                        break;
-                                    case ConnectionType::ct_someip_udp:
-                                        // SOME/IP SD
-                                        udpPublisher->addRemote(subConnection);
-                                        break;
-                                    }
                                 }
                                 delete subConnection;
                             }
