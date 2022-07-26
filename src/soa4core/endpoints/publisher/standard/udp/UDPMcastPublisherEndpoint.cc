@@ -19,6 +19,8 @@
 #include "UDPMcastPublisherEndpoint.h"
 //INET
 #include <inet/networklayer/common/L3AddressResolver.h>
+#include "inet/networklayer/contract/IRoutingTable.h"
+#include "inet/networklayer/ipv4/IPv4Route.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
 
@@ -67,25 +69,16 @@ void UDPMcastPublisherEndpoint::initializeTransportConnection() {
     _serverSocket.bind(_localAddress.c_str() ? L3AddressResolver().resolve(_localAddress.c_str()) : L3Address(), _localPort);
     _isConnected = true;
 
-    //
-    //    const char *multicastInterface = par("multicastInterface");
-    //    if (multicastInterface[0]) {
-    //        IInterfaceTable *ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
-    //        InterfaceEntry *ie = ift->getInterfaceByName(multicastInterface);
-    //        if (!ie)
-    //            throw cRuntimeError("Wrong multicastInterface setting: no interface named \"%s\"", multicastInterface);
-    //        socket.setMulticastOutputInterface(ie->getInterfaceId());
-    //    }
-    //
-    //    bool receiveBroadcast = par("receiveBroadcast");
-    //    if (receiveBroadcast)
-    //        socket.setBroadcast(true);
-    //
-    //    bool joinLocalMulticastGroups = par("joinLocalMulticastGroups");
-    //    if (joinLocalMulticastGroups) {
-    //        MulticastGroupList mgl = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this)->collectMulticastGroups();
-    //        socket.joinLocalMulticastGroups(mgl);
-    //    }
+    // set output interface on socket
+    IInterfaceTable *ift = dynamic_cast<IInterfaceTable*>(this->getParentModule()->getParentModule()->getSubmodule("interfaceTable"));
+    if(!ift)
+        throw cRuntimeError("Could not locate interface table at relative path from endpoint \"^.^.interfaceTable\"");
+    InterfaceEntry *ie = ift->getInterfaceByName("eth0");
+    if (!ie)
+        throw cRuntimeError("Wrong multicastInterface setting: no interface named \"eth0\"");
+    _serverSocket.setMulticastOutputInterface(ie->getInterfaceId());
+    _serverSocket.setMulticastLoop(false);
+
 }
 
 void UDPMcastPublisherEndpoint::publish(cPacket* msg) {
