@@ -37,38 +37,22 @@ ConnectionSpecificInformation* UDPMcastSubscriberEndpoint::getConnectionSpecific
 }
 
 void UDPMcastSubscriberEndpoint::initializeTransportConnection() {
-    // find UDP module and add another gate.
-    cModule* udp = getParentModule()->getParentModule()->getSubmodule("udp");
-    if(!udp){
-        throw cRuntimeError("udp module required for udp subscriber but not found");
-    }
-    //connect to transport via middleware
-    connectToTransportGate(udp, "appIn", "appOut");
+    // switcheroo workaround to bind the socket to mcast port
+    int tmp = _localPort;
+    _localPort = _mcastDestPort;
+    // let the base init the socket first
+    UDPSubscriberEndpoint::initializeTransportConnection();
+    _localPort = tmp;
 
-    // update server socket and connect
-    _socket.setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));
-    _socket.setReuseAddress(true);
-    _socket.bind(_localAddress.c_str() ? L3AddressResolver().resolve(_localAddress.c_str()) : L3Address(), _localPort);
-    _isConnected = true;
-//
-//    const char *multicastInterface = par("multicastInterface");
-//    if (multicastInterface[0]) {
-//        IInterfaceTable *ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
-//        InterfaceEntry *ie = ift->getInterfaceByName(multicastInterface);
-//        if (!ie)
-//            throw cRuntimeError("Wrong multicastInterface setting: no interface named \"%s\"", multicastInterface);
-//        socket.setMulticastOutputInterface(ie->getInterfaceId());
-//    }
-//
-//    bool receiveBroadcast = par("receiveBroadcast");
-//    if (receiveBroadcast)
-//        socket.setBroadcast(true);
-//
-//    bool joinLocalMulticastGroups = par("joinLocalMulticastGroups");
-//    if (joinLocalMulticastGroups) {
-//        MulticastGroupList mgl = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this)->collectMulticastGroups();
-//        socket.joinLocalMulticastGroups(mgl);
-//    }
+    // set input interface on socket
+    IInterfaceTable *ift = dynamic_cast<IInterfaceTable*>(this->getParentModule()->getParentModule()->getSubmodule("interfaceTable"));
+    if(!ift)
+        throw cRuntimeError("Could not locate interface table at relative path from endpoint \"^.^.interfaceTable\"");
+    InterfaceEntry *ie = ift->getInterfaceByName("eth0");
+    if (!ie)
+        throw cRuntimeError("Wrong multicastInterface setting: no interface named \"eth0\"");
+
+    _socket.joinMulticastGroup(L3Address(_mcastDestAddress.c_str()), ie->getInterfaceId());
 }
 
 void UDPMcastSubscriberEndpoint::handleParameterChange(const char* parname) {

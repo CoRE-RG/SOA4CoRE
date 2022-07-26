@@ -32,6 +32,7 @@
 #include <cstring>
 #include <iterator>
 #include <stdio.h>
+#include <string.h>
 
 
 using namespace std;
@@ -482,6 +483,10 @@ SubscriberEndpointBase* Manager::createUDPMcastSubscriberEndpoint(
         udpEndpoint->par("localAddress").setStringValue(localAddr);
         int localPort = subscriberConnector->getUdpPort();
         udpEndpoint->par("localPort").setIntValue(localPort);
+        string mcastAddr = csi_udp->getDestAddress();
+        udpEndpoint->par("mcastDestAddress").setStringValue(mcastAddr);
+        int mcastPort = csi_udp->getDestPort();
+        udpEndpoint->par("mcastDestPort").setIntValue(mcastPort);
 
         // cast back.
         ret = dynamic_cast<SubscriberEndpointBase*>(udpEndpoint);

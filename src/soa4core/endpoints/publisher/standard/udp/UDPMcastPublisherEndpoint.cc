@@ -54,20 +54,8 @@ void UDPMcastPublisherEndpoint::handleParameterChange(const char* parname) {
 }
 
 void UDPMcastPublisherEndpoint::initializeTransportConnection() {
-    // find UDP module and add another gate.
-    cModule* udp = getParentModule()->getParentModule()->getSubmodule("udp");
-    if(!udp){
-        throw cRuntimeError("udp module required for udp publisher but not found");
-    }
-    //connect to transport via middleware
-    connectToTransportGate(udp, "appIn", "appOut");
-
-    // update server socket and listen
-    _serverSocket.setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));
-    _serverSocket.setReuseAddress(true);
-
-    _serverSocket.bind(_localAddress.c_str() ? L3AddressResolver().resolve(_localAddress.c_str()) : L3Address(), _localPort);
-    _isConnected = true;
+    // let the base init the socket first
+    UDPPublisherEndpoint::initializeTransportConnection();
 
     // set output interface on socket
     IInterfaceTable *ift = dynamic_cast<IInterfaceTable*>(this->getParentModule()->getParentModule()->getSubmodule("interfaceTable"));

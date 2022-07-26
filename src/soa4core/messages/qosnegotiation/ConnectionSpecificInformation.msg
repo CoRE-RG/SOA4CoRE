@@ -54,7 +54,7 @@ packet CSI_UDP extends ConnectionSpecificInformation {
 }
 
 packet CSI_UDP_MCAST extends CSI_UDP {
-    connectionType = ConnectionType::ct_someip_udp;
+    connectionType = ConnectionType::ct_udp_mcast;
     string destAddress;
     int destPort;
 }
@@ -69,10 +69,10 @@ packet CSI_SOMEIP_UDP extends CSI_UDP {
     connectionType = ConnectionType::ct_someip_udp;
 }
 
-packet CSI_SOMEIP_TCP extends CSI_TCP {
-    connectionType = ConnectionType::ct_someip_tcp;
-}
-
 packet CSI_SOMEIP_UDP_MCAST extends CSI_UDP_MCAST {
     connectionType = ConnectionType::ct_someip_udp_mcast;
+}
+
+packet CSI_SOMEIP_TCP extends CSI_TCP {
+    connectionType = ConnectionType::ct_someip_tcp;
 }
