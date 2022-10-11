@@ -47,6 +47,14 @@ simple SomeIpSD extends UDPBasicApp like IServiceDiscovery
         messageLength = default(16B);
         // The send interval of a message
         sendInterval = default(0.001s);
+        // Multicast interface
+      	multicastInterface = default("eth0");
+        // Join mcast
+        joinLocalMulticastGroups = default(true);
+        // SOME/IP multicast address
+        string mcastDestAddress = default("224.0.2.254");
+      
+        
      gates:
         // Input gate for service discovery module
         input sdIn;

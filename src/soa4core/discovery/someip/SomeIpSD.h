@@ -80,6 +80,11 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      */
     virtual bool handleNodeStart(IDoneCallback *doneCallback) override;
 
+    /**
+     * Set additional socket options
+     */
+    virtual void setSocketOptions() override;
+
   private:
     /**
      * Discovers a service
@@ -164,6 +169,15 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      */
     IPv4EndpointOption* createIpv4Endpoint(SomeIpDiscoveryNotification* someIpDiscoveryNotification, QoSGroup qosGroup = QoSGroup::UNDEFINED);
 
+    /**
+     * Send a SOME/IP SD message to a specific destination address and port
+     * @param someIpSDHeader
+     * @param destIp
+     * @param destPort
+     */
+    void sendTo(SomeIpSDHeader *someIpSDHeader, inet::L3Address destIp = inet::IPv4Address::UNSPECIFIED_ADDRESS,
+            int destPort = -1);
+
 /**
  * Member variables
  */
@@ -189,6 +203,11 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      * The local ip address
      */
     inet::L3Address _localAddress;
+
+    /**
+     * The SOME/IP SD multicast address
+     */
+    inet::L3Address _mcastDestAddress;
 
     /**
      * Indicates if QoS Negotiation Protocol is present

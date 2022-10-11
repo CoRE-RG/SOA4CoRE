@@ -21,6 +21,7 @@
 //INET
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/networklayer/contract/ipv4/IPv4Address.h>
+#include "inet/common/ModuleAccess.h"
 //STD
 #include <list>
 
@@ -45,6 +46,7 @@ void SomeIpSD::initialize(int stage) {
 
         localPort = par("localPort");
         destPort = par("destPort");
+        _mcastDestAddress = inet::L3Address(par("mcastDestAddress"));
         startTime = par("startTime").doubleValue();
         stopTime = par("stopTime").doubleValue();
         packetName = par("packetName");
@@ -78,6 +80,19 @@ bool SomeIpSD::handleNodeStart(IDoneCallback *doneCallback)
     return true;
 }
 
+void SomeIpSD::setSocketOptions() {
+    socket.setMulticastLoop(false);
+    UDPBasicApp::setSocketOptions();
+    const char *multicastInterface = par("multicastInterface");
+    if (multicastInterface[0]) {
+        IInterfaceTable *ift = getModuleFromPar<IInterfaceTable>(par("interfaceTableModule"), this);
+        InterfaceEntry *ie = ift->getInterfaceByName(multicastInterface);
+        if (!ie)
+            throw cRuntimeError("Wrong multicastInterface setting: no interface named \"%s\"", multicastInterface);
+        socket.joinMulticastGroup(_mcastDestAddress, ie->getInterfaceId());
+    }
+}
+
 void SomeIpSD::handleMessageWhenUp(cMessage *msg) {
     if (SomeIpSDHeader *someIpSDHeader = dynamic_cast<SomeIpSDHeader*>(msg)) {
         if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
@@ -106,7 +121,7 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
     findEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(findEntry);
 
-    socket.sendTo(someIpSDHeader, inet::IPv4Address(BROADCASTADDRESS), destPort);
+    sendTo(someIpSDHeader);
 }
 
 void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
@@ -138,7 +153,7 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
         someIpSDHeader->encapOption(ipv4EndpointOption);
     }
 
-    socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
+    sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress());
 }
 
 void SomeIpSD::subscribeEventgroup(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
@@ -160,7 +175,7 @@ void SomeIpSD::subscribeEventgroup(SomeIpDiscoveryNotification* someIpDiscoveryN
     IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(someIpDiscoveryNotification);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
-    socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
+    sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress());
 }
 
 void SomeIpSD::subscribeEventgroupAck(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
@@ -182,7 +197,7 @@ void SomeIpSD::subscribeEventgroupAck(SomeIpDiscoveryNotification* someIpDiscove
     IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(someIpDiscoveryNotification);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
-    socket.sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress(), destPort);
+    sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress());
 }
 
 void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
@@ -389,6 +404,16 @@ IPv4EndpointOption* SomeIpSD::createIpv4Endpoint(
             throw cRuntimeError("Unknown QoSGroup");
     }
     return ipv4EndpointOption;
+}
+
+void SomeIpSD::sendTo(SomeIpSDHeader* someIpSDHeader, inet::L3Address destIp, int destPort) {
+    if(destIp.isUnspecified()) {
+        destIp = this->_mcastDestAddress;
+    }
+    if(destPort == -1) {
+        destPort = this->destPort;
+    }
+    socket.sendTo(someIpSDHeader, destIp, destPort);
 }
 
 } /* end namespace SOA4CoRE */
