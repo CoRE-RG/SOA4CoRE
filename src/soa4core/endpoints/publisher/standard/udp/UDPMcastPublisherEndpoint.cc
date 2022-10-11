@@ -67,6 +67,8 @@ void UDPMcastPublisherEndpoint::initializeTransportConnection() {
     _serverSocket.setMulticastOutputInterface(ie->getInterfaceId());
     _serverSocket.setMulticastLoop(false);
 
+    _serverSocket.joinMulticastGroup(L3Address(_mcastDestAddress.c_str()), ie->getInterfaceId());
+
 }
 
 void UDPMcastPublisherEndpoint::publish(cPacket* msg) {
