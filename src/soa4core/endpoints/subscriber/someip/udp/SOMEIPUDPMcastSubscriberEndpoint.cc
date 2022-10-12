@@ -17,9 +17,8 @@
 
 #include <soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPMcastSubscriberEndpoint.h>
 
-#include <inet/networklayer/common/L3AddressResolver.h>
 //AUTO-GENERATED MESSAGES
-#include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
+#include "soa4core/messages/someip/SomeIpHeader_m.h"
 
 using namespace inet;
 

@@ -299,7 +299,7 @@ void SomeIpManager::lookForService(cObject* obj) {
         if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication())) {
             SomeIpDiscoveryNotification* someIpDiscoveryNotificationFindResponse = new SomeIpDiscoveryNotification(publisher->getServiceId(),
                     someIpDiscoveryNotificationFindRequest->getAddress(), publisher->getInstanceId(), publisher->getQoSGroups(),
-                    QoSGroup::UNDEFINED, publisher->getTcpPort(), publisher->getUdpPort()
+                    QoSGroup::UNDEFINED, publisher->getTcpPort(), publisher->getUdpPort(), L3Address(publisher->getMcastDestAddr().c_str()), publisher->getMcastDestPort()
             );
             emit(_findResultSignal,someIpDiscoveryNotificationFindResponse);
         }

@@ -15,14 +15,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/applications/base/ServiceBase.h"
 #include "SOMEIPUDPMcastPublisherEndpoint.h"
-//INET
-#include <inet/networklayer/common/L3AddressResolver.h>
-#include "inet/networklayer/contract/IRoutingTable.h"
-#include "inet/networklayer/ipv4/IPv4Route.h"
+
 //AUTO-GENERATED MESSAGES
-#include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
+#include "soa4core/messages/someip/SomeIpHeader_m.h"
 
 using namespace inet;
 using namespace std;
@@ -45,7 +41,7 @@ void SOMEIPUDPMcastPublisherEndpoint::publish(cPacket* msg) {
         uint16_t serviceID = atoi(msg->getName());
         cPacket* someipPacket = SOMEIPPublisherEndpointBase::createSOMEIPPacket(serviceID, msg->dup());
         if (SomeIpHeader* someipheader = dynamic_cast<SomeIpHeader*>(someipPacket)){
-            _serverSocket.sendTo(someipheader, pair->first, pair->second);
+            _serverSocket.sendTo(someipheader, L3Address(_mcastDestAddress.c_str()), _mcastDestPort);
         } else {
             throw cRuntimeError("Expected SomeIpHeader");
         }
