@@ -139,14 +139,14 @@ bool SomeIpDiscoveryNotification::updateFromEndpointOption(
         case IPProtocolId::IP_PROT_UDP:
             if(isMcast) {
                 if(!this->addQoSGroup(QoSGroup::SOMEIP_UDP_MCAST)){
-                    throw cRuntimeError("Already parsed another UDP Option for this offer");
+                    throw cRuntimeError("Already parsed another UDP Mcast Option for this offer");
                 }
                 changed = true;
                 this->setMcastDestAddr(ipv4EndpointOption->getIpv4Address());
                 this->setMcastDestPort(ipv4EndpointOption->getPort());
             } else {
                 if(!this->addQoSGroup(QoSGroup::SOMEIP_UDP)){
-                    throw cRuntimeError("Already parsed another Mcast Option for this offer");
+                    throw cRuntimeError("Already parsed another UDP Option for this offer");
                 }
                 changed = true;
                 this->setUdpPort(ipv4EndpointOption->getPort());
