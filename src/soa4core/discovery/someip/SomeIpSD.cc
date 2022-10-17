@@ -252,8 +252,6 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
 
     std::advance(optionsListIterator, offerEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < offerEntry->getNum1stOptions(); firstOptionsIdx++) {
-        std::advance(optionsListIterator, firstOptionsIdx);
-
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
         if(!ipv4EndpointOption) {
             throw cRuntimeError("SomeIpSDOption is not of type IPv4EndpointOption");
@@ -265,6 +263,7 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
         } else {
             notification->updateFromEndpointOption(ipv4EndpointOption);
         }
+        optionsListIterator++;
     }
 
     if(notification->getAddress().isUnspecified()) {
