@@ -119,22 +119,37 @@ private:
     SubscriberEndpointBase* createSomeIpUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
 
     /**
+     * @brief Creates a SOME/IP UDP multicast subscriber endpoint
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the SOME/IP UDP mcast subscriber endpoint
+     */
+    SubscriberEndpointBase* createSomeIpUDPMcastSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+
+    /**
      * @brief Creates a SOME/IP TCP publisher endpoint
      *
-     * @param qosGroup the QoS group
      * @param publisherConnector the publisher connector
      * @return the SOME/IP TCP publisher endpoint
      */
-    PublisherEndpointBase* createSomeIpTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+    PublisherEndpointBase* createSomeIpTCPPublisherEndpoint(PublisherConnector* publisherConnector);
 
     /**
      * @brief Creates a SOME/IP UDP publisher endpoint
      *
-     * @param qosGroup the QoS group
      * @param publisherConnector the publisher connector
      * @return the SOME/IP UDP publisher endpoint
      */
-    PublisherEndpointBase* createSomeIpUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+    PublisherEndpointBase* createSomeIpUDPPublisherEndpoint(PublisherConnector* publisherConnector);
+
+    /**
+     * @brief Creates a SOME/IP UDP multicast publisher endpoint
+     *
+     * @param publisherConnector the publisher connector
+     * @return the SOME/IP UDP mcast publisher endpoint
+     */
+    PublisherEndpointBase* createSomeIpUDPMcastPublisherEndpoint(PublisherConnector* publisherConnector);
 
     /**
      * Looks for a requested service in the local registry
