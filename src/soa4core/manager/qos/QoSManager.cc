@@ -13,13 +13,25 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "soa4core/discovery/SomeIpDiscoveryNotification.h"
-#include "soa4core/discovery/someip/SomeIpSD.h"
 #include "soa4core/manager/qos/QoSManager.h"
+#include "soa4core/discovery/SomeIpDiscoveryNotification.h"
+#include "soa4core/discovery/someip/SomeIpSD.h" // TODO REMOVE!
+#include "soa4core/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
+#include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
+#include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
+#include "soa4core/endpoints/subscriber/standard/udp/UDPMcastSubscriberEndpoint.h"
+#include "soa4core/endpoints/publisher/realtime/avb/AVBPublisherEndpoint.h"
+#include "soa4core/endpoints/publisher/standard/tcp/TCPPublisherEndpoint.h"
+#include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
+#include "soa4core/endpoints/publisher/standard/udp/UDPMcastPublisherEndpoint.h"
 //STD
 #include <algorithm>
 //INET
 #include <inet/networklayer/common/L3Address.h>
+
+using namespace std;
+using namespace inet;
+using namespace CoRE4INET;
 
 namespace SOA4CoRE {
 
@@ -29,6 +41,7 @@ void QoSManager::initialize(int stage)
 {
     Manager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
+        _requestID = 0;
         if(!(_qosnp =
                dynamic_cast<QoSNegotiationProtocol*>(getParentModule()->getSubmodule(
                        par("qosnpmoduleName"))))) {
@@ -62,6 +75,98 @@ void QoSManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject
     } else {
         throw cRuntimeError("Unknown signal.");
     }
+}
+
+void QoSManager::discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
+    Subscriber* subscriberApplication_ = nullptr;
+    if (!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))) {
+        throw cRuntimeError("Subscriber application must be of type Subscriber.");
+    }
+    _pendingRequests.push_back(std::make_pair(publisherServiceIdentifier.getServiceId(), subscriberApplication_->getQoSGroup()));
+    _sd->discover(publisherServiceIdentifier);
+}
+
+SubscriberEndpointBase* QoSManager::createConnectionSpecificSubscriberEndpoint(ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+    SubscriberEndpointBase* sub = nullptr;
+    //create according endpoint
+    switch(csi->getConnectionType()){
+    case ConnectionType::ct_avb:
+        sub = createAVBSubscriberEndpoint(csi, subscriberConnector);
+        break;
+    case ConnectionType::ct_tcp:
+        sub = createTCPSubscriberEndpoint(csi, subscriberConnector);
+        break;
+    case ConnectionType::ct_udp:
+        sub = createUDPSubscriberEndpoint(csi, subscriberConnector);
+        break;
+    case ConnectionType::ct_udp_mcast:
+        sub = createUDPMcastSubscriberEndpoint(csi, subscriberConnector);
+        break;
+    case ConnectionType::ct_http:
+        throw cRuntimeError("The HTTP connection is not yet available");
+        break;
+    default:
+        throw cRuntimeError("Unknown connection type for subscriber.");
+        break;
+    }
+    return sub;
+}
+
+PublisherEndpointBase* QoSManager::createQoSSpecificPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector) {
+    PublisherEndpointBase* pub = nullptr;
+    //create according endpoint
+    switch(qosGroup){
+    case QoSGroup::RT:
+        pub = createAVBPublisherEndpoint(qosGroup, publisherConnector);
+        break;
+    case QoSGroup::STD_TCP:
+        pub = createTCPPublisherEndpoint(qosGroup, publisherConnector);
+        break;
+    case QoSGroup::STD_UDP:
+        pub = createUDPPublisherEndpoint(qosGroup, publisherConnector);
+        break;
+    case QoSGroup::STD_UDP_MCAST:
+        pub = createUDPMcastPublisherEndpoint(qosGroup, publisherConnector);
+        break;
+    case QoSGroup::WEB:
+        throw cRuntimeError("The web QoS Group is not yet available");
+        break;
+    default:
+        throw cRuntimeError("Unknown connection type for publisher.");
+        break;
+    }
+    return pub;
+}
+
+QoSGroup QoSManager::getQoSGroupForConnectionType(ConnectionType connectionType){
+    switch(connectionType){
+    case ConnectionType::ct_avb:
+        return QoSGroup::RT;
+        break;
+    case ConnectionType::ct_tcp:
+        return QoSGroup::STD_TCP;
+        break;
+    case ConnectionType::ct_udp:
+        return QoSGroup::STD_UDP;
+        break;
+    case ConnectionType::ct_udp_mcast:
+        return QoSGroup::STD_UDP_MCAST;
+        break;
+    case ConnectionType::ct_http:
+        return QoSGroup::WEB;
+        break;
+    default:
+        throw cRuntimeError("Unknown connection type.");
+        break;
+    }
+}
+
+Request* QoSManager::createNegotiationRequest(Registry::ServiceId serviceId, inet::L3Address publisherAddress, QoSGroup qosGroup) {
+    EndpointDescription subscriber(serviceId, _localAddress, _qosnp->getProtocolPort());
+    EndpointDescription publisher(serviceId, publisherAddress, _qosnp->getProtocolPort());
+    Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
+    return request;
 }
 
 // Subscriber-side
@@ -107,22 +212,304 @@ void QoSManager::lookForService(cObject* obj) {
     delete(discoveryNotification);
 }
 
+SubscriberEndpointBase* QoSManager::createAVBSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+    SubscriberEndpointBase* ret = nullptr;
 
+    CSI_AVB* csi_avb = dynamic_cast<CSI_AVB*>(csi);
 
-void QoSManager::discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) {
-    Subscriber* subscriberApplication_ = nullptr;
-    if (!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))) {
-        throw cRuntimeError("Subscriber application must be of type Subscriber.");
+    if(csi_avb){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.subscriber.realtime.avb.AVBSubscriberEndpoint");
+        // 2. Create the module;
+        AVBSubscriberEndpoint* avbEndpoint =
+                            dynamic_cast<AVBSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        avbEndpoint->par("updateInterval").setDoubleValue(par("updateInterval"));
+        avbEndpoint->par("retryInterval").setDoubleValue(par("retryInterval"));
+        avbEndpoint->par("streamID").setIntValue(csi_avb->getStreamID());
+        avbEndpoint->par("vlan_id").setIntValue(csi_avb->getVlanID());
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(avbEndpoint);
+        //connect endpoint to the reader
+        ret->setSubscriberConnector(subscriberConnector);
+        subscriberConnector->setEndpoint(ret);
     }
-    _pendingRequests.push_back(std::make_pair(publisherServiceIdentifier.getServiceId(), subscriberApplication_->getQoSGroup()));
-    _sd->discover(publisherServiceIdentifier);
+
+    return ret;
+
 }
 
-Request* QoSManager::createNegotiationRequest(Registry::ServiceId serviceId, inet::L3Address publisherAddress, QoSGroup qosGroup) {
-    EndpointDescription subscriber(serviceId, _localAddress, _qosnp->getProtocolPort());
-    EndpointDescription publisher(serviceId, publisherAddress, _qosnp->getProtocolPort());
-    Request *request = new Request(_requestID++, subscriber, publisher, qosGroup, nullptr);
-    return request;
+SubscriberEndpointBase* QoSManager::createTCPSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_TCP* csi_tcp = dynamic_cast<CSI_TCP*>(csi);
+
+    if(csi_tcp){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.subscriber.standard.tcp.TCPSubscriberEndpoint");
+        // 2. Create the module;
+        TCPSubscriberEndpoint* tcpEndpoint =
+                            dynamic_cast<TCPSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = subscriberConnector->getAddress().str();
+        tcpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = subscriberConnector->getTcpPort();
+        tcpEndpoint->par("localPort").setIntValue(localPort);
+        tcpEndpoint->par("remoteAddress").setStringValue(csi_tcp->getAddress());
+        tcpEndpoint->par("remotePort").setIntValue(csi_tcp->getPort());
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(tcpEndpoint);
+        //connect endpoint to the reader
+        ret->setSubscriberConnector(subscriberConnector);
+        subscriberConnector->setEndpoint(ret);
+    }
+
+    return ret;
+}
+
+SubscriberEndpointBase* QoSManager::createUDPSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_UDP* csi_udp = dynamic_cast<CSI_UDP*>(csi);
+
+    if(csi_udp){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.subscriber.standard.udp.UDPSubscriberEndpoint");
+        // 2. Create the module;
+        UDPSubscriberEndpoint* udpEndpoint =
+                            dynamic_cast<UDPSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = subscriberConnector->getAddress().str();
+        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = subscriberConnector->getUdpPort();
+        udpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(udpEndpoint);
+        //connect endpoint to the reader
+        ret->setSubscriberConnector(subscriberConnector);
+        subscriberConnector->setEndpoint(ret);
+    }
+
+    return ret;
+}
+
+SubscriberEndpointBase* QoSManager::createUDPMcastSubscriberEndpoint(
+        ConnectionSpecificInformation* csi,
+        SubscriberConnector* subscriberConnector) {
+
+    SubscriberEndpointBase* ret = nullptr;
+
+    CSI_UDP_MCAST* csi_udp = dynamic_cast<CSI_UDP_MCAST*>(csi);
+
+    if(csi_udp){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.subscriber.standard.udp.UDPMcastSubscriberEndpoint");
+        // 2. Create the module;
+        UDPMcastSubscriberEndpoint* udpEndpoint =
+                            dynamic_cast<UDPMcastSubscriberEndpoint*>(
+                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
+        _subscriberEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = subscriberConnector->getAddress().str();
+        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = subscriberConnector->getUdpPort();
+        udpEndpoint->par("localPort").setIntValue(localPort);
+        string mcastAddr = csi_udp->getDestAddress();
+        udpEndpoint->par("mcastDestAddress").setStringValue(mcastAddr);
+        int mcastPort = csi_udp->getDestPort();
+        udpEndpoint->par("mcastDestPort").setIntValue(mcastPort);
+
+        // cast back.
+        ret = dynamic_cast<SubscriberEndpointBase*>(udpEndpoint);
+        //connect endpoint to the reader
+        ret->setSubscriberConnector(subscriberConnector);
+        subscriberConnector->setEndpoint(ret);
+    }
+
+    return ret;
+}
+
+PublisherEndpointBase* QoSManager::createAVBPublisherEndpoint(
+        QoSGroup qosGroup,
+        PublisherConnector* publisherConnector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qosGroup == QoSGroup::RT){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.publisher.realtime.avb.AVBPublisherEndpoint");
+        // 2. Create the module;
+        AVBPublisherEndpoint* avbEndpoint =
+                            dynamic_cast<AVBPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        // 3. Set up its parameters and gate sizes as needed;
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
+        }
+        auto streamID = publisherApplication->getStreamId();
+        avbEndpoint->par("streamID").setIntValue(streamID);
+
+        auto srClass = publisherApplication->getSrClass();
+        string strSrClass;
+        switch(srClass){
+        case SR_CLASS::A: strSrClass = "A"; break;
+        case SR_CLASS::B: strSrClass = "B"; break;
+        default: break;
+        }
+        avbEndpoint->par("srClass").setStringValue(strSrClass);
+
+        auto intervalFrames = publisherApplication->getIntervalFrames();
+        avbEndpoint->par("intervalFrames").setIntValue(intervalFrames);
+
+        auto vlanID = publisherApplication->getVlanId();
+        avbEndpoint->par("vlan_id").setIntValue(vlanID);
+
+        auto pcp = publisherApplication->getPcp();
+        avbEndpoint->par("pcp").setIntValue(pcp);
+
+        auto payload = publisherApplication->getFramesize();
+        avbEndpoint->par("payload").setIntValue(payload);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(avbEndpoint);
+        //connect endpoint to the reader
+        ret->setPublisherConnector(publisherConnector);
+        publisherConnector->addEndpoint(ret);
+    }
+
+    return ret;
+}
+
+PublisherEndpointBase* QoSManager::createTCPPublisherEndpoint(
+        QoSGroup qosGroup,
+        PublisherConnector* publisherConnector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qosGroup == QoSGroup::STD_TCP){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.publisher.standard.tcp.TCPPublisherEndpoint");
+        // 2. Create the module;
+        TCPPublisherEndpoint* tcpEndpoint =
+                            dynamic_cast<TCPPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
+        }
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = publisherApplication->getAddress().str();
+        tcpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = publisherApplication->getTcpPort();
+        tcpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(tcpEndpoint);
+        //connect endpoint to the reader
+        ret->setPublisherConnector(publisherConnector);
+        publisherConnector->addEndpoint(ret);
+    }
+
+    return ret;
+}
+
+PublisherEndpointBase* QoSManager::createUDPPublisherEndpoint(
+        QoSGroup qosGroup,
+        PublisherConnector* publisherConnector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qosGroup == QoSGroup::STD_UDP){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.publisher.standard.udp.UDPPublisherEndpoint");
+        // 2. Create the module;
+        UDPPublisherEndpoint* udpEndpoint =
+                            dynamic_cast<UDPPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
+        }
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = publisherApplication->getAddress().str();
+        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = publisherApplication->getUdpPort();
+        udpEndpoint->par("localPort").setIntValue(localPort);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
+        //connect endpoint to the reader
+        ret->setPublisherConnector(publisherConnector);
+        publisherConnector->addEndpoint(ret);
+    }
+
+    return ret;
+}
+
+PublisherEndpointBase* QoSManager::createUDPMcastPublisherEndpoint(
+        QoSGroup qosGroup,
+        PublisherConnector* publisherConnector) {
+
+    PublisherEndpointBase* ret = nullptr;
+
+    if(qosGroup == QoSGroup::STD_UDP_MCAST){
+        // 1. Find the factory object;
+        cModuleType * moduleType = cModuleType::get(
+                    "soa4core.endpoints.publisher.standard.udp.UDPMcastPublisherEndpoint");
+        // 2. Create the module;
+        UDPMcastPublisherEndpoint* udpEndpoint =
+                            dynamic_cast<UDPMcastPublisherEndpoint*>(
+                                    moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
+        _publisherEndpointCount++;
+        Publisher* publisherApplication = nullptr;
+        if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
+            throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
+        }
+        // 3. Set up its parameters and gate sizes as needed;
+        string localAddr = publisherApplication->getAddress().str();
+        udpEndpoint->par("localAddress").setStringValue(localAddr);
+        int localPort = publisherApplication->getUdpPort();
+        udpEndpoint->par("localPort").setIntValue(localPort);
+        string mcastAddr = publisherApplication->getMcastDestAddr();
+        udpEndpoint->par("mcastDestAddress").setStringValue(mcastAddr);
+        int mcastPort = publisherApplication->getMcastDestPort();
+        udpEndpoint->par("mcastDestPort").setIntValue(mcastPort);
+
+        // cast back.
+        ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
+        //connect endpoint to the reader
+        ret->setPublisherConnector(publisherConnector);
+        publisherConnector->addEndpoint(ret);
+    }
+
+    return ret;
 }
 
 } /* end namespace SOA4CoRE */

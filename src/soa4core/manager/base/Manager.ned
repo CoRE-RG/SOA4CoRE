@@ -27,19 +27,11 @@ import soa4core.manager.base.IManager;
 simple Manager like IManager
 {
     parameters:
-        @class(SOA4CoRE::Manager);
         @display("i=block/cogwheel");
         
         // paths to used modules.
         string sdmoduleName = default("sd");
-        string qosnpmoduleName = default("qosnp");
         string srmoduleName = default("sr");
 
-        string localAddress = default("");
-
-        // ########## parameters for service creation AVB ########## :
-        //Interval in which a subscription is updated
-        double updateInterval @unit("s") = default(6s);
-        //Interval in which a subscription is reregistered after a registration failed
-        double retryInterval @unit("s") = default(1s);
+        string localAddress = default("");        
 }

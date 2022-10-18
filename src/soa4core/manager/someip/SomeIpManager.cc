@@ -106,7 +106,7 @@ SubscriberEndpointBase* SomeIpManager::createConnectionSpecificSubscriberEndpoin
         sub = createSomeIpUDPMcastSubscriberEndpoint(csi, subscriberConnector);
         break;
     default:
-        sub = Manager::createConnectionSpecificSubscriberEndpoint(csi, subscriberConnector);
+        throw cRuntimeError("Unknown connection type for subscriber.");
         break;
     }
     return sub;
@@ -126,7 +126,7 @@ PublisherEndpointBase* SomeIpManager::createQoSSpecificPublisherEndpoint(QoSGrou
         pub = createSomeIpUDPMcastPublisherEndpoint(publisherConnector);
         break;
     default:
-        pub = Manager::createQoSSpecificPublisherEndpoint(qosGroup,publisherConnector);
+        throw cRuntimeError("Unknown connection type for publisher.");
         break;
     }
     return pub;
@@ -144,7 +144,7 @@ QoSGroup SomeIpManager::getQoSGroupForConnectionType(ConnectionType connectionTy
         return QoSGroup::SOMEIP_UDP_MCAST;
         break;
     default:
-        return Manager::getQoSGroupForConnectionType(connectionType);
+        throw cRuntimeError("Unknown connection type.");
         break;
     }
 }

@@ -19,13 +19,20 @@ import soa4core.manager.base.Manager;
 //
 // The QoSManager module creates, finds and removes local QoS services.
 //
-// @author Mehmet Mueller
+// @author Mehmet Mueller and Timo Haeckel for HAW Hamburg
 //
 simple QoSManager extends Manager
 {
         parameters:
         @class(SOA4CoRE::QoSManager);
         @display("i=block/join");
+        string qosnpmoduleName = default("qosnp");
+
+        // ########## parameters for service creation AVB ########## :
+        //Interval in which a subscription is updated
+        double updateInterval @unit("s") = default(6s);
+        //Interval in which a subscription is reregistered after a registration failed
+        double retryInterval @unit("s") = default(1s);
         
         // The signal which is emitted when a requested service is found
         @signal[findResultSignal];

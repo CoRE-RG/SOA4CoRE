@@ -18,16 +18,13 @@
 #ifndef __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 #define __SOA4CORE_SERVICEMANAGER_MANAGER_H_
 
+#include "soa4core/manager/base/IManager.h"
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
 #include "soa4core/applications/subscriber/base/Subscriber.h"
-#include "soa4core/manager/base/IManager.h"
 #include "soa4core/registry/base/Registry.h"
-#include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
-//AUTO-GENERATED MESSAGES
-#include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
 //OMNETPP
 #include <omnetpp.h>
 //INET
@@ -57,8 +54,6 @@ friend class QoSBroker;
  * Methods
  */
 public:
-    Manager();
-    virtual ~Manager();
 
     /**
      * @brief Registers a new Publisher and returns its connector.
@@ -157,13 +152,23 @@ protected:
     SubscriberConnector* findSubscriberConnector(uint32_t publisherServiceId, QoSGroup qosGroup);
 
     /**
+     * @brief Initiates a service discovery for the given service
+     *
+     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
+     * @param subscriberApplication the subscriber application
+     */
+    virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
+
+// INTERFACE FUNCTIONS TO BE IMPLEMENTED BY Specific Manager
+
+    /**
      * @brief Dispatcher method that calls the correct QoS dependent create subscriber function.
      *
      * @param csi the csi
      * @param subscriberConnector the subscriber connector
      * @return the subscriber endpoint
      */
-    virtual SubscriberEndpointBase* createConnectionSpecificSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+    virtual SubscriberEndpointBase* createConnectionSpecificSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector) = 0;
 
     /**
      * @brief Dispatcher method that calls the correct QoS dependent create publisher function.
@@ -172,22 +177,15 @@ protected:
      * @param publisherConnector the publisher connector
      * @return the publisher endpoint
      */
-    virtual PublisherEndpointBase* createQoSSpecificPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+    virtual PublisherEndpointBase* createQoSSpecificPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector) = 0;
 
     /**
      * Returns the QoS group for the given connection type
      * @param  connectionType @see~ConnectionType
      * @return the qos group. @see~QoSGroups
      */
-    virtual QoSGroup getQoSGroupForConnectionType(ConnectionType connectionType);
-
-    /**
-     * @brief Initiates a service discovery for the given service
-     *
-     * @param publisherServiceIdentifier service identifier of the service to be subscribed to
-     * @param subscriberApplication the subscriber application
-     */
-    virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
+    virtual QoSGroup getQoSGroupForConnectionType(ConnectionType connectionType) = 0;
+// END - INTERFACE FUNCTIONS TO BE IMPLEMENTED BY Specific Manager
 
 private:
     /**
@@ -214,78 +212,6 @@ private:
      */
     SubscriberConnector* createSubscriberConnector(ServiceBase* subscriberApplication);
 
-    /**
-     * @brief Creates an AVB subscriber endpoint
-     *
-     * @param csi the csi
-     * @param subscriberConnector the subscriber connector
-     * @return the AVB subscriber endpoint
-     */
-    SubscriberEndpointBase* createAVBSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
-
-    /**
-     * @brief Creates a TCP subscriber endpoint
-     *
-     * @param csi the csi
-     * @param subscriberConnector the subscriber connector
-     * @return the TCP subscriber endpoint
-     */
-    SubscriberEndpointBase* createTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
-
-    /**
-     * @brief Creates an UDP subscriber endpoint
-     *
-     * @param csi the csi
-     * @param subscriberConnector the subscriber connector
-     * @return the UDP subscriber endpoint
-     */
-    SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
-
-    /**
-     * @brief Creates an UDP multicast subscriber endpoint
-     *
-     * @param csi the csi
-     * @param subscriberConnector the subscriber connector
-     * @return the UDP mcast subscriber endpoint
-     */
-    SubscriberEndpointBase* createUDPMcastSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
-
-    /**
-     * @brief Creates an AVB publisher endpoint
-     *
-     * @param qosGroup the QoS group
-     * @param publisherConnector the publisher connector
-     * @return the AVB publisher endpoint
-     */
-    PublisherEndpointBase* createAVBPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
-    /**
-     * @brief Creates a TCP publisher endpoint
-     *
-     * @param qosGroup the QoS group
-     * @param publisherConnector the publisher connector
-     * @return the TCP publisher endpoint
-     */
-    PublisherEndpointBase* createTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
-    /**
-     * @brief Creates a UDP publisher endpoint
-     *
-     * @param qosGroup the QoS group
-     * @param publisherConnector the publisher connector
-     * @return the UDP publisher endpoint
-     */
-    PublisherEndpointBase* createUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
-    /**
-     * @brief Creates a UDP multicast publisher endpoint
-     *
-     * @param qosGroup the QoS group
-     * @param publisherConnector the publisher connector
-     * @return the UDP mcast publisher endpoint
-     */
-    PublisherEndpointBase* createUDPMcastPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
-
 /**
  * Member variables
  */
@@ -305,16 +231,6 @@ protected:
      * A pointer to the local service registry.
      */
     Registry* _lsr;
-
-    /**
-     * Static ID for created Requests.
-     */
-    std::atomic<int> _requestID;
-
-    /**
-     * Stores all issued requests.
-     */
-    std::vector<Request*> _requests;
 
     /**
      * Caches the localAddress parameter.

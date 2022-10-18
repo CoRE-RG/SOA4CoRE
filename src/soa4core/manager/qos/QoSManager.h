@@ -19,6 +19,9 @@
 #include "soa4core/manager/base/Manager.h"
 #include "soa4core/discovery/base/IServiceDiscovery.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
+#include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
+//AUTO-GENERATED MESSAGES
+#include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
 //OMNETPP
 #include <omnetpp.h>
 
@@ -70,6 +73,31 @@ protected:
      */
     virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 
+    /**
+     * @brief Dispatcher method that calls the correct QoS dependent create subscriber function.
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the subscriber endpoint
+     */
+    virtual SubscriberEndpointBase* createConnectionSpecificSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector) override;
+
+    /**
+     * @brief Dispatcher method that calls the correct QoS dependent create publisher function.
+     *
+     * @param qosGroup the QoS group
+     * @param publisherConnector the publisher connector
+     * @return the publisher endpoint
+     */
+    virtual PublisherEndpointBase* createQoSSpecificPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector) override;
+
+    /**
+     * Returns the QoS group for the given connection type
+     * @param  connectionType @see~ConnectionType
+     * @return the qos group. @see~QoSGroups
+     */
+    virtual QoSGroup getQoSGroupForConnectionType(ConnectionType connectionType) override;
+
 private:
     /**
      * Creates a negotiation request
@@ -92,6 +120,78 @@ private:
      */
     void lookForService(cObject* obj);
 
+    /**
+     * @brief Creates an AVB subscriber endpoint
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the AVB subscriber endpoint
+     */
+    SubscriberEndpointBase* createAVBSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+
+    /**
+     * @brief Creates a TCP subscriber endpoint
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the TCP subscriber endpoint
+     */
+    SubscriberEndpointBase* createTCPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+
+    /**
+     * @brief Creates an UDP subscriber endpoint
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the UDP subscriber endpoint
+     */
+    SubscriberEndpointBase* createUDPSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+
+    /**
+     * @brief Creates an UDP multicast subscriber endpoint
+     *
+     * @param csi the csi
+     * @param subscriberConnector the subscriber connector
+     * @return the UDP mcast subscriber endpoint
+     */
+    SubscriberEndpointBase* createUDPMcastSubscriberEndpoint(ConnectionSpecificInformation* csi, SubscriberConnector* subscriberConnector);
+
+    /**
+     * @brief Creates an AVB publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param publisherConnector the publisher connector
+     * @return the AVB publisher endpoint
+     */
+    PublisherEndpointBase* createAVBPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+
+    /**
+     * @brief Creates a TCP publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param publisherConnector the publisher connector
+     * @return the TCP publisher endpoint
+     */
+    PublisherEndpointBase* createTCPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+
+    /**
+     * @brief Creates a UDP publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param publisherConnector the publisher connector
+     * @return the UDP publisher endpoint
+     */
+    PublisherEndpointBase* createUDPPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+
+    /**
+     * @brief Creates a UDP multicast publisher endpoint
+     *
+     * @param qosGroup the QoS group
+     * @param publisherConnector the publisher connector
+     * @return the UDP mcast publisher endpoint
+     */
+    PublisherEndpointBase* createUDPMcastPublisherEndpoint(QoSGroup qosGroup, PublisherConnector* publisherConnector);
+
 /**
  * Member variables
  */
@@ -111,6 +211,11 @@ private:
      * The service discovery.
      */
     IServiceDiscovery* _sd;
+
+    /**
+     * Static ID for created Requests.
+     */
+    std::atomic<int> _requestID;
 
     /**
      * Contains pending requests
