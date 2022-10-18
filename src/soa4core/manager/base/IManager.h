@@ -23,6 +23,7 @@
 namespace SOA4CoRE {
 class ServiceBase;
 class SubscriberConnector;
+class PublisherConnector;
 
 /**
  * @brief Interface for the service manager module
@@ -35,6 +36,15 @@ class IManager
 {
 public:
   virtual ~IManager();
+
+  /**
+   * @brief Registers a new Publisher and returns its connector.
+   *
+   * @param publisherApplication The application publishing a service.
+   * @return the publisher connector
+   */
+  virtual PublisherConnector* registerPublisherService(ServiceBase* publisherApplication) = 0;
+
   /**
    * @brief Registers the given Subscriber application and subscribes the service given in the publisher service identifier.
    *

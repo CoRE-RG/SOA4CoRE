@@ -16,10 +16,8 @@
 //
 
 #include "soa4core/applications/subscriber/base/Subscriber.h"
-#include "soa4core/manager/base/Manager.h"
-#include "soa4core/manager/base/Manager.h"
+#include "soa4core/connector/subscriber/SubscriberConnector.h"
 #include "soa4core/serviceidentifier/ServiceIdentifier.h"
-#include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //CORE4INET
 #include <core4inet/utilities/ConfigFunctions.h>
@@ -61,12 +59,8 @@ void Subscriber::handleMessage(cMessage *msg)
 {
     if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
         //create a subscriber
-        Manager* localServiceManager = nullptr;
-        if (!(localServiceManager = dynamic_cast<Manager*>(_localServiceManager))){
-            throw cRuntimeError("No Manager found.");
-        }
         ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId,this->_instanceId);
-        _connector = dynamic_cast<ConnectorBase*>(localServiceManager->registerSubscriberServiceAndSubscribeService(publisherServiceIdentifier, this));
+        _connector = dynamic_cast<ConnectorBase*>(_localServiceManager->registerSubscriberServiceAndSubscribeService(publisherServiceIdentifier, this));
         if (!_connector) {
             throw cRuntimeError("No subscriber connector created.");
         }

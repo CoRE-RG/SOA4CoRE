@@ -66,7 +66,7 @@ public:
      * @param publisherApplication The application publishing a service.
      * @return the publisher connector
      */
-    PublisherConnector* registerPublisherService(ServiceBase* publisherApplication);
+    virtual PublisherConnector* registerPublisherService(ServiceBase* publisherApplication) override;
 
     /**
      * Registers the given Subscriber application and subscribes the service given in the publisher service identifier
