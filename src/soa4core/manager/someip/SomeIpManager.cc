@@ -53,8 +53,30 @@ void SomeIpManager::initialize(int stage) {
 }
 
 void SomeIpManager::handleMessage(cMessage *msg) {
-    // Does nothing here
+    Manager::handleMessage(msg);
 }
+
+void SomeIpManager::handleParameterChange(const char* parname) {
+    Manager::handleParameterChange(parname);
+
+    if (!parname || !strcmp(parname, "initialDelayMin")) {
+        initialDelayMin = par("initialDelayMin").doubleValue();
+    }
+    if (!parname || !strcmp(parname, "initialDelayMax")) {
+        initialDelayMax = par("initialDelayMax").doubleValue();
+    }
+    if (!parname || !strcmp(parname, "repetitionsMax")) {
+        repetitionsMax = par("repetitionsMax").intValue();
+    }
+    if (!parname || !strcmp(parname, "repititionBaseDelay")) {
+        repititionBaseDelay = par("repititionBaseDelay").doubleValue();
+    }
+    if (!parname || !strcmp(parname, "cyclicOfferDelay")) {
+        cyclicOfferDelay = par("cyclicOfferDelay").doubleValue();
+    }
+}
+
+
 
 // Subscriber-side
 void SomeIpManager::processAcknowledgedSubscription(cObject* obj) {

@@ -67,6 +67,13 @@ protected:
     virtual void handleMessage(cMessage *msg) override;
 
     /**
+     * @brief Indicates a parameter has changed.
+     *
+     * @param parname Name of the changed parameter or nullptr if multiple parameter changed.
+     */
+    virtual void handleParameterChange(const char* parname) override;
+
+    /**
      * Dispatcher method that calls the correct QoS dependent create function.
      *
      * @param csi the csi
@@ -210,6 +217,31 @@ protected:
     omnetpp::simsignal_t _subscribeAckSignal;
 
 private:
+    /**
+     * Cached parameter initialDelayMin for initial wait phase
+     */
+    double initialDelayMin;
+
+    /**
+     * Cached parameter initialDelayMax for initial wait phase
+     */
+    double initialDelayMax;
+
+    /**
+     * Cached parameter repitionMax for repetition phase
+     */
+    double repitionMax;
+
+    /**
+     * Cached parameter initialDelayMax for repetition phase
+     */
+    double repititionBaseDelay;
+
+    /**
+     * Cached parameter cyclicOfferDelay for main phase
+     */
+    double cyclicOfferDelay;
+
     /**
      * The service discovery.
      */
