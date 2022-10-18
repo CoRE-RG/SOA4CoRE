@@ -17,6 +17,7 @@
 
 
 #include "soa4core/qosmanagement/negotiation/broker/QoSBroker.h"
+#include "soa4core/manager/qos/QoSManager.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/connector/base/ConnectorBase.h"
 #include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
@@ -35,7 +36,7 @@ namespace SOA4CoRE {
 using namespace inet;
 using namespace std;
 
-QoSBroker::QoSBroker(UDPSocket* socket, Manager* manager, EndpointDescription local,
+QoSBroker::QoSBroker(UDPSocket* socket, QoSManager* manager, EndpointDescription local,
         EndpointDescription remote, Request* request) :
         _socket(socket), _manager(manager), _local(local), _remote(remote), _request(request), _startTimestamp(-1), _finishTimestamp(-1) {
     _negotiationFinished = false;

@@ -141,7 +141,7 @@ private:
     /**
      * Reference to the local service manager.
      */
-    Manager* _manager;
+    QoSManager* _manager;
 
     /**
      * Signal to capture time points of negotiation messages.

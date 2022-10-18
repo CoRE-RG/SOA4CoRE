@@ -16,6 +16,7 @@
 //
 
 #include "soa4core/manager/base/Manager.h"
+#include "soa4core/manager/qos/QoSManager.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/qosmanagement/negotiation/QoSNegotiationProtocol.h"
 //AUTO-GENERATED MESSAGES
@@ -52,8 +53,11 @@ void QoSNegotiationProtocol::initialize(int stage) {
     }
     if (stage == INITSTAGE_APPLICATION_LAYER) {
         handleParameterChange(nullptr);
-        _manager = dynamic_cast<Manager*>(getParentModule()->getSubmodule(
+        _manager = dynamic_cast<QoSManager*>(getParentModule()->getSubmodule(
                                par("smmoduleName")));
+        if(!_manager) {
+            throw cRuntimeError("Manager not found or not of type QoSManager");
+        }
         if (!isSocketBound()) {
             socketSetup();
         }

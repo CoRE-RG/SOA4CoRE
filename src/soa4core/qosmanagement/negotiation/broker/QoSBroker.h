@@ -18,7 +18,6 @@
 #ifndef __SOA4CORE_QOSMANAGEMENT_NEGOTIATION_BROKER_QOSBROKER_H_
 #define __SOA4CORE_QOSMANAGEMENT_NEGOTIATION_BROKER_QOSBROKER_H_
 
-#include "soa4core/manager/base/Manager.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/EndpointDescription.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 //STD
@@ -29,6 +28,8 @@
 using namespace omnetpp;
 
 namespace SOA4CoRE {
+
+class QoSManager;
 
 /**
  * @brief QoSBroker handles the negotiation for a connection.
@@ -43,12 +44,12 @@ public:
     /**
      * Constructor.
      * @param socket The UDP socket for outgoing messages.
-     * @param manager The service manager
+     * @param manager The qos service manager
      * @param local The local endpoint description.
      * @param remote The remote endpoint description.
      * @param request The request handled by this negotiation
      */
-    QoSBroker(inet::UDPSocket* socket, Manager* manager, EndpointDescription local,
+    QoSBroker(inet::UDPSocket* socket, QoSManager* manager, EndpointDescription local,
             EndpointDescription remote, Request* request);
     virtual ~QoSBroker();
 
@@ -199,7 +200,7 @@ private:
     /**
      * Reference to the local service manager.
      */
-    Manager* _manager;
+    QoSManager* _manager;
 
     /**
      * My Endpoint.

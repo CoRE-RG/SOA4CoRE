@@ -48,8 +48,6 @@ namespace SOA4CoRE {
  */
 class Manager: public IManager, public cSimpleModule, public cListener {
 
-friend class QoSBroker;
-
 /**
  * Methods
  */

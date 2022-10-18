@@ -36,6 +36,7 @@ namespace SOA4CoRE {
  */
 class QoSManager : public Manager
 {
+    friend class QoSBroker;
 
 /**
  * Methods
