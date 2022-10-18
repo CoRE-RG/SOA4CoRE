@@ -24,10 +24,14 @@
 #include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPMcastSubscriberEndpoint.h"
 //STD
 #include <algorithm>
+#include <math.h>
 
 using namespace std;
 
 namespace SOA4CoRE {
+
+#define MSG_INITIAL_WAIT_OVER "INITIAL_WAIT_OVER"
+#define MSG_REPETITION "REPETITION"
 
 Define_Module(SomeIpManager);
 
@@ -53,50 +57,41 @@ void SomeIpManager::initialize(int stage) {
 }
 
 void SomeIpManager::handleMessage(cMessage *msg) {
-    Manager::handleMessage(msg);
+    if (msg->isSelfMessage() && (strcmp(msg->getName(), MSG_INITIAL_WAIT_OVER) == 0)) {
+        if(ServiceState* serviceState = dynamic_cast<ServiceState*>(msg->getContextPointer())){
+            handleInitialWaitPhaseOver(serviceState);
+        } else {
+            throw cRuntimeError("Received INITIAL_WAIT_OVER without ServiceState attached");
+        }
+    } else if (msg->isSelfMessage() && (strcmp(msg->getName(), MSG_REPETITION) == 0)) {
+        if(ServiceState* serviceState = dynamic_cast<ServiceState*>(msg->getContextPointer())){
+            handleNextRepetitionPhase(serviceState);
+        } else {
+            throw cRuntimeError("Received INITIAL_WAIT_OVER without ServiceState attached");
+        }
+    } else {
+        Manager::handleMessage(msg);
+    }
 }
 
 void SomeIpManager::handleParameterChange(const char* parname) {
     Manager::handleParameterChange(parname);
 
     if (!parname || !strcmp(parname, "initialDelayMin")) {
-        initialDelayMin = par("initialDelayMin").doubleValue();
+        _initialDelayMin = par("initialDelayMin").doubleValue();
     }
     if (!parname || !strcmp(parname, "initialDelayMax")) {
-        initialDelayMax = par("initialDelayMax").doubleValue();
+        _initialDelayMax = par("initialDelayMax").doubleValue();
     }
     if (!parname || !strcmp(parname, "repetitionsMax")) {
-        repetitionsMax = par("repetitionsMax").intValue();
+        _repetitionsMax = par("repetitionsMax").intValue();
     }
     if (!parname || !strcmp(parname, "repititionBaseDelay")) {
-        repititionBaseDelay = par("repititionBaseDelay").doubleValue();
+        _repititionBaseDelay = par("repititionBaseDelay").doubleValue();
     }
     if (!parname || !strcmp(parname, "cyclicOfferDelay")) {
-        cyclicOfferDelay = par("cyclicOfferDelay").doubleValue();
+        _cyclicOfferDelay = par("cyclicOfferDelay").doubleValue();
     }
-}
-
-
-
-// Subscriber-side
-void SomeIpManager::processAcknowledgedSubscription(cObject* obj) {
-    SomeIpDiscoveryNotification* someIpDiscoveryNotification = nullptr;
-    if (!(someIpDiscoveryNotification = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
-        throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
-    }
-    set<QoSGroup> qosGroups = someIpDiscoveryNotification->getQoSGroups();
-    for (QoSGroup qosGroup : qosGroups) {
-        if (_pendingSubscriptionsMap.count(someIpDiscoveryNotification->getServiceId())
-            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].count(qosGroup)
-            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()][qosGroup] == SubscriptionState::WAITING_FOR_SUBACK) {
-            createSubscriberEndpoint(someIpDiscoveryNotification, qosGroup);
-            _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].erase(qosGroup);
-            if (_pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].empty()) {
-                _pendingSubscriptionsMap.erase(someIpDiscoveryNotification->getServiceId());
-            }
-        }
-    }
-    delete obj;
 }
 
 void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
@@ -111,6 +106,27 @@ void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObj
     } else {
         throw cRuntimeError("Unknown signal.");
     }
+}
+
+// Subscriber-side
+void SomeIpManager::processAcknowledgedSubscription(cObject* obj) {
+    SomeIpDiscoveryNotification* someIpDiscoveryNotification = nullptr;
+    if (!(someIpDiscoveryNotification = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
+        throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
+    }
+    set<QoSGroup> qosGroups = someIpDiscoveryNotification->getQoSGroups();
+    for (QoSGroup qosGroup : qosGroups) {
+        if (_pendingSubscriptionsMap.count(someIpDiscoveryNotification->getServiceId())
+            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].count(qosGroup)
+            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()][qosGroup] == SubscriptionState_E::WAITING_FOR_SUBACK) {
+            createSubscriberEndpoint(someIpDiscoveryNotification, qosGroup);
+            _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].erase(qosGroup);
+            if (_pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].empty()) {
+                _pendingSubscriptionsMap.erase(someIpDiscoveryNotification->getServiceId());
+            }
+        }
+    }
+    delete obj;
 }
 
 SubscriberEndpointBase* SomeIpManager::createConnectionSpecificSubscriberEndpoint(ConnectionSpecificInformation* csi,
@@ -177,7 +193,7 @@ void SomeIpManager::discoverService(ServiceIdentifier publisherServiceIdentifier
     if (!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))) {
         throw cRuntimeError("Subscriber application must be of type Subscriber.");
     }
-    _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()][subscriberApplication_->getQoSGroup()] = SubscriptionState::WAITING_FOR_OFFER;
+    _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()][subscriberApplication_->getQoSGroup()] = SubscriptionState_E::WAITING_FOR_OFFER;
     _sd->discover(publisherServiceIdentifier);
 }
 
@@ -406,8 +422,8 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
         for (QoSGroup offeredQoSGroup : offeredQoSGroups) {
             if (_pendingSubscriptionsMap.count(someIpdiscoveryNotificationOffer->getServiceId())
                 && _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()].count(offeredQoSGroup)
-                && _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] == SubscriptionState::WAITING_FOR_OFFER) {
-                _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] = SubscriptionState::WAITING_FOR_SUBACK;
+                && _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] == SubscriptionState_E::WAITING_FOR_OFFER) {
+                _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] = SubscriptionState_E::WAITING_FOR_SUBACK;
                 // Find the appropriate connector to the QoSGroup
                 for (SubscriberConnector* subscriberConnector: subscriberConnectors) {
                     vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
@@ -556,6 +572,69 @@ IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
             throw cRuntimeError("Unknown QoS group.");
     }
     return ipProtocolId;
+}
+
+void SomeIpManager::startInitialWaitPhase(ServiceState* serviceState) {
+    double diff = _initialDelayMax - _initialDelayMin;
+    if(diff < 0) {
+        throw cRuntimeError("Initial delay invalid as min is larger than max");
+    }
+    serviceState->randInitialDelay = this->dblrand()*diff + _initialDelayMin;
+    serviceState->phase = ServiceState::SdPhase::INITIAL_WAIT_PHASE;
+    if(serviceState->randInitialDelay == 0) {
+        handleInitialWaitPhaseOver(serviceState);
+    } else {
+        cMessage message = new cMessage(MSG_INITIAL_WAIT_OVER);
+        message->setContextPointer(serviceState);
+        scheduleAt(simTime() + serviceState->randInitialDelay, msg);
+    }
+}
+
+void SomeIpManager::handleInitialWaitPhaseOver(ServiceState* serviceState) {
+    if(serviceState->phase != ServiceState::SdPhase::INITIAL_WAIT_PHASE) {
+        // Not in initial wait phase
+        // For example, when receiving an offer before the wait phase is over
+        // return without progression
+        return;
+    }
+    executeSdForServiceState(serviceState);
+    // progress to repetition phase
+    handleNextRepetitionPhase(serviceState);
+}
+
+void SomeIpManager::handleNextRepetitionPhase(ServiceState* serviceState) {
+    if(serviceState->numRepetitions != 0 && serviceState->phase != ServiceState::SdPhase::REPETITION_PHASE) {
+        // We already had a repetition but are not in repetition phase
+        // For example, when receiving an offer before the repetition phase is over
+        // return without progression
+        return;
+    }
+    if(serviceState->numRepetitions > 0) {
+        // not the first operation, so send again
+        executeSdForServiceState(serviceState);
+    }
+    if(_repetitionsMax > serviceState->numRepetitions) {
+        // we have more repetitions to do
+        serviceState->phase = ServiceState::SdPhase::REPETITION_PHASE;
+        cMessage message = new cMessage(MSG_REPETITION);
+        message->setContextPointer(serviceState);
+        // Wait 2^(repetitionsMax-1) * repititionBaseDelay
+        scheduleAt(simTime() + _repititionBaseDelay * pow(2, serviceState->numRepetitions-1), msg);
+        serviceState->numRepetitions++;
+    } else {
+        // no (more) repetitions needed goto main phase
+    }
+}
+
+void SomeIpManager::executeSdForServiceState(ServiceState* serviceState) {
+    if(SubscriptionState* subState = dynamic_cast<SubscriptionState*>(serviceState)) {
+        // send first find
+        _sd->discover(subState->publisherServiceIdentifier);
+    }
+    else if(OfferState* offerState = dynamic_cast<OfferState*>(serviceState)) {
+        // send first offer
+        emit(_findResultSignal,new SomeIpDiscoveryNotification(offerState->serviceOffering));
+    }
 }
 
 } /* end namespace SOA4CoRE */

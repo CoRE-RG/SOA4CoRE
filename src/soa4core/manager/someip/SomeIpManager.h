@@ -20,6 +20,8 @@
 //OMNETPP
 #include <omnetpp.h>
 
+#include <map>
+
 using namespace omnetpp;
 namespace SOA4CoRE {
 
@@ -35,10 +37,39 @@ namespace SOA4CoRE {
  * SubscriptionState provides states that are used to
  * indicate the current progress of subscribing to a service.
  */
-enum class SubscriptionState {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
+enum class SubscriptionState_E {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
 
 class SomeIpManager : public Manager
 {
+    class ServiceState: cObject {
+    public:
+        enum class SdPhase {
+            INITIAL_WAIT_PHASE,
+            REPETITION_PHASE,
+            MAIN_PHASE,
+        };
+
+        SdPhase phase = SdPhase::INITIAL_WAIT_PHASE;
+        double randInitialDelay = 0;
+        int numRepetitions = 0;
+    };
+    class SubscriptionState: ServiceState {
+    public:
+//        enum class SubscriptionState {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
+        ServiceIdentifier publisherServiceIdentifier; // for reuse after first find
+//        SubscriptionState subState = SubscriptionState::WAITING_FOR_OFFER;
+    };
+    class OfferState: ServiceState {
+    public:
+        SomeIpDiscoveryNotification serviceOffering; // for reuse after first offer
+    };
+
+    typedef std::map<int, OfferState*> OfferInstanceStateMap;
+    typedef std::map<int, InstanceStateMap> OfferStateMap;
+
+    typedef std::map<QoSGroup, SubscriptionState*> SubscriptionQoSGroupStateMap;
+    typedef std::map<int, QoSGroupStateMap> SubscriptionInstanceStateMap;
+    typedef std::map<int, InstanceStateMap> SubscriptionStateMap;
 /**
  * Methods
  */
@@ -196,6 +227,30 @@ private:
      */
     IPProtocolId getIPProtocolId(QoSGroup qosGroup);
 
+    /**
+     * Start the initial wait phase and schedule self message
+     * @param serviceState the service to handle the event
+     */
+    void startInitialWaitPhase(ServiceState* serviceState);
+
+    /**
+     * Finish the initial wait phase
+     * @param serviceState the service to handle the event
+     */
+    void handleInitialWaitPhaseOver(ServiceState* serviceState);
+
+    /**
+     * Start the first/next repetition phase and schedule self message
+     * @param serviceState the service to handle the event
+     */
+    void handleNextRepetitionPhase(ServiceState* serviceState);
+
+    /**
+     * Executes find/offer for the service state
+     * @param serviceState the service to handle the event
+     */
+    void executeSdForServiceState(ServiceState* serviceState);
+
 /**
  * Member variables
  */
@@ -220,27 +275,27 @@ private:
     /**
      * Cached parameter initialDelayMin for initial wait phase
      */
-    double initialDelayMin;
+    double _initialDelayMin;
 
     /**
      * Cached parameter initialDelayMax for initial wait phase
      */
-    double initialDelayMax;
+    double _initialDelayMax;
 
     /**
      * Cached parameter repitionMax for repetition phase
      */
-    double repitionMax;
+    double _repetitionsMax;
 
     /**
      * Cached parameter initialDelayMax for repetition phase
      */
-    double repititionBaseDelay;
+    double _repititionBaseDelay;
 
     /**
      * Cached parameter cyclicOfferDelay for main phase
      */
-    double cyclicOfferDelay;
+    double _cyclicOfferDelay;
 
     /**
      * The service discovery.
@@ -250,7 +305,7 @@ private:
     /**
      * Contains pending SOME/IP subscriptions
      */
-    std::unordered_map<Registry::ServiceId, std::unordered_map<QoSGroup, SubscriptionState>> _pendingSubscriptionsMap;
+    std::unordered_map<Registry::ServiceId, std::unordered_map<QoSGroup, SubscriptionState_E>> _pendingSubscriptionsMap;
 };
 } /* end namespace SOA4CoRE */
 #endif
