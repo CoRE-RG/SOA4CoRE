@@ -3,15 +3,17 @@
 /examples/performance_evaluation/small_network,                 -f omnetpp.ini -c AVB -r 0,                     50ms,            4fc1-eff4
 /examples/performance_evaluation/small_network,                 -f omnetpp.ini -c UDP -r 0,                     50ms,            a465-5978
 /examples/performance_evaluation/small_network,                 -f omnetpp.ini -c TCP -r 0,                     50ms,            384d-e4f0
-# /examples/performance_evaluation/small_network,                 -f omnetpp.ini -c SOMEIP_UDP -r 0,              50ms,            ba8e-8814
-# /examples/performance_evaluation/small_network,                 -f omnetpp.ini -c SOMEIP_TCP -r 0,              50ms,            d341-c80c
+# /examples/performance_evaluation/small_network,               -f omnetpp.ini -c SOMEIP_UDP -r 0,              50ms,            ba8e-8814
+# /examples/performance_evaluation/small_network,               -f omnetpp.ini -c SOMEIP_TCP -r 0,              50ms,            d341-c80c
 /examples/performance_evaluation/medium_network,                -f omnetpp.ini -c General -r 0,                 50ms,            7d29-1d98
 /examples/performance_evaluation/large_network,                 -f omnetpp.ini -c General -r 0,                 1s,              652e-b452
 /examples/performance_evaluation/large_network,                 -f omnetpp.ini -c With_CT -r 0,                 1s,              cd03-70ae
 
 /examples/qosnp/small_network,                                  -f omnetpp.ini -c General -r 0,                 50ms,            a00b-a292
-/examples/qosnp/small_network,                                  -f omnetpp.ini -c SomeIP_ServiceDiscovery -r 0, 50ms,            93c1-3455
+/examples/qosnp/small_network,                                  -f omnetpp.ini -c SomeIP_ServiceDiscovery -r 0, 50ms,            836d-9d3e
+/examples/qosnp/small_network,                                  -f omnetpp.ini -c Router_SomeIPSD_QoS_STDUDPMCAST -r 0, 50ms,    7306-40d4
 
-/examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            6422-1d70
-/examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            8218-364e
-/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              3785-8637
+/examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            6110-9829
+/examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            f639-baeb
+/examples/someip/small_network,                                 -f omnetpp.ini -c Router_UDP_Mcast -r 0,        50ms,            4e44-1b66
+/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              97b2-0a4a
