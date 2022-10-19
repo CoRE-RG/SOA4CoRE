@@ -22,6 +22,8 @@
 #include "soa4core/endpoints/subscriber/someip/tcp/SOMEIPTCPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPMcastSubscriberEndpoint.h"
+//INET
+#include "inet/networklayer/contract/ipv4/IPv4Address.h"
 //STD
 #include <set>
 #include <algorithm>
@@ -91,6 +93,42 @@ void SomeIpManager::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "cyclicOfferDelay")) {
         _cyclicOfferDelay = par("cyclicOfferDelay").doubleValue();
     }
+}
+
+PublisherConnector* SomeIpManager::registerPublisherService(ServiceBase* publisherApplication) {
+    PublisherConnector* publisherConnector = Manager::registerPublisherService(publisherApplication);
+    Enter_Method_Silent();
+    // intercept connector to register service in the offer table and start offering it
+    if(publisherConnector) {
+        if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication())) {
+            int serviceId = publisher->getServiceId();
+            int instanceId = publisher->getInstanceId();
+            //check if already exists
+            if(_offers.count(serviceId)) {
+                if(_offers[serviceId].count(instanceId)) {
+                    throw cRuntimeError("Service already in offer map. This should never happen!");
+                }
+            } else {
+                _offers[serviceId] = OfferInstanceStateMap();
+            }
+            // create offer state
+            OfferState* offerState = new OfferState();
+            offerState->serviceOffering = SomeIpDiscoveryNotification(publisher->getServiceId(),
+                    inet::IPv4Address::UNSPECIFIED_ADDRESS,
+                    publisher->getInstanceId(),
+                    publisher->getQoSGroups(),
+                    QoSGroup::UNDEFINED,
+                    publisher->getTcpPort(),
+                    publisher->getUdpPort(),
+                    L3Address(publisher->getMcastDestAddr().c_str()),
+                    publisher->getMcastDestPort()
+            );
+            _offers[serviceId][instanceId] = offerState;
+            // start wait phase
+            startInitialWaitPhase(offerState);
+        }
+    }
+    return publisherConnector;
 }
 
 void SomeIpManager::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) {
@@ -437,17 +475,37 @@ PublisherEndpointBase* SomeIpManager::createSomeIpUDPMcastPublisherEndpoint(
 
 // Publisher-side
 void SomeIpManager::lookForService(cObject* obj) {
-    SomeIpDiscoveryNotification* someIpDiscoveryNotificationFindRequest = dynamic_cast<SomeIpDiscoveryNotification*>(obj);
-    if (PublisherConnector* publisherConnector = _lsr->getPublisherConnector(someIpDiscoveryNotificationFindRequest->getServiceId())) {
-        if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication())) {
-            SomeIpDiscoveryNotification* someIpDiscoveryNotificationFindResponse = new SomeIpDiscoveryNotification(publisher->getServiceId(),
-                    someIpDiscoveryNotificationFindRequest->getAddress(), publisher->getInstanceId(), publisher->getQoSGroups(),
-                    QoSGroup::UNDEFINED, publisher->getTcpPort(), publisher->getUdpPort(), L3Address(publisher->getMcastDestAddr().c_str()), publisher->getMcastDestPort()
-            );
-            emit(_findResultSignal,someIpDiscoveryNotificationFindResponse);
+    SomeIpDiscoveryNotification* request = dynamic_cast<SomeIpDiscoveryNotification*>(obj);
+    // create offer state
+    int serviceId = request->getServiceId();
+    int instanceId = request->getInstanceId();
+    if(_offers.count(serviceId)) {
+        if(_offers[serviceId].count(instanceId)) {
+            if(_offers[serviceId][instanceId]->phase == SomeIpSDState::SdPhase::INITIAL_WAIT_PHASE) {
+                EV << "Ignoring find as offered service is still in initial wait phase" << endl;
+            } else {
+                SomeIpDiscoveryNotification* response =
+                        new SomeIpDiscoveryNotification(_offers[serviceId][instanceId]->serviceOffering);
+                // replace address to respond to find with unicast
+                response->setAddress(request->getAddress());
+                emit(_findResultSignal,response);
+            }
+        } else if(instanceId == 0xFFFF) {
+            // respond with all local service instances of the service id
+            for(auto offer : _offers[serviceId]) {
+                if(offer.second->phase == SomeIpSDState::SdPhase::INITIAL_WAIT_PHASE) {
+                    EV << "Ignoring find this offered instance as it is still in initial wait phase" << endl;
+                } else {
+                    SomeIpDiscoveryNotification* response =
+                            new SomeIpDiscoveryNotification(offer.second->serviceOffering);
+                    // replace address to respond to find with unicast
+                    response->setAddress(request->getAddress());
+                    emit(_findResultSignal,response);
+                }
+            }
         }
     }
-    delete(someIpDiscoveryNotificationFindRequest);
+    delete(request);
 }
 
 // Subscriber-side
@@ -510,10 +568,9 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
         if (!(publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
             throw cRuntimeError("The application must not null and must be of type Publisher");
         }
-        if (find(publisher->getQoSGroups().begin(), publisher->getQoSGroups().end(), someIpDiscoveryNotification->getQoSGroup()) != publisher->getQoSGroups().end()) {
-            SomeIpDiscoveryNotification* someIpDiscoveryNotificationAcknowledge = new SomeIpDiscoveryNotification(someIpDiscoveryNotification->getServiceId(), someIpDiscoveryNotification->getAddress(),
-                    publisher->getInstanceId(), set<QoSGroup>{}, someIpDiscoveryNotification->getQoSGroup(), publisher->getTcpPort(), publisher->getUdpPort(),
-                    someIpDiscoveryNotification->getMcastDestAddr(), someIpDiscoveryNotification->getMcastDestPort());
+
+        if (publisher->getQoSGroups().find( someIpDiscoveryNotification->getQoSGroup()) != publisher->getQoSGroups().end()) {
+            // find or create local endpoint if needed
             switch (someIpDiscoveryNotification->getQoSGroup()) {
                 case QoSGroup::SOMEIP_TCP: {
                     PublisherEndpointBase* publisherEndpointBase = createOrFindPublisherEndpoint(someIpDiscoveryNotification->getServiceId(), QoSGroup::SOMEIP_TCP);
@@ -561,6 +618,13 @@ void SomeIpManager::acknowledgeSubscription(cObject* obj) {
                 default:
                     throw cRuntimeError("Unknown QoS group");
             }
+            // acknowledge subscription
+            if(_offers.count(publisher->getServiceId()) && _offers[publisher->getServiceId()].count(publisher->getInstanceId())) {
+                _offers[publisher->getServiceId()][publisher->getInstanceId()]->hasSubscription = true;
+            }
+            SomeIpDiscoveryNotification* someIpDiscoveryNotificationAcknowledge = new SomeIpDiscoveryNotification(someIpDiscoveryNotification->getServiceId(), someIpDiscoveryNotification->getAddress(),
+                    publisher->getInstanceId(), set<QoSGroup>{}, someIpDiscoveryNotification->getQoSGroup(), publisher->getTcpPort(), publisher->getUdpPort(),
+                    someIpDiscoveryNotification->getMcastDestAddr(), someIpDiscoveryNotification->getMcastDestPort());
             emit(_subscribeAckSignal,someIpDiscoveryNotificationAcknowledge);
         }
     }
@@ -675,9 +739,11 @@ void SomeIpManager::handleNextRepetitionPhase(SomeIpSDState* serviceState) {
 void SomeIpManager::startMainPhase(SomeIpSDState* serviceState) {
     serviceState->phase = SomeIpSDState::SdPhase::MAIN_PHASE;
     if(dynamic_cast<OfferState*>(serviceState)) {
-        cMessage* message = new cMessage(MSG_CYCLIC_OFFER);
-        message->setContextPointer(serviceState);
-        scheduleAt(simTime() + _cyclicOfferDelay, message);
+        if(_cyclicOfferDelay>0) {
+            cMessage* message = new cMessage(MSG_CYCLIC_OFFER);
+            message->setContextPointer(serviceState);
+            scheduleAt(simTime() + _cyclicOfferDelay, message);
+        }
     }
 }
 

@@ -21,9 +21,9 @@ namespace SOA4CoRE {
 
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
                                                          std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
-                                                         inet::L3Address mcastDestAddr, int _mcastDestPort) :
+                                                         inet::L3Address mcastDestAddr, int mcastDestPort) :
                              DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
-                             _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(_mcastDestPort) {
+                             _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort) {
 }
 
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification() :
@@ -37,7 +37,7 @@ SomeIpDiscoveryNotification::~SomeIpDiscoveryNotification() {
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) :
     DiscoveryNotification(static_cast<DiscoveryNotification>(someIpDiscoveryNotification)), _instanceId(someIpDiscoveryNotification._instanceId),
     _qosGroups(someIpDiscoveryNotification._qosGroups), _qosGroup(someIpDiscoveryNotification._qosGroup), _tcpPort(someIpDiscoveryNotification._tcpPort),
-    _udpPort(someIpDiscoveryNotification._udpPort){
+    _udpPort(someIpDiscoveryNotification._udpPort), _mcastDestAddr(someIpDiscoveryNotification._mcastDestAddr), _mcastDestPort(someIpDiscoveryNotification._mcastDestPort){
 }
 
 SomeIpDiscoveryNotification& SomeIpDiscoveryNotification::operator=(const SomeIpDiscoveryNotification& other) {

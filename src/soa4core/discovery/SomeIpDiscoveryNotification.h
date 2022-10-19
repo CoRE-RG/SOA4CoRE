@@ -52,7 +52,7 @@ public:
      * @param mcastDestPort the multicast destination port of this service
      */
     SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId, std::set<QoSGroup> qosGroups,
-                                QoSGroup qosGroup, int tcpPort, int udpPort, inet::L3Address mcastDestAddr = inet::L3Address(), int _mcastDestPort = -1);
+                                QoSGroup qosGroup, int tcpPort, int udpPort, inet::L3Address mcastDestAddr = inet::L3Address(), int mcastDestPort = -1);
     /**
      * Default Constructor. Set all values manually!
      */

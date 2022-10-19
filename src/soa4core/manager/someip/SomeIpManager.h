@@ -104,6 +104,14 @@ public:
  */
 public:
     /**
+     * @brief Registers a new Publisher and returns its connector.
+     *
+     * @param publisherApplication The application publishing a service.
+     * @return the publisher connector
+     */
+    virtual PublisherConnector* registerPublisherService(ServiceBase* publisherApplication) override;
+
+    /**
      * @brief Receives discovery response
      * @param source the source
      * @param signalID the signal ID
@@ -111,6 +119,7 @@ public:
      * @param details the details
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj, cObject *details) override;
+
 protected:
     /**
      * Initializes the module and waits for find
@@ -347,6 +356,11 @@ private:
      * Contains local SOME/IP subscriptions
      */
     SubscriptionStateMap _subscriptions;
+
+    /**
+     * Contains local SOME/IP offered services
+     */
+    OfferStateMap _offers;
 };
 } /* end namespace SOA4CoRE */
 #endif
