@@ -32,6 +32,7 @@ namespace SOA4CoRE {
 
 #define MSG_INITIAL_WAIT_OVER "INITIAL_WAIT_OVER"
 #define MSG_REPETITION "REPETITION"
+#define MSG_CYCLIC_OFFER "CYCLIC_OFFER"
 
 Define_Module(SomeIpManager);
 
@@ -58,17 +59,14 @@ void SomeIpManager::initialize(int stage) {
 
 void SomeIpManager::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage() && (strcmp(msg->getName(), MSG_INITIAL_WAIT_OVER) == 0)) {
-        if(ServiceState* serviceState = dynamic_cast<ServiceState*>(msg->getContextPointer())){
-            handleInitialWaitPhaseOver(serviceState);
-        } else {
-            throw cRuntimeError("Received INITIAL_WAIT_OVER without ServiceState attached");
-        }
+        handleInitialWaitPhaseOver((SomeIpSDState*) msg->getContextPointer());
+        delete msg;
     } else if (msg->isSelfMessage() && (strcmp(msg->getName(), MSG_REPETITION) == 0)) {
-        if(ServiceState* serviceState = dynamic_cast<ServiceState*>(msg->getContextPointer())){
-            handleNextRepetitionPhase(serviceState);
-        } else {
-            throw cRuntimeError("Received INITIAL_WAIT_OVER without ServiceState attached");
-        }
+        handleNextRepetitionPhase((SomeIpSDState*) msg->getContextPointer());
+        delete msg;
+    } else if (msg->isSelfMessage() && (strcmp(msg->getName(), MSG_CYCLIC_OFFER) == 0)) {
+        handleCyclicOffer((SomeIpSDState*) msg->getContextPointer());
+        delete msg;
     } else {
         Manager::handleMessage(msg);
     }
@@ -574,27 +572,25 @@ IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
     return ipProtocolId;
 }
 
-void SomeIpManager::startInitialWaitPhase(ServiceState* serviceState) {
+void SomeIpManager::startInitialWaitPhase(SomeIpSDState* serviceState) {
     double diff = _initialDelayMax - _initialDelayMin;
     if(diff < 0) {
         throw cRuntimeError("Initial delay invalid as min is larger than max");
     }
     serviceState->randInitialDelay = this->dblrand()*diff + _initialDelayMin;
-    serviceState->phase = ServiceState::SdPhase::INITIAL_WAIT_PHASE;
+    serviceState->phase = SomeIpSDState::SdPhase::INITIAL_WAIT_PHASE;
     if(serviceState->randInitialDelay == 0) {
         handleInitialWaitPhaseOver(serviceState);
     } else {
-        cMessage message = new cMessage(MSG_INITIAL_WAIT_OVER);
+        cMessage* message = new cMessage(MSG_INITIAL_WAIT_OVER);
         message->setContextPointer(serviceState);
-        scheduleAt(simTime() + serviceState->randInitialDelay, msg);
+        scheduleAt(simTime() + serviceState->randInitialDelay, message);
     }
 }
 
-void SomeIpManager::handleInitialWaitPhaseOver(ServiceState* serviceState) {
-    if(serviceState->phase != ServiceState::SdPhase::INITIAL_WAIT_PHASE) {
-        // Not in initial wait phase
-        // For example, when receiving an offer before the wait phase is over
-        // return without progression
+void SomeIpManager::handleInitialWaitPhaseOver(SomeIpSDState* serviceState) {
+    if(serviceState->isSubscriptionAndServiceSeen()) {
+        // subscription and service was seen --> we are already in another phase
         return;
     }
     executeSdForServiceState(serviceState);
@@ -602,11 +598,9 @@ void SomeIpManager::handleInitialWaitPhaseOver(ServiceState* serviceState) {
     handleNextRepetitionPhase(serviceState);
 }
 
-void SomeIpManager::handleNextRepetitionPhase(ServiceState* serviceState) {
-    if(serviceState->numRepetitions != 0 && serviceState->phase != ServiceState::SdPhase::REPETITION_PHASE) {
-        // We already had a repetition but are not in repetition phase
-        // For example, when receiving an offer before the repetition phase is over
-        // return without progression
+void SomeIpManager::handleNextRepetitionPhase(SomeIpSDState* serviceState) {
+    if(serviceState->isSubscriptionAndServiceSeen()) {
+        // subscription and service was seen --> we are already in another phase
         return;
     }
     if(serviceState->numRepetitions > 0) {
@@ -615,21 +609,42 @@ void SomeIpManager::handleNextRepetitionPhase(ServiceState* serviceState) {
     }
     if(_repetitionsMax > serviceState->numRepetitions) {
         // we have more repetitions to do
-        serviceState->phase = ServiceState::SdPhase::REPETITION_PHASE;
-        cMessage message = new cMessage(MSG_REPETITION);
+        serviceState->phase = SomeIpSDState::SdPhase::REPETITION_PHASE;
+        cMessage* message = new cMessage(MSG_REPETITION);
         message->setContextPointer(serviceState);
         // Wait 2^(repetitionsMax-1) * repititionBaseDelay
-        scheduleAt(simTime() + _repititionBaseDelay * pow(2, serviceState->numRepetitions-1), msg);
+        scheduleAt(simTime() + _repititionBaseDelay * pow(2, serviceState->numRepetitions-1), message);
         serviceState->numRepetitions++;
     } else {
         // no (more) repetitions needed goto main phase
+        startMainPhase(serviceState);
     }
 }
 
-void SomeIpManager::executeSdForServiceState(ServiceState* serviceState) {
+void SomeIpManager::startMainPhase(SomeIpSDState* serviceState) {
+    serviceState->phase = SomeIpSDState::SdPhase::MAIN_PHASE;
+    if(dynamic_cast<OfferState*>(serviceState)) {
+        cMessage* message = new cMessage(MSG_CYCLIC_OFFER);
+        message->setContextPointer(serviceState);
+        scheduleAt(simTime() + _cyclicOfferDelay, message);
+    }
+}
+
+void SomeIpManager::handleCyclicOffer(SomeIpSDState* serviceState) {
+    if(dynamic_cast<OfferState*>(serviceState)) {
+        executeSdForServiceState(serviceState);
+        cMessage* message = new cMessage(MSG_CYCLIC_OFFER);
+        message->setContextPointer(serviceState);
+        scheduleAt(simTime() + _cyclicOfferDelay, message);
+    } else {
+        throw cRuntimeError("Can not handly cyclic offer event for serviceState not of type OfferState ");
+    }
+}
+
+void SomeIpManager::executeSdForServiceState(SomeIpSDState* serviceState) {
     if(SubscriptionState* subState = dynamic_cast<SubscriptionState*>(serviceState)) {
         // send first find
-        _sd->discover(subState->publisherServiceIdentifier);
+        _sd->discover(subState->publisherIdentifier);
     }
     else if(OfferState* offerState = dynamic_cast<OfferState*>(serviceState)) {
         // send first offer

@@ -41,7 +41,7 @@ enum class SubscriptionState_E {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
 
 class SomeIpManager : public Manager
 {
-    class ServiceState: cObject {
+    class SomeIpSDState: cObject {
     public:
         enum class SdPhase {
             INITIAL_WAIT_PHASE,
@@ -52,24 +52,41 @@ class SomeIpManager : public Manager
         SdPhase phase = SdPhase::INITIAL_WAIT_PHASE;
         double randInitialDelay = 0;
         int numRepetitions = 0;
+
+        /**
+         * Helper method to quickly identify if a subscription has skipped phases
+         * @return true if this is of type SubscriptionState and service has been seen
+         */
+        virtual bool isSubscriptionAndServiceSeen(){ return false; }
     };
-    class SubscriptionState: ServiceState {
+    class SubscriptionState: SomeIpSDState {
     public:
-//        enum class SubscriptionState {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
-        ServiceIdentifier publisherServiceIdentifier; // for reuse after first find
-//        SubscriptionState subState = SubscriptionState::WAITING_FOR_OFFER;
+        ServiceIdentifier publisherIdentifier;
+        bool seen = false;
+        bool requested = false;
+        bool active = false;
+
+        /**
+         * helper method to quickly identify if a subscription has skipped phases
+         * @return true if service has been seen
+         */
+        virtual bool isSubscriptionAndServiceSeen() override {
+            return seen;
+        }
     };
-    class OfferState: ServiceState {
+    class OfferState: SomeIpSDState {
     public:
         SomeIpDiscoveryNotification serviceOffering; // for reuse after first offer
+        bool hasSubscription = false;
     };
 
     typedef std::map<int, OfferState*> OfferInstanceStateMap;
-    typedef std::map<int, InstanceStateMap> OfferStateMap;
+    typedef std::map<int, OfferInstanceStateMap> OfferStateMap;
 
     typedef std::map<QoSGroup, SubscriptionState*> SubscriptionQoSGroupStateMap;
-    typedef std::map<int, QoSGroupStateMap> SubscriptionInstanceStateMap;
-    typedef std::map<int, InstanceStateMap> SubscriptionStateMap;
+    typedef std::map<int, SubscriptionQoSGroupStateMap> SubscriptionInstanceStateMap;
+    typedef std::map<int, SubscriptionInstanceStateMap> SubscriptionStateMap;
+
 /**
  * Methods
  */
@@ -231,25 +248,37 @@ private:
      * Start the initial wait phase and schedule self message
      * @param serviceState the service to handle the event
      */
-    void startInitialWaitPhase(ServiceState* serviceState);
+    void startInitialWaitPhase(SomeIpSDState* serviceState);
 
     /**
      * Finish the initial wait phase
      * @param serviceState the service to handle the event
      */
-    void handleInitialWaitPhaseOver(ServiceState* serviceState);
+    void handleInitialWaitPhaseOver(SomeIpSDState* serviceState);
 
     /**
      * Start the first/next repetition phase and schedule self message
      * @param serviceState the service to handle the event
      */
-    void handleNextRepetitionPhase(ServiceState* serviceState);
+    void handleNextRepetitionPhase(SomeIpSDState* serviceState);
+
+    /**
+     * Start the main phase
+     * @param serviceState the service to handle the event
+     */
+    void startMainPhase(SomeIpSDState* serviceState);
+
+    /**
+     * Handle cyclic offer and schedule self message
+     * @param serviceState the service to handle the event
+     */
+    void handleCyclicOffer(SomeIpSDState* serviceState);
 
     /**
      * Executes find/offer for the service state
      * @param serviceState the service to handle the event
      */
-    void executeSdForServiceState(ServiceState* serviceState);
+    void executeSdForServiceState(SomeIpSDState* serviceState);
 
 /**
  * Member variables
