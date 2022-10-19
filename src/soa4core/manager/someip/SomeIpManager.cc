@@ -23,6 +23,7 @@
 #include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPMcastSubscriberEndpoint.h"
 //STD
+#include <set>
 #include <algorithm>
 #include <math.h>
 
@@ -112,15 +113,37 @@ void SomeIpManager::processAcknowledgedSubscription(cObject* obj) {
     if (!(someIpDiscoveryNotification = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
         throw cRuntimeError("The discovery notification must be of type SomeIpDiscoveryNotification");
     }
+    auto serviceId = someIpDiscoveryNotification->getServiceId();
+    auto instanceId = someIpDiscoveryNotification->getInstanceId();
     set<QoSGroup> qosGroups = someIpDiscoveryNotification->getQoSGroups();
-    for (QoSGroup qosGroup : qosGroups) {
-        if (_pendingSubscriptionsMap.count(someIpDiscoveryNotification->getServiceId())
-            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].count(qosGroup)
-            && _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()][qosGroup] == SubscriptionState_E::WAITING_FOR_SUBACK) {
-            createSubscriberEndpoint(someIpDiscoveryNotification, qosGroup);
-            _pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].erase(qosGroup);
-            if (_pendingSubscriptionsMap[someIpDiscoveryNotification->getServiceId()].empty()) {
-                _pendingSubscriptionsMap.erase(someIpDiscoveryNotification->getServiceId());
+    if(_subscriptions.count(serviceId)) {
+        for (auto it=qosGroups.begin(); it!=qosGroups.end();it++) {
+            QoSGroup qosGroup = *it;
+            if(_subscriptions[serviceId].count(qosGroup)) {
+                if(_subscriptions[serviceId][qosGroup].count(instanceId)) {
+                    //specific instance requested
+                    SubscriptionState* subState = _subscriptions[serviceId][qosGroup][instanceId];
+                    if(subState->requested) {
+                        if(!subState->active) {
+                            // this is a new established subscription, and no cyclic refresh
+                            createSubscriberEndpoint(someIpDiscoveryNotification, qosGroup);
+                            subState->active = true;
+                        }
+                        subState->requested = false;
+                    }
+                }
+                if(_subscriptions[serviceId][qosGroup].count(0xFFFF)) {
+                    //any instance requested
+                    SubscriptionState* subState = _subscriptions[serviceId][qosGroup][0xFFFF];
+                    if(subState->requested) {
+                        if(!subState->active) {
+                            // this is a new established subscription, and no cyclic refresh
+                            createSubscriberEndpoint(someIpDiscoveryNotification, qosGroup);
+                            subState->active = true;
+                        }
+                        subState->requested = false;
+                    }
+                }
             }
         }
     }
@@ -191,8 +214,28 @@ void SomeIpManager::discoverService(ServiceIdentifier publisherServiceIdentifier
     if (!(subscriberApplication_ = dynamic_cast<Subscriber*>(subscriberApplication))) {
         throw cRuntimeError("Subscriber application must be of type Subscriber.");
     }
-    _pendingSubscriptionsMap[publisherServiceIdentifier.getServiceId()][subscriberApplication_->getQoSGroup()] = SubscriptionState_E::WAITING_FOR_OFFER;
-    _sd->discover(publisherServiceIdentifier);
+    auto serviceId = publisherServiceIdentifier.getServiceId();
+    auto instanceId = publisherServiceIdentifier.getInstanceId();
+    QoSGroup qosGroup = subscriberApplication_->getQoSGroup();
+    if(_subscriptions.count(serviceId)) {
+        if(_subscriptions[serviceId].count(qosGroup)) {
+            if(_subscriptions[serviceId][qosGroup].count(instanceId)) {
+                throw cRuntimeError("Sepecific instance already requested, this should never happen!");
+            } else if(_subscriptions[serviceId][qosGroup].count(0xFFFF)) {
+                throw cRuntimeError("Currently we cannot handle any simultaneous any subscriptions and specific subs");
+            }
+        } else {
+            _subscriptions[serviceId][qosGroup] = SubscriptionInstanceStateMap();
+        }
+    } else {
+        _subscriptions[serviceId] = SubscriptionQoSGroupStateMap();
+        _subscriptions[serviceId][qosGroup] = SubscriptionInstanceStateMap();
+    }
+    SubscriptionState* subState = new SubscriptionState();
+    subState->publisherIdentifier = publisherServiceIdentifier;
+    // TODO OFFER CHACHING check if service already known?
+    _subscriptions[serviceId][qosGroup][instanceId] = subState;
+    startInitialWaitPhase(subState);
 }
 
 SubscriberEndpointBase* SomeIpManager::createSomeIpTCPSubscriberEndpoint(
@@ -413,33 +456,40 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
     if (!(someIpdiscoveryNotificationOffer = dynamic_cast<SomeIpDiscoveryNotification*>(obj))) {
         throw cRuntimeError("Notification must be of type SomeIpDiscoveryNotification.");
     }
-    if (_pendingSubscriptionsMap.count(someIpdiscoveryNotificationOffer->getServiceId())) {
-        set<QoSGroup> offeredQoSGroups = someIpdiscoveryNotificationOffer->getQoSGroups();
-        list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(someIpdiscoveryNotificationOffer->getServiceId());
-
-        for (QoSGroup offeredQoSGroup : offeredQoSGroups) {
-            if (_pendingSubscriptionsMap.count(someIpdiscoveryNotificationOffer->getServiceId())
-                && _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()].count(offeredQoSGroup)
-                && _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] == SubscriptionState_E::WAITING_FOR_OFFER) {
-                _pendingSubscriptionsMap[someIpdiscoveryNotificationOffer->getServiceId()][offeredQoSGroup] = SubscriptionState_E::WAITING_FOR_SUBACK;
-                // Find the appropriate connector to the QoSGroup
-                for (SubscriberConnector* subscriberConnector: subscriberConnectors) {
-                    vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
-                    if (subscriberApplications.empty()) {
-                        throw cRuntimeError("Empty subscriber connector without applications!.");
-                    }
-                    Subscriber* subscriberApplication = nullptr;
-                    if (!(subscriberApplication = dynamic_cast<Subscriber*>(subscriberApplications[0]))) {
-                        throw cRuntimeError("The subscriber application must be of the type Subscriber.");
-                    }
-                    if (subscriberApplication->getQoSGroup() == offeredQoSGroup) {
-                        SomeIpDiscoveryNotification* someIpdiscoveryNotificationSubscription = new SomeIpDiscoveryNotification(someIpdiscoveryNotificationOffer->getServiceId(),
-                                someIpdiscoveryNotificationOffer->getAddress(), someIpdiscoveryNotificationOffer->getInstanceId(), set<QoSGroup>{}, offeredQoSGroup, subscriberConnector->getTcpPort(),
-                                subscriberConnector->getUdpPort(), someIpdiscoveryNotificationOffer->getMcastDestAddr(), someIpdiscoveryNotificationOffer->getMcastDestPort()
-                        );
-                        emit(_subscribeSignal, someIpdiscoveryNotificationSubscription);
-                        // Break here because there can be only one connector for a service ID and QoS Group pair
-                        break;
+    auto serviceId = someIpdiscoveryNotificationOffer->getServiceId();
+    auto instanceId = someIpdiscoveryNotificationOffer->getInstanceId();
+    set<QoSGroup> qosGroups = someIpdiscoveryNotificationOffer->getQoSGroups();
+    if(_subscriptions.count(serviceId)) {
+        for (QoSGroup qosGroup : qosGroups) {
+            if(_subscriptions[serviceId].count(qosGroup)) {
+                bool instanceIdRequested = _subscriptions[serviceId][qosGroup].count(instanceId) > 0;
+                bool anyInstanceRequested = _subscriptions[serviceId][qosGroup].count(0xFFFF) > 0;
+                if(instanceIdRequested || anyInstanceRequested) {
+                    list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(someIpdiscoveryNotificationOffer->getServiceId());
+                    for (SubscriberConnector* subscriberConnector: subscriberConnectors) {
+                        vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
+                        if (subscriberApplications.empty()) {
+                            throw cRuntimeError("Empty subscriber connector without applications!.");
+                        }
+                        Subscriber* subscriberApplication = nullptr;
+                        if (!(subscriberApplication = dynamic_cast<Subscriber*>(subscriberApplications[0]))) {
+                            throw cRuntimeError("The subscriber application must be of the type Subscriber.");
+                        }
+                        if (subscriberApplication->getQoSGroup() == qosGroup) {
+                            SomeIpDiscoveryNotification* someIpdiscoveryNotificationSubscription = new SomeIpDiscoveryNotification(serviceId,
+                                    someIpdiscoveryNotificationOffer->getAddress(), instanceId, set<QoSGroup>{}, qosGroup, subscriberConnector->getTcpPort(),
+                                    subscriberConnector->getUdpPort(), someIpdiscoveryNotificationOffer->getMcastDestAddr(), someIpdiscoveryNotificationOffer->getMcastDestPort()
+                            );
+                            if (instanceIdRequested) {
+                                _subscriptions[serviceId][qosGroup][instanceId]->serviceOfferReceivedAndRequested();
+                            }
+                            if (anyInstanceRequested) {
+                                _subscriptions[serviceId][qosGroup][0xFFFF]->serviceOfferReceivedAndRequested();
+                            }
+                            emit(_subscribeSignal, someIpdiscoveryNotificationSubscription);
+                            // Break here because there can be only one connector for a service ID and QoS Group pair
+                            break;
+                        }
                     }
                 }
             }
@@ -613,7 +663,8 @@ void SomeIpManager::handleNextRepetitionPhase(SomeIpSDState* serviceState) {
         cMessage* message = new cMessage(MSG_REPETITION);
         message->setContextPointer(serviceState);
         // Wait 2^(repetitionsMax-1) * repititionBaseDelay
-        scheduleAt(simTime() + _repititionBaseDelay * pow(2, serviceState->numRepetitions-1), message);
+        double delay = _repititionBaseDelay * pow(2, serviceState->numRepetitions);
+        scheduleAt(simTime() + delay, message);
         serviceState->numRepetitions++;
     } else {
         // no (more) repetitions needed goto main phase

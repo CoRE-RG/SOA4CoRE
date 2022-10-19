@@ -25,6 +25,7 @@
 #include "soa4core/registry/base/Registry.h"
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
+#include "soa4core/messages/qosnegotiation/QoSNegotiationProtocol_m.h"
 //OMNETPP
 #include <omnetpp.h>
 //INET

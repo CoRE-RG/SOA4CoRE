@@ -30,7 +30,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/manager
  *
- * @author Mehmet Mueller for HAW Hamburg
+ * @author Mehmet Mueller and Timo Haeckel for HAW Hamburg
  */
 
 /**
@@ -41,6 +41,7 @@ enum class SubscriptionState_E {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
 
 class SomeIpManager : public Manager
 {
+public:
     class SomeIpSDState: cObject {
     public:
         enum class SdPhase {
@@ -59,12 +60,13 @@ class SomeIpManager : public Manager
          */
         virtual bool isSubscriptionAndServiceSeen(){ return false; }
     };
-    class SubscriptionState: SomeIpSDState {
+    class SubscriptionState: public SomeIpSDState {
     public:
         ServiceIdentifier publisherIdentifier;
         bool seen = false;
         bool requested = false;
         bool active = false;
+        // TODO how to handle connection abborts? do we have to note to which instance we are subbed?
 
         /**
          * helper method to quickly identify if a subscription has skipped phases
@@ -73,8 +75,18 @@ class SomeIpManager : public Manager
         virtual bool isSubscriptionAndServiceSeen() override {
             return seen;
         }
+
+        bool isAnyInstanceRequest() {
+            return publisherIdentifier.getInstanceId() == 0xFFFF;
+        }
+
+        void serviceOfferReceivedAndRequested() {
+            phase = SomeIpSDState::SdPhase::MAIN_PHASE;
+            seen = true;
+            requested = true;
+        }
     };
-    class OfferState: SomeIpSDState {
+    class OfferState: public SomeIpSDState {
     public:
         SomeIpDiscoveryNotification serviceOffering; // for reuse after first offer
         bool hasSubscription = false;
@@ -83,9 +95,9 @@ class SomeIpManager : public Manager
     typedef std::map<int, OfferState*> OfferInstanceStateMap;
     typedef std::map<int, OfferInstanceStateMap> OfferStateMap;
 
-    typedef std::map<QoSGroup, SubscriptionState*> SubscriptionQoSGroupStateMap;
-    typedef std::map<int, SubscriptionQoSGroupStateMap> SubscriptionInstanceStateMap;
-    typedef std::map<int, SubscriptionInstanceStateMap> SubscriptionStateMap;
+    typedef std::map<int, SubscriptionState*> SubscriptionInstanceStateMap;
+    typedef std::map<QoSGroup, SubscriptionInstanceStateMap> SubscriptionQoSGroupStateMap;
+    typedef std::map<int, SubscriptionQoSGroupStateMap> SubscriptionStateMap;
 
 /**
  * Methods
@@ -332,9 +344,9 @@ private:
     IServiceDiscovery* _sd;
 
     /**
-     * Contains pending SOME/IP subscriptions
+     * Contains local SOME/IP subscriptions
      */
-    std::unordered_map<Registry::ServiceId, std::unordered_map<QoSGroup, SubscriptionState_E>> _pendingSubscriptionsMap;
+    SubscriptionStateMap _subscriptions;
 };
 } /* end namespace SOA4CoRE */
 #endif
