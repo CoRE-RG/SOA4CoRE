@@ -77,7 +77,7 @@ simple SomeIpManager extends Manager
         //  - Offer Messages shall be sent cyclically if a CYCLIC_OFFER_DELAY is configured [PRS_SOMEIPSD_00412]
         //  - For Find entries (Find Service and Find Eventgroup) no cyclic messages are allowed in Main Phase [PRS_SOMEIPSD_00415]
         //  - Subscribe EventGroup Entries shall be triggered by Offer entries, which are sent cyclically  [PRS_SOMEIPSD_00582]
-        double cyclicOfferDelay @unit(s) = default(6s);
+        double cyclicOfferDelay @unit(s) = default(0s);
         // Example: 
 		// 1. Wait CYCLIC_OFFER_DELAY
 		// 2. Send message (Offer Service entries)
