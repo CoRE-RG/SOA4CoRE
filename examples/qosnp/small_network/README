@@ -14,3 +14,7 @@ Demonstrates a small network which negotiates the QoS via the QoSNP.
 
 - After the service discovery and QoS negotiation publisher sends messages to its subscribers.
 
+	
+IMPORTANT: If you want to run this example using dynamic IGMP Routing
+		Apply the patch located in this repository under patches/inet-igmp-patch.diff
+		This will add dynamic route learning for inet routers.

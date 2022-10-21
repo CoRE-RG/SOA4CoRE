@@ -1,0 +1,78 @@
+From d12e26d1e65d9b064399ee5d98275c1023054777 Mon Sep 17 00:00:00 2001
+From: Timo Haeckel <timo.haeckel@haw-hamburg.de>
+Date: Tue, 11 Oct 2022 17:25:53 +0200
+Subject: [PATCH] update multicast routes according to IGMP reports
+
+---
+ src/inet/networklayer/ipv4/IGMPv2.cc | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/src/inet/networklayer/ipv4/IGMPv2.cc b/src/inet/networklayer/ipv4/IGMPv2.cc
+index 159c8ad1e5..e008abbdc1 100644
+--- a/src/inet/networklayer/ipv4/IGMPv2.cc
++++ b/src/inet/networklayer/ipv4/IGMPv2.cc
+@@ -813,6 +813,24 @@ void IGMPv2::processV2Report(InterfaceEntry *ie, IGMPv2Report *msg)
+         else if (routerGroupData->state == IGMP_RGS_CHECKING_MEMBERSHIP)
+             cancelEvent(routerGroupData->rexmtTimer);
+ 
++        for(int k = 0; /** stop when route == nullptr or matches our group**/; k++) {
++            IPv4MulticastRoute * route = rt->getMulticastRoute(k);
++            if(!route) {
++                // create a new route
++                route = new IPv4MulticastRoute();
++                route->setMulticastGroup(groupAddr);
++                route->addOutInterface(new IMulticastRoute::OutInterface(ie));
++                rt->addMulticastRoute(route);
++                break;
++            }
++            // check if rout is the one we want to update
++            else if(route->isValid() && route->matches(IPv4Address(), groupAddr)) {
++                // update route with new receivers
++                route->addOutInterface(new IMulticastRoute::OutInterface(ie));
++                break;
++            }
++        }
++
+         startTimer(routerGroupData->timer, groupMembershipInterval);
+         routerGroupData->state = IGMP_RGS_MEMBERS_PRESENT;
+     }
+-- 
+2.37.3.windows.1
+
+From f0f4a83801281a476254b4d8ce45fc2132532d46 Mon Sep 17 00:00:00 2001
+From: Timo Haeckel <timo.haeckel@haw-hamburg.de>
+Date: Wed, 12 Oct 2022 11:14:46 +0200
+Subject: [PATCH] remove routes after igmp timeouts and leave group
+
+---
+ src/inet/networklayer/ipv4/IGMPv2.cc | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/src/inet/networklayer/ipv4/IGMPv2.cc b/src/inet/networklayer/ipv4/IGMPv2.cc
+index e008abbdc1..08576f0b97 100644
+--- a/src/inet/networklayer/ipv4/IGMPv2.cc
++++ b/src/inet/networklayer/ipv4/IGMPv2.cc
+@@ -314,6 +314,20 @@ void IGMPv2::deleteHostGroupData(InterfaceEntry *ie, const IPv4Address& group)
+ 
+ void IGMPv2::deleteRouterGroupData(InterfaceEntry *ie, const IPv4Address& group)
+ {
++    //remove routes in routing table for ie and group
++    for(int i = 0; i < rt->getNumMulticastRoutes(); i++) {
++        IPv4MulticastRoute * route = rt->getMulticastRoute(i);
++        if(route != nullptr
++                && route->isValid()
++                && route->matches(IPv4Address(), group)) {
++            route->removeOutInterface(ie);
++            if(route->getNumOutInterfaces() == 0) {
++                rt->removeMulticastRoute(route);
++            }
++            break;
++        }
++    }
++
+     RouterInterfaceData *interfaceData = getRouterInterfaceData(ie);
+     auto it = interfaceData->groups.find(group);
+     if (it != interfaceData->groups.end()) {
+-- 
+2.37.3.windows.1
+

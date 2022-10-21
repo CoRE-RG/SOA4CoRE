@@ -19,6 +19,12 @@ import inet.node.ethernet.EtherLink;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.node.inet.Router;
 
+
+//
+// IMPORTANT: If you want to run this example using dynamic IGMP Routing
+// 			Apply the patch located in this repository under patches/inet-igmp-patch.diff
+//			This will add dynamic route learning for inet routers.
+// 
 network SomeIpSDSmallNetworkRouter
 {
     parameters:

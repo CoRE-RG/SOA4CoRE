@@ -9,7 +9,9 @@
 
 /examples/qosnp/small_network,                                  -f omnetpp.ini -c General -r 0,                 50ms,            3f76-494e
 /examples/qosnp/small_network,                                  -f omnetpp.ini -c SomeIP_ServiceDiscovery -r 0, 50ms,            77f5-5b73
+/examples/qosnp/small_network,                                  -f omnetpp.ini -c Router_SomeIPSD_QoS_STDUDPMCAST -r 0, 50ms,    7306-40d4
 
 /examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            cc52-d197
 /examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            42bf-5d37
+/examples/someip/small_network,                                 -f omnetpp.ini -c Router_UDP_Mcast -r 0,        50ms,            84e9-c887
 /examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              b78c-5d8c
