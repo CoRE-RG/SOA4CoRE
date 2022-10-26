@@ -8,6 +8,13 @@ SOA4CoRE provides service-oriented middleware components, service applications a
 * Switch to OMNeT++ 5.5.1 and INET 3.6.6
 * Continuous integration is now enabled.
 * Model release including service-oriented middleware components, service applications and service endpoints for avb, tcp and udp. 
+* Name changed from SOQoSMW to SOA4CoRE.
+* Model extended to support AUTOSAR SOME/IP with Service Discovery and SOME/IP service endpoints.
+
+## References
+If you would like to reference this project please use the following [publication](https://doi.org/10.29007/w71t):
+
+ >Cakir, Mehmet and Häckel, Timo and Reider, Sandra and Meyer, Philipp and Korf, Franz and Schmidt, Thomas C. A QoS Aware Approach to Service-Oriented Communication in Future Automotive Networks, 2019 IEEE Vehicular Networking Conference (VNC), IEEE, Dec., 2019
 
 
 ## Quick Start
@@ -29,7 +36,7 @@ SOA4CoRE provides service-oriented middleware components, service applications a
 7. Working with the framework
     * See the documentation in [doc/](/doc)
     * Start the examples in the framework
-    
+
 
 ## Continuous Integration
 
@@ -66,6 +73,11 @@ Please see [INSTALL](/INSTALL)
 ### Documentation
 Please see [doc/](/doc)
 
+### Multicast and IGMP in INET 3.6.6
+At the moment of this writing the INET framework does not support multicast route updates in routers using the IGMP (see [inet-framework issue #80](https://github.com/inet-framework/inet/issues/80)).
+We did a very basic implementation that reacts to IGMP messages to add and remove routes dynamically in routers.
+You can download this version from [our fork of the inet-framework](https://github.com/CoRE-RG/inet/tree/feature/DynamicIGMPRoutes) and checkout the branch ```feature/DynamicIGMPRoutes```
+The patch is also located at ```SOA4CoRE/patches/inet-igmp-patch.diff``` and can be applied with git. 
 
 ## IMPORTANT
 The SOA4CoRE model is under continuous development: new parts are added, bugs are corrected, and so on. We cannot assert that the implementation will work fully according to the specifications. YOU ARE RESPONSIBLE YOURSELF TO MAKE SURE THAT THE MODELS YOU USE IN YOUR SIMULATIONS WORK CORRECTLY, AND YOU'RE GETTING VALID RESULTS.
