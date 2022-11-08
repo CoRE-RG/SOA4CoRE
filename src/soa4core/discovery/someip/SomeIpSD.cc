@@ -288,7 +288,6 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
 
     std::advance(optionsListIterator, subscribeEventGroupEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupEntry->getNum1stOptions(); firstOptionsIdx++) {
-        std::advance(optionsListIterator, firstOptionsIdx);
 
         SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
         notification->setServiceId(subscribeEventGroupEntry->getServiceID());
@@ -306,6 +305,7 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
         }
 
         emit(_subscribeEventGroupSignal, notification);
+        optionsListIterator++;
     }
 }
 
@@ -319,9 +319,9 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
 
     std::advance(optionsListIterator, subscribeEventGroupAckEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupAckEntry->getNum1stOptions(); firstOptionsIdx++) {
-        std::advance(optionsListIterator, firstOptionsIdx);
 
         notification->updateFromEndpointOption(*optionsListIterator);
+        optionsListIterator++;
     }
 
     if(notification->getAddress().isUnspecified()) {
