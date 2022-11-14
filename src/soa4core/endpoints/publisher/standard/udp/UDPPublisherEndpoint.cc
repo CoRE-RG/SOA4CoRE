@@ -68,6 +68,12 @@ void UDPPublisherEndpoint::initializeTransportConnection() {
 
 void UDPPublisherEndpoint::addRemote(ConnectionSpecificInformation* csi) {
     if(CSI_UDP* csiUdp = dynamic_cast<CSI_UDP*>(csi)){
+        for(auto pair = _remotes.begin(); pair != _remotes.end(); pair++){
+            if(pair->first == L3AddressResolver().resolve(csiUdp->getAddress())
+                    && pair->second == csiUdp->getPort()) {
+                return;
+            }
+        }
         emit(_remotesSignal,1);
         // create new processor and add to list
         _remotes.push_back(pair<L3Address,int>(L3AddressResolver().resolve(csiUdp->getAddress()), csiUdp->getPort()));
