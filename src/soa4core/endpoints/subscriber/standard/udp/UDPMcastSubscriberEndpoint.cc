@@ -49,8 +49,11 @@ void UDPMcastSubscriberEndpoint::initializeTransportConnection() {
     if(!ift)
         throw cRuntimeError("Could not locate interface table at relative path from endpoint \"^.^.interfaceTable\"");
     InterfaceEntry *ie = ift->getInterfaceByName("eth0");
-    if (!ie)
-        throw cRuntimeError("Wrong multicastInterface setting: no interface named \"eth0\"");
+    if (!ie) {
+        ie = ift->getInterfaceByName("phy0");
+    }
+    if(!ie)
+        throw cRuntimeError("Wrong multicastInterface setting: no interface named \"eth0\" or \"phy0\"");
 
     _socket.joinMulticastGroup(L3Address(_mcastDestAddress.c_str()), ie->getInterfaceId());
 }
