@@ -73,17 +73,11 @@ void ServiceBase::initialize() {
 }
 
 std::string ServiceBase::getServiceName() {
-    std::string serviceName = "";
-    if (this->_publisherName.length() > 0) {
-        serviceName = this->_publisherName;
-    } else if (this->_subscriberName.length() > 0) {
-        serviceName = this->_subscriberName;
-    }
-    return serviceName;
+    return this->_serviceName;
 }
 
 int ServiceBase::getServiceId() {
-    return this->_publisherServiceId;
+    return this->_serviceId;
 }
 
  inet::L3Address ServiceBase::getAddress() {
@@ -123,6 +117,10 @@ void ServiceBase::handleParameterChange(const char* parname) {
         _localAddress = par("localAddress").stdstringValue();
     }
 
+    if (!parname || !strcmp(parname, "serviceName")) {
+        this->_serviceName = par("serviceName").stdstringValue();
+    }
+
     if (!parname || !strcmp(parname, "enabled")) {
         this->_enabled = par("enabled").boolValue();
     }
@@ -133,6 +131,10 @@ void ServiceBase::handleParameterChange(const char* parname) {
 
     if (!parname || !strcmp(parname, "instanceID")) {
         _instanceId = par("instanceID").intValue();
+    }
+    if (!parname || !strcmp(parname, "serviceId"))
+    {
+        this->_serviceId = par("serviceId").intValue();
     }
 }
 

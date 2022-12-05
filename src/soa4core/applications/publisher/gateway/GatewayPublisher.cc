@@ -80,7 +80,7 @@ void GatewayPublisher::handleMessage(cMessage *msg) {
             if(gwam){
                 emit(this->_msgSentSignal, msg);
                 sendDirect(gwam, _connector->gate("applicationIn"));
-                EV_DEBUG << _publisherName << ": Message Published." << endl;
+                EV_DEBUG << _serviceName << ": Message Published." << endl;
             } else {
                 delete msg;
             }

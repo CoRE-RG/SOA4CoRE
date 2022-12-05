@@ -45,6 +45,10 @@ simple ServiceBase like IService
     	
     	// The instance id of the service that will be subscribed/offered
         int instanceID = default(0xFFFF); // see [PRS_SOMEIPSD_00268], [PRS_SOMEIPSD_00270], [PRS_SOMEIPSD_00351]
+    	//Service ID that will be subscribed/offered
+    	int serviceId = default(0);
+    	//Service Description
+    	string serviceName = default("");
         
     gates:
         // the connector gate to receive messages.

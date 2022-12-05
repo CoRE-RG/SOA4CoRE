@@ -43,10 +43,7 @@ simple Subscriber extends ServiceBase
         @statistic[rxLatencyInner](title="End-to-end latency inner"; source="messageAge(innerMessage(rxPk))"; unit=s; record=stats,histogram?,vector; interpolationmode=none);
         
         //Subscriber name
-        string subscriberName = default("SubscriberService");
-        
-        //Service ID
-    	int publisherServiceId = default(0);
+        serviceName = default("SubscriberService");
         
         //The QoS group which is requestes/subscribed
         string qosGroup = default("STD_TCP");

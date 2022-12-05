@@ -92,13 +92,6 @@ void Publisher::handleParameterChange(const char* parname) {
         this->_payload = CoRE4INET::parameterULongCheckRange(par("payload"), 0,
         MAX_ETHERNET_DATA_BYTES);
     }
-    if (!parname || !strcmp(parname, "serviceName")) {
-        this->_publisherName = par("serviceName").stdstringValue();
-    }
-    if (!parname || !strcmp(parname, "serviceId"))
-    {
-        this->_publisherServiceId = par("serviceId").intValue();
-    }
     if (!parname || !strcmp(parname, "interval")) {
         this->_interval = CoRE4INET::parameterDoubleCheckRange(par("interval"),
                 0, SIMTIME_MAX.dbl());;
@@ -199,12 +192,12 @@ void Publisher::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage()
             && (strcmp(msg->getName(), SEND_MSG_NAME) == 0)) {
         if (_connector) {
-            cPacket *payloadPacket = new cPacket(std::to_string(_publisherServiceId).c_str());
+            cPacket *payloadPacket = new cPacket(std::to_string(_serviceId).c_str());
             payloadPacket->setTimestamp();
             payloadPacket->setByteLength(
                     static_cast<int64_t>(getPayloadBytes()));
             sendDirect(payloadPacket, _connector->gate("applicationIn"));
-            EV_DEBUG << _publisherName << ": Message Published." << endl;
+            EV_DEBUG << _serviceName << ": Message Published." << endl;
 
             //schedule next send event
             scheduleNextMessage();
@@ -221,7 +214,7 @@ void Publisher::handleMessage(cMessage *msg) {
 
 void Publisher::printQoS() {
     cout << "printing offered qos services:" << endl;
-    cout << "Service ID: " << _publisherServiceId <<endl;
+    cout << "Service ID: " << _serviceId <<endl;
     cout << "StreamID: " << _streamID << endl;
     cout << "SRClass: " << CoRE4INET::SR_CLASStoString[_srClass] << endl;
     cout << "Framesize: " << _framesize << endl;

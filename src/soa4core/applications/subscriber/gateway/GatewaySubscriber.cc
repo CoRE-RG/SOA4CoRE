@@ -44,7 +44,6 @@ GatewaySubscriber::~GatewaySubscriber() {
 void GatewaySubscriber::initialize()
 {
     Subscriber::initialize();
-    handleParameterChange(nullptr);
 
     //find the gateway to deliver messages
     if(EthernetGatewayApplication* gwApp = dynamic_cast<EthernetGatewayApplication*>(this->getParentModule()->getSubmodule("gatewayApp"))) {

@@ -156,19 +156,14 @@ protected:
     std::string _localAddress;
 
     /**
-     * Name of the subscriber service.
+     * Name of the service.
      */
-    std::string _subscriberName;
-
-    /**
-     * Name of the service to publish.
-     */
-    std::string _publisherName;
+    std::string _serviceName;
 
     /**
       * Id of the publishing service to subscribe to.
       */
-    int _publisherServiceId;
+    int _serviceId;
 
     /**
      * Instance Id of the service

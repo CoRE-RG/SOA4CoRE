@@ -62,10 +62,7 @@ simple Publisher extends ServiceBase
         @statistic[msgLatency](title="End-to-end latency"; source="messageAge(msgSent)"; unit=s; record=stats,histogram?,vector; interpolationmode=none);
     
     	//Service Description
-    	string serviceName = default("PublisherService");
-    	
-    	//Service ID
-    	int serviceId = default(0);
+    	serviceName = default("PublisherService");
     	
     	//The QoS types this application can serve (one space separated)
     	string qosGroups = default("");

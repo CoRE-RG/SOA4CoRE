@@ -66,16 +66,6 @@ void Subscriber::handleParameterChange(const char* parname)
 {
     ServiceBase::handleParameterChange(parname);
 
-    if (!parname || !strcmp(parname, "publisherServiceId"))
-    {
-        this->_publisherServiceId = par("publisherServiceId").intValue();
-    }
-
-    if (!parname || !strcmp(parname, "subscriberName"))
-    {
-        this->_subscriberName = par("subscriberName").stdstringValue();
-    }
-
     if (!parname || !strcmp(parname, "qosGroup")) {
         string group = par("qosGroup").stdstringValue();
         if(group == "WEB"){
