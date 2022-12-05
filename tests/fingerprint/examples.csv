@@ -14,4 +14,4 @@
 
 /examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            1f87-4d00
 # /examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            1f87-4d00
-/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              b70d-f69b
+/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              2835-6345
