@@ -174,6 +174,7 @@ void Publisher::handleStart() {
     }
 
     //schedule next send event
+    this->_sendMsgTimer = new cMessage(SEND_MSG_NAME);
     scheduleNextMessage();
 }
 
@@ -197,10 +198,10 @@ void Publisher::sendMessage() {
 }
 
 void Publisher::scheduleNextMessage() {
+    this->cancelEvent(_sendMsgTimer);
     //schedule next send event
-    double interval = CoRE4INET::parameterDoubleCheckRange(par("interval"), 0, SIMTIME_MAX.dbl());
-    scheduleAt(simTime() + (interval / this->_intervalFrames),
-            new cMessage(SEND_MSG_NAME));
+    scheduleAt(simTime() + (this->_interval / this->_intervalFrames),
+            _sendMsgTimer);
 }
 
 void Publisher::handleMessage(cMessage *msg) {
@@ -210,7 +211,6 @@ void Publisher::handleMessage(cMessage *msg) {
         sendMessage();
         //schedule next send event
         scheduleNextMessage();
-        delete msg;
     } else {
         ServiceBase::handleMessage(msg);
     }

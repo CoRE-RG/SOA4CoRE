@@ -256,6 +256,8 @@ private:
      * Caches the QoS types this application can serve
      */
     std::set<QoSGroup> _qosGroups;
+
+    cMessage* _sendMsgTimer;
 };
 
 } /* end namespace SOA4CoRE */
