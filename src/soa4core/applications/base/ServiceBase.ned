@@ -37,7 +37,13 @@ simple ServiceBase like IService
     	int applicationTCPPort;
     	// the udp port for this service
     	int applicationUDPPort;
-    	// The instance id of the service that will be subscribed
+    	
+        // PublisherApp enabled or disabled
+        bool enabled = default(true);
+        // Start time
+        double startTime @unit(s) = default(0s);
+    	
+    	// The instance id of the service that will be subscribed/offered
         int instanceID = default(0xFFFF); // see [PRS_SOMEIPSD_00268], [PRS_SOMEIPSD_00270], [PRS_SOMEIPSD_00351]
         
     gates:

@@ -67,6 +67,12 @@ protected:
      */
     virtual void handleParameterChange(const char* parname) override;
 
+    /**
+     * Interface method to handle service start up of publisher/subscriber
+     * Creates and registers this subscriber
+     */
+    virtual void handleStart() override;
+
 private:
 
 /**
@@ -85,12 +91,6 @@ protected:
      * Signal that is emitted every time a frame was sent.
      */
      simsignal_t _rxPkSignal;
-
-private:
-    /**
-     * Caches the start time parameter
-     */
-    double _startTime;
 };
 
 }/* end namespace SOA4CoRE */

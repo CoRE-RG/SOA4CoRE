@@ -33,8 +33,6 @@ namespace SOA4CoRE {
 using namespace std;
 using namespace CoRE4INET;
 
-#define START_MSG_NAME "Start Message"
-
 Define_Module(Subscriber);
 
 Subscriber::Subscriber() {
@@ -46,37 +44,22 @@ Subscriber::~Subscriber() {
 void Subscriber::initialize()
 {
     ServiceBase::initialize();
-    handleParameterChange(nullptr);
     this->_rxPkSignal = registerSignal("rxPk");
-
-    scheduleAt(simTime() + par("startTime").doubleValue(), new cMessage(START_MSG_NAME));
-    if (getEnvir()->isGUI()) {
-        getDisplayString().setTagArg("i2", 0, "status/asleep");
-    }
 }
 
 void Subscriber::handleMessage(cMessage *msg)
 {
-    if(msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)){
-        //create a subscriber
-        ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_publisherServiceId,this->_instanceId);
-        _connector = dynamic_cast<ConnectorBase*>(_localServiceManager->registerSubscriberServiceAndSubscribeService(publisherServiceIdentifier, this));
-        if (!_connector) {
-            throw cRuntimeError("No subscriber connector created.");
-        }
-        if (getEnvir()->isGUI()) {
-            getDisplayString().setTagArg("i2", 0, "status/active");
-        }
-
+    if(msg->isSelfMessage()) {
+        ServiceBase::handleMessage(msg);
     } else {
-        EV_DEBUG << "Subscriber " << _subscriberName << " received a message."  << endl;
+        EV_DEBUG << "Subscriber " << _serviceName << " received a message."  << endl;
         //this is a subscription message so handle it.
         if (omnetpp::cPacket *frame = dynamic_cast<omnetpp::cPacket*>(msg))
         {
             emit(_rxPkSignal, frame);
         }
+        delete msg;
     }
-    delete msg;
 }
 
 void Subscriber::handleParameterChange(const char* parname)
@@ -91,11 +74,6 @@ void Subscriber::handleParameterChange(const char* parname)
     if (!parname || !strcmp(parname, "subscriberName"))
     {
         this->_subscriberName = par("subscriberName").stdstringValue();
-    }
-
-    if (!parname || !strcmp(parname, "startTime"))
-    {
-        this->_startTime = CoRE4INET::parameterDoubleCheckRange(par("startTime"), 0, SIMTIME_MAX.dbl());
     }
 
     if (!parname || !strcmp(parname, "qosGroup")) {
@@ -121,6 +99,16 @@ void Subscriber::handleParameterChange(const char* parname)
             throw cRuntimeError("Unknown QoS");
         }
 
+    }
+}
+
+
+void Subscriber::handleStart() {
+    //create a subscriber
+    ServiceIdentifier publisherServiceIdentifier = ServiceIdentifier(this->_serviceId,this->_instanceId);
+    _connector = dynamic_cast<ConnectorBase*>(_localServiceManager->registerSubscriberServiceAndSubscribeService(publisherServiceIdentifier, this));
+    if (!_connector) {
+        throw cRuntimeError("No subscriber connector created.");
     }
 }
 

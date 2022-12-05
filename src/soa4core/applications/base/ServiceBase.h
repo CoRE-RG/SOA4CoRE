@@ -52,6 +52,13 @@ public:
     virtual ~ServiceBase();
 
     /**
+     * Indicated that a Service App is enabled
+     *
+     * @return true when enabled, otherwise false
+     */
+    bool isEnabled();
+
+    /**
      * Returns the service name
      * @return the service name
      */
@@ -110,6 +117,11 @@ protected:
      */
     virtual void handleParameterChange(const char* parname) override;
 
+    /**
+     * Interface method to handle service start up of publisher/subscriber
+     */
+    virtual void handleStart() {};
+
 private:
 
     /**
@@ -162,6 +174,16 @@ protected:
      * Instance Id of the service
      */
     uint16_t _instanceId;
+
+    /**
+     * Caches enabled parameter
+     */
+    bool _enabled;
+
+    /**
+     * Caches the start time parameter
+     */
+    double _startTime;
 
 private:
 };

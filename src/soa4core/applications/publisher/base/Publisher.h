@@ -31,7 +31,6 @@ using namespace omnetpp;
 
 namespace SOA4CoRE {
 
-#define START_MSG_NAME "Start Message"
 #define SEND_MSG_NAME "Send Message"
 
 /**
@@ -50,13 +49,6 @@ public:
     Publisher();
 
     virtual ~Publisher();
-
-    /**
-     * Indicated that PublisherApp is enabled
-     *
-     * @return true when enabled, otherwise false
-     */
-    bool isEnabled();
 
     /**
      * Returns the number of bytes of the payload desired
@@ -154,9 +146,10 @@ protected:
     void printQoS();
 
     /**
+     * Interface method to handle service start up of publisher/subscriber
      * Creates and registers this Publisher
      */
-    void createPublisherWithQoS();
+    virtual void handleStart() override;
 
     /**
      * Schedules the next message to be published
@@ -170,10 +163,6 @@ private:
  */
 public:
 protected:
-    /**
-     * Caches enabled parameter
-     */
-    bool _enabled;
 
     /**
      * Caches payload parameter
@@ -189,11 +178,6 @@ protected:
      * Signal that is emitted each time then a message is sent.
      */
     simsignal_t _msgSentSignal;
-
-    /**
-     * Caches the start time parameter
-     */
-    double _startTime;
 
     /**
      * Caches the interval length parameter

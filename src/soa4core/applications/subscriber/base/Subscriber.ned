@@ -42,9 +42,6 @@ simple Subscriber extends ServiceBase
         //Uses encapsulated packet | Frame when nothing is encapsulated
         @statistic[rxLatencyInner](title="End-to-end latency inner"; source="messageAge(innerMessage(rxPk))"; unit=s; record=stats,histogram?,vector; interpolationmode=none);
         
-        // Start time
-        double startTime @unit(s) = default(0s);  
-        
         //Subscriber name
         string subscriberName = default("SubscriberService");
         

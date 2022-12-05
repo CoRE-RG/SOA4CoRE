@@ -18,6 +18,9 @@
 #include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/manager/base/IManager.h"
 #include "soa4core/connector/base/ConnectorBase.h"
+//CoRE4INET
+#include <core4inet/base/CoRE4INET_Defs.h>
+#include <core4inet/utilities/ConfigFunctions.h>
 //INET
 #include <inet/networklayer/common/L3AddressResolver.h>
 //STD
@@ -25,23 +28,47 @@
 
 namespace SOA4CoRE {
 
+#define SERVICE_START_MSG_NAME "Start Message"
+
 ServiceBase::~ServiceBase()
 {
 }
 
+bool ServiceBase::isEnabled() {
+    return this->_enabled;
+}
+
 void ServiceBase::handleMessage(cMessage *msg) {
-    throw cRuntimeError("ServiceBase does not handle messages. Implementations need to handle them.");
+    if (msg->isSelfMessage() && (strcmp(msg->getName(), SERVICE_START_MSG_NAME) == 0)) {
+        this->handleStart();
+        if (getEnvir()->isGUI()) {
+            getDisplayString().setTagArg("i2", 0, "status/active");
+        }
+    } else {
+        throw cRuntimeError("ServiceBase does not handle messages. Implementations need to handle them.");
+    }
+    delete msg;
 }
 
 void ServiceBase::initialize() {
-    this->_subscriberName = "";
-    this->_publisherName = "";
+    handleParameterChange(nullptr);
     _localServiceManager =
             dynamic_cast<IManager*>(getParentModule()->getModuleByPath(par("serviceManagerModulePath")));
     if (!_localServiceManager) {
         throw cRuntimeError(
                 "Configuration problem of parameter serviceManagerModulePath in module %s.",
                 this->getFullName());
+    }
+
+    if (this->isEnabled()) {
+        scheduleAt(_startTime, new cMessage(SERVICE_START_MSG_NAME));
+        if (getEnvir()->isGUI()) {
+            getDisplayString().setTagArg("i2", 0, "status/asleep");
+        }
+    } else {
+        if (getEnvir()->isGUI()) {
+            getDisplayString().setTagArg("i2", 0, "status/stop");
+        }
     }
 }
 
@@ -94,6 +121,14 @@ void ServiceBase::handleParameterChange(const char* parname) {
     }
     if (!parname || !strcmp(parname, "localAddress")) {
         _localAddress = par("localAddress").stdstringValue();
+    }
+
+    if (!parname || !strcmp(parname, "enabled")) {
+        this->_enabled = par("enabled").boolValue();
+    }
+    if (!parname || !strcmp(parname, "startTime")) {
+        this->_startTime = CoRE4INET::parameterDoubleCheckRange(
+                par("startTime"), 0, SIMTIME_MAX.dbl());
     }
 
     if (!parname || !strcmp(parname, "instanceID")) {

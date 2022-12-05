@@ -31,10 +31,6 @@ simple Publisher extends ServiceBase
         @class(SOA4CoRE::Publisher);
         @display("i=block/source");
         
-        // PublisherApp enabled or disabled
-        bool enabled = default(true);
-        // Start time
-        double startTime @unit(s) = default(0s);
         // Interval of new messages
         double interval @unit(s) = default(125us);
         // Number of frames per interval

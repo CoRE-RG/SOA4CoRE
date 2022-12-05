@@ -37,15 +37,10 @@ namespace SOA4CoRE {
 Define_Module(Publisher);
 
 Publisher::Publisher() {
-    this->_enabled = true;
     this->_sigPayload = 0;
 }
 
 Publisher::~Publisher() {
-}
-
-bool Publisher::isEnabled() {
-    return this->_enabled;
 }
 
 size_t Publisher::getPayloadBytes() {
@@ -76,7 +71,6 @@ int Publisher::getIntervalFrames() {
 
 void Publisher::initialize() {
     ServiceBase::initialize();
-    handleParameterChange(nullptr);
 
     this->_msgSentSignal = registerSignal("msgSent");
     this->_sigPayload = registerSignal("payloadSignal");
@@ -89,30 +83,11 @@ void Publisher::initialize() {
         _framesize =
                 getPayloadBytes() + ETHER_MAC_FRAME_BYTES + ETHER_8021Q_TAG_BYTES;
     }
-
-    if (isEnabled()) {
-        scheduleAt(simTime() + par("startTime").doubleValue(),
-                new cMessage(START_MSG_NAME));
-        if (getEnvir()->isGUI()) {
-            getDisplayString().setTagArg("i2", 0, "status/asleep");
-        }
-    } else {
-        if (getEnvir()->isGUI()) {
-            getDisplayString().setTagArg("i2", 0, "status/stop");
-        }
-    }
 }
 
 void Publisher::handleParameterChange(const char* parname) {
     ServiceBase::handleParameterChange(parname);
 
-    if (!parname || !strcmp(parname, "enabled")) {
-        this->_enabled = par("enabled").boolValue();
-    }
-    if (!parname || !strcmp(parname, "startTime")) {
-        this->_startTime = CoRE4INET::parameterDoubleCheckRange(
-                par("startTime"), 0, SIMTIME_MAX.dbl());
-    }
     if (!parname || !strcmp(parname, "payload")) {
         this->_payload = CoRE4INET::parameterULongCheckRange(par("payload"), 0,
         MAX_ETHERNET_DATA_BYTES);
@@ -200,7 +175,7 @@ void Publisher::handleParameterChange(const char* parname) {
     }
 }
 
-void Publisher::createPublisherWithQoS() {
+void Publisher::handleStart() {
     //printQoS();
 
     //register this as new publisher app!
@@ -208,6 +183,9 @@ void Publisher::createPublisherWithQoS() {
     if (!_connector) {
         throw cRuntimeError("No publisher connector created.");
     }
+
+    //schedule next send event
+    scheduleNextMessage();
 }
 
 void Publisher::scheduleNextMessage() {
@@ -218,18 +196,7 @@ void Publisher::scheduleNextMessage() {
 
 void Publisher::handleMessage(cMessage *msg) {
 
-    if (msg->isSelfMessage() && (strcmp(msg->getName(), START_MSG_NAME) == 0)) {
-
-        createPublisherWithQoS();
-
-        //schedule next send event
-        scheduleNextMessage();
-        if (getEnvir()->isGUI()) {
-            getDisplayString().setTagArg("i2", 0, "status/active");
-        }
-        delete msg;
-
-    } else if (msg->isSelfMessage()
+    if (msg->isSelfMessage()
             && (strcmp(msg->getName(), SEND_MSG_NAME) == 0)) {
         if (_connector) {
             cPacket *payloadPacket = new cPacket(std::to_string(_publisherServiceId).c_str());
@@ -247,7 +214,7 @@ void Publisher::handleMessage(cMessage *msg) {
         }
         delete msg;
     } else {
-        delete msg;
+        ServiceBase::handleMessage(msg);
     }
 
 }
