@@ -29,6 +29,8 @@
 namespace SOA4CoRE {
 
 #define SERVICE_START_MSG_NAME "Start Message"
+#define SERVICE_STOP_MSG_NAME "Stop Message"
+#define SERVICE_DONT_STOP -1
 
 ServiceBase::~ServiceBase()
 {
@@ -43,6 +45,11 @@ void ServiceBase::handleMessage(cMessage *msg) {
         this->handleStart();
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/active");
+        }
+    } else if (msg->isSelfMessage() && (strcmp(msg->getName(), SERVICE_STOP_MSG_NAME) == 0)) {
+        this->handleStop();
+        if (getEnvir()->isGUI()) {
+            getDisplayString().setTagArg("i2", 0, "status/stop");
         }
     } else {
         throw cRuntimeError("ServiceBase does not handle messages. Implementations need to handle them.");
@@ -62,6 +69,9 @@ void ServiceBase::initialize() {
 
     if (this->isEnabled()) {
         scheduleAt(_startTime, new cMessage(SERVICE_START_MSG_NAME));
+        if(_stopTime > SERVICE_DONT_STOP) {
+            scheduleAt(_stopTime, new cMessage(SERVICE_STOP_MSG_NAME));
+        }
         if (getEnvir()->isGUI()) {
             getDisplayString().setTagArg("i2", 0, "status/asleep");
         }
@@ -135,6 +145,18 @@ void ServiceBase::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "startTime")) {
         this->_startTime = CoRE4INET::parameterDoubleCheckRange(
                 par("startTime"), 0, SIMTIME_MAX.dbl());
+    }
+    if (!parname || !strcmp(parname, "stopTime")) {
+        double stopTime = par("stopTime").doubleValue();
+        if(stopTime <= 0) {
+            this->_stopTime = SERVICE_DONT_STOP;
+        } else {
+            this->_stopTime = CoRE4INET::parameterDoubleCheckRange(
+                    par("stopTime"), 0, SIMTIME_MAX.dbl());
+            if(_stopTime <= _startTime) {
+                throw cRuntimeError("Stop time less or equal than start time");
+            }
+        }
     }
 
     if (!parname || !strcmp(parname, "instanceID")) {

@@ -42,6 +42,8 @@ simple ServiceBase like IService
         bool enabled = default(true);
         // Start time
         double startTime @unit(s) = default(0s);
+        // Stop time <= 0 means   
+        double stopTime @unit(s) = default(0s);
     	
     	// The instance id of the service that will be subscribed/offered
         int instanceID; // see [PRS_SOMEIPSD_00268], [PRS_SOMEIPSD_00270], [PRS_SOMEIPSD_00351]

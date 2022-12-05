@@ -134,6 +134,11 @@ protected:
      */
     virtual void handleStart() {};
 
+    /**
+     * Interface method to handle service shut down of publisher/subscriber
+     */
+    virtual void handleStop() {};
+
 private:
 
     /**
@@ -201,6 +206,11 @@ protected:
      * Caches if this is a static publisher that shall not be advertised.
      */
     bool _static;
+
+    /**
+     * Caches the stop time parameter
+     */
+    double _stopTime;
 
 private:
 };
