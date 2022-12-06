@@ -520,9 +520,13 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
     if(_subscriptions.count(serviceId)) {
         for (QoSGroup qosGroup : qosGroups) {
             if(_subscriptions[serviceId].count(qosGroup)) {
-                bool instanceIdRequested = _subscriptions[serviceId][qosGroup].count(instanceId) > 0;
-                bool anyInstanceRequested = _subscriptions[serviceId][qosGroup].count(0xFFFF) > 0;
-                if(instanceIdRequested || anyInstanceRequested) {
+                SubscriptionState* subscription = nullptr;
+                if(_subscriptions[serviceId][qosGroup].count(instanceId) > 0) {
+                    subscription = _subscriptions[serviceId][qosGroup][instanceId];
+                } else if (_subscriptions[serviceId][qosGroup].count(0xFFFF) > 0) {
+                    subscription = _subscriptions[serviceId][qosGroup][0xFFFF];
+                }
+                if(subscription != nullptr && !subscription->requested) {
                     list<SubscriberConnector*> subscriberConnectors = _lsr->getSubscriberConnectors(someIpdiscoveryNotificationOffer->getServiceId());
                     for (SubscriberConnector* subscriberConnector: subscriberConnectors) {
                         vector<ServiceBase*> subscriberApplications = subscriberConnector->getApplications();
@@ -538,12 +542,7 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
                                     someIpdiscoveryNotificationOffer->getAddress(), instanceId, set<QoSGroup>{}, qosGroup, subscriberConnector->getTcpPort(),
                                     subscriberConnector->getUdpPort(), someIpdiscoveryNotificationOffer->getMcastDestAddr(), someIpdiscoveryNotificationOffer->getMcastDestPort()
                             );
-                            if (instanceIdRequested) {
-                                _subscriptions[serviceId][qosGroup][instanceId]->serviceOfferReceivedAndRequested();
-                            }
-                            if (anyInstanceRequested) {
-                                _subscriptions[serviceId][qosGroup][0xFFFF]->serviceOfferReceivedAndRequested();
-                            }
+                            subscription->serviceOfferReceivedAndRequested();
                             emit(_subscribeSignal, someIpdiscoveryNotificationSubscription);
                             // Break here because there can be only one connector for a service ID and QoS Group pair
                             break;
