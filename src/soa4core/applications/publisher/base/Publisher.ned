@@ -61,6 +61,9 @@ simple Publisher extends ServiceBase
         //End-to-end latency
         @statistic[msgLatency](title="End-to-end latency"; source="messageAge(msgSent)"; unit=s; record=stats,histogram?,vector; interpolationmode=none);
     
+        //Offered instance id, must not be 0 or 0xFFFF, default is 1
+        instanceID = default(0x0001);
+        
     	//Service Description
     	serviceName = default("PublisherService");
     	
