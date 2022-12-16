@@ -13,5 +13,4 @@
 /examples/qosnp/small_network,                                  -f omnetpp.ini -c SomeIP_ServiceDiscovery -r 0, 50ms,            836d-9d3e
 
 /examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            1f87-4d00
-# /examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            1f87-4d00
-/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              2835-6345
+/examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              b99c-b4a8
