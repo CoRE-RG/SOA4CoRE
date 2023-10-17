@@ -15,6 +15,8 @@
 
 #include "SOMEIPPublisherEndpointBase.h"
 
+#include <string>
+
 namespace SOA4CoRE {
 
 cPacket* SOMEIPPublisherEndpointBase::createSOMEIPPacket(uint16_t serviceID, cPacket *payload, uint16_t method_EventID, uint8_t clientIDPrefix, uint8_t clientID, uint16_t sessionID,
@@ -47,6 +49,8 @@ cPacket* SOMEIPPublisherEndpointBase::createSOMEIPPacket(uint16_t serviceID, cPa
     //The return code
     someipheader->setReturnCode(returnCode);
     someipheader->encapsulate(payload);
+    std::string name = "SOME/IP Service " + std::to_string(serviceID);
+    someipheader->setName(name.c_str());
     return someipheader;
 }
 
