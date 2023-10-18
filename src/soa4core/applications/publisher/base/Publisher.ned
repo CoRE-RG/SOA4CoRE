@@ -58,8 +58,6 @@ simple Publisher extends ServiceBase
         @statistic[msgCount](title="Sent Packets"; source=msgSent; record=count; unit=packets);
         //Statistic of the amount of bytes that were sent by the publisher
         @statistic[msgBytes](title="Sent Bytes"; source=msgSent; unit=B; record="sum(packetBytes)","vector(packetBytes)", "histogram(packetBytes)?","floatingIntervalSumVector(packetBytes)?"; interpolationmode=none); //possible parameter e.g.: **.floatingintervalvectorrecorder-measure-interval = 20ms for floatingIntervalRecorders
-        //End-to-end latency
-        @statistic[msgLatency](title="End-to-end latency"; source="messageAge(msgSent)"; unit=s; record=stats,histogram?,vector; interpolationmode=none);
     
         //Offered instance id, must not be 0 or 0xFFFF, default is 1
         instanceID = default(0x0001);
