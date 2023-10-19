@@ -27,6 +27,10 @@ using namespace CoRE4INET;
 
 namespace SOA4CoRE {
 
+bool STDPublisherEndpointBase::has8021QInformation() {
+    return _pcp >= 0 && _vlanID >= 0;
+}
+
 void STDPublisherEndpointBase::initialize()
 {
     PublisherEndpointBase::initialize();
@@ -63,14 +67,14 @@ void STDPublisherEndpointBase::handleParameterChange(const char* parname)
     {
         if(par("vlan_id").intValue() != -1)
         {
-            this->_vlanID = static_cast<uint16_t>(parameterULongCheckRange(par("vlan_id"), 0, MAX_VLAN_ID));
+            this->_vlanID = static_cast<int>(parameterULongCheckRange(par("vlan_id"), 0, MAX_VLAN_ID));
         }
     }
     if (!parname || !strcmp(parname, "pcp"))
     {
         if(par("pcp").intValue() != -1)
         {
-            this->_pcp = static_cast<uint8_t>(parameterULongCheckRange(par("pcp"), 0, MAX_Q_PRIORITY));
+            this->_pcp = static_cast<int>(parameterULongCheckRange(par("pcp"), 0, MAX_Q_PRIORITY));
         }
     }
     if (!parname || !strcmp(parname, "localAddress"))
@@ -127,13 +131,13 @@ IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(MACAdd
     return createDestinationInfo(_vlanID, _pcp, destMAC, destGates);
 }
 
-IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(uint16_t vid, uint8_t pcp, MACAddress destMAC,
+IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(int vid, int pcp, MACAddress destMAC,
         std::list<cGate*>& destGates)
 {
     IEEE8021QDestinationInfo *destInfo = new IEEE8021QDestinationInfo();
     destInfo->setDestType(DestinationType_8021Q);
-    destInfo->setVID(vid);
-    destInfo->setPCP(pcp);
+    destInfo->setVID(static_cast<uint16_t>(vid));
+    destInfo->setPCP(static_cast<uint8_t>(pcp));
     destInfo->setDestMac(new MACAddress(destMAC));
     destInfo->setDestGates(destGates);
     return destInfo;
@@ -166,3 +170,4 @@ MACAddress STDPublisherEndpointBase::resolveDestMacAddress(inet::IPv4Address des
 }
 
 } /*end namespace SOA4CoRE*/
+

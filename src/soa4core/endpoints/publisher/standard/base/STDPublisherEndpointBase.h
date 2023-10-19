@@ -49,6 +49,12 @@ class STDPublisherEndpointBase : public PublisherEndpointBase
  * Methods
  */
 public:
+    /**
+     * Check whether this publisher has all the information required for 802.1Q traffic
+     * @return true if all information is present
+     */
+    bool has8021QInformation();
+
 protected:
     virtual void initialize() override;
     virtual void handleParameterChange(const char* parname) override;
@@ -95,7 +101,7 @@ protected:
      * @param destGates the destination gate the layer2 frame shall be forwarded to
      * @return the destination info
      */
-    CoRE4INET::IEEE8021QDestinationInfo* createDestinationInfo(uint16_t vid, uint8_t pcp, inet::MACAddress destMAC,
+    CoRE4INET::IEEE8021QDestinationInfo* createDestinationInfo(int vid, int pcp, inet::MACAddress destMAC,
             std::list<cGate*>& destGates);
 
     /**
@@ -125,12 +131,12 @@ protected:
     /**
      * VLAN ID for 802.1Q filters in the IPv4oRE network layer
      */
-    uint16_t _vlanID = -1;
+    int _vlanID = -1;
 
     /**
      * PCP for 802.1Q filters in the IPv4oRE network layer
      */
-    uint8_t _pcp = -1;
+    int _pcp = -1;
 
     /**
      * Default destination gate for 802.1Q packets in the IPv4oRE network layer
