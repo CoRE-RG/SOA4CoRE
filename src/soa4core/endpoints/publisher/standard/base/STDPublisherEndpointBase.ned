@@ -39,4 +39,10 @@ simple STDPublisherEndpointBase extends PublisherEndpointBase
     
         // Local port for socket
         int localPort;
+        
+        // VLAN identifier of the stream
+        int vlan_id = default(-1); // if <0 no QHeader is used
+        
+        // Priority code point of the stream
+        int pcp = default(-1); // if <0 no QHeader is used 
 }
