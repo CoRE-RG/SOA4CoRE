@@ -59,19 +59,32 @@ void UDPMcastPublisherEndpoint::initializeTransportConnection() {
 
     // set output interface on socket
     IInterfaceTable *ift = dynamic_cast<IInterfaceTable*>(this->getParentModule()->getParentModule()->getSubmodule("interfaceTable"));
-    if(!ift)
+    if(!ift) {
         throw cRuntimeError("Could not locate interface table at relative path from endpoint \"^.^.interfaceTable\"");
+    }
     InterfaceEntry *ie = ift->getInterfaceByName("eth0");
     if (!ie) {
         ie = ift->getInterfaceByName("phy0");
     }
-    if(!ie)
+    if(!ie) {
         throw cRuntimeError("Wrong multicastInterface setting: no interface named \"eth0\" or \"phy0\"");
+    }
     _serverSocket.setMulticastOutputInterface(ie->getInterfaceId());
     _serverSocket.setMulticastLoop(false);
-
     _serverSocket.joinMulticastGroup(L3Address(_mcastDestAddress.c_str()), ie->getInterfaceId());
+}
 
+void UDPMcastPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformation* csi) {
+    static bool filterCreated = false;
+    if(filterCreated) return;
+
+    L3Address ipaddress = L3Address(_mcastDestAddress.c_str());
+    if(has8021QInformation()) 
+    {
+        // install a traffic filter in the network layer to add the qtag
+        createAndInstallFilter(ipaddress.toIPv4(), _localPort, _mcastDestPort);
+    }
+    filterCreated = true; 
 }
 
 void UDPMcastPublisherEndpoint::publish(cPacket* msg) {

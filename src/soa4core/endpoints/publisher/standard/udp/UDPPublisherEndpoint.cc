@@ -77,6 +77,17 @@ void UDPPublisherEndpoint::addRemote(ConnectionSpecificInformation* csi) {
         emit(_remotesSignal,1);
         // create new processor and add to list
         _remotes.push_back(pair<L3Address,int>(L3AddressResolver().resolve(csiUdp->getAddress()), csiUdp->getPort()));
+        checkAndCreateFilter(csiUdp);
+    }
+}
+
+void UDPPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformation* csi) {
+    if(CSI_UDP* csiUdp = dynamic_cast<CSI_UDP*>(csi)){
+        L3Address ipaddress = L3AddressResolver().resolve(csiUdp->getAddress());
+        if(has8021QInformation()) {
+            // install a traffic filter in the network layer to add the qtag
+            createAndInstallFilter(ipaddress.toIPv4(), _localPort, csiUdp->getPort());
+        }
     }
 }
 

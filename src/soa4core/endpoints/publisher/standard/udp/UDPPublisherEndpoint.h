@@ -76,6 +76,13 @@ protected:
     virtual void initializeTransportConnection() override;
 
     /**
+     * Checks if a filter must be set for the given connection specific information and
+     * creates it if necessary.
+     * @param csi   the connection specific information of the new remote.
+     */
+    virtual void checkAndCreateFilter(ConnectionSpecificInformation* csi);
+
+    /**
      * Publish a payload to all subscribers. This needs to be implemented by all subclasses.
      * The message will be deleted by the caller afterwards.
      *
