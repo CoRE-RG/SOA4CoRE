@@ -28,7 +28,7 @@ using namespace CoRE4INET;
 namespace SOA4CoRE {
 
 bool STDPublisherEndpointBase::has8021QInformation() {
-    return _pcp >= 0 && _vlanID >= 0;
+    return _pcp < 0 || _vlanID < 0;
 }
 
 void STDPublisherEndpointBase::initialize()

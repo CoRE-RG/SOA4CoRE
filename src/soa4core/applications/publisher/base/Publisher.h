@@ -91,7 +91,7 @@ public:
      * Returns the vlan id
      * @return the vlan id
      */
-    uint16_t getVlanId() const {
+    int getVlanId() const {
         return _vlan_id;
     }
 
@@ -99,7 +99,7 @@ public:
      * Returns the vlan pcp
      * @return the vlan pcp
      */
-    uint8_t getPcp() const {
+    int getPcp() const {
         return _pcp;
     }
 
@@ -202,12 +202,12 @@ protected:
     /**
      * Caches the vlan ID.
      */
-    uint16_t _vlan_id;
+    int _vlan_id = -1;
 
     /**
      * Caches the vlan pcp.
      */
-    uint8_t _pcp;
+    int _pcp = -1;
 
     /**
      * Caches the multicast IP destination address.

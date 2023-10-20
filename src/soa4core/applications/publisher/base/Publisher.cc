@@ -122,12 +122,14 @@ void Publisher::handleParameterChange(const char* parname) {
     }
     if (!parname || !strcmp(parname, "vlan_id"))
     {
-        this->_vlan_id = static_cast<uint16_t>(parameterULongCheckRange(par("vlan_id"), 0, MAX_VLAN_ID));
+        if(par("vlan_id").intValue() >= 0){
+            this->_vlan_id = static_cast<int>(parameterULongCheckRange(par("vlan_id"), 0, MAX_VLAN_ID));
+        }
     }
     if (!parname || !strcmp(parname, "pcp"))
     {
-        if(par("pcp").intValue() != -1){
-            this->_pcp = static_cast<uint8_t>(parameterULongCheckRange(par("pcp"), 0, MAX_Q_PRIORITY));
+        if(par("pcp").intValue() >= 0){
+            this->_pcp = static_cast<int>(parameterULongCheckRange(par("pcp"), 0, MAX_Q_PRIORITY));
         }
     }
     if (!parname || !strcmp(parname, "mcastDestAddress")) {

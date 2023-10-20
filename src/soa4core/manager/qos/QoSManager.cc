@@ -427,6 +427,8 @@ PublisherEndpointBase* QoSManager::createTCPPublisherEndpoint(
         tcpEndpoint->par("localAddress").setStringValue(localAddr);
         int localPort = publisherApplication->getTcpPort();
         tcpEndpoint->par("localPort").setIntValue(localPort);
+        tcpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
+        tcpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
 
         // cast back.
         ret = dynamic_cast<PublisherEndpointBase*>(tcpEndpoint);
@@ -462,6 +464,8 @@ PublisherEndpointBase* QoSManager::createUDPPublisherEndpoint(
         udpEndpoint->par("localAddress").setStringValue(localAddr);
         int localPort = publisherApplication->getUdpPort();
         udpEndpoint->par("localPort").setIntValue(localPort);
+        udpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
+        udpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
 
         // cast back.
         ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
@@ -501,6 +505,8 @@ PublisherEndpointBase* QoSManager::createUDPMcastPublisherEndpoint(
         udpEndpoint->par("mcastDestAddress").setStringValue(mcastAddr);
         int mcastPort = publisherApplication->getMcastDestPort();
         udpEndpoint->par("mcastDestPort").setIntValue(mcastPort);
+        udpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
+        udpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
 
         // cast back.
         ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);

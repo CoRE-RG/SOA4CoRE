@@ -399,6 +399,8 @@ PublisherEndpointBase* SomeIpManager::createSomeIpTCPPublisherEndpoint(
     someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
     int localPort = publisherApplication->getTcpPort();
     someipTcpEndpoint->par("localPort").setIntValue(localPort);
+    someipTcpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
+    someipTcpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
 
     // cast back.
     PublisherEndpointBase* ret = dynamic_cast<PublisherEndpointBase*>(someipTcpEndpoint);
@@ -429,6 +431,8 @@ PublisherEndpointBase* SomeIpManager::createSomeIpUDPPublisherEndpoint(
     someipUdpEndpoint->par("localAddress").setStringValue(localAddr);
     int localPort = publisherApplication->getUdpPort();
     someipUdpEndpoint->par("localPort").setIntValue(localPort);
+    someipUdpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
+    someipUdpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
 
     // cast back.
     PublisherEndpointBase* ret = dynamic_cast<PublisherEndpointBase*>(someipUdpEndpoint);
@@ -463,6 +467,8 @@ PublisherEndpointBase* SomeIpManager::createSomeIpUDPMcastPublisherEndpoint(
     someipUdpMcastEndpoint->par("mcastDestAddress").setStringValue(mcastDestAddr);
     int mcastDestPort = publisherApplication->getMcastDestPort();
     someipUdpMcastEndpoint->par("mcastDestPort").setIntValue(mcastDestPort);
+    someipUdpMcastEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
+    someipUdpMcastEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
 
     // cast back.
     PublisherEndpointBase* ret = dynamic_cast<PublisherEndpointBase*>(someipUdpMcastEndpoint);
