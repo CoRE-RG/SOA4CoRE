@@ -141,7 +141,7 @@ protected:
     /**
      * Default destination gate for 802.1Q packets in the IPv4oRE network layer
      */
-    std::string _defaultDestGate = "bgOut[0]";
+    std::string _defaultDestGate;
 
     /**
      * The ipv4 module form IPv4oRE stack

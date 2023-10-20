@@ -28,7 +28,7 @@ using namespace CoRE4INET;
 namespace SOA4CoRE {
 
 bool STDPublisherEndpointBase::has8021QInformation() {
-    return _pcp < 0 || _vlanID < 0;
+    return _pcp >= 0 && _vlanID >= 0;
 }
 
 void STDPublisherEndpointBase::initialize()
@@ -115,18 +115,26 @@ TrafficPattern* STDPublisherEndpointBase::createTrafficPattern(
 IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(MACAddress destMAC)
 {
     list<cGate*> destGates;
-    // use default gate bg out as in IPv4oIEEE8021Q
-    cModule* module = findModuleWhereverInNode(_defaultDestGate.c_str(), this);
-    if (!module)
+    cModule* module;
+    if(!_defaultDestGate.empty())
     {
-        throw cRuntimeError("Default destModule \"%s\" could not be resolved.", _defaultDestGate.c_str());
+        if(!(module = findModuleWhereverInNode(_defaultDestGate.c_str(), this))) {
+            throw cRuntimeError("Default destModule \"%s\" set but could not be resolved.", _defaultDestGate.c_str());
+        }
+    } else if (!(module = findModuleWhereverInNode("bgOut[0]", this)))
+    {
+        if(!(module = findModuleWhereverInNode("bgOut", this)))
+        {
+            throw cRuntimeError("BG buffers could not be resolved.");
+        }
     }
-    if (BGBuffer *bgBuf = dynamic_cast<BGBuffer*>(module))
+    if (module->hasGate("in"))
     {
-        destGates.push_back(bgBuf->gate("in"));
+        destGates.push_back(module->gate("in"));
+        // todo add a gate parameter
     } else
     {
-        throw cRuntimeError("destModule: %s is not a BGBuffer and destGate could not be resolved.", _defaultDestGate.c_str());
+        throw cRuntimeError("destModule: %s does not have an in gate.", _defaultDestGate.c_str());
     }
     return createDestinationInfo(_vlanID, _pcp, destMAC, destGates);
 }
