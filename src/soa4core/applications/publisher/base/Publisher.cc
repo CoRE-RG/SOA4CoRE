@@ -102,14 +102,8 @@ void Publisher::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "srClass")) {
         if (strcmp(par("srClass").stringValue(), "A") == 0) {
             this->_srClass = SR_CLASS::A;
-            if(par("pcp").intValue() == -1){
-                this->_pcp = PCP_DEFAULT_SRCLASSA;
-            }
         } else if (strcmp(par("srClass").stringValue(), "B") == 0) {
             this->_srClass = SR_CLASS::B;
-            if(par("pcp").intValue() == -1){
-                this->_pcp = PCP_DEFAULT_SRCLASSB;
-            }
         } else {
             throw cRuntimeError(
                     "Parameter srClass of %s is %s and is only allowed to be A or B",

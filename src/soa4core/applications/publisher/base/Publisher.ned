@@ -42,7 +42,7 @@ simple Publisher extends ServiceBase
         // Stream Reservation Class of the AVB Stream
         string srClass = default("A");   
         // VLAN identifier of the AVB Stream
-        int vlan_id = default(2);
+        int vlan_id = default(-1);
         // Priority code point of the AVB Stream
         int pcp = default(-1); // -1 = use srClass default priority
         // IPv4 Multicast destination address

@@ -385,10 +385,13 @@ PublisherEndpointBase* QoSManager::createAVBPublisherEndpoint(
         avbEndpoint->par("intervalFrames").setIntValue(intervalFrames);
 
         auto vlanID = publisherApplication->getVlanId();
-        avbEndpoint->par("vlan_id").setIntValue(vlanID);
-
+        if(vlanID >= 0) {
+            avbEndpoint->par("vlan_id").setIntValue(vlanID);
+        }
         auto pcp = publisherApplication->getPcp();
-        avbEndpoint->par("pcp").setIntValue(pcp);
+        if(pcp >= 0) {
+            avbEndpoint->par("pcp").setIntValue(pcp);
+        }
 
         auto payload = publisherApplication->getFramesize();
         avbEndpoint->par("payload").setIntValue(payload);
