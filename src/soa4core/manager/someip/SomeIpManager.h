@@ -329,16 +329,6 @@ private:
     double _repetitionsMax;
 
     /**
-     * Cached parameter repititionBaseDelay for repetition phase
-     */
-    double _repititionBaseDelay;
-
-    /**
-     * Cached parameter cyclicOfferDelay for main phase
-     */
-    double _cyclicOfferDelay;
-
-    /**
      * The service discovery.
      */
     IServiceDiscovery* _sd;
