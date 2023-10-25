@@ -32,7 +32,9 @@ simple Publisher extends ServiceBase
         @display("i=block/source");
         
         // Interval of new messages
-        double interval @unit(s) = default(125us);
+        double intervalMin @unit(s) = default(125us);// must be set for realtime publishers
+        double intervalMax @unit(s) = default(125us);
+        volatile double interval @unit(s) = default(uniform(intervalMin, intervalMax)); // setting this directly overrides interval min and max values
         // Number of frames per interval
         int intervalFrames = default(1);     
         //Size of the payload of the message (size of encapsulated cPacket) that is being generated

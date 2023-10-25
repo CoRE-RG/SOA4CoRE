@@ -78,20 +78,8 @@ void SomeIpManager::handleMessage(cMessage *msg) {
 void SomeIpManager::handleParameterChange(const char* parname) {
     Manager::handleParameterChange(parname);
 
-    if (!parname || !strcmp(parname, "initialDelayMin")) {
-        _initialDelayMin = par("initialDelayMin").doubleValue();
-    }
-    if (!parname || !strcmp(parname, "initialDelayMax")) {
-        _initialDelayMax = par("initialDelayMax").doubleValue();
-    }
     if (!parname || !strcmp(parname, "repetitionsMax")) {
         _repetitionsMax = par("repetitionsMax").intValue();
-    }
-    if (!parname || !strcmp(parname, "repititionBaseDelay")) {
-        _repititionBaseDelay = par("repititionBaseDelay").doubleValue();
-    }
-    if (!parname || !strcmp(parname, "cyclicOfferDelay")) {
-        _cyclicOfferDelay = par("cyclicOfferDelay").doubleValue();
     }
 }
 
@@ -692,18 +680,14 @@ IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
 }
 
 void SomeIpManager::startInitialWaitPhase(SomeIpSDState* serviceState) {
-    double diff = _initialDelayMax - _initialDelayMin;
-    if(diff < 0) {
-        throw cRuntimeError("Initial delay invalid as min is larger than max");
-    }
-    serviceState->randInitialDelay = this->dblrand()*diff + _initialDelayMin;
+    serviceState->initialDelay = this->par("initialDelay").doubleValue();
     serviceState->phase = SomeIpSDState::SdPhase::INITIAL_WAIT_PHASE;
-    if(serviceState->randInitialDelay == 0) {
+    if(serviceState->initialDelay == 0) {
         handleInitialWaitPhaseOver(serviceState);
     } else {
         cMessage* message = new cMessage(MSG_INITIAL_WAIT_OVER);
         message->setContextPointer(serviceState);
-        scheduleAt(simTime() + serviceState->randInitialDelay, message);
+        scheduleAt(simTime() + serviceState->initialDelay, message);
     }
 }
 
@@ -732,7 +716,7 @@ void SomeIpManager::handleNextRepetitionPhase(SomeIpSDState* serviceState) {
         cMessage* message = new cMessage(MSG_REPETITION);
         message->setContextPointer(serviceState);
         // Wait 2^(repetitionsMax-1) * repititionBaseDelay
-        double delay = _repititionBaseDelay * pow(2, serviceState->numRepetitions);
+        double delay = par("repititionBaseDelay").doubleValue() * pow(2, serviceState->numRepetitions);
         scheduleAt(simTime() + delay, message);
         serviceState->numRepetitions++;
     } else {
@@ -744,10 +728,11 @@ void SomeIpManager::handleNextRepetitionPhase(SomeIpSDState* serviceState) {
 void SomeIpManager::startMainPhase(SomeIpSDState* serviceState) {
     serviceState->phase = SomeIpSDState::SdPhase::MAIN_PHASE;
     if(dynamic_cast<OfferState*>(serviceState)) {
-        if(_cyclicOfferDelay>0) {
+        double cyclicOfferDelay = par("cyclicOfferDelay").doubleValue();
+        if(cyclicOfferDelay>0) {
             cMessage* message = new cMessage(MSG_CYCLIC_OFFER);
             message->setContextPointer(serviceState);
-            scheduleAt(simTime() + _cyclicOfferDelay, message);
+            scheduleAt(simTime() + cyclicOfferDelay, message);
         }
     }
 }
@@ -757,7 +742,7 @@ void SomeIpManager::handleCyclicOffer(SomeIpSDState* serviceState) {
         executeSdForServiceState(serviceState);
         cMessage* message = new cMessage(MSG_CYCLIC_OFFER);
         message->setContextPointer(serviceState);
-        scheduleAt(simTime() + _cyclicOfferDelay, message);
+        scheduleAt(simTime() + par("cyclicOfferDelay").doubleValue(), message);
     } else {
         throw cRuntimeError("Can not handly cyclic offer event for serviceState not of type OfferState ");
     }

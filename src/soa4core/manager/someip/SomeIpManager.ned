@@ -50,6 +50,7 @@ simple SomeIpManager extends Manager
 		// - If a FindService Entry is received within the Initial Wait Phase for this Server Service Instance, it shall be ignored. [PRS_SOMEIPSD_00839]
         double initialDelayMin @unit(s) = default(0s);
         double initialDelayMax @unit(s) = default(0s);
+        volatile double initialDelay @unit(s) = default(uniform(initialDelayMin, initialDelayMax)); // setting this directly will override the initial delay min and max values
         // Example: 	
         // 1. Wait for random_delay in Range(initialDelayMin, initialDelayMax)
 		// 2. Send message (Find Service and Offer Service entries)
@@ -62,7 +63,7 @@ simple SomeIpManager extends Manager
 	 	// - If REPETITIONS_MAX is set to 0, the Repetition Phase shall be skipped [PRS_SOMEIPSD_00409]
  		// - After the Repetition Phase the Main Phase is being entered for a Service Instance. [PRS_SOMEIPSD_00410]
         int repetitionsMax = default(0); // 0 => no repition phase
-        double repititionBaseDelay @unit(s) = default(1s);
+        volatile double repititionBaseDelay @unit(s) = default(1s);
         // Example: 
         // 	1. Wait 2^0 * repititionBaseDelay
         //	2. Send message (Find Service and Offer Service entries)
@@ -77,7 +78,7 @@ simple SomeIpManager extends Manager
         //  - Offer Messages shall be sent cyclically if a CYCLIC_OFFER_DELAY is configured [PRS_SOMEIPSD_00412]
         //  - For Find entries (Find Service and Find Eventgroup) no cyclic messages are allowed in Main Phase [PRS_SOMEIPSD_00415]
         //  - Subscribe EventGroup Entries shall be triggered by Offer entries, which are sent cyclically  [PRS_SOMEIPSD_00582]
-        double cyclicOfferDelay @unit(s) = default(0s);
+        volatile double cyclicOfferDelay @unit(s) = default(0s);
         // Example: 
 		// 1. Wait CYCLIC_OFFER_DELAY
 		// 2. Send message (Offer Service entries)

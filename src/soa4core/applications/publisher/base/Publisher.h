@@ -180,11 +180,6 @@ protected:
     simsignal_t _msgSentSignal;
 
     /**
-     * Caches the interval length parameter
-     */
-    double _interval;
-
-    /**
      * Caches the number of Messages per Interval parameter.
      */
     int _intervalFrames;

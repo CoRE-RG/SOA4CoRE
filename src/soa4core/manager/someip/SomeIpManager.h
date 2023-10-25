@@ -51,7 +51,7 @@ public:
         };
 
         SdPhase phase = SdPhase::INITIAL_WAIT_PHASE;
-        double randInitialDelay = 0;
+        double initialDelay = 0;
         int numRepetitions = 0;
 
         /**
@@ -322,30 +322,11 @@ protected:
     omnetpp::simsignal_t _subscribeAckSignal;
 
 private:
-    /**
-     * Cached parameter initialDelayMin for initial wait phase
-     */
-    double _initialDelayMin;
-
-    /**
-     * Cached parameter initialDelayMax for initial wait phase
-     */
-    double _initialDelayMax;
 
     /**
      * Cached parameter repitionMax for repetition phase
      */
     double _repetitionsMax;
-
-    /**
-     * Cached parameter initialDelayMax for repetition phase
-     */
-    double _repititionBaseDelay;
-
-    /**
-     * Cached parameter cyclicOfferDelay for main phase
-     */
-    double _cyclicOfferDelay;
 
     /**
      * The service discovery.
