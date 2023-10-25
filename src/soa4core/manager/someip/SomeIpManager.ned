@@ -50,6 +50,7 @@ simple SomeIpManager extends Manager
 		// - If a FindService Entry is received within the Initial Wait Phase for this Server Service Instance, it shall be ignored. [PRS_SOMEIPSD_00839]
         double initialDelayMin @unit(s) = default(0s);
         double initialDelayMax @unit(s) = default(0s);
+        volatile double initialDelay @unit(s) = default(uniform(initialDelayMin, initialDelayMax)); // setting this directly will override the initial delay min and max values
         // Example: 	
         // 1. Wait for random_delay in Range(initialDelayMin, initialDelayMax)
 		// 2. Send message (Find Service and Offer Service entries)

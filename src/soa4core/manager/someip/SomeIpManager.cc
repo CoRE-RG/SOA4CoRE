@@ -78,12 +78,6 @@ void SomeIpManager::handleMessage(cMessage *msg) {
 void SomeIpManager::handleParameterChange(const char* parname) {
     Manager::handleParameterChange(parname);
 
-    if (!parname || !strcmp(parname, "initialDelayMin")) {
-        _initialDelayMin = par("initialDelayMin").doubleValue();
-    }
-    if (!parname || !strcmp(parname, "initialDelayMax")) {
-        _initialDelayMax = par("initialDelayMax").doubleValue();
-    }
     if (!parname || !strcmp(parname, "repetitionsMax")) {
         _repetitionsMax = par("repetitionsMax").intValue();
     }
@@ -686,18 +680,14 @@ IPProtocolId SomeIpManager::getIPProtocolId(QoSGroup qosGroup) {
 }
 
 void SomeIpManager::startInitialWaitPhase(SomeIpSDState* serviceState) {
-    double diff = _initialDelayMax - _initialDelayMin;
-    if(diff < 0) {
-        throw cRuntimeError("Initial delay invalid as min is larger than max");
-    }
-    serviceState->randInitialDelay = this->dblrand()*diff + _initialDelayMin;
+    serviceState->initialDelay = this->par("initialDelay").doubleValue();
     serviceState->phase = SomeIpSDState::SdPhase::INITIAL_WAIT_PHASE;
-    if(serviceState->randInitialDelay == 0) {
+    if(serviceState->initialDelay == 0) {
         handleInitialWaitPhaseOver(serviceState);
     } else {
         cMessage* message = new cMessage(MSG_INITIAL_WAIT_OVER);
         message->setContextPointer(serviceState);
-        scheduleAt(simTime() + serviceState->randInitialDelay, message);
+        scheduleAt(simTime() + serviceState->initialDelay, message);
     }
 }
 
