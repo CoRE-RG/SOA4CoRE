@@ -26,7 +26,7 @@ using namespace inet;
 //
 // @ingroup soa4core/messages
 // 
-// @author Mehmet Mueller for HAW Hamburg
+// @author Mehmet Mueller, and Timo Haeckel for HAW Hamburg
 //
 
 enum IPProtocolId;
@@ -60,7 +60,7 @@ packet SomeIpSDOption {
 //SOME/IP SD configuration option (see [PRS_SOMEIPSD_00276])
 packet ConfigurationOption extends SomeIpSDOption {
     type = CONFIGURATION;
-    string configurationString;
+//    string configurationString;
 }
 
 //SOME/IP SD load balancing option (see [PRS_SOMEIPSD_00544])
@@ -112,4 +112,35 @@ packet IPv4SDEndpointOption extends IPv4EndpointOption {
 //SOME/IP SD IPv4 SD endpoint option (see [PRS_SOMEIPSD_00559])
 packet IPv6SDEndpointOption extends IPv6EndpointOption {
     type = IPV6SDENDPOINT;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// custom experimental extensions from studies conducted with this framework: //
+// extends SOME/IP SD configuration option (see [PRS_SOMEIPSD_00276])         //
+////////////////////////////////////////////////////////////////////////////////
+
+// Information for 802.1Q traffic priorities and vlans
+// to be attached to offer messages
+packet IEEE8021QConfigurationOption extends ConfigurationOption {
+    byteLength = 8; // 4 from base base + padding to 32 bit.
+    uint8_t pcp;
+    // unit8_t padding;
+    uint16_t vlan_id;
+}
+
+// Information for required ressources of the stream 
+// to be attached in offer messages
+packet RessourceConfigurationOption extends ConfigurationOption {
+    byteLength = 12; // 4 from base base + padding to 32 bit.
+    uint16_t maxFrameSize; // the maximum layer 1 frame size of this stream
+    double minInterval @unit(s); // the minimum interval between two frames of this streams
+    //NOTE: for simplicity we use a double here based on seconds in a real protocol this will probably be represented by a uint32_t in us, for example.
+}
+
+// Information for required ressources of the stream 
+// to be attached in offer or subscribe messages
+packet RealTimeConfigurationOption extends ConfigurationOption {
+    byteLength = 8; // 4 from base base + padding to 32 bit.
+    double deadline @unit(s); // the maximum tolerated latency for packets of this service 
+    //NOTE: for simplicity we use a double here based on seconds in a real protocol this will probably be represented by a uint32_t in us, for example.
 }
