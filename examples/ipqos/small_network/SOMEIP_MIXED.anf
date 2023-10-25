@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.sca"/>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec"/>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.sca"/>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec"/>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.sca"/>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec"/>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.sca"/>
+    <inputs name="/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec"/>
+  </inputs>
+  <datasets>
+    <datasets name="All latencies">
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="All cases all flows" lineNameFormat="">
+        <properties name="Legend.Display" value="true"/>
+      </items>
+    </datasets>
+    <datasets name="Flow 2 all latencies ">
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="All cases flow 2 pcp 5" lineNameFormat=""/>
+    </datasets>
+    <datasets name="N3 F1 latencies">
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT-#0.vec) AND attr:configname(SOMEIP_MIXED_CT) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="All cases flow 1 at node 3" lineNameFormat=""/>
+    </datasets>
+    <datasets name="CT Q All latencies">
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_CT_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_CT_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="All latencies with CT and Q" lineNameFormat=""/>
+    </datasets>
+    <datasets name="Q All latencies">
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED_Q-#0.vec) AND attr:configname(SOMEIP_MIXED_Q) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="All latencies with Q and NO CT" lineNameFormat=""/>
+    </datasets>
+    <datasets name="No CT, No Q all latencies">
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[1].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[3].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[0]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[2]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/SOA4CoRE/examples/ipqos/small_network/results/SOMEIP_MIXED-#0.vec) AND attr:configname(SOMEIP_MIXED) AND attr:runnumber(0) AND module(SomeIp_Qos_Small.N[2].services[1]) AND name(rxLatency:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="All latencies no ct, no q" lineNameFormat=""/>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.28 //@datasets/@datasets.1/@items.12 //@datasets/@datasets.2/@items.4 //@datasets/@datasets.3/@items.7 //@datasets/@datasets.4/@items.7 //@datasets/@datasets.5/@items.7"/>
+  </chartSheets>
+</scave:Analysis>
