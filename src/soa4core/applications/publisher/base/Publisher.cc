@@ -92,10 +92,6 @@ void Publisher::handleParameterChange(const char* parname) {
         this->_payload = CoRE4INET::parameterULongCheckRange(par("payload"), 0,
         MAX_ETHERNET_DATA_BYTES);
     }
-    if (!parname || !strcmp(parname, "interval")) {
-        this->_interval = CoRE4INET::parameterDoubleCheckRange(par("interval"),
-                0, SIMTIME_MAX.dbl());;
-    }
     if (!parname || !strcmp(parname, "intervalFrames")) {
         this->_intervalFrames = par("intervalFrames");
     }
@@ -183,7 +179,8 @@ void Publisher::handleStart() {
 
 void Publisher::scheduleNextMessage() {
     //schedule next send event
-    scheduleAt(simTime() + (this->_interval / this->_intervalFrames),
+    double interval = CoRE4INET::parameterDoubleCheckRange(par("interval"), 0, SIMTIME_MAX.dbl());
+    scheduleAt(simTime() + (interval / this->_intervalFrames),
             new cMessage(SEND_MSG_NAME));
 }
 
