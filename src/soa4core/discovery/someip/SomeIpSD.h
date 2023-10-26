@@ -213,6 +213,21 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      * Indicates if QoS Negotiation Protocol is present
      */
     bool _hasQoSNP;
+
+    /**
+     * Caches parameter includeIEEE8021QConfig
+     */
+    bool _includeIEEE8021QConfig;
+
+    /**
+     * Caches parameter includeRessourceConfig
+     */
+    bool _includeRessourceConfig;
+
+    /**
+     * Caches parameter includeRealTimeConfig
+     */
+    bool _includeRealTimeConfig;
 };
 } /* end namespace SOA4CoRE */
 #endif

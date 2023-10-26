@@ -50,6 +50,9 @@ void SomeIpSD::initialize(int stage) {
         startTime = par("startTime").doubleValue();
         stopTime = par("stopTime").doubleValue();
         packetName = par("packetName");
+        _includeIEEE8021QConfig = par("includeIEEE8021QConfig").boolValue();
+        _includeRessourceConfig = par("includeRessourceConfig").boolValue();
+        _includeRealTimeConfig = par("includeRealTimeConfig").boolValue();
     }
     if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
         if (!(par("localAddress").stdstringValue().length())) {
@@ -124,7 +127,7 @@ void SomeIpSD::find(uint16_t serviceID, uint16_t instanceID) {
     sendTo(someIpSDHeader);
 }
 
-void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
+void SomeIpSD::offer(SomeIpDiscoveryNotification* notification) {
     Enter_Method("SomeIpSD::offer");
     SomeIpSDHeader *someIpSDHeader = new SomeIpSDHeader("SOME/IP SD - OFFER");
 
@@ -132,19 +135,47 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
     offerEntry->setType(SOA4CoRE::SomeIpSDEntryType::OFFER);
     offerEntry->setIndex1stOptions(0);
     offerEntry->setIndex2ndOptions(0);
-    offerEntry->setNum1stOptions(someIpDiscoveryNotification->getQoSGroups().size());
+    offerEntry->setNum1stOptions(notification->getQoSGroups().size());
     offerEntry->setNum2ndOptions(0);
-    offerEntry->setServiceID(someIpDiscoveryNotification->getServiceId());
-    offerEntry->setInstanceID(someIpDiscoveryNotification->getInstanceId());
+    offerEntry->setServiceID(notification->getServiceId());
+    offerEntry->setInstanceID(notification->getInstanceId());
     offerEntry->setMajorVersion(MAJOR_VERSION);
     offerEntry->setTTL(TTL);
     offerEntry->setMinorVersion(MINOR_VERSION);
     someIpSDHeader->encapEntry(offerEntry);
 
     if (!_hasQoSNP) {
-        for (QoSGroup qosGroup : someIpDiscoveryNotification->getQoSGroups()) {
-            IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(someIpDiscoveryNotification,qosGroup);
+        for (QoSGroup qosGroup : notification->getQoSGroups())
+        {
+            IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(notification,qosGroup);
             someIpSDHeader->encapOption(ipv4EndpointOption);
+        }
+        if (_includeIEEE8021QConfig
+                && notification->getPcp() >= 0
+                && notification->getVlanId() >= 0)
+        {
+            IEEE8021QConfigurationOption* qconfig = new IEEE8021QConfigurationOption();
+            qconfig->setVlan_id(notification->getVlanId());
+            qconfig->setPcp(notification->getPcp());
+            someIpSDHeader->encapOption(qconfig);
+            offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
+        }
+        if (_includeRessourceConfig
+                && notification->getIntervalMin() > 0)
+        {
+            RessourceConfigurationOption* resconfig = new RessourceConfigurationOption();
+            resconfig->setMaxFrameSize(notification->getFramesizeMax());
+            resconfig->setMinInterval(notification->getIntervalMin());
+            someIpSDHeader->encapOption(resconfig);
+            offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
+        }
+        if (_includeRealTimeConfig
+                && notification->getDeadline() > 0)
+        {
+            RealTimeConfigurationOption* rtconfig = new RealTimeConfigurationOption();
+            rtconfig->setDeadline(notification->getDeadline());
+            someIpSDHeader->encapOption(rtconfig);
+            offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
         }
     } else {
         offerEntry->setNum1stOptions(QOS_NP_OPTIONS_COUNT);
@@ -153,7 +184,7 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
         someIpSDHeader->encapOption(ipv4EndpointOption);
     }
 
-    sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress());
+    sendTo(someIpSDHeader, notification->getAddress());
 }
 
 void SomeIpSD::subscribeEventgroup(SomeIpDiscoveryNotification* someIpDiscoveryNotification) {
@@ -254,6 +285,9 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     for (int firstOptionsIdx = 0; firstOptionsIdx < offerEntry->getNum1stOptions(); firstOptionsIdx++) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
         if(!ipv4EndpointOption) {
+            if(dynamic_cast<ConfigurationOption*>(*optionsListIterator)) {
+               continue;
+            }
             throw cRuntimeError("SomeIpSDOption is not of type IPv4EndpointOption");
         }
         if (_hasQoSNP) {

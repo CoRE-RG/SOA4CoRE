@@ -54,6 +54,10 @@ simple SomeIpSD extends UDPBasicApp like IServiceDiscovery
         // SOME/IP multicast address
         string mcastDestAddress = default("224.0.2.254");
       
+		// add optional configuration options to the 
+		bool includeIEEE8021QConfig = default (false);
+		bool includeRessourceConfig = default (false);
+		bool includeRealTimeConfig = default (false);
         
      gates:
         // Input gate for service discovery module

@@ -29,6 +29,9 @@ module Node extends MiddlewareTSNHost
 		middleware.sm.repetitionsMax = 3;
 		middleware.sm.repetitionBaseDelay = 1s;
 		middleware.sm.cyclicOfferDelay = 7s;
+        middleware.sd.includeIEEE8021QConfig = default(true);
+        middleware.sd.includeRessourceConfig = default(true);
+        middleware.sd.includeRealTimeConfig = default(true);
 		
 	submodules:
 	connections:
