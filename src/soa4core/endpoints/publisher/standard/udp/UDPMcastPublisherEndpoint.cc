@@ -75,8 +75,7 @@ void UDPMcastPublisherEndpoint::initializeTransportConnection() {
 }
 
 void UDPMcastPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformation* csi) {
-    static bool filterCreated = false;
-    if(filterCreated) return;
+    if(_filterCreated) return;
 
     L3Address ipaddress = L3Address(_mcastDestAddress.c_str());
     if(has8021QInformation()) 
@@ -84,7 +83,7 @@ void UDPMcastPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformati
         // install a traffic filter in the network layer to add the qtag
         createAndInstallFilter(ipaddress.toIPv4(), _localPort, _mcastDestPort);
     }
-    filterCreated = true; 
+    _filterCreated = true;
 }
 
 void UDPMcastPublisherEndpoint::publish(cPacket* msg) {

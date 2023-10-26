@@ -94,6 +94,11 @@ protected:
      * The multicast destination port.
      */
     int _mcastDestPort;
+
+    /**
+     * Indicates if ip filter for mcast group over 802.1Q is already setup.
+     */
+    bool _filterCreated = false;
 private:
 };
 
