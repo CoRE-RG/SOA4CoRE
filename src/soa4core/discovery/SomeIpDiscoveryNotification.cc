@@ -22,21 +22,22 @@ namespace SOA4CoRE {
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
                                                          std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
                                                          inet::L3Address mcastDestAddr, int mcastDestPort) :
-                             DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
-                             _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort) {
+                                DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
+                                _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort) {
 }
 
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
                                                          std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
                                                          inet::L3Address mcastDestAddr, int mcastDestPort,
                                                          size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline) :
-        _framesizeMax(framesizeMax), _intervalMin(intervalMin), _vlan_id(vlan_id), _pcp(pcp), _deadline(deadline) {
-    SomeIpDiscoveryNotification(serviceId, address, instanceId, qosGroups, qosGroup, tcpPort, udpPort, mcastDestAddr, mcastDestPort);
+                                DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
+                                _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort),
+                                _framesizeMax(framesizeMax), _intervalMin(intervalMin), _vlan_id(vlan_id), _pcp(pcp), _deadline(deadline) {
 }
 
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification() :
-                             DiscoveryNotification(), _instanceId(0xFFFF), _qosGroup(QoSGroup::UNDEFINED),
-                             _tcpPort(-1), _udpPort(-1), _mcastDestPort(-1){
+                                DiscoveryNotification(), _instanceId(0xFFFF), _qosGroup(QoSGroup::UNDEFINED),
+                                _tcpPort(-1), _udpPort(-1), _mcastDestPort(-1){
 }
 
 SomeIpDiscoveryNotification::~SomeIpDiscoveryNotification() {

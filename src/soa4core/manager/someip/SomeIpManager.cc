@@ -22,8 +22,13 @@
 #include "soa4core/endpoints/subscriber/someip/tcp/SOMEIPTCPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPSubscriberEndpoint.h"
 #include "soa4core/endpoints/subscriber/someip/udp/SOMEIPUDPMcastSubscriberEndpoint.h"
+//CoRE4INET
+#include <core4inet/base/CoRE4INET_Defs.h>
 //INET
 #include "inet/networklayer/contract/ipv4/IPv4Address.h"
+#include "inet/linklayer/ethernet/Ethernet.h"
+#include "inet/networklayer/ipv4/IPv4Datagram_m.h"
+#include "inet/transportlayer/udp/UDPPacket_m.h"
 //STD
 #include <set>
 #include <algorithm>
@@ -38,6 +43,18 @@ namespace SOA4CoRE {
 #define MSG_CYCLIC_OFFER "CYCLIC_OFFER"
 
 Define_Module(SomeIpManager);
+
+
+size_t calculateL1FramesizeFromSomeIpPayload(size_t payload) {
+    size_t framesize = payload + ETHER_MAC_FRAME_BYTES + ETHER_8021Q_TAG_BYTES
+            + IP_HEADER_BYTES + UDP_HEADER_BYTES + SOMEIP_HEADER_BYTES;
+    if (framesize < MIN_ETHERNET_FRAME_BYTES) {
+        framesize = MIN_ETHERNET_FRAME_BYTES;
+    } else if (framesize > MAX_ETHERNET_FRAME_BYTES) {
+        throw cRuntimeError ("Reserved framesize does not fit into one Ethernet frame. Segmentation is not yet supported.");
+    }
+    return framesize;
+}
 
 void SomeIpManager::initialize(int stage) {
     Manager::initialize(stage);
@@ -109,7 +126,12 @@ PublisherConnector* SomeIpManager::registerPublisherService(ServiceBase* publish
                     publisher->getTcpPort(),
                     publisher->getUdpPort(),
                     L3Address(publisher->getMcastDestAddr().c_str()),
-                    publisher->getMcastDestPort()
+                    publisher->getMcastDestPort(),
+                    calculateL1FramesizeFromSomeIpPayload(publisher->getPayloadMax()),
+                    publisher->getIntervalMin(),
+                    publisher->getVlanId(),
+                    publisher->getPcp(),
+                    publisher->getDeadline()
             );
             _offers[serviceId][instanceId] = offerState;
             // start wait phase
