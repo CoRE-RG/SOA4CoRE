@@ -44,7 +44,6 @@ int DiscoveryNotification::getServiceId() const {
     return _serviceId;
 }
 
-
 inet::L3Address DiscoveryNotification::getAddress() const {
        return _address;
 }

@@ -24,6 +24,7 @@
 namespace SOA4CoRE;
 cplusplus {{
 #define ADDITIONAL_BYTES_TO_PAYLOADLENGTH 8 // see below SOME/IP Header from requestID (inclusive)
+#define SOMEIP_HEADER_BYTES 16 //
 }}
 
 //Type of message (see [PRS_SOMEIP_00055])
@@ -67,7 +68,7 @@ enum InterfaceVersion{
 
 //SOME/IP header (see (RS_SOMEIP_00027))
 packet SomeIpHeader {
-    byteLength = 16;
+    byteLength = SOMEIP_HEADER_BYTES;
     uint32_t messageID;
     uint32_t length;
     uint32_t requestID;

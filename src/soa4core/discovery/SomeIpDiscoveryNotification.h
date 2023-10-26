@@ -53,6 +53,28 @@ public:
      */
     SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId, std::set<QoSGroup> qosGroups,
                                 QoSGroup qosGroup, int tcpPort, int udpPort, inet::L3Address mcastDestAddr = inet::L3Address(), int mcastDestPort = -1);
+
+    /**
+     *
+     * @param serviceId the service id of the application
+     * @param address the IP address of the node where the application resides
+     * @param instanceId the instance id of the service instance
+     * @param qosGroups the QoS groups offered in case of a SOME/IP publisher
+     * @param qosGroup the QoS group requested in case of a SOME/IP subscriber
+     * @param tcpPort the TCP port of this service
+     * @param udpPort the UDP port of this service
+     * @param mcastDestAddr the IP multicast destination address of this service
+     * @param mcastDestPort the multicast destination port of this service
+     * @param framesizeMax the maximum framesize of this service
+     * @param intervalMin the minimum interval between two messages
+     * @param vlan_id the vlan id of this service
+     * @param pcp the vlan pcp of this service
+     * @param deadline the deadline for messages
+     */
+    SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
+                                                             std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
+                                                             inet::L3Address mcastDestAddr, int mcastDestPort,
+                                                             size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline);
     /**
      * Default Constructor. Set all values manually!
      */
@@ -143,6 +165,16 @@ public:
      * @return true if updated
      */
     bool updateFromEndpointOption(SomeIpSDOption* option);
+    double getDeadline() const;
+    void setDeadline(double deadline);
+    size_t getFramesizeMax() const;
+    void setFramesizeMax(size_t framesizeMax);
+    double getIntervalMin() const;
+    void setIntervalMin(double intervalMin);
+    int getPcp() const;
+    void setPcp(int pcp);
+    int getVlanId() const;
+    void setVlanId(int vlanId);
 
 protected:
 private:
@@ -152,7 +184,6 @@ private:
      */
 public:
 protected:
-private:
     /**
      * Instance Id of the service
      */
@@ -187,6 +218,32 @@ private:
      * UDP multicast destination port used for IPv4MulticastEndpoints
      */
     int _mcastDestPort;
+
+    /**
+     * Maximum size of the l1 frame calculated from maximum payload used for RessourceConfigurationOption
+     */
+    size_t _framesizeMax;
+
+    /**
+     * The minimum interval between two frames used for RessourceConfigurationOption
+     */
+    double _intervalMin;
+
+    /**
+     * Vlan ID used for IEEE8021QConfigurationOption
+     */
+    int _vlan_id;
+
+    /**
+     * Vlan pcp used for IEEE8021QConfigurationOption
+     */
+    int _pcp;
+
+    /**
+     * Deadline for messages used for RealTimeConfigurationOption
+     */
+    double _deadline;
+private:
 
 };
 } /* end namespace SOA4CoRE */

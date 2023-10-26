@@ -120,7 +120,7 @@ packet IPv6SDEndpointOption extends IPv6EndpointOption {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Information for 802.1Q traffic priorities and vlans
-// to be attached to offer messages
+// to be attached to offer or subscribe messages
 packet IEEE8021QConfigurationOption extends ConfigurationOption {
     byteLength = 8; // 4 from base base + padding to 32 bit.
     uint8_t pcp;

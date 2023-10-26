@@ -26,6 +26,14 @@ SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3
                              _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort) {
 }
 
+SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
+                                                         std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
+                                                         inet::L3Address mcastDestAddr, int mcastDestPort,
+                                                         size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline) :
+        _framesizeMax(framesizeMax), _intervalMin(intervalMin), _vlan_id(vlan_id), _pcp(pcp), _deadline(deadline) {
+    SomeIpDiscoveryNotification(serviceId, address, instanceId, qosGroups, qosGroup, tcpPort, udpPort, mcastDestAddr, mcastDestPort);
+}
+
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification() :
                              DiscoveryNotification(), _instanceId(0xFFFF), _qosGroup(QoSGroup::UNDEFINED),
                              _tcpPort(-1), _udpPort(-1), _mcastDestPort(-1){
@@ -37,7 +45,9 @@ SomeIpDiscoveryNotification::~SomeIpDiscoveryNotification() {
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(const SomeIpDiscoveryNotification& someIpDiscoveryNotification) :
     DiscoveryNotification(static_cast<DiscoveryNotification>(someIpDiscoveryNotification)), _instanceId(someIpDiscoveryNotification._instanceId),
     _qosGroups(someIpDiscoveryNotification._qosGroups), _qosGroup(someIpDiscoveryNotification._qosGroup), _tcpPort(someIpDiscoveryNotification._tcpPort),
-    _udpPort(someIpDiscoveryNotification._udpPort), _mcastDestAddr(someIpDiscoveryNotification._mcastDestAddr), _mcastDestPort(someIpDiscoveryNotification._mcastDestPort){
+    _udpPort(someIpDiscoveryNotification._udpPort), _mcastDestAddr(someIpDiscoveryNotification._mcastDestAddr), _mcastDestPort(someIpDiscoveryNotification._mcastDestPort),
+    _framesizeMax(someIpDiscoveryNotification._framesizeMax), _intervalMin(someIpDiscoveryNotification._intervalMin), _vlan_id(someIpDiscoveryNotification._vlan_id),
+    _pcp(someIpDiscoveryNotification._pcp), _deadline(someIpDiscoveryNotification._deadline) {
 }
 
 SomeIpDiscoveryNotification& SomeIpDiscoveryNotification::operator=(const SomeIpDiscoveryNotification& other) {
@@ -50,6 +60,11 @@ SomeIpDiscoveryNotification& SomeIpDiscoveryNotification::operator=(const SomeIp
     _udpPort = other._udpPort;
     _mcastDestAddr = other._mcastDestAddr;
     _mcastDestPort = other._mcastDestPort;
+    _framesizeMax = other._framesizeMax;
+    _intervalMin = other._intervalMin;
+    _vlan_id = other._vlan_id;
+    _pcp = other._pcp;
+    _deadline = other._deadline;
     return *this;
 }
 
@@ -117,6 +132,47 @@ bool SomeIpDiscoveryNotification::addQoSGroup(QoSGroup qosGroup) {
         return true;
     }
     return false;
+}
+
+double SomeIpDiscoveryNotification::getDeadline() const {
+    return _deadline;
+}
+
+void SomeIpDiscoveryNotification::setDeadline(double deadline) {
+    _deadline = deadline;
+}
+
+size_t SomeIpDiscoveryNotification::getFramesizeMax() const {
+    return _framesizeMax;
+}
+
+void SomeIpDiscoveryNotification::setFramesizeMax(
+        size_t framesizeMax) {
+    _framesizeMax = framesizeMax;
+}
+
+double SomeIpDiscoveryNotification::getIntervalMin() const {
+    return _intervalMin;
+}
+
+void SomeIpDiscoveryNotification::setIntervalMin(double intervalMin) {
+    _intervalMin = intervalMin;
+}
+
+int SomeIpDiscoveryNotification::getPcp() const {
+    return _pcp;
+}
+
+void SomeIpDiscoveryNotification::setPcp(int pcp) {
+    _pcp = pcp;
+}
+
+int SomeIpDiscoveryNotification::getVlanId() const {
+    return _vlan_id;
+}
+
+void SomeIpDiscoveryNotification::setVlanId(int vlanId) {
+    _vlan_id = vlanId;
 }
 
 bool SomeIpDiscoveryNotification::updateFromEndpointOption(
