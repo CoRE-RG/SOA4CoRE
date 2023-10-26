@@ -21,6 +21,7 @@
 #include <core4inet/base/CoRE4INET_Defs.h>
 #include <core4inet/utilities/ConfigFunctions.h>
 //INET
+#include <inet/networklayer/ipv4/IPv4Datagram_m.h>
 #include <inet/linklayer/ethernet/Ethernet.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 //STD
@@ -61,12 +62,16 @@ CoRE4INET::SR_CLASS Publisher::getSrClass() {
     return this->_srClass;
 }
 
-size_t Publisher::getFramesize() {
-    return this->_framesize;
+size_t Publisher::getPayloadMax() {
+    return _payloadMax;
 }
 
 int Publisher::getIntervalFrames() {
     return this->_intervalFrames;
+}
+
+double Publisher::getIntervalMin() {
+    return _intervalMin;
 }
 
 void Publisher::initialize() {
@@ -74,26 +79,22 @@ void Publisher::initialize() {
 
     this->_msgSentSignal = registerSignal("msgSent");
     this->_sigPayload = registerSignal("payloadSignal");
-    _framesize = getPayloadBytes();
-    if (getPayloadBytes()
-            <= (MIN_ETHERNET_FRAME_BYTES - ETHER_MAC_FRAME_BYTES
-                    - ETHER_8021Q_TAG_BYTES)) {
-        _framesize = MIN_ETHERNET_FRAME_BYTES;
-    } else {
-        _framesize =
-                getPayloadBytes() + ETHER_MAC_FRAME_BYTES + ETHER_8021Q_TAG_BYTES;
-    }
 }
 
 void Publisher::handleParameterChange(const char* parname) {
     ServiceBase::handleParameterChange(parname);
 
     if (!parname || !strcmp(parname, "payload")) {
-        this->_payload = CoRE4INET::parameterULongCheckRange(par("payload"), 0,
-        MAX_ETHERNET_DATA_BYTES);
+        this->_payload = par("payload").intValue();
     }
     if (!parname || !strcmp(parname, "intervalFrames")) {
         this->_intervalFrames = par("intervalFrames");
+    }
+    if (!parname || !strcmp(parname, "intervalMin")) {
+        _intervalMin = CoRE4INET::parameterDoubleCheckRange(par("intervalMin"), 0, SIMTIME_MAX.dbl());
+    }
+    if (!parname || !strcmp(parname, "payloadMax")) {
+        _payloadMax = par("payloadMax");
     }
     if (!parname || !strcmp(parname, "srClass")) {
         if (strcmp(par("srClass").stringValue(), "A") == 0) {
@@ -210,7 +211,7 @@ void Publisher::printQoS() {
     cout << "Service ID: " << _serviceId <<endl;
     cout << "StreamID: " << _streamID << endl;
     cout << "SRClass: " << CoRE4INET::SR_CLASStoString[_srClass] << endl;
-    cout << "Framesize: " << _framesize << endl;
+    cout << "Framesize: " << _payloadMax << endl;
     cout << "IntervalFrames: " << _intervalFrames << endl;
 
 }

@@ -94,6 +94,12 @@ public:
      */
     int getUdpPort();
 
+    /**
+     * Returns the deadline
+     * @return the deadline
+     */
+    double getDeadline();
+
 protected:
     /**
      * Initialization of the module.
@@ -179,6 +185,11 @@ protected:
      * Caches the start time parameter
      */
     double _startTime;
+
+    /**
+     * Caches the deadline parameter
+     */
+    double _deadline;
 
 private:
 };

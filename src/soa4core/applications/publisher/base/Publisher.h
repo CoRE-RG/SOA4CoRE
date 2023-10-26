@@ -76,16 +76,22 @@ public:
     CoRE4INET::SR_CLASS getSrClass();
 
     /**
-     * Returns the the ethernet frame size
-     * @return the ethernet frame size
+     * Returns the maximum payload to calculate framesizes
+     * @return maximum payload bytes
      */
-    size_t getFramesize();
+    size_t getPayloadMax();
 
     /**
      * Returns the interval frames
      * @return the interval frames
      */
     int getIntervalFrames();
+
+    /**
+     * Returns the minimum interval between two consecutive frames
+     * @return the interval in seconds
+     */
+    double getIntervalMin();
 
     /**
      * Returns the vlan id
@@ -165,14 +171,22 @@ public:
 protected:
 
     /**
-     * Caches payload parameter
+     * Caches the current payload parameter.
      */
     size_t _payload;
 
     /**
-     * size of the ethernet frame calculated from the payload.
+     * Maximum size of the payload.
      */
-    size_t _framesize;
+    size_t _payloadMax;
+
+    /**
+     * The minimum interval between two frames.
+     * @note The actual send interval is determined by the volatile interval parameter.
+     *       This is used to be forwarded to endpoints or service discovery for optional
+     *       ressource reservation mechanisms
+     */
+    double _intervalMin;
 
     /**
      * Signal that is emitted each time then a message is sent.

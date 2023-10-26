@@ -393,7 +393,13 @@ PublisherEndpointBase* QoSManager::createAVBPublisherEndpoint(
             avbEndpoint->par("pcp").setIntValue(pcp);
         }
 
-        auto payload = publisherApplication->getFramesize();
+        auto payload = publisherApplication->getPayloadMax();
+        size_t framesize = payload + ETHER_MAC_FRAME_BYTES + ETHER_8021Q_TAG_BYTES;
+        if (framesize < MIN_ETHERNET_FRAME_BYTES) {
+            framesize = MIN_ETHERNET_FRAME_BYTES;
+        } else if (framesize > MAX_ETHERNET_FRAME_BYTES) {
+            throw cRuntimeError ("Reserved framesize does not fit into one Ethernet frame.");
+        }
         avbEndpoint->par("payload").setIntValue(payload);
 
         // cast back.

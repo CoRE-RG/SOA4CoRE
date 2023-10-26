@@ -96,6 +96,10 @@ int ServiceBase::getUdpPort() {
     return this->_udpPort;
 }
 
+double ServiceBase::getDeadline() {
+    return _deadline;
+}
+
 void ServiceBase::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "applicationUDPPort")) {
         _udpPort = par("applicationUDPPort");
@@ -135,6 +139,10 @@ void ServiceBase::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "serviceId"))
     {
         this->_serviceId = par("serviceId").intValue();
+    }
+
+    if (!parname || !strcmp(parname, "deadline")) {
+        this->_deadline = par("deadline").doubleValue();
     }
 }
 

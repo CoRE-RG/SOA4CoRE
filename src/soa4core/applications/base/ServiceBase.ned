@@ -49,7 +49,12 @@ simple ServiceBase like IService
     	int serviceId = default(0);
     	//Service Description
     	string serviceName = default("");
-        
+    	
+    	// Optional deadline for messages. 
+    	// Can be set for both publishers and subscribers to be communicated
+    	// during connection setup and, e.g., forwarded to the network.
+		double deadline @unit(s) = default(0s); // deadline <= 0 means no deadline    
+		    
     gates:
         // the connector gate to receive messages.
         input connectorIn @direct;
