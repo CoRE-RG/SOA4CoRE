@@ -206,6 +206,14 @@ void SomeIpSD::subscribeEventgroup(SomeIpDiscoveryNotification* someIpDiscoveryN
     IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(someIpDiscoveryNotification);
     someIpSDHeader->encapOption(ipv4EndpointOption);
 
+    if(_includeRealTimeConfig && someIpDiscoveryNotification->getDeadline() > 0)
+    {
+        RealTimeConfigurationOption* rtconfig = new RealTimeConfigurationOption();
+        rtconfig->setDeadline(someIpDiscoveryNotification->getDeadline());
+        someIpSDHeader->encapOption(rtconfig);
+        subscribeEventgroupEntry->setNum1stOptions(subscribeEventgroupEntry->getNum1stOptions() + 1);
+    }
+
     sendTo(someIpSDHeader, someIpDiscoveryNotification->getAddress());
 }
 
@@ -282,20 +290,20 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
     notification->setInstanceId(offerEntry->getInstanceID());
 
     std::advance(optionsListIterator, offerEntry->getIndex1stOptions());
-    for (int firstOptionsIdx = 0; firstOptionsIdx < offerEntry->getNum1stOptions(); firstOptionsIdx++) {
-        IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
-        if(!ipv4EndpointOption) {
-            if(dynamic_cast<ConfigurationOption*>(*optionsListIterator)) {
-               continue;
+    for (int firstOptionsIdx = 0; firstOptionsIdx < offerEntry->getNum1stOptions(); firstOptionsIdx++)
+    {
+        if(IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator))
+        {
+            if (_hasQoSNP) {
+                if(!dynamic_cast<IPv4MulticastOption*>(ipv4EndpointOption)) {
+                    notification->setAddress(ipv4EndpointOption->getIpv4Address());
+                }
+            } else {
+                notification->updateFromEndpointOption(ipv4EndpointOption);
             }
-            throw cRuntimeError("SomeIpSDOption is not of type IPv4EndpointOption");
         }
-        if (_hasQoSNP) {
-            if(!dynamic_cast<IPv4MulticastOption*>(ipv4EndpointOption)) {
-                notification->setAddress(ipv4EndpointOption->getIpv4Address());
-            }
-        } else {
-            notification->updateFromEndpointOption(ipv4EndpointOption);
+        else if(!dynamic_cast<ConfigurationOption*>(*optionsListIterator)) {
+            throw cRuntimeError("SomeIpSDOption is not of type IPv4EndpointOption");
         }
         optionsListIterator++;
     }
@@ -321,24 +329,28 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
     std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
     std::advance(optionsListIterator, subscribeEventGroupEntry->getIndex1stOptions());
-    for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupEntry->getNum1stOptions(); firstOptionsIdx++) {
-
-        SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
-        notification->setServiceId(subscribeEventGroupEntry->getServiceID());
-        notification->setInstanceId(subscribeEventGroupEntry->getInstanceID());
-        notification->updateFromEndpointOption(*optionsListIterator);
-        notification->setQosGroup(*(notification->getQoSGroups().begin()));
-
-        if(notification->getAddress().isUnspecified()) {
-            // use udp src of someip sd message instead
-            if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
-                notification->setAddress(udpDataIndication->getSrcAddr());
-            } else {
-                throw cRuntimeError("Could not determine any address for service");
+    for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupEntry->getNum1stOptions(); firstOptionsIdx++)
+    {
+        if(!dynamic_cast<ConfigurationOption*>(*optionsListIterator))
+        {
+            SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
+            notification->setServiceId(subscribeEventGroupEntry->getServiceID());
+            notification->setInstanceId(subscribeEventGroupEntry->getInstanceID());
+            notification->updateFromEndpointOption(*optionsListIterator);
+            notification->setQosGroup(*(notification->getQoSGroups().begin()));
+            if(notification->getAddress().isUnspecified())
+            {
+                // use udp src of someip sd message instead
+                if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo()))
+                {
+                    notification->setAddress(udpDataIndication->getSrcAddr());
+                } else
+                {
+                    throw cRuntimeError("Could not determine any address for service");
+                }
             }
+            emit(_subscribeEventGroupSignal, notification);
         }
-
-        emit(_subscribeEventGroupSignal, notification);
         optionsListIterator++;
     }
 }

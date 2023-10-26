@@ -222,27 +222,27 @@ protected:
     /**
      * Maximum size of the l1 frame calculated from maximum payload used for RessourceConfigurationOption
      */
-    size_t _framesizeMax;
+    size_t _framesizeMax = 0;
 
     /**
      * The minimum interval between two frames used for RessourceConfigurationOption
      */
-    double _intervalMin;
+    double _intervalMin = 0;
 
     /**
      * Vlan ID used for IEEE8021QConfigurationOption
      */
-    int _vlan_id;
+    int _vlan_id = -1;
 
     /**
      * Vlan pcp used for IEEE8021QConfigurationOption
      */
-    int _pcp;
+    int _pcp = -1;
 
     /**
      * Deadline for messages used for RealTimeConfigurationOption
      */
-    double _deadline;
+    double _deadline = 0;
 private:
 
 };

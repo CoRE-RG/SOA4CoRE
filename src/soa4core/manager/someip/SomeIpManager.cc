@@ -558,6 +558,7 @@ void SomeIpManager::subscribeServiceIfThereIsAPendingRequest(cObject* obj) {
                                     someIpdiscoveryNotificationOffer->getAddress(), instanceId, set<QoSGroup>{}, qosGroup, subscriberConnector->getTcpPort(),
                                     subscriberConnector->getUdpPort(), someIpdiscoveryNotificationOffer->getMcastDestAddr(), someIpdiscoveryNotificationOffer->getMcastDestPort()
                             );
+                            someIpdiscoveryNotificationSubscription->setDeadline(subscriberApplication->getDeadline());
                             subscription->serviceOfferReceivedAndRequested();
                             emit(_subscribeSignal, someIpdiscoveryNotificationSubscription);
                             // Break here because there can be only one connector for a service ID and QoS Group pair
