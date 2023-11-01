@@ -12,3 +12,6 @@
 
 /examples/someip/small_network,                                 -f omnetpp.ini -c General -r 0,                 50ms,            3532-dfb5
 /examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              5997-bc93
+
+/examples/ipqos/small_network,                                  -f omnetpp.ini -c SOMEIP_UDP_MCAST_CT_Q -r 0,   100ms,           fbe2-80c2
+/examples/ipqos/small_network,                                  -f omnetpp.ini -c SOMEIP_MIXED_CT_Q -r 0,       100ms,           06d6-f228

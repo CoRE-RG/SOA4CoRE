@@ -15,3 +15,6 @@
 /examples/someip/small_network,                                 -f omnetpp.ini -c UDP_Only -r 0,                50ms,            42bf-5d37
 /examples/someip/small_network,                                 -f omnetpp.ini -c Router_UDP_Mcast -r 0,        50ms,            84e9-c887
 /examples/someip/large_network,                                 -f omnetpp.ini -c General -r 0,                 1s,              b78c-5d8c
+
+/examples/ipqos/small_network,                                  -f omnetpp.ini -c SOMEIP_UDP_MCAST_CT_Q -r 0,   100ms,           fbe2-80c2
+/examples/ipqos/small_network,                                  -f omnetpp.ini -c SOMEIP_MIXED_CT_Q -r 0,       100ms,           06d6-f228
