@@ -15,9 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/endpoints/publisher/ip/udp/UDPMcastPublisherEndpoint.h>
 #include "soa4core/applications/base/ServiceBase.h"
-#include "UDPMcastPublisherEndpoint.h"
-//INET
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include "inet/networklayer/contract/IRoutingTable.h"
 #include "inet/networklayer/ipv4/IPv4Route.h"

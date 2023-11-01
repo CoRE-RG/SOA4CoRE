@@ -15,7 +15,7 @@
 
 package soa4core.endpoints.subscriber.someip.tcp;
 
-import soa4core.endpoints.subscriber.standard.tcp.TCPSubscriberEndpoint;
+import soa4core.endpoints.subscriber.ip.tcp.TCPSubscriberEndpoint;
 
 //
 // The SOMEIPTCPSubscriberEndpoint is a subscriber endpoint module for SOME/IP traffic via TCP.

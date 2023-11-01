@@ -15,7 +15,7 @@
 
 package soa4core.endpoints.publisher.someip.tcp;
 
-import soa4core.endpoints.publisher.standard.tcp.TCPPublisherEndpoint;
+import soa4core.endpoints.publisher.ip.tcp.TCPPublisherEndpoint;
 
 //
 // The SOMEIPTCPPublisherEndpoint is a publisher endpoint module for SOME/IP traffic via TCP.

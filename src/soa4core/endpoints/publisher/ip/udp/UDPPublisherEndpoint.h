@@ -18,8 +18,7 @@
 #ifndef __SOA4CORE_UDPPUBLISHERENDPOINT_H_
 #define __SOA4CORE_UDPPUBLISHERENDPOINT_H_
 
-#include "soa4core/endpoints/publisher/standard/base/STDPublisherEndpointBase.h"
-//STD
+#include <soa4core/endpoints/publisher/ip/base/IPPublisherEndpointBase.h>
 #include <string>
 #include <vector>
 #include <utility>
@@ -31,7 +30,7 @@
 namespace SOA4CoRE {
 
 /**
- * @brief The UDPPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
+ * @brief The UDPPublisherEndpoint is a publisher endpoint module with IP qos (@see~EndpointBase).
  * It realizes an UDP specific publishing endpoint.
  * Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a publishing endpoint for a service.
@@ -42,7 +41,7 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class UDPPublisherEndpoint : public STDPublisherEndpointBase
+class UDPPublisherEndpoint : public IPPublisherEndpointBase
 {
 /**
  * Methods

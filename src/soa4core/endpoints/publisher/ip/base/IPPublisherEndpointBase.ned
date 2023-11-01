@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.publisher.standard.base;
+package soa4core.endpoints.publisher.ip.base;
 
 import soa4core.endpoints.publisher.base.PublisherEndpointBase;
 
 //
-// The STDPublisherEndpointBase is a publisher endpoint module with STD qos (@see~EndpointBase).
+// The IPPublisherEndpointBase is a publisher endpoint module with IP qos (@see~EndpointBase).
 // Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a publishing endpoint for a service. 
 // Publishers are connected to a specific transport and a publisher connector module (@see~PublisherConnector)
@@ -28,11 +28,11 @@ import soa4core.endpoints.publisher.base.PublisherEndpointBase;
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
-simple STDPublisherEndpointBase extends PublisherEndpointBase
+simple IPPublisherEndpointBase extends PublisherEndpointBase
 {
     parameters:
         // The endpoint path or name
-        endpointPath = default("STDPublisher");
+        endpointPath = default("IPPublisher");
     
         // Local ip address for socket
         string localAddress;

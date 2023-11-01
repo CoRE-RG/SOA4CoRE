@@ -15,15 +15,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOA4CORE_STDSUBSCRIBERENDPOINTBASE_H_
-#define __SOA4CORE_STDSUBSCRIBERENDPOINTBASE_H_
+#ifndef __SOA4CORE_IPSUBSCRIBERENDPOINTBASE_H_
+#define __SOA4CORE_IPSUBSCRIBERENDPOINTBASE_H_
 
 #include "soa4core/endpoints/subscriber/base/SubscriberEndpointBase.h"
 
 namespace SOA4CoRE {
 
 /**
- * @brief The STDSubscriberEndpointBase is a subscriber endpoint module with STD qos (@see~EndpointBase).
+ * @brief The IPSubscriberEndpointBase is a subscriber endpoint module with IP qos (@see~EndpointBase).
  * Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a subscribing endpoint for a service.
  * Subscribers are connected to a specific transport and a subscriber connector module (@see~SubscriberConnector)
@@ -33,7 +33,7 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel for HAW Hamburg
  */
-class STDSubscriberEndpointBase : public SubscriberEndpointBase
+class IPSubscriberEndpointBase : public SubscriberEndpointBase
 {
 /**
  * Methods

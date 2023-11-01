@@ -17,7 +17,7 @@
 
 package soa4core.endpoints.publisher.someip.udp;
 
-import soa4core.endpoints.publisher.standard.udp.UDPMcastPublisherEndpoint;
+import soa4core.endpoints.publisher.ip.udp.UDPMcastPublisherEndpoint;
 
 //
 // The SOMEIPUDPMcastPublisherEndpoint is a publisher endpoint module  SOME/IP traffic via UDP multicasts.

@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "UDPMcastSubscriberEndpoint.h"
-//INET
+#include <soa4core/endpoints/subscriber/ip/udp/UDPMcastSubscriberEndpoint.h>
+
 #include <inet/networklayer/common/L3AddressResolver.h>
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"

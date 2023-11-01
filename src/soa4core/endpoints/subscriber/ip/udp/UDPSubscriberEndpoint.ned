@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.subscriber.standard.udp;
+package soa4core.endpoints.subscriber.ip.udp;
 
-import soa4core.endpoints.subscriber.standard.base.STDSubscriberEndpointBase;
+import soa4core.endpoints.subscriber.ip.base.IPSubscriberEndpointBase;
 
 //
-// The UDPSubscriberEndpoint is a subscriber endpoint module with STD qos (@see~EndpointBase).
+// The UDPSubscriberEndpoint is a subscriber endpoint module with IP qos (@see~EndpointBase).
 // It realizes an UDP specific subscriber endpoint.
 // Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a subscribing endpoint for a service. 
@@ -29,11 +29,11 @@ import soa4core.endpoints.subscriber.standard.base.STDSubscriberEndpointBase;
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
-simple UDPSubscriberEndpoint extends STDSubscriberEndpointBase
+simple UDPSubscriberEndpoint extends IPSubscriberEndpointBase
 {
     parameters:
         @class(SOA4CoRE::UDPSubscriberEndpoint);
         // The QoS group this endpoint serves
-    	qos = default("STD_UDP");
+    	qos = default("IP_UDP");
     
 }

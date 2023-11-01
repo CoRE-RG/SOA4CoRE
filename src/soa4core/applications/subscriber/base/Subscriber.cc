@@ -71,12 +71,12 @@ void Subscriber::handleParameterChange(const char* parname)
         if(group == "WEB"){
             //_qosGroup = QoSGroups::WEB;
             throw cRuntimeError("WEB QoS is not implemented yet.");
-        } else if(group == "STD_TCP"){
-            _qosGroup = QoSGroup::STD_TCP;
-        } else if(group == "STD_UDP"){
-            _qosGroup = QoSGroup::STD_UDP;
-        } else if(group == "STD_UDP_MCAST"){
-            _qosGroup = QoSGroup::STD_UDP_MCAST;
+        } else if(group == "IP_TCP" || group == "STD_TCP"){
+            _qosGroup = QoSGroup::IP_TCP;
+        } else if(group == "IP_UDP" || group == "STD_UDP"){
+            _qosGroup = QoSGroup::IP_UDP;
+        } else if(group == "IP_UDP_MCAST" || group == "STD_UDP_MCAST"){
+            _qosGroup = QoSGroup::IP_UDP_MCAST;
         } else if(group == "RT"){
             _qosGroup = QoSGroup::RT;
         } else if(group == "SOMEIP_TCP"){

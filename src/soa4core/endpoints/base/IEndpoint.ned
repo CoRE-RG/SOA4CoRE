@@ -26,7 +26,7 @@ package soa4core.endpoints.base;
 moduleinterface IEndpoint
 {
     parameters:
-        // indicates which qos is realized in this endpoint one of RT, STD_UDP, STD_TCP, WEB
+        // indicates which qos is realized in this endpoint one of RT, IP_UDP, IP_TCP, WEB
         string qos;  
         
      	//The name of the endpoint as a path (e.g. "Reifendruck/links").

@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.subscriber.standard.tcp;
+package soa4core.endpoints.subscriber.ip.tcp;
 
-import soa4core.endpoints.subscriber.standard.base.STDSubscriberEndpointBase;
+import soa4core.endpoints.subscriber.ip.base.IPSubscriberEndpointBase;
 
 //
-// The TCPSubscriberEndpoint is a subscriber endpoint module with STD qos (@see~EndpointBase).
+// The TCPSubscriberEndpoint is a subscriber endpoint module with IP qos (@see~EndpointBase).
 // It realizes an TCP specific subscriber endpoint.
 // Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a subscribing endpoint for a service. 
@@ -29,12 +29,12 @@ import soa4core.endpoints.subscriber.standard.base.STDSubscriberEndpointBase;
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
-simple TCPSubscriberEndpoint extends STDSubscriberEndpointBase
+simple TCPSubscriberEndpoint extends IPSubscriberEndpointBase
 {
     parameters:
         @class(SOA4CoRE::TCPSubscriberEndpoint);
         // The QoS group this enpoint serves
-    	qos = default("STD_TCP");
+    	qos = default("IP_TCP");
         
         // Remote IP address for TCP socket
         string remoteAddress;

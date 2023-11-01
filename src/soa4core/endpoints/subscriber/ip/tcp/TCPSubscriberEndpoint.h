@@ -18,13 +18,13 @@
 #ifndef __SOA4CORE_TCPSUBSCRIBERENDPOINT_H_
 #define __SOA4CORE_TCPSUBSCRIBERENDPOINT_H_
 
-#include "soa4core/endpoints/subscriber/standard/base/STDSubscriberEndpointBase.h"
+#include "soa4core/endpoints/subscriber/ip/base/IPSubscriberEndpointBase.h"
 //INET
 #include <inet/transportlayer/contract/tcp/TCPSocket.h>
 
 namespace SOA4CoRE {
 /**
- * @brief The TCPSubscriberEndpoint is a subscriber endpoint module with STD qos (@see~EndpointBase).
+ * @brief The TCPSubscriberEndpoint is a subscriber endpoint module with IP qos (@see~EndpointBase).
  * It realizes an TCP specific subscriber endpoint.
  * Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a subscribing endpoint for a service.
@@ -35,7 +35,7 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class TCPSubscriberEndpoint : public STDSubscriberEndpointBase
+class TCPSubscriberEndpoint : public IPSubscriberEndpointBase
 {
 /**
  * Methods

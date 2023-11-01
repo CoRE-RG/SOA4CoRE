@@ -15,8 +15,8 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __SOA4CORE_STDPUBLISHERENDPOINTBASE_H_
-#define __SOA4CORE_STDPUBLISHERENDPOINTBASE_H_
+#ifndef __SOA4CORE_IPPUBLISHERENDPOINTBASE_H_
+#define __SOA4CORE_IPPUBLISHERENDPOINTBASE_H_
 
 #include "soa4core/endpoints/publisher/base/PublisherEndpointBase.h"
 
@@ -32,7 +32,7 @@
 namespace SOA4CoRE {
 
 /**
- * @brief The STDPublisherEndpointBase is a publisher endpoint module with STD qos (@see~EndpointBase).
+ * @brief The IPPublisherEndpointBase is a publisher endpoint module with IP qos (@see~EndpointBase).
  * Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a publishing endpoint for a service.
  * Publishers are connected to a specific transport and a publisher connector module (@see~PublisherConnector)
@@ -43,7 +43,7 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class STDPublisherEndpointBase : public PublisherEndpointBase
+class IPPublisherEndpointBase : public PublisherEndpointBase
 {
 /**
  * Methods

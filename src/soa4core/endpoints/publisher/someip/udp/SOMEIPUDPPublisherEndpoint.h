@@ -16,7 +16,7 @@
 #ifndef __SOA4CORE_SOMEIPUDPPUBLISHERENDPOINT_H_
 #define __SOA4CORE_SOMEIPUDPPUBLISHERENDPOINT_H_
 
-#include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
+#include <soa4core/endpoints/publisher/ip/udp/UDPPublisherEndpoint.h>
 #include "soa4core/endpoints/publisher/someip/base/SOMEIPPublisherEndpointBase.h"
 
 namespace SOA4CoRE {

@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.publisher.standard.tcp;
+package soa4core.endpoints.publisher.ip.tcp;
 
-import soa4core.endpoints.publisher.standard.base.STDPublisherEndpointBase;
+import soa4core.endpoints.publisher.ip.base.IPPublisherEndpointBase;
 
 //
-// The TCPPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
+// The TCPPublisherEndpoint is a publisher endpoint module with IP qos (@see~EndpointBase).
 // It realizes a TCP specific publishing endpoint.
 // Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a publishing endpoint for a service. 
@@ -29,9 +29,9 @@ import soa4core.endpoints.publisher.standard.base.STDPublisherEndpointBase;
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
-simple TCPPublisherEndpoint extends STDPublisherEndpointBase
+simple TCPPublisherEndpoint extends IPPublisherEndpointBase
 {
     parameters:
         @class(SOA4CoRE::TCPPublisherEndpoint);
-    	qos = default("STD_TCP");
+    	qos = default("IP_TCP");
 }

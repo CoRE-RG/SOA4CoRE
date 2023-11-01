@@ -42,7 +42,7 @@ for nodes in range(1, SUBSCRIBER_NODE_COUNT+1):
         servicesStringBuffer.append('**.Subscriber[*].numServices = {}'.format(services))
         servicesStringBuffer.append('\n')
         servicesStringBuffer.append('**.Subscriber[*].services[*].typename = \"Subscriber\"')
-        servicesStringBuffer.append('**.Subscriber[*].services[*].qosGroup = \"STD_UDP\"')
+        servicesStringBuffer.append('**.Subscriber[*].services[*].qosGroup = \"IP_UDP\"')
         servicesStringBuffer.append('\n')
         for serviceIndex in range(0, services):
             servicesStringBuffer.append('**.Subscriber[*].services[{0}].publisherName = \"service{0}Publisher\"'.format(serviceIndex))

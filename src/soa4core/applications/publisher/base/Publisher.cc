@@ -138,12 +138,12 @@ void Publisher::handleParameterChange(const char* parname) {
             qosGroups.insert(std::string(token));
         }
         for (std::string qosGroup : qosGroups) {
-            if (qosGroup == "STD_TCP") {
-                this->_qosGroups.insert(QoSGroup::STD_TCP);
-            } else if (qosGroup == "STD_UDP") {
-                this->_qosGroups.insert(QoSGroup::STD_UDP);
-            } else if (qosGroup == "STD_UDP_MCAST") {
-                this->_qosGroups.insert(QoSGroup::STD_UDP_MCAST);
+            if (qosGroup == "IP_TCP" || qosGroup == "STD_TCP") {
+                this->_qosGroups.insert(QoSGroup::IP_TCP);
+            } else if (qosGroup == "IP_UDP" || qosGroup == "STD_UDP") {
+                this->_qosGroups.insert(QoSGroup::IP_UDP);
+            } else if (qosGroup == "IP_UDP_MCAST" || qosGroup == "STD_UDP_MCAST") {
+                this->_qosGroups.insert(QoSGroup::IP_UDP_MCAST);
             } else if (qosGroup == "SOMEIP_TCP") {
                 this->_qosGroups.insert(QoSGroup::SOMEIP_TCP);
             } else if (qosGroup == "SOMEIP_UDP") {

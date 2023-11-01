@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.subscriber.standard.base;
+package soa4core.endpoints.subscriber.ip.base;
 
 import soa4core.endpoints.subscriber.base.SubscriberEndpointBase;
 
 //
-// The STDSubscriberEndpointBase is a subscriber endpoint module with STD qos (@see~EndpointBase).
+// The IPSubscriberEndpointBase is a subscriber endpoint module with IP qos (@see~EndpointBase).
 // Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a subscribing endpoint for a service. 
 // Subscribers are connected to a specific transport and a subscriber connector module (@see~SubscriberConnector)
@@ -28,11 +28,11 @@ import soa4core.endpoints.subscriber.base.SubscriberEndpointBase;
 //
 // @author Timo Haeckel for HAW Hamburg
 //
-simple STDSubscriberEndpointBase extends SubscriberEndpointBase
+simple IPSubscriberEndpointBase extends SubscriberEndpointBase
 {
     parameters:
         // The endpoint path or name
-        endpointPath = default("STDSubscriber");
+        endpointPath = default("IPSubscriber");
     
         // Local IP address for socket
         string localAddress;

@@ -18,11 +18,11 @@
 #ifndef __SOA4CORE_UDPMCASTSUBSCRIBERENDPOINT_H_
 #define __SOA4CORE_UDPMCASTSUBSCRIBERENDPOINT_H_
 
-#include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
+#include <soa4core/endpoints/subscriber/ip/udp/UDPSubscriberEndpoint.h>
 
 namespace SOA4CoRE {
 /**
- * @brief The UDPMcastSubscriberEndpoint is a subscriber endpoint module with STD qos (@see~EndpointBase).
+ * @brief The UDPMcastSubscriberEndpoint is a subscriber endpoint module with IP qos (@see~EndpointBase).
  * It realizes an UDP specific subscriber endpoint.
  * Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a subscribing endpoint for a service.

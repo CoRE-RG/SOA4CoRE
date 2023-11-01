@@ -18,8 +18,7 @@
 #ifndef __SOA4CORE_TCPPUBLISHERENDPOINT_H_
 #define __SOA4CORE_TCPPUBLISHERENDPOINT_H_
 
-#include "soa4core/endpoints/publisher/standard/base/STDPublisherEndpointBase.h"
-//STD
+#include <soa4core/endpoints/publisher/ip/base/IPPublisherEndpointBase.h>
 #include <unordered_map>
 #include <string>
 //INET
@@ -30,7 +29,7 @@
 namespace SOA4CoRE {
 
 /**
- * @brief The TCPPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
+ * @brief The TCPPublisherEndpoint is a publisher endpoint module with IP qos (@see~EndpointBase).
  * It realizes an TCP specific publishing endpoint.
  * Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a publishing endpoint for a service.
@@ -41,7 +40,7 @@ namespace SOA4CoRE {
  *
  * @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
  */
-class TCPPublisherEndpoint : public STDPublisherEndpointBase, public inet::TCPSocketMap
+class TCPPublisherEndpoint : public IPPublisherEndpointBase, public inet::TCPSocketMap
 {
 /**
  * Methods

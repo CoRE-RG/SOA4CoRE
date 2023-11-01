@@ -31,7 +31,7 @@ import soa4core.utility.processing.ProcessingTimeSimulation;
 simple EndpointBase extends ProcessingTimeSimulation like IEndpoint
 {
     parameters:
-        // indicates which qos is realized in this endpoint one of RT, STD_UDP, STD_TCP, WEB
+        // indicates which qos is realized in this endpoint one of RT, IP_UDP, IP_TCP, WEB
         string qos = default("");  
         
      	// The name of the endpoint as a path (e.g. "Reifendruck/links").

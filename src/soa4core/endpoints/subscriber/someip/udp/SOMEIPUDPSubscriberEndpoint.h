@@ -16,7 +16,7 @@
 #ifndef __SOA4CORE_SOMEIPUDPSUBSCRIBERENDPOINT_H_
 #define __SOA4CORE_SOMEIPUDPSUBSCRIBERENDPOINT_H_
 
-#include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
+#include <soa4core/endpoints/subscriber/ip/udp/UDPSubscriberEndpoint.h>
 
 namespace SOA4CoRE {
 

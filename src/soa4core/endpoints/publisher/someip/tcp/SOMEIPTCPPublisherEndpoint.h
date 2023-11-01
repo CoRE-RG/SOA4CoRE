@@ -16,7 +16,7 @@
 #ifndef __SOA4CORE_SOMEIPTCPPUBLISHERENDPOINT_H_
 #define __SOA4CORE_SOMEIPTCPPUBLISHERENDPOINT_H_
 
-#include "soa4core/endpoints/publisher/standard/tcp/TCPPublisherEndpoint.h"
+#include <soa4core/endpoints/publisher/ip/tcp/TCPPublisherEndpoint.h>
 #include "soa4core/endpoints/publisher/someip/base/SOMEIPPublisherEndpointBase.h"
 
 namespace SOA4CoRE {

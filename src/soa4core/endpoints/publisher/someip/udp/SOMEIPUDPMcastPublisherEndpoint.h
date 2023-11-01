@@ -18,7 +18,7 @@
 #ifndef __SOA4CORE_SOMEIPUDPMCASTPUBLISHERENDPOINT_H_
 #define __SOA4CORE_SOMEIPUDPMCASTPUBLISHERENDPOINT_H_
 
-#include "soa4core/endpoints/publisher/standard/udp/UDPMcastPublisherEndpoint.h"
+#include <soa4core/endpoints/publisher/ip/udp/UDPMcastPublisherEndpoint.h>
 #include "soa4core/endpoints/publisher/someip/base/SOMEIPPublisherEndpointBase.h"
 
 #include <string>

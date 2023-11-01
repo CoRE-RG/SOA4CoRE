@@ -13,18 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <soa4core/endpoints/publisher/ip/tcp/TCPPublisherEndpoint.h>
+#include <soa4core/endpoints/publisher/ip/udp/UDPMcastPublisherEndpoint.h>
+#include <soa4core/endpoints/publisher/ip/udp/UDPPublisherEndpoint.h>
+#include <soa4core/endpoints/subscriber/ip/tcp/TCPSubscriberEndpoint.h>
+#include <soa4core/endpoints/subscriber/ip/udp/UDPMcastSubscriberEndpoint.h>
+#include <soa4core/endpoints/subscriber/ip/udp/UDPSubscriberEndpoint.h>
 #include "soa4core/manager/qos/QoSManager.h"
 #include "soa4core/discovery/SomeIpDiscoveryNotification.h"
 #include "soa4core/discovery/someip/SomeIpSD.h" // TODO REMOVE!
 #include "soa4core/endpoints/subscriber/realtime/avb/AVBSubscriberEndpoint.h"
-#include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
-#include "soa4core/endpoints/subscriber/standard/udp/UDPSubscriberEndpoint.h"
-#include "soa4core/endpoints/subscriber/standard/udp/UDPMcastSubscriberEndpoint.h"
 #include "soa4core/endpoints/publisher/realtime/avb/AVBPublisherEndpoint.h"
-#include "soa4core/endpoints/publisher/standard/tcp/TCPPublisherEndpoint.h"
-#include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
-#include "soa4core/endpoints/publisher/standard/udp/UDPMcastPublisherEndpoint.h"
-//STD
 #include <algorithm>
 //INET
 #include <inet/networklayer/common/L3Address.h>
@@ -120,13 +119,13 @@ PublisherEndpointBase* QoSManager::createQoSSpecificPublisherEndpoint(QoSGroup q
     case QoSGroup::RT:
         pub = createAVBPublisherEndpoint(qosGroup, publisherConnector);
         break;
-    case QoSGroup::STD_TCP:
+    case QoSGroup::IP_TCP:
         pub = createTCPPublisherEndpoint(qosGroup, publisherConnector);
         break;
-    case QoSGroup::STD_UDP:
+    case QoSGroup::IP_UDP:
         pub = createUDPPublisherEndpoint(qosGroup, publisherConnector);
         break;
-    case QoSGroup::STD_UDP_MCAST:
+    case QoSGroup::IP_UDP_MCAST:
         pub = createUDPMcastPublisherEndpoint(qosGroup, publisherConnector);
         break;
     case QoSGroup::WEB:
@@ -145,13 +144,13 @@ QoSGroup QoSManager::getQoSGroupForConnectionType(ConnectionType connectionType)
         return QoSGroup::RT;
         break;
     case ConnectionType::ct_tcp:
-        return QoSGroup::STD_TCP;
+        return QoSGroup::IP_TCP;
         break;
     case ConnectionType::ct_udp:
-        return QoSGroup::STD_UDP;
+        return QoSGroup::IP_UDP;
         break;
     case ConnectionType::ct_udp_mcast:
-        return QoSGroup::STD_UDP_MCAST;
+        return QoSGroup::IP_UDP_MCAST;
         break;
     case ConnectionType::ct_http:
         return QoSGroup::WEB;
@@ -255,7 +254,7 @@ SubscriberEndpointBase* QoSManager::createTCPSubscriberEndpoint(
     if(csi_tcp){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.subscriber.standard.tcp.TCPSubscriberEndpoint");
+                    "soa4core.endpoints.subscriber.ip.tcp.TCPSubscriberEndpoint");
         // 2. Create the module;
         TCPSubscriberEndpoint* tcpEndpoint =
                             dynamic_cast<TCPSubscriberEndpoint*>(
@@ -290,7 +289,7 @@ SubscriberEndpointBase* QoSManager::createUDPSubscriberEndpoint(
     if(csi_udp){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.subscriber.standard.udp.UDPSubscriberEndpoint");
+                    "soa4core.endpoints.subscriber.ip.udp.UDPSubscriberEndpoint");
         // 2. Create the module;
         UDPSubscriberEndpoint* udpEndpoint =
                             dynamic_cast<UDPSubscriberEndpoint*>(
@@ -323,7 +322,7 @@ SubscriberEndpointBase* QoSManager::createUDPMcastSubscriberEndpoint(
     if(csi_udp){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.subscriber.standard.udp.UDPMcastSubscriberEndpoint");
+                    "soa4core.endpoints.subscriber.ip.udp.UDPMcastSubscriberEndpoint");
         // 2. Create the module;
         UDPMcastSubscriberEndpoint* udpEndpoint =
                             dynamic_cast<UDPMcastSubscriberEndpoint*>(
@@ -418,10 +417,10 @@ PublisherEndpointBase* QoSManager::createTCPPublisherEndpoint(
 
     PublisherEndpointBase* ret = nullptr;
 
-    if(qosGroup == QoSGroup::STD_TCP){
+    if(qosGroup == QoSGroup::IP_TCP){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.publisher.standard.tcp.TCPPublisherEndpoint");
+                    "soa4core.endpoints.publisher.ip.tcp.TCPPublisherEndpoint");
         // 2. Create the module;
         TCPPublisherEndpoint* tcpEndpoint =
                             dynamic_cast<TCPPublisherEndpoint*>(
@@ -455,10 +454,10 @@ PublisherEndpointBase* QoSManager::createUDPPublisherEndpoint(
 
     PublisherEndpointBase* ret = nullptr;
 
-    if(qosGroup == QoSGroup::STD_UDP){
+    if(qosGroup == QoSGroup::IP_UDP){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.publisher.standard.udp.UDPPublisherEndpoint");
+                    "soa4core.endpoints.publisher.ip.udp.UDPPublisherEndpoint");
         // 2. Create the module;
         UDPPublisherEndpoint* udpEndpoint =
                             dynamic_cast<UDPPublisherEndpoint*>(
@@ -492,10 +491,10 @@ PublisherEndpointBase* QoSManager::createUDPMcastPublisherEndpoint(
 
     PublisherEndpointBase* ret = nullptr;
 
-    if(qosGroup == QoSGroup::STD_UDP_MCAST){
+    if(qosGroup == QoSGroup::IP_UDP_MCAST){
         // 1. Find the factory object;
         cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.publisher.standard.udp.UDPMcastPublisherEndpoint");
+                    "soa4core.endpoints.publisher.ip.udp.UDPMcastPublisherEndpoint");
         // 2. Create the module;
         UDPMcastPublisherEndpoint* udpEndpoint =
                             dynamic_cast<UDPMcastPublisherEndpoint*>(

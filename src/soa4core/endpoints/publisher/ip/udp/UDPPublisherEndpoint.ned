@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.publisher.standard.udp;
+package soa4core.endpoints.publisher.ip.udp;
 
-import soa4core.endpoints.publisher.standard.base.STDPublisherEndpointBase;
+import soa4core.endpoints.publisher.ip.base.IPPublisherEndpointBase;
 
 //
-// The UDPPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
+// The UDPPublisherEndpoint is a publisher endpoint module with IP qos (@see~EndpointBase).
 // It realizes a UDP specific publishing endpoint.
 // Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a publishing endpoint for a service. 
@@ -29,9 +29,9 @@ import soa4core.endpoints.publisher.standard.base.STDPublisherEndpointBase;
 //
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
-simple UDPPublisherEndpoint extends STDPublisherEndpointBase
+simple UDPPublisherEndpoint extends IPPublisherEndpointBase
 {
     parameters:
         @class(SOA4CoRE::UDPPublisherEndpoint);
-    	qos = default("STD_UDP");
+    	qos = default("IP_UDP");
 }

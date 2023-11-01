@@ -16,7 +16,7 @@
 #ifndef __SOA4CORE_SOMEIPTCPSUBSCRIBERENDPOINT_H_
 #define __SOA4CORE_SOMEIPTCPSUBSCRIBERENDPOINT_H_
 
-#include "soa4core/endpoints/subscriber/standard/tcp/TCPSubscriberEndpoint.h"
+#include <soa4core/endpoints/subscriber/ip/tcp/TCPSubscriberEndpoint.h>
 
 namespace SOA4CoRE {
 

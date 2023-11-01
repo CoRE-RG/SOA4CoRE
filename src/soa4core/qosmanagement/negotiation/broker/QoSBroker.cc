@@ -16,11 +16,11 @@
 //
 
 
+#include <soa4core/endpoints/publisher/ip/udp/UDPPublisherEndpoint.h>
 #include "soa4core/qosmanagement/negotiation/broker/QoSBroker.h"
 #include "soa4core/manager/qos/QoSManager.h"
 #include "soa4core/qosmanagement/negotiation/datatypes/Request.h"
 #include "soa4core/connector/base/ConnectorBase.h"
-#include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
 #include "soa4core/endpoints/publisher/someip/udp/SOMEIPUDPPublisherEndpoint.h"
 //AUTO-GENERATED Messages
 #include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
@@ -195,7 +195,7 @@ bool QoSBroker::handleResponse(QoSNegotiationResponse* response) {
 
                 ConnectionSpecificInformation* connectionlessCSI = nullptr;
                 switch (response->getQosClass()) {
-                case QoSGroup::STD_UDP:
+                case QoSGroup::IP_UDP:
                     connectionlessCSI = new CSI_UDP();
                 case QoSGroup::SOMEIP_UDP: {
                     connectionlessCSI = connectionlessCSI ? connectionlessCSI : new CSI_SOMEIP_UDP();

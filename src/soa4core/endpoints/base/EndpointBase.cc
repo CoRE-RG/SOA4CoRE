@@ -64,12 +64,12 @@ void EndpointBase::handleParameterChange(const char* parname) {
             _qos = QoSGroup::RT;
         } else if (!strcmp(par("qos"), "WEB")) {
             _qos = QoSGroup::WEB;
-        } else if (!strcmp(par("qos"), "STD_TCP")) {
-            _qos = QoSGroup::STD_TCP;
-        } else if (!strcmp(par("qos"), "STD_UDP")) {
-            _qos = QoSGroup::STD_UDP;
-        } else if (!strcmp(par("qos"), "STD_UDP_MCAST")) {
-            _qos = QoSGroup::STD_UDP_MCAST;
+        } else if (!strcmp(par("qos"), "IP_TCP")) {
+            _qos = QoSGroup::IP_TCP;
+        } else if (!strcmp(par("qos"), "IP_UDP")) {
+            _qos = QoSGroup::IP_UDP;
+        } else if (!strcmp(par("qos"), "IP_UDP_MCAST")) {
+            _qos = QoSGroup::IP_UDP_MCAST;
         } else if (!strcmp(par("qos"), "SOMEIP_TCP")) {
             _qos = QoSGroup::SOMEIP_TCP;
         } else if(!strcmp(par("qos"), "SOMEIP_UDP")) {

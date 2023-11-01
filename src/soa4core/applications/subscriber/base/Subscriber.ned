@@ -49,5 +49,5 @@ simple Subscriber extends ServiceBase
         serviceName = default("SubscriberService");
         
         //The QoS group which is requestes/subscribed
-        string qosGroup = default("STD_TCP");
+        string qosGroup = default("IP_TCP");
 }

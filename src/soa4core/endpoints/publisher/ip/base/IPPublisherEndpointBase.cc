@@ -15,7 +15,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "STDPublisherEndpointBase.h"
+#include <soa4core/endpoints/publisher/ip/base/IPPublisherEndpointBase.h>
 
 #include "core4inet/utilities/ConfigFunctions.h"
 #include "core4inet/utilities/ModuleAccess.h"
@@ -27,11 +27,11 @@ using namespace CoRE4INET;
 
 namespace SOA4CoRE {
 
-bool STDPublisherEndpointBase::has8021QInformation() {
+bool IPPublisherEndpointBase::has8021QInformation() {
     return _pcp >= 0 && _vlanID >= 0;
 }
 
-void STDPublisherEndpointBase::initialize()
+void IPPublisherEndpointBase::initialize()
 {
     PublisherEndpointBase::initialize();
 
@@ -51,7 +51,7 @@ void STDPublisherEndpointBase::initialize()
     }
 }
 
-void STDPublisherEndpointBase::handleParameterChange(const char* parname)
+void IPPublisherEndpointBase::handleParameterChange(const char* parname)
 {
     PublisherEndpointBase::handleParameterChange(parname);
 
@@ -83,7 +83,7 @@ void STDPublisherEndpointBase::handleParameterChange(const char* parname)
     }
 }
 
-void STDPublisherEndpointBase::createAndInstallFilter(inet::IPv4Address destAddr, int srcPort, int destPort)
+void IPPublisherEndpointBase::createAndInstallFilter(inet::IPv4Address destAddr, int srcPort, int destPort)
 {
     MACAddress macAddress = resolveDestMacAddress(destAddr);
     TrafficPattern* tp = createTrafficPattern(destAddr, srcPort, destPort);
@@ -94,12 +94,12 @@ void STDPublisherEndpointBase::createAndInstallFilter(inet::IPv4Address destAddr
     installFilter(filter);
 }
 
-void STDPublisherEndpointBase::installFilter(IPoREFilter* filter)
+void IPPublisherEndpointBase::installFilter(IPoREFilter* filter)
 {
     _networkLayer->addFilter(filter);
 }
 
-TrafficPattern* STDPublisherEndpointBase::createTrafficPattern(
+TrafficPattern* IPPublisherEndpointBase::createTrafficPattern(
         inet::IPv4Address destAddr, int srcPort, int destPort)
 {
     TrafficPattern* tp = new TrafficPattern();
@@ -112,7 +112,7 @@ TrafficPattern* STDPublisherEndpointBase::createTrafficPattern(
     return tp;
 }
 
-IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(MACAddress destMAC)
+IEEE8021QDestinationInfo* IPPublisherEndpointBase::createDestinationInfo(MACAddress destMAC)
 {
     list<cGate*> destGates;
     cModule* module;
@@ -139,7 +139,7 @@ IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(MACAdd
     return createDestinationInfo(_vlanID, _pcp, destMAC, destGates);
 }
 
-IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(int vid, int pcp, MACAddress destMAC,
+IEEE8021QDestinationInfo* IPPublisherEndpointBase::createDestinationInfo(int vid, int pcp, MACAddress destMAC,
         std::list<cGate*>& destGates)
 {
     IEEE8021QDestinationInfo *destInfo = new IEEE8021QDestinationInfo();
@@ -151,7 +151,7 @@ IEEE8021QDestinationInfo* STDPublisherEndpointBase::createDestinationInfo(int vi
     return destInfo;
 }
 
-MACAddress STDPublisherEndpointBase::resolveDestMacAddress(inet::IPv4Address destAddress)
+MACAddress IPPublisherEndpointBase::resolveDestMacAddress(inet::IPv4Address destAddress)
 {
     MACAddress destMac;
     if (destAddress.isLimitedBroadcastAddress())

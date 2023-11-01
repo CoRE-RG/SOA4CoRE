@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.publisher.standard.udp;
+package soa4core.endpoints.publisher.ip.udp;
 
-import soa4core.endpoints.publisher.standard.udp.UDPPublisherEndpoint;
+import soa4core.endpoints.publisher.ip.udp.UDPPublisherEndpoint;
 
 //
-// The UDPMcastPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
+// The UDPMcastPublisherEndpoint is a publisher endpoint module with IP qos (@see~EndpointBase).
 // It realizes a UDP specific publishing endpoint.
 // Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a publishing endpoint for a service. 
@@ -33,7 +33,7 @@ simple UDPMcastPublisherEndpoint extends UDPPublisherEndpoint
 {
     parameters:
         @class(SOA4CoRE::UDPMcastPublisherEndpoint);
-    	qos = default("STD_UDP_MCAST");
+    	qos = default("IP_UDP_MCAST");
     
         // Mcast IP address for UDP socket
         string mcastDestAddress;

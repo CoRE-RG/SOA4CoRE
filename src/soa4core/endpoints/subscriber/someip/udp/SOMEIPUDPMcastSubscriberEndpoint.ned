@@ -17,7 +17,7 @@
 
 package soa4core.endpoints.subscriber.someip.udp;
 
-import soa4core.endpoints.subscriber.standard.udp.UDPMcastSubscriberEndpoint;
+import soa4core.endpoints.subscriber.ip.udp.UDPMcastSubscriberEndpoint;
 
 //
 // The SOMEIPUDPMcastSubscriberEndpoint is a subscriber endpoint module  SOME/IP traffic via UDP multicasts.

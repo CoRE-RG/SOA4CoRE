@@ -18,14 +18,13 @@
 #ifndef __SOA4CORE_UDPMCASTPUBLISHERENDPOINT_H_
 #define __SOA4CORE_UDPMCASTPUBLISHERENDPOINT_H_
 
-#include "soa4core/endpoints/publisher/standard/udp/UDPPublisherEndpoint.h"
-
+#include <soa4core/endpoints/publisher/ip/udp/UDPPublisherEndpoint.h>
 #include <string>
 
 namespace SOA4CoRE {
 
 /**
- * @brief The UDPMcastPublisherEndpoint is a publisher endpoint module with STD qos (@see~EndpointBase).
+ * @brief The UDPMcastPublisherEndpoint is a publisher endpoint module with IP qos (@see~EndpointBase).
  * It realizes an UDP specific publishing endpoint.
  * Publishers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
  * during runtime to connect realise a publishing endpoint for a service.

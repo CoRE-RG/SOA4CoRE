@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "STDSubscriberEndpointBase.h"
+#include "soa4core/endpoints/subscriber/ip/base/IPSubscriberEndpointBase.h"
 
 
 namespace SOA4CoRE {
 
-void STDSubscriberEndpointBase::handleParameterChange(const char* parname) {
+void IPSubscriberEndpointBase::handleParameterChange(const char* parname) {
     SubscriberEndpointBase::handleParameterChange(parname);
 
     if (!parname || !strcmp(parname, "localAddress"))

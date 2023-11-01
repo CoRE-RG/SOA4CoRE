@@ -15,12 +15,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package soa4core.endpoints.subscriber.standard.udp;
+package soa4core.endpoints.subscriber.ip.udp;
 
-import soa4core.endpoints.subscriber.standard.udp.UDPSubscriberEndpoint;
+import soa4core.endpoints.subscriber.ip.udp.UDPSubscriberEndpoint;
 
 //
-// The UDPMcastSubscriberEndpoint is a subscriber endpoint module with STD qos (@see~EndpointBase).
+// The UDPMcastSubscriberEndpoint is a subscriber endpoint module with IP qos (@see~EndpointBase).
 // It realizes an UDP specific subscriber endpoint.
 // Subscribers are created by the QoSNegotiationProtocol module (@see~QoSNegotiationProtocol)
 // during runtime to connect realise a subscribing endpoint for a service. 
@@ -34,7 +34,7 @@ simple UDPMcastSubscriberEndpoint extends UDPSubscriberEndpoint
     parameters:
         @class(SOA4CoRE::UDPMcastSubscriberEndpoint);
         // The QoS group this endpoint serves
-    	qos = default("STD_UDP_MCAST");
+    	qos = default("IP_UDP_MCAST");
     
         // Mcast IP address for UDP socket
         string mcastDestAddress;
