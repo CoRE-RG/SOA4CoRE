@@ -97,7 +97,7 @@ protected:
     /**
      * Indicates if ip filter for mcast group over 802.1Q is already setup.
      */
-    bool _filterCreated = false;
+    bool _ipFilterCreated = false;
 private:
 };
 
