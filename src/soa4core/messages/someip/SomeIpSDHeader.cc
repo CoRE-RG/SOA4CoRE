@@ -21,6 +21,42 @@ namespace SOA4CoRE {
 
 Register_Class(SomeIpSDHeader);
 
+std::ostream& operator<<(std::ostream& os, const IPv4EndpointOption& endpoint)
+{
+    os << "IPv4EndpointOption {";
+    os << " IP=" << endpoint.getIpv4Address().str();
+    os << ", port=" << endpoint.getPort();
+    os << ", protocol=" << (uint32) endpoint.getL4Protocol();
+    os << " } ";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const IEEE8021QConfigurationOption& config)
+{
+    os << "IEEE8021QConfigurationOption {";
+    os << " pcp=" << config.getPcp();
+    os << ", vlan_id=" << config.getVlan_id();
+    os << " } ";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const RessourceConfigurationOption& config)
+{
+    os << "RessourceConfigurationOption {";
+    os << " maxFrameSize=" << config.getMaxFrameSize();
+    os << ", minInterval=" << config.getMinInterval();
+    os << "s } ";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const RealTimeConfigurationOption& config)
+{
+    os << "RealTimeConfigurationOption {";
+    os << " deadline=" << config.getDeadline();
+    os << "s } ";
+    return os;
+}
+
 void SomeIpSDHeader::copy(const SomeIpSDHeader& other){
     for(list<SomeIpSDEntry*>::const_iterator it = other.entryList.begin(); it != other.entryList.end(); ++it){
         SomeIpSDEntry* entry = (*it)->dup();

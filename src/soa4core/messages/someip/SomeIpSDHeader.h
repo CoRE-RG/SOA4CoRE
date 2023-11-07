@@ -157,5 +157,12 @@ private:
      */
     std::list<SomeIpSDOption*> optionList;
 };
+
+// To string operators for configs.
+std::ostream& operator<<(std::ostream& os, const IPv4EndpointOption& endpoint);
+std::ostream& operator<<(std::ostream& os, const IEEE8021QConfigurationOption& config);
+std::ostream& operator<<(std::ostream& os, const RessourceConfigurationOption& config);
+std::ostream& operator<<(std::ostream& os, const RealTimeConfigurationOption& config);
+
 } /* end namespace SOA4CoRE */
 #endif /* SOA4CORE_MESSAGES_SOMEIP_SOMEIPSDHEADER_H_ */
