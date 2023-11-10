@@ -437,6 +437,8 @@ PublisherEndpointBase* QoSManager::createTCPPublisherEndpoint(
         tcpEndpoint->par("localPort").setIntValue(localPort);
         tcpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
         tcpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
+        tcpEndpoint->par("registerStream").setBoolValue(this->_registerStreams);
+        tcpEndpoint->par("advertiseStreamRegistration").setBoolValue(this->_advertiseStreamRegistration);
 
         // cast back.
         ret = dynamic_cast<PublisherEndpointBase*>(tcpEndpoint);
@@ -474,6 +476,8 @@ PublisherEndpointBase* QoSManager::createUDPPublisherEndpoint(
         udpEndpoint->par("localPort").setIntValue(localPort);
         udpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
         udpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
+        udpEndpoint->par("registerStream").setBoolValue(this->_registerStreams);
+        udpEndpoint->par("advertiseStreamRegistration").setBoolValue(this->_advertiseStreamRegistration);
 
         // cast back.
         ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);
@@ -515,6 +519,8 @@ PublisherEndpointBase* QoSManager::createUDPMcastPublisherEndpoint(
         udpEndpoint->par("mcastDestPort").setIntValue(mcastPort);
         udpEndpoint->par("pcp").setIntValue(publisherApplication->getPcp());
         udpEndpoint->par("vlan_id").setIntValue(publisherApplication->getVlanId());
+        udpEndpoint->par("registerStream").setBoolValue(this->_registerStreams);
+        udpEndpoint->par("advertiseStreamRegistration").setBoolValue(this->_advertiseStreamRegistration);
 
         // cast back.
         ret = dynamic_cast<PublisherEndpointBase*>(udpEndpoint);

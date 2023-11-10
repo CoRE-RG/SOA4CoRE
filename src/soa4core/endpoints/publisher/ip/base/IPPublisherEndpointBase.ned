@@ -33,16 +33,16 @@ simple IPPublisherEndpointBase extends PublisherEndpointBase
     parameters:
         // The endpoint path or name
         endpointPath = default("IPPublisher");
-    
         // Local ip address for socket
         string localAddress;
-    
         // Local port for socket
         int localPort;
-        
         // VLAN identifier of the stream
         int vlan_id = default(-1); // if <0 no QHeader is used
-        
         // Priority code point of the stream
         int pcp = default(-1); // if <0 no QHeader is used 
+        // Indicator if outgoing streams should be registered at the SRTable to be used by CBS
+        bool registerStream = default(false); // if true, register stream at SRTable
+        // Indicator if outgoing streams should be advertised to other nodes after SR
+        bool advertiseStreamRegistration = default(false); // if true, advertise stream registration
 }

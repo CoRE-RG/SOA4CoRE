@@ -235,6 +235,16 @@ protected:
      * Caches the localAddress parameter.
      */
     inet::L3Address _localAddress;
+
+    /**
+     * Caches the registerStream parameter.
+     */
+    bool _registerStreams = false;
+
+    /**
+     * Caches the advertiseStreamRegistration parameter.
+     */
+    bool _advertiseStreamRegistration = false; 
 private:
 
 };

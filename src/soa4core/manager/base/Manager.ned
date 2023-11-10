@@ -33,5 +33,8 @@ simple Manager like IManager
         string sdmoduleName = default("sd");
         string srmoduleName = default("sr");
 
-        string localAddress = default("");        
+        string localAddress = default("");       
+        
+        bool registerStreams = default(false);
+        bool advertiseStreamRegistration = default(false);
 }

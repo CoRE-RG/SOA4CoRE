@@ -46,13 +46,18 @@ void Manager::handleMessage(cMessage *msg) {
 }
 
 void Manager::handleParameterChange(const char* parname) {
-
-    //read UDP Common Parameters
     if (!parname || !strcmp(parname, "localAddress")) {
         const char* localAddr = par("localAddress");
         _localAddress = L3AddressResolver().resolve(localAddr);
     }
-
+    if (!parname || !strcmp(parname, "registerStreams"))
+    {
+        _registerStreams = par("registerStreams").boolValue();
+    }
+    if (!parname || !strcmp(parname, "advertiseStreamRegistration"))
+    {
+        _advertiseStreamRegistration = par("advertiseStreamRegistration").boolValue();
+    }
 }
 
 PublisherConnector* Manager::registerPublisherService(ServiceBase* publisherApplication) {

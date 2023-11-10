@@ -85,7 +85,11 @@ void UDPPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformation* c
         L3Address ipaddress = L3AddressResolver().resolve(csiUdp->getAddress());
         if(has8021QInformation()) {
             // install a traffic filter in the network layer to add the qtag
-            createAndInstallFilter(ipaddress.toIPv4(), _localPort, csiUdp->getPort());
+            auto destAddr = ipaddress.toIPv4();
+            createAndInstallFilter(destAddr, _localPort, csiUdp->getPort());
+            if(this->_registerStream) {
+                registerTalker(destAddr);
+            }
         }
     }
 }

@@ -16,10 +16,14 @@
 // 
 
 #include <soa4core/endpoints/publisher/ip/base/IPPublisherEndpointBase.h>
+#include "soa4core/applications/publisher/base/Publisher.h"
+#include "soa4core/connector/publisher/PublisherConnector.h"
 
 #include "core4inet/utilities/ConfigFunctions.h"
+#include "core4inet/utilities/HelperFunctions.h"
 #include "core4inet/utilities/ModuleAccess.h"
 #include "core4inet/buffer/base/BGBuffer.h"
+#include "core4inet/services/avb/SRP/SRPTable.h"
 
 using namespace std;
 using namespace inet;
@@ -80,6 +84,46 @@ void IPPublisherEndpointBase::handleParameterChange(const char* parname)
     if (!parname || !strcmp(parname, "localAddress"))
     {
         _localAddress = par("localAddress").stdstringValue();
+    }
+    if (!parname || !strcmp(parname, "registerStream"))
+    {
+        _registerStream = par("registerStream").boolValue();
+    }
+    if (!parname || !strcmp(parname, "advertiseStreamRegistration"))
+    {
+        _advertiseStreamRegistration = par("advertiseStreamRegistration").boolValue();
+    }
+}
+
+void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
+{
+    //find srp table
+    SRPTable* srpTable = dynamic_cast<SRPTable*>(findModuleWhereverInNode("srpTable", getParentModule()));
+    if(!srpTable){
+        throw cRuntimeError("srpTable module required for stream reservation but not found");
+    }
+    MACAddress macAddress = resolveDestMacAddress(destAddress);
+    //calculate framesize used per class measurement interval.
+    Publisher* app = dynamic_cast<Publisher*>(_publisherConnector->getApplication());
+    if(!app) {
+        throw cRuntimeError("Publisher could not be resolved.");
+    }
+    double interval_cmi_ratio = app->getIntervalMin() / getIntervalForClass(SR_CLASS::A);
+    uint16_t frameSize = app->getPayloadMax() / interval_cmi_ratio; // TODO Update to get max frame size instead of payload size. Problem: we do not know all headers.
+    uint64 streamId = app->getStreamId();
+    srpTable->updateTalkerWithStreamId( streamId, this, macAddress, 
+                                        SR_CLASS::A, frameSize, 1, _vlanID, 
+                                        _pcp, !_advertiseStreamRegistration);
+    if(srpTable->getListenersForStreamId(streamId, _vlanID).empty()){
+        //add a listener
+        cModule* listener = app->getParentModule()->getSubmodule("eth", 0);
+        if(!listener) {
+            listener = app->getParentModule()->getSubmodule("phy", 0);
+            if(!listener) {
+                throw cRuntimeError("Could not resolve phy port to register dummy listener module.");
+            }
+        }
+        srpTable->updateListenerWithStreamId(streamId, listener, _vlanID, !_advertiseStreamRegistration);
     }
 }
 

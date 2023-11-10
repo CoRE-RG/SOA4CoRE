@@ -63,6 +63,12 @@ protected:
     }
 
     /**
+     * Registers the given talker at the SRTable
+     * @param destAddr the destination IP (can be multicast and unicast)
+     */
+    void registerTalker(inet::IPv4Address& destAddress);
+
+    /**
      * Creates and installs a traffic filter on the IPv4oIEEE8021Q network layer
      * @param destAddr the destination IP
      * @param srcPort the transport src port
@@ -137,6 +143,16 @@ protected:
      * PCP for 802.1Q filters in the IPv4oRE network layer
      */
     int _pcp = -1;
+
+    /**
+     * Should the publisher register the stream at the SRTable
+     */
+    bool _registerStream = false;
+
+    /**
+     * Should the publisher advertise the stream after registration
+     */
+    bool _advertiseStreamRegistration = false;
 
     /**
      * Default destination gate for 802.1Q packets in the IPv4oRE network layer

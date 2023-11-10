@@ -83,7 +83,11 @@ void TCPPublisherEndpoint::handleTransportIn(cMessage* msg) {
             this->addSocket(socket);
             if(has8021QInformation()) {
                 // install a traffic filter in the network layer to add the qtag
-                createAndInstallFilter(socket->getRemoteAddress().toIPv4(), _localPort, socket->getRemotePort());
+                auto destAddr = socket->getRemoteAddress().toIPv4();
+                createAndInstallFilter(destAddr, _localPort, socket->getRemotePort());
+                if(this->_registerStream) {
+                    registerTalker(destAddr);
+                }
             }
         }
         socket->processMessage(msg); // invoke callback interface

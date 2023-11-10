@@ -80,7 +80,11 @@ void UDPMcastPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformati
     if(has8021QInformation()) 
     {
         // install a traffic filter in the network layer to add the qtag
-        createAndInstallFilter(ipaddress.toIPv4(), _localPort, _mcastDestPort);
+        auto destAddr = ipaddress.toIPv4();
+        createAndInstallFilter(destAddr, _localPort, _mcastDestPort);
+        if(this->_registerStream) {
+            registerTalker(destAddr);
+        }
     }
     _ipFilterCreated = true;
 }
