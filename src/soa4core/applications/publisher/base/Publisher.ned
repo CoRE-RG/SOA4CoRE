@@ -33,13 +33,13 @@ simple Publisher extends ServiceBase
         
         // Interval of new messages
         double intervalMin @unit(s) = default(125us);// must be set for realtime publishers
-        double intervalMax @unit(s) = default(125us);
+        double intervalMax @unit(s) = default(intervalMin);
         volatile double interval @unit(s) = default(uniform(intervalMin, intervalMax)); // setting this directly overrides interval min and max values
         // Number of frames per interval
         int intervalFrames = default(1);     
         //Size of the payload of the message (size of encapsulated cPacket) that is being generated
-        int payloadMin @unit(Byte) = default(46Byte);
         int payloadMax @unit(Byte) = default(46Byte);// must be set for realtime publishers
+        int payloadMin @unit(Byte) = default(payloadMax);
         volatile int payload @unit(Byte) = default(intWithUnit(uniform(payloadMin, payloadMax)));
         // ID of the AVB Stream
         int streamID = default(0);     
