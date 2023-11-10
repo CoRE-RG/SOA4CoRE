@@ -42,7 +42,7 @@ simple Publisher extends ServiceBase
         int payloadMin @unit(Byte) = default(payloadMax);
         volatile int payload @unit(Byte) = default(intWithUnit(uniform(payloadMin, payloadMax)));
         // ID of the AVB Stream
-        int streamID = default(0);     
+        int streamID = default(serviceId);     
         // Stream Reservation Class of the AVB Stream
         string srClass = default("A");   
         // VLAN identifier of the AVB Stream
