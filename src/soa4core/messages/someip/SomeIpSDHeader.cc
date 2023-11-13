@@ -43,7 +43,7 @@ std::ostream& operator<<(std::ostream& os, const IEEE8021QConfigurationOption& c
 std::ostream& operator<<(std::ostream& os, const RessourceConfigurationOption& config)
 {
     os << "RessourceConfigurationOption {";
-    os << " maxFrameSize=" << config.getMaxFrameSize();
+    os << " maxFrameSize=" << config.getMaxPayload();
     os << ", minInterval=" << config.getMinInterval();
     os << "s } ";
     return os;

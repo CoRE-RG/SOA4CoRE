@@ -167,7 +167,7 @@ public:
     bool updateFromEndpointOption(SomeIpSDOption* option);
     double getDeadline() const;
     void setDeadline(double deadline);
-    size_t getFramesizeMax() const;
+    size_t getPayloadMax() const;
     void setFramesizeMax(size_t framesizeMax);
     double getIntervalMin() const;
     void setIntervalMin(double intervalMin);
@@ -222,7 +222,7 @@ protected:
     /**
      * Maximum size of the l1 frame calculated from maximum payload used for RessourceConfigurationOption
      */
-    size_t _framesizeMax = 0;
+    size_t _payloadMax = 0;
 
     /**
      * The minimum interval between two frames used for RessourceConfigurationOption

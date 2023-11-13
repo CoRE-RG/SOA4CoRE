@@ -32,7 +32,7 @@ SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3
                                                          size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline) :
                                 DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
                                 _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort),
-                                _framesizeMax(framesizeMax), _intervalMin(intervalMin), _vlan_id(vlan_id), _pcp(pcp), _deadline(deadline) {
+                                _payloadMax(framesizeMax), _intervalMin(intervalMin), _vlan_id(vlan_id), _pcp(pcp), _deadline(deadline) {
 }
 
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification() :
@@ -47,7 +47,7 @@ SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(const SomeIpDiscoveryNo
     DiscoveryNotification(static_cast<DiscoveryNotification>(someIpDiscoveryNotification)), _instanceId(someIpDiscoveryNotification._instanceId),
     _qosGroups(someIpDiscoveryNotification._qosGroups), _qosGroup(someIpDiscoveryNotification._qosGroup), _tcpPort(someIpDiscoveryNotification._tcpPort),
     _udpPort(someIpDiscoveryNotification._udpPort), _mcastDestAddr(someIpDiscoveryNotification._mcastDestAddr), _mcastDestPort(someIpDiscoveryNotification._mcastDestPort),
-    _framesizeMax(someIpDiscoveryNotification._framesizeMax), _intervalMin(someIpDiscoveryNotification._intervalMin), _vlan_id(someIpDiscoveryNotification._vlan_id),
+    _payloadMax(someIpDiscoveryNotification._payloadMax), _intervalMin(someIpDiscoveryNotification._intervalMin), _vlan_id(someIpDiscoveryNotification._vlan_id),
     _pcp(someIpDiscoveryNotification._pcp), _deadline(someIpDiscoveryNotification._deadline) {
 }
 
@@ -61,7 +61,7 @@ SomeIpDiscoveryNotification& SomeIpDiscoveryNotification::operator=(const SomeIp
     _udpPort = other._udpPort;
     _mcastDestAddr = other._mcastDestAddr;
     _mcastDestPort = other._mcastDestPort;
-    _framesizeMax = other._framesizeMax;
+    _payloadMax = other._payloadMax;
     _intervalMin = other._intervalMin;
     _vlan_id = other._vlan_id;
     _pcp = other._pcp;
@@ -143,13 +143,13 @@ void SomeIpDiscoveryNotification::setDeadline(double deadline) {
     _deadline = deadline;
 }
 
-size_t SomeIpDiscoveryNotification::getFramesizeMax() const {
-    return _framesizeMax;
+size_t SomeIpDiscoveryNotification::getPayloadMax() const {
+    return _payloadMax;
 }
 
 void SomeIpDiscoveryNotification::setFramesizeMax(
         size_t framesizeMax) {
-    _framesizeMax = framesizeMax;
+    _payloadMax = framesizeMax;
 }
 
 double SomeIpDiscoveryNotification::getIntervalMin() const {

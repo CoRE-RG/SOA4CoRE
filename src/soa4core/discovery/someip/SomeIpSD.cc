@@ -164,7 +164,7 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* notification) {
                 && notification->getIntervalMin() > 0)
         {
             RessourceConfigurationOption* resconfig = new RessourceConfigurationOption();
-            resconfig->setMaxFrameSize(notification->getFramesizeMax());
+            resconfig->setMaxPayload(notification->getPayloadMax());
             resconfig->setMinInterval(notification->getIntervalMin());
             someIpSDHeader->encapOption(resconfig);
             offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
