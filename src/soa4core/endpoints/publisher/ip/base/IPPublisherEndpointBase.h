@@ -58,7 +58,7 @@ public:
 protected:
     virtual void initialize() override;
     virtual void handleParameterChange(const char* parname) override;
-    CoRE4INET::TrafficPattern * createTrafficPattern() {
+    virtual CoRE4INET::TrafficPattern * createTrafficPattern() {
         return new CoRE4INET::TrafficPattern();
     }
 
@@ -116,6 +116,14 @@ protected:
      * @return the MAC address
      */
     inet::MACAddress resolveDestMacAddress(inet::IPv4Address destAddress);
+
+    /**
+     * Calculate the layer 1 frame size for the given payload adding all known headers.
+     * @param payload
+     * @return The sum of all header bytes and the payload.
+     */
+    virtual uint16_t calculateL1Framesize(uint16_t payload);
+
 private:
 
 /**

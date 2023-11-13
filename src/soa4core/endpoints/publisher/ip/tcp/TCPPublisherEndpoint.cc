@@ -18,6 +18,7 @@
 #include <soa4core/endpoints/publisher/ip/tcp/TCPPublisherEndpoint.h>
 #include "soa4core/applications/base/ServiceBase.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
+#include "inet/transportlayer/tcp_common/TCPSegment_m.h"
 
 using namespace inet;
 
@@ -100,6 +101,10 @@ void TCPPublisherEndpoint::publish(cPacket* msg) {
             iter->second->send(msg->dup());
         }
     }
+}
+
+uint16_t TCPPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
+    return IPPublisherEndpointBase::calculateL1Framesize(payload) + TCP_HEADER_OCTETS;
 }
 
 } /*end namespace SOA4CoRE*/

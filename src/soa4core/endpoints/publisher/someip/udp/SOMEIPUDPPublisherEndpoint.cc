@@ -42,4 +42,9 @@ void SOMEIPUDPPublisherEndpoint::publish(cPacket* msg) {
     }
 }
 
+uint16_t SOMEIPUDPPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
+    return UDPPublisherEndpoint::calculateL1Framesize(payload) + SOMEIP_HEADER_BYTES;
+}
+
+
 } /* end namespace SOA4CoRE */

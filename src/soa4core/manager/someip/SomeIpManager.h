@@ -39,8 +39,6 @@ namespace SOA4CoRE {
  */
 enum class SubscriptionState_E {WAITING_FOR_OFFER, WAITING_FOR_SUBACK};
 
-size_t calculateL1FramesizeFromSomeIpPayload(size_t payload);
-
 class SomeIpManager : public Manager
 {
 public:

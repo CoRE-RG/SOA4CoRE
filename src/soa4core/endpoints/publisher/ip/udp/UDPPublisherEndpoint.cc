@@ -18,6 +18,7 @@
 #include <soa4core/endpoints/publisher/ip/udp/UDPPublisherEndpoint.h>
 #include "soa4core/applications/base/ServiceBase.h"
 #include <inet/networklayer/common/L3AddressResolver.h>
+#include "inet/transportlayer/udp/UDPPacket_m.h"
 
 using namespace inet;
 using namespace std;
@@ -100,6 +101,10 @@ void UDPPublisherEndpoint::publish(cPacket* msg) {
             _serverSocket.sendTo(msg->dup(), pair->first, pair->second);
         }
     }
+}
+
+uint16_t UDPPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
+    return IPPublisherEndpointBase::calculateL1Framesize(payload) + UDP_HEADER_BYTES;
 }
 
 

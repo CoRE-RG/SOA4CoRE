@@ -24,6 +24,9 @@
 #include "core4inet/utilities/ModuleAccess.h"
 #include "core4inet/buffer/base/BGBuffer.h"
 #include "core4inet/services/avb/SRP/SRPTable.h"
+#include "inet/linklayer/ethernet/Ethernet.h"
+#include "inet/networklayer/ipv4/IPv4Datagram_m.h"
+#include <core4inet/base/CoRE4INET_Defs.h>
 
 using namespace std;
 using namespace inet;
@@ -109,7 +112,7 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
         throw cRuntimeError("Publisher could not be resolved.");
     }
     double interval_cmi_ratio = app->getIntervalMin() / getIntervalForClass(SR_CLASS::A);
-    uint16_t frameSize = app->getPayloadMax() / interval_cmi_ratio; // TODO Update to get max frame size instead of payload size. Problem: we do not know all headers.
+    uint16_t frameSize = calculateL1Framesize(app->getPayloadMax()) / interval_cmi_ratio;
     uint64 streamId = app->getStreamId();
     srpTable->updateTalkerWithStreamId( streamId, this, macAddress, 
                                         SR_CLASS::A, frameSize, 1, _vlanID, 
@@ -125,6 +128,14 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
         }
         srpTable->updateListenerWithStreamId(streamId, listener, _vlanID, !_advertiseStreamRegistration);
     }
+}
+
+uint16_t IPPublisherEndpointBase::calculateL1Framesize(uint16_t payload) {
+    uint16_t addQTagBytes = ETHER_8021Q_TAG_BYTES;
+    if(!has8021QInformation()) {
+        addQTagBytes = 0;
+    }
+    return ETHER_MAC_FRAME_BYTES + addQTagBytes + IP_HEADER_BYTES + payload;
 }
 
 void IPPublisherEndpointBase::createAndInstallFilter(inet::IPv4Address destAddr, int srcPort, int destPort)

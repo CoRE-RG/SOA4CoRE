@@ -44,18 +44,6 @@ namespace SOA4CoRE {
 
 Define_Module(SomeIpManager);
 
-
-size_t calculateL1FramesizeFromSomeIpPayload(size_t payload) {
-    size_t framesize = payload + ETHER_MAC_FRAME_BYTES + ETHER_8021Q_TAG_BYTES
-            + IP_HEADER_BYTES + UDP_HEADER_BYTES + SOMEIP_HEADER_BYTES;
-    if (framesize < MIN_ETHERNET_FRAME_BYTES) {
-        framesize = MIN_ETHERNET_FRAME_BYTES;
-    } else if (framesize > MAX_ETHERNET_FRAME_BYTES) {
-        throw cRuntimeError ("Reserved framesize does not fit into one Ethernet frame. Segmentation is not yet supported.");
-    }
-    return framesize;
-}
-
 void SomeIpManager::initialize(int stage) {
     Manager::initialize(stage);
     if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
@@ -127,7 +115,7 @@ PublisherConnector* SomeIpManager::registerPublisherService(ServiceBase* publish
                     publisher->getUdpPort(),
                     L3Address(publisher->getMcastDestAddr().c_str()),
                     publisher->getMcastDestPort(),
-                    calculateL1FramesizeFromSomeIpPayload(publisher->getPayloadMax()),
+                    publisher->getPayloadMax(),
                     publisher->getIntervalMin(),
                     publisher->getVlanId(),
                     publisher->getPcp(),
