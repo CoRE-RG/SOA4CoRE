@@ -113,7 +113,14 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     }
     double interval_cmi_ratio = app->getIntervalMin() / getIntervalForClass(SR_CLASS::A);
     uint16_t frameSize = calculateL1Framesize(app->getPayloadMax()) / interval_cmi_ratio;
-    uint64 streamId = app->getStreamId();
+    // we need a unique stream ID per flow which is not trivial for UNICAST
+    // using the service id is not enough when one service has multiple !UNICAST! destination nodes
+    // using the destination MAC is not enough when multiple services have the same !UNICAST! destination addresses
+    // the combination of the two, however, is unique
+    // we use a 64 bit value with 2 highest bytes occupied by serviceId and the lower 6 by the MAC address.
+    uint64 macDestAsInt = macAddress.getInt(); // from INET::MACAddress: 6*8=48 bit address, lowest 6 bytes are used, highest 2 bytes are always zero
+    uint64_t shiftedServiceId = ((uint64_t) app->getServiceId()) << 48;// shift to occupy the two highest 2 bytes
+    uint64 streamId = macDestAsInt + shiftedServiceId;
     srpTable->updateTalkerWithStreamId( streamId, this, macAddress, 
                                         SR_CLASS::A, frameSize, 1, _vlanID, 
                                         _pcp, !_advertiseStreamRegistration);
