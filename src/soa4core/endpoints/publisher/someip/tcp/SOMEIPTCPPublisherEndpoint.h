@@ -27,7 +27,7 @@ namespace SOA4CoRE {
  *
  * @ingroup soa4core/endpoints
  *
- * @author Mehmet Mueller for HAW Hamburg
+ * @author Mehmet Mueller, Timo Haeckel for HAW Hamburg
  */
 class SOMEIPTCPPublisherEndpoint : public SOMEIPPublisherEndpointBase, public TCPPublisherEndpoint
 {
@@ -55,6 +55,14 @@ protected:
      * @return The sum of all header bytes and the payload.
      */
     virtual uint16_t calculateL1Framesize(uint16_t payload) override;
+
+    /**
+     * Creates a unique stream ID for the endpoint used for stream reservation
+     * based on different service information
+     * @param destAddress
+     * @return a unique stream id
+     */
+    virtual uint64_t createStreamId(inet::IPv4Address destAddress) override;
 private:
 
 /**

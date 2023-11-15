@@ -124,6 +124,13 @@ protected:
      */
     virtual uint16_t calculateL1Framesize(uint16_t payload);
 
+    /**
+     * Creates a unique stream ID for the endpoint used for stream reservation
+     * @param destAddress unused by this implementation
+     * @return the stream id set in the publisher application
+     */
+    virtual uint64_t createStreamId(inet::IPv4Address destAddress);
+
 private:
 
 /**

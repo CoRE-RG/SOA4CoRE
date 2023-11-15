@@ -18,6 +18,7 @@
 #include <soa4core/endpoints/publisher/ip/base/IPPublisherEndpointBase.h>
 #include "soa4core/applications/publisher/base/Publisher.h"
 #include "soa4core/connector/publisher/PublisherConnector.h"
+#include "soa4core/utility/comfortFunctions.h"
 
 #include "core4inet/utilities/ConfigFunctions.h"
 #include "core4inet/utilities/HelperFunctions.h"
@@ -113,14 +114,9 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     }
     double interval_cmi_ratio = app->getIntervalMin() / getIntervalForClass(SR_CLASS::A);
     uint16_t frameSize = calculateL1Framesize(app->getPayloadMax()) / interval_cmi_ratio;
-    // we need a unique stream ID per flow which is not trivial for UNICAST
-    // using the service id is not enough when one service has multiple !UNICAST! destination nodes
-    // using the destination MAC is not enough when multiple services have the same !UNICAST! destination addresses
-    // the combination of the two, however, is unique
-    // we use a 64 bit value with 2 highest bytes occupied by serviceId and the lower 6 by the MAC address.
-    uint64 macDestAsInt = macAddress.getInt(); // from INET::MACAddress: 6*8=48 bit address, lowest 6 bytes are used, highest 2 bytes are always zero
-    uint64_t shiftedServiceId = ((uint64_t) app->getServiceId()) << 48;// shift to occupy the two highest 2 bytes
-    uint64 streamId = macDestAsInt + shiftedServiceId;
+    // -- not unique if multiple instances of a service exist and are subscribed by the same destination
+    // uint64_t streamId = buildStreamIDForService(serviceId, mac_dest)
+    uint64_t streamId = createStreamId(destAddress);
     srpTable->updateTalkerWithStreamId( streamId, this, macAddress, 
                                         SR_CLASS::A, frameSize, 1, _vlanID, 
                                         _pcp, !_advertiseStreamRegistration);
@@ -143,6 +139,15 @@ uint16_t IPPublisherEndpointBase::calculateL1Framesize(uint16_t payload) {
         addQTagBytes = 0;
     }
     return ETHER_MAC_FRAME_BYTES + addQTagBytes + IP_HEADER_BYTES + payload;
+}
+
+uint64_t IPPublisherEndpointBase::createStreamId(
+        inet::IPv4Address destAddress) {
+    Publisher* app = dynamic_cast<Publisher*>(_publisherConnector->getApplication());
+    if(!app) {
+        throw cRuntimeError("Publisher could not be resolved.");
+    }
+    return app->getStreamId();
 }
 
 void IPPublisherEndpointBase::createAndInstallFilter(inet::IPv4Address destAddr, int srcPort, int destPort)
@@ -240,4 +245,3 @@ MACAddress IPPublisherEndpointBase::resolveDestMacAddress(inet::IPv4Address dest
 }
 
 } /*end namespace SOA4CoRE*/
-

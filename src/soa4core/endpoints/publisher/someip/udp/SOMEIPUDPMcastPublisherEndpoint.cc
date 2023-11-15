@@ -19,6 +19,9 @@
 
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpHeader_m.h"
+#include "soa4core/applications/publisher/base/Publisher.h"
+#include "soa4core/connector/publisher/PublisherConnector.h"
+#include "soa4core/utility/comfortFunctions.h"
 
 using namespace inet;
 using namespace std;
@@ -50,6 +53,15 @@ void SOMEIPUDPMcastPublisherEndpoint::publish(cPacket* msg) {
 
 uint16_t SOMEIPUDPMcastPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
     return UDPPublisherEndpoint::calculateL1Framesize(payload) + SOMEIP_HEADER_BYTES;
+}
+
+uint64_t SOMEIPUDPMcastPublisherEndpoint::createStreamId(
+        inet::IPv4Address destAddress) {
+    Publisher* app = dynamic_cast<Publisher*>(_publisherConnector->getApplication());
+    if(!app) {
+        throw cRuntimeError("Publisher could not be resolved.");
+    }
+    return buildStreamIDForService(app->getServiceId(), app->getInstanceId(), destAddress);
 }
 
 

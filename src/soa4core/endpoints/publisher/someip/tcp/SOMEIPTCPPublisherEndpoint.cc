@@ -16,6 +16,9 @@
 #include "SOMEIPTCPPublisherEndpoint.h"
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpHeader_m.h"
+#include "soa4core/applications/publisher/base/Publisher.h"
+#include "soa4core/connector/publisher/PublisherConnector.h"
+#include "soa4core/utility/comfortFunctions.h"
 
 namespace SOA4CoRE {
 
@@ -46,5 +49,15 @@ void SOMEIPTCPPublisherEndpoint::publish(cPacket* msg) {
 uint16_t SOMEIPTCPPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
     return TCPPublisherEndpoint::calculateL1Framesize(payload) + SOMEIP_HEADER_BYTES;
 }
+
+uint64_t SOMEIPTCPPublisherEndpoint::createStreamId(
+        inet::IPv4Address destAddress) {
+    Publisher* app = dynamic_cast<Publisher*>(_publisherConnector->getApplication());
+    if(!app) {
+        throw cRuntimeError("Publisher could not be resolved.");
+    }
+    return buildStreamIDForService(app->getServiceId(), app->getInstanceId(), destAddress);
+}
+
 
 } /*end namespace SOA4CoRE*/
