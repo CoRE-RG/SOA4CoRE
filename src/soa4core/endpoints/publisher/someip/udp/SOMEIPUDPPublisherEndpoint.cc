@@ -45,8 +45,8 @@ void SOMEIPUDPPublisherEndpoint::publish(cPacket* msg) {
     }
 }
 
-uint16_t SOMEIPUDPPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
-    return UDPPublisherEndpoint::calculateL1Framesize(payload) + SOMEIP_HEADER_BYTES;
+uint16_t SOMEIPUDPPublisherEndpoint::calculateL2Framesize(uint16_t payload) {
+    return UDPPublisherEndpoint::calculateL2Framesize(payload) + SOMEIP_HEADER_BYTES;
 }
 
 uint64_t SOMEIPUDPPublisherEndpoint::createStreamId(

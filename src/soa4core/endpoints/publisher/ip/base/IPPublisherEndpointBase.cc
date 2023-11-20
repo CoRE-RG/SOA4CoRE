@@ -112,13 +112,18 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     if(!app) {
         throw cRuntimeError("Publisher could not be resolved.");
     }
-    double interval_cmi_ratio = app->getIntervalMin() / getIntervalForClass(SR_CLASS::A);
-    uint16_t frameSize = calculateL1Framesize(app->getPayloadMax()) / interval_cmi_ratio;
-    // -- not unique if multiple instances of a service exist and are subscribed by the same destination
+    SR_CLASS srclass = SR_CLASS::A;
+    int fullL2FrameSize = calculateL2Framesize(app->getPayloadMax());
+    int normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, app->getIntervalMin(), srclass, false);
+    if(normalizedFramesize < 0) {
+        srclass = SR_CLASS::B;
+        normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, app->getIntervalMin(), srclass, true);
+    }
+    // -- not unique if multiple instances of a service exist and are subscribed by the same unicast destination
     // uint64_t streamId = buildStreamIDForService(serviceId, mac_dest)
     uint64_t streamId = createStreamId(destAddress);
     srpTable->updateTalkerWithStreamId( streamId, this, macAddress, 
-                                        SR_CLASS::A, frameSize, 1, _vlanID, 
+                                        srclass, (uint16_t) normalizedFramesize, 1, _vlanID,
                                         _pcp, !_advertiseStreamRegistration);
     if(srpTable->getListenersForStreamId(streamId, _vlanID).empty()){
         //add a listener
@@ -133,7 +138,7 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     }
 }
 
-uint16_t IPPublisherEndpointBase::calculateL1Framesize(uint16_t payload) {
+uint16_t IPPublisherEndpointBase::calculateL2Framesize(uint16_t payload) {
     uint16_t addQTagBytes = ETHER_8021Q_TAG_BYTES;
     if(!has8021QInformation()) {
         addQTagBytes = 0;

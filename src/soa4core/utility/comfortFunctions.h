@@ -20,6 +20,7 @@
 
 #include "inet/linklayer/common/MACAddress.h"
 #include "inet/networklayer/contract/ipv4/IPv4Address.h"
+#include "core4inet/base/avb/AVBDefs.h"
 
 namespace SOA4CoRE {
 
@@ -47,6 +48,20 @@ uint64_t buildStreamIDForService(uint16_t serviceId, inet::MACAddress macAddress
  * @return concatinate uint64 with (highest to lowest byte) 2 bytes serviceId, 2 bytes instanceId and 4 bytes IP
  */
 uint64_t buildStreamIDForService(uint16_t serviceId, uint16_t instanceId, inet::IPv4Address ipv4Address);
+
+/**
+ * Normalizes the framesize for the class measurement interval.
+ * Calculates the interval to CMI ratio and devides the framesize by it.
+ * Also corrects for multiples of l1 header, IFG and SRP that would be added
+ * in SRTable bandwidth calculation.
+ * @param l2Framesize the layer 2 framesize
+ * @param intervalMin the minimum interval of the stream
+ * @param srclass the SR class to normalize for
+ * @param errorOnNegativeResult true, if we should throw an error for a negative framesize result
+ * @return the normalized framesize for the CMI that is ceiled to an int,
+ *         CAUTION: can be negative for very large interval and small frames
+ */
+int normalizeFramesizeForCMI(uint16_t l2Framesize, double intervalMin, CoRE4INET::SR_CLASS srclass, bool errorOnNegativeResult = true);
 
 }
 

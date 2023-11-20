@@ -103,8 +103,8 @@ void TCPPublisherEndpoint::publish(cPacket* msg) {
     }
 }
 
-uint16_t TCPPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
-    return IPPublisherEndpointBase::calculateL1Framesize(payload) + TCP_HEADER_OCTETS;
+uint16_t TCPPublisherEndpoint::calculateL2Framesize(uint16_t payload) {
+    return IPPublisherEndpointBase::calculateL2Framesize(payload) + TCP_HEADER_OCTETS;
 }
 
 } /*end namespace SOA4CoRE*/

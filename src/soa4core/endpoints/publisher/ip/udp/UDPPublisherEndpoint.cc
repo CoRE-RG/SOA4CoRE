@@ -103,8 +103,8 @@ void UDPPublisherEndpoint::publish(cPacket* msg) {
     }
 }
 
-uint16_t UDPPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
-    return IPPublisherEndpointBase::calculateL1Framesize(payload) + UDP_HEADER_BYTES;
+uint16_t UDPPublisherEndpoint::calculateL2Framesize(uint16_t payload) {
+    return IPPublisherEndpointBase::calculateL2Framesize(payload) + UDP_HEADER_BYTES;
 }
 
 

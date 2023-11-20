@@ -82,7 +82,7 @@ protected:
      * @param payload
      * @return The sum of all header bytes and the payload.
      */
-    virtual uint16_t calculateL1Framesize(uint16_t payload) override;
+    virtual uint16_t calculateL2Framesize(uint16_t payload) override;
 
 private:
 

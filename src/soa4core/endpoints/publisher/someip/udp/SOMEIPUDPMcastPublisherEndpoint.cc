@@ -51,8 +51,8 @@ void SOMEIPUDPMcastPublisherEndpoint::publish(cPacket* msg) {
     }
 }
 
-uint16_t SOMEIPUDPMcastPublisherEndpoint::calculateL1Framesize(uint16_t payload) {
-    return UDPPublisherEndpoint::calculateL1Framesize(payload) + SOMEIP_HEADER_BYTES;
+uint16_t SOMEIPUDPMcastPublisherEndpoint::calculateL2Framesize(uint16_t payload) {
+    return UDPPublisherEndpoint::calculateL2Framesize(payload) + SOMEIP_HEADER_BYTES;
 }
 
 uint64_t SOMEIPUDPMcastPublisherEndpoint::createStreamId(

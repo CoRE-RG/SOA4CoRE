@@ -60,7 +60,7 @@ protected:
      * @param payload
      * @return The sum of all header bytes and the payload.
      */
-    virtual uint16_t calculateL1Framesize(uint16_t payload) override;
+    virtual uint16_t calculateL2Framesize(uint16_t payload) override;
 
     /**
      * Creates a unique stream ID for the endpoint used for stream reservation
