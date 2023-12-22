@@ -68,7 +68,7 @@ public:
      * Checks whether this Broker is responsible for the negotiation between local and remote Endpoint.
      * @return true if Broker is responsible.
      */
-    bool isResponsibleFor(EndpointDescription& local, EndpointDescription& remote);
+    bool isResponsibleFor(const EndpointDescription& local, const EndpointDescription& remote);
 
     /**
      * Checks whether the Negotiation has been finished and the broker can be removed.

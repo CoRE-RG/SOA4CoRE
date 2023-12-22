@@ -422,8 +422,8 @@ string QoSBroker::getStateAsName() {
     }
 }
 
-bool QoSBroker::isResponsibleFor(EndpointDescription& local,
-        EndpointDescription& remote) {
+bool QoSBroker::isResponsibleFor(const EndpointDescription& local,
+        const EndpointDescription& remote) {
     return local == _local && remote == _remote;
 }
 

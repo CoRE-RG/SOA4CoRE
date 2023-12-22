@@ -55,7 +55,7 @@ public:
     /**
      * comparing operators
      */
-    inline bool operator==(EndpointDescription& other) {
+    inline bool operator==(const EndpointDescription& other) const {
         bool value = false;
         if (_networkAddr == other.getNetworkAddr()) {
             if (_networkPort == other.getNetworkPort()) {
@@ -75,7 +75,7 @@ public:
      * Returns the network address
      * @return the network address
      */
-    inet::L3Address& getNetworkAddr() {
+    inet::L3Address getNetworkAddr() const {
         return _networkAddr;
     }
 
@@ -83,7 +83,7 @@ public:
      * Returns the network port
      * @return the network port
      */
-    int getNetworkPort() {
+    int getNetworkPort() const {
         return _networkPort;
     }
 
@@ -91,7 +91,7 @@ public:
      * Returns the service id
      * @return the service id
      */
-    int getServiceId() {
+    int getServiceId() const {
         return _serviceId;
     }
 
