@@ -96,10 +96,8 @@ void EndpointBase::connectToTransportGate(cModule* tpModule, const char* tpInGat
     cModule* middleware = this->getParentModule();
     if (!middleware->hasGate(TRANSPORT_MIDDLEWARE_IN_GATE_NAME)
             && !middleware->hasGate(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME)) {
-        middleware->addGate(TRANSPORT_MIDDLEWARE_IN_GATE_NAME, cGate::INPUT,
-                true);
-        middleware->addGate(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, cGate::OUTPUT,
-                true);
+        middleware->addGateVector(TRANSPORT_MIDDLEWARE_IN_GATE_NAME, cGate::INPUT,1);
+        middleware->addGateVector(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, cGate::OUTPUT,1);
     }
     // get or create gates in middleware compound module
     cGate* middlewareInGate = middleware->getOrCreateFirstUnconnectedGate(
