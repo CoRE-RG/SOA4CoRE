@@ -25,6 +25,9 @@
 //STD
 #include <list>
 
+using namespace std;
+using namespace inet;
+
 namespace SOA4CoRE {
 
 #define MAJOR_VERSION 0xFF       // see [PRS_SOMEIPSD_00351],[PRS_SOMEIPSD_00356],[PRS_SOMEIPSD_00386],[PRS_SOMEIPSD_00391]
@@ -35,8 +38,8 @@ namespace SOA4CoRE {
 Define_Module(SomeIpSD);
 
 void SomeIpSD::initialize(int stage) {
-    inet::ApplicationBase::initialize(stage);
-    if (stage == inet::INITSTAGE_LOCAL) {
+    ApplicationBase::initialize(stage);
+    if (stage == INITSTAGE_LOCAL) {
         gate("udpOut")->connectTo(getParentModule()->gate("sdUDPOut"));
         getParentModule()->gate("sdUDPIn")->connectTo(gate("udpIn"));
         numSent = 0;
@@ -46,16 +49,16 @@ void SomeIpSD::initialize(int stage) {
 
         localPort = par("localPort");
         destPort = par("destPort");
-        _mcastDestAddress = inet::L3Address(par("mcastDestAddress"));
+        _mcastDestAddress = L3Address(par("mcastDestAddress"));
         startTime = par("startTime").doubleValue();
         stopTime = par("stopTime").doubleValue();
         packetName = par("packetName");
     }
-    if (stage == inet::INITSTAGE_ROUTING_PROTOCOLS) {
+    if (stage == INITSTAGE_ROUTING_PROTOCOLS) {
         if (!(par("localAddress").stdstringValue().length())) {
             throw cRuntimeError("Please define a local ip address");
         }
-        _localAddress = inet::L3AddressResolver().resolve(par("localAddress").stdstringValue().c_str());
+        _localAddress = L3AddressResolver().resolve(par("localAddress").stdstringValue().c_str());
         processStart();
         IServiceDiscovery::_serviceOfferSignal = omnetpp::cComponent::registerSignal("serviceOfferSignal");
         _serviceFindSignal = omnetpp::cComponent::registerSignal("serviceFindSignal");
@@ -95,8 +98,8 @@ void SomeIpSD::setSocketOptions() {
 
 void SomeIpSD::handleMessageWhenUp(cMessage *msg) {
     if (SomeIpSDHeader *someIpSDHeader = dynamic_cast<SomeIpSDHeader*>(msg)) {
-        if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
-            if (udpDataIndication->getSrcAddr() != inet::L3AddressResolver().resolve(par("localAddress"))) {
+        if(UDPDataIndication *udpDataIndication = dynamic_cast<UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
+            if (udpDataIndication->getSrcAddr() != L3AddressResolver().resolve(par("localAddress"))) {
                 processSomeIpSDHeader(someIpSDHeader);
             }
         }
@@ -201,8 +204,8 @@ void SomeIpSD::subscribeEventgroupAck(SomeIpDiscoveryNotification* someIpDiscove
 }
 
 void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
-    std::list<SomeIpSDEntry*> entries = someIpSDHeader->getEncapEntries();
-    for (std::list<SomeIpSDEntry*>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
+    list<SomeIpSDEntry*> entries = someIpSDHeader->getEncapEntries();
+    for (list<SomeIpSDEntry*>::const_iterator it = entries.begin(); it != entries.end(); ++it) {
         switch ((*it)->getType()) {
             case SOA4CoRE::SomeIpSDEntryType::FIND:
                 EV << "FIND ARRIVED" << endl;
@@ -221,15 +224,15 @@ void SomeIpSD::processSomeIpSDHeader(SomeIpSDHeader* someIpSDHeader) {
                 processSubscribeEventGroupAckEntry(*it, someIpSDHeader);
                 break;
             default:
-                EV << "Unknown type" << std::endl;
+                EV << "Unknown type" << endl;
         }
     }
 }
 
 void SomeIpSD::processFindEntry(SomeIpSDEntry* findEntry, SomeIpSDHeader* someIpSDHeader) {
-    inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo());
+    UDPDataIndication *udpDataIndication = dynamic_cast<UDPDataIndication*>(someIpSDHeader->getControlInfo());
     SomeIpDiscoveryNotification* someIpDiscoveryNotification = new SomeIpDiscoveryNotification(findEntry->getServiceID(),
-            udpDataIndication->getSrcAddr(), findEntry->getInstanceID(), std::set<QoSGroup>{}, QoSGroup::UNDEFINED, -1, -1);
+            udpDataIndication->getSrcAddr(), findEntry->getInstanceID(), set<QoSGroup>{}, QoSGroup::UNDEFINED, -1, -1);
     emit(_serviceFindSignal, someIpDiscoveryNotification);
 }
 
@@ -243,14 +246,14 @@ void SomeIpSD::processFindResult(cObject* obj) {
 }
 
 void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* someIpSDHeader) {
-    std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
-    std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
+    list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
+    _List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
     SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
     notification->setServiceId(offerEntry->getServiceID());
     notification->setInstanceId(offerEntry->getInstanceID());
 
-    std::advance(optionsListIterator, offerEntry->getIndex1stOptions());
+    advance(optionsListIterator, offerEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < offerEntry->getNum1stOptions(); firstOptionsIdx++) {
         IPv4EndpointOption* ipv4EndpointOption = dynamic_cast<IPv4EndpointOption*>(*optionsListIterator);
         if(!ipv4EndpointOption) {
@@ -272,7 +275,7 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
             throw cRuntimeError("No address found in non mcast options");
         }
         // use udp src of someip sd message instead
-        if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
+        if(UDPDataIndication *udpDataIndication = dynamic_cast<UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
             notification->setAddress(udpDataIndication->getSrcAddr());
         } else {
             throw cRuntimeError("Could not determine any address for service");
@@ -283,10 +286,10 @@ void SomeIpSD::processOfferEntry(SomeIpSDEntry* offerEntry, SomeIpSDHeader* some
 }
 
 void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGroupEntry, SomeIpSDHeader* someIpSDHeader) {
-    std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
-    std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
+    list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
+    _List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
-    std::advance(optionsListIterator, subscribeEventGroupEntry->getIndex1stOptions());
+    advance(optionsListIterator, subscribeEventGroupEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupEntry->getNum1stOptions(); firstOptionsIdx++) {
 
         SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
@@ -297,7 +300,7 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
 
         if(notification->getAddress().isUnspecified()) {
             // use udp src of someip sd message instead
-            if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
+            if(UDPDataIndication *udpDataIndication = dynamic_cast<UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
                 notification->setAddress(udpDataIndication->getSrcAddr());
             } else {
                 throw cRuntimeError("Could not determine any address for service");
@@ -310,14 +313,14 @@ void SomeIpSD::processSubscribeEventGroupEntry(SomeIpSDEntry* subscribeEventGrou
 }
 
 void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventGroupAckEntry, SomeIpSDHeader* someIpSDHeader) {
-    std::list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
-    std::_List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
+    list<SomeIpSDOption*> optionsList = someIpSDHeader->getEncapOptions();
+    _List_iterator<SomeIpSDOption*> optionsListIterator = optionsList.begin();
 
     SomeIpDiscoveryNotification* notification = new SomeIpDiscoveryNotification();
     notification->setServiceId(subscribeEventGroupAckEntry->getServiceID());
     notification->setInstanceId(subscribeEventGroupAckEntry->getInstanceID());
 
-    std::advance(optionsListIterator, subscribeEventGroupAckEntry->getIndex1stOptions());
+    advance(optionsListIterator, subscribeEventGroupAckEntry->getIndex1stOptions());
     for (int firstOptionsIdx = 0; firstOptionsIdx < subscribeEventGroupAckEntry->getNum1stOptions(); firstOptionsIdx++) {
 
         notification->updateFromEndpointOption(*optionsListIterator);
@@ -326,7 +329,7 @@ void SomeIpSD::processSubscribeEventGroupAckEntry(SomeIpSDEntry *subscribeEventG
 
     if(notification->getAddress().isUnspecified()) {
         // use udp src of someip sd message instead
-        if(inet::UDPDataIndication *udpDataIndication = dynamic_cast<inet::UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
+        if(UDPDataIndication *udpDataIndication = dynamic_cast<UDPDataIndication*>(someIpSDHeader->getControlInfo())) {
             notification->setAddress(udpDataIndication->getSrcAddr());
         } else {
             throw cRuntimeError("Could not determine any address for service");
@@ -405,7 +408,7 @@ IPv4EndpointOption* SomeIpSD::createIpv4Endpoint(
     return ipv4EndpointOption;
 }
 
-void SomeIpSD::sendTo(SomeIpSDHeader* someIpSDHeader, inet::L3Address destIp, int destPort) {
+void SomeIpSD::sendTo(SomeIpSDHeader* someIpSDHeader, L3Address destIp, int destPort) {
     if(destIp.isUnspecified()) {
         destIp = this->_mcastDestAddress;
     }

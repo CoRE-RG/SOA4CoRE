@@ -30,6 +30,7 @@
 #include <math.h>
 
 using namespace std;
+using namespace inet;
 
 namespace SOA4CoRE {
 
@@ -41,7 +42,7 @@ Define_Module(SomeIpManager);
 
 void SomeIpManager::initialize(int stage) {
     Manager::initialize(stage);
-    if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
+    if (stage == INITSTAGE_APPLICATION_LAYER) {
         if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(par("sdmoduleName"))))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
@@ -114,7 +115,7 @@ PublisherConnector* SomeIpManager::registerPublisherService(ServiceBase* publish
             // create offer state
             OfferState* offerState = new OfferState();
             offerState->serviceOffering = SomeIpDiscoveryNotification(publisher->getServiceId(),
-                    inet::IPv4Address::UNSPECIFIED_ADDRESS,
+                    IPv4Address::UNSPECIFIED_ADDRESS,
                     publisher->getInstanceId(),
                     publisher->getQoSGroups(),
                     QoSGroup::UNDEFINED,
