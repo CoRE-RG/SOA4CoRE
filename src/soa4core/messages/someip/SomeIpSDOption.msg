@@ -13,13 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-
-cplusplus {{
-#include "inet/networklayer/common/IPProtocolId_m.h"
-#include "inet/networklayer/contract/ipv4/IPv4Address.h"
-#include "inet/networklayer/contract/ipv6/IPv6Address.h"
-using namespace inet;
-}}
+import inet.networklayer.common.IPProtocolId;
+import inet.networklayer.contract.ipv4.IPv4Address;
+import inet.networklayer.contract.ipv6.IPv6Address;
 
 //
 // @brief The SOME/IP SD option for the SOME/IP SD protocol. (see [PRS_SOMEIPSD_00273], [PRS_SOMEIPSD_00274])
@@ -29,13 +25,10 @@ using namespace inet;
 // @author Mehmet Mueller for HAW Hamburg
 //
 
-enum IPProtocolId;
-class noncobject IPv4Address;
-class noncobject IPv6Address;
 
 namespace SOA4CoRE;
 
-enum SomeIpSDOptionType;
+//enum SomeIpSDOptionType;
 
 //SOME/IP SD option type
 enum SomeIpSDOptionType {
@@ -78,8 +71,8 @@ packet IPv4EndpointOption extends SomeIpSDOption {
     length = 0x0009;
     type = IPV4ENDPOINT;
     reserved = 0;
-    IPv4Address ipv4Address;
-    uint8_t l4Protocol @enum(IPProtocolId);
+    inet::IPv4Address ipv4Address;
+    uint8_t l4Protocol @enum(inet::IPProtocolId);
     uint16_t port;
 }
 
@@ -89,8 +82,8 @@ packet IPv6EndpointOption extends SomeIpSDOption {
     length = 0x0015;
     type = IPV6ENDPOINT;
     reserved = 0;
-    IPv6Address ipv6Address;
-    uint8_t l4Protocol @enum(IPProtocolId);
+    inet::IPv6Address ipv6Address;
+    uint8_t l4Protocol @enum(inet::IPProtocolId);
     uint16_t port;
 }
 
