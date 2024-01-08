@@ -34,10 +34,10 @@ module MiddlewareHost extends RTIPHost
         hasUdp = true; //needed for qosnp
         hasTcp = true; //needed for tcp based communication
         bool hasQoSNP = default(true);
-        *.hasQoSNP = hasQoSNP;
+        *.hasQoSNP = this.hasQoSNP;
         int numServices = default(0);
         string localAddress = default("");
-        *.localAddress = localAddress;
+        *.localAddress = this.localAddress;
         @display("i=device/device");
     submodules:
 

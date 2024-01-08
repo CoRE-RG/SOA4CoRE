@@ -39,9 +39,9 @@ module Middleware
 {
     parameters:
         string interfaceTableModule;
-        *.interfaceTableModule = interfaceTableModule;
+        *.interfaceTableModule = this.interfaceTableModule;
         string localAddress = default("");
-        *.localAddress = localAddress;
+        *.localAddress = this.localAddress;
         *.smmoduleName = "sm";         // The service manager module name
         *.sdmoduleName = "sd";         // The service discovery module name
         *.qosnpmoduleName = "qosnp";   // The QoS negotiation protocol module name
