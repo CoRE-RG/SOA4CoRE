@@ -35,7 +35,7 @@ simple STDSubscriberEndpointBase extends SubscriberEndpointBase
         endpointPath = default("STDSubscriber");
     
         // Local IP address for socket
-        string localAddress;
+        string localAddress @mutable;
         // Local port for socket
-        int localPort;
+        int localPort @mutable;
 }
