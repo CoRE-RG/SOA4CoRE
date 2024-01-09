@@ -59,6 +59,10 @@ module Middleware
         output sdUDPOut;
         //connection for the SOME/IP SD module from udp
         input sdUDPIn;
+        
+        // static transport pass through gates, dynamic creation would throw an error during simulation tare down
+        input tpEndpointsIn[0]; 
+        output tpEndpointsOut[0];
 
     submodules:
         // QoS Negotiation Protocol
