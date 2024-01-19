@@ -54,8 +54,6 @@ simple PublisherEndpointBase extends EndpointBase
         
         //Signal emitted when a new remote connection is established
         @signal[remotes]();
-        //Statistic of the total amount of remotes
-        @statistic[remotesCount](title="Conencted remotes"; source=remotes; record=count);
         //Connection times
-        @statistic[remotes](title="Remote connection times"; source="remotes"; unit=s; record=stats,histogram?,"vector(constant1)"; interpolationmode=none);
+        @statistic[connectedRemotes](title="Remote connection times"; source=remotes; record=stats,vector; interpolationmode=none);
 }

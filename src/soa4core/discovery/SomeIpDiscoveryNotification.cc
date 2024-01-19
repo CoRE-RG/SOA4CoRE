@@ -17,11 +17,13 @@
 //STD
 #include <algorithm>
 
+using namespace inet;
+
 namespace SOA4CoRE {
 
-SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
+SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, L3Address address, uint16_t instanceId,
                                                          std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
-                                                         inet::L3Address mcastDestAddr, int mcastDestPort) :
+                                                         L3Address mcastDestAddr, int mcastDestPort) :
                              DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
                              _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort) {
 }
@@ -81,7 +83,7 @@ int SomeIpDiscoveryNotification::getMcastDestPort() const {
     return _mcastDestPort;
 }
 
-inet::L3Address SomeIpDiscoveryNotification::getMcastDestAddr() const {
+L3Address SomeIpDiscoveryNotification::getMcastDestAddr() const {
     return _mcastDestAddr;
 }
 
@@ -90,7 +92,7 @@ void SomeIpDiscoveryNotification::setInstanceId(uint16_t instanceId) {
 }
 
 void SomeIpDiscoveryNotification::setMcastDestAddr(
-        const inet::L3Address& mcastDestAddr) {
+        const L3Address& mcastDestAddr) {
     _mcastDestAddr = mcastDestAddr;
 }
 

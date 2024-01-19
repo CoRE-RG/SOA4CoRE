@@ -23,12 +23,8 @@
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
 
-cplusplus {{
-#include "soa4core/messages/Envelope_m.h"
-#include "soa4core/messages/qosnegotiation/ConnectionSpecificInformation_m.h"
-}}
-packet SOA4CoRE::Envelope;
-enum MiddlewareProtocols;
+import soa4core.messages.Envelope;
+import soa4core.messages.qosnegotiation.ConnectionSpecificInformation;
 
 namespace SOA4CoRE;
 
@@ -61,7 +57,7 @@ enum QoSNegotiationStatus{
 
 
 //Message type for all Protocol message of the qos negotiation
-packet QoSNegotiationProtocolMsg extends SOA4CoRE::Envelope {
+packet QoSNegotiationProtocolMsg extends Envelope {
     protocol = MiddlewareProtocols::QOSNEGOTIATIONPROTOCOL; //indicates the type of message for better casting.
     //receiver; inherited from Envelope
     //sender; inherited from Envelope  

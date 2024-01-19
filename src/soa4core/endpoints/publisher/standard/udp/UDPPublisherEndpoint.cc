@@ -74,9 +74,9 @@ void UDPPublisherEndpoint::addRemote(ConnectionSpecificInformation* csi) {
                 return;
             }
         }
-        emit(_remotesSignal,1);
         // create new processor and add to list
         _remotes.push_back(pair<L3Address,int>(L3AddressResolver().resolve(csiUdp->getAddress()), csiUdp->getPort()));
+        emit(_remotesSignal, _remotes.size());
     }
 }
 

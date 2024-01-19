@@ -30,6 +30,7 @@
 #include <math.h>
 
 using namespace std;
+using namespace inet;
 
 namespace SOA4CoRE {
 
@@ -41,7 +42,7 @@ Define_Module(SomeIpManager);
 
 void SomeIpManager::initialize(int stage) {
     Manager::initialize(stage);
-    if (stage == inet::INITSTAGE_APPLICATION_LAYER) {
+    if (stage == INITSTAGE_APPLICATION_LAYER) {
         if (!(_sd = dynamic_cast<IServiceDiscovery*>(getParentModule()->getSubmodule(par("sdmoduleName"))))) {
             throw cRuntimeError("No IServiceDiscovery found.");
         }
@@ -114,7 +115,7 @@ PublisherConnector* SomeIpManager::registerPublisherService(ServiceBase* publish
             // create offer state
             OfferState* offerState = new OfferState();
             offerState->serviceOffering = SomeIpDiscoveryNotification(publisher->getServiceId(),
-                    inet::IPv4Address::UNSPECIFIED_ADDRESS,
+                    IPv4Address::UNSPECIFIED_ADDRESS,
                     publisher->getInstanceId(),
                     publisher->getQoSGroups(),
                     QoSGroup::UNDEFINED,
@@ -285,13 +286,11 @@ SubscriberEndpointBase* SomeIpManager::createSomeIpTCPSubscriberEndpoint(
 
     if(csi_someip){
         // 1. Find the factory object;
-        cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.subscriber.someip.tcp.SOMEIPTCPSubscriberEndpoint");
         // 2. Create the module;
         SOMEIPTCPSubscriberEndpoint* someipTcpEndpoint =
-                            dynamic_cast<SOMEIPTCPSubscriberEndpoint*>(
-                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
-        _subscriberEndpointCount++;
+                                dynamic_cast<SOMEIPTCPSubscriberEndpoint*>(
+                                        addSubscriberEndpointModule(
+                                                "soa4core.endpoints.subscriber.someip.tcp.SOMEIPTCPSubscriberEndpoint"));
         // 3. Set up its parameters and gate sizes as needed;
         string localAddr = subscriberConnector->getAddress().str();
         someipTcpEndpoint->par("localAddress").setStringValue(localAddr);
@@ -320,13 +319,11 @@ SubscriberEndpointBase* SomeIpManager::createSomeIpUDPSubscriberEndpoint(
 
     if(csi_someip){
         // 1. Find the factory object;
-        cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.subscriber.someip.udp.SOMEIPUDPSubscriberEndpoint");
         // 2. Create the module;
         SOMEIPUDPSubscriberEndpoint* someipUdpMcastEndpoint =
-                            dynamic_cast<SOMEIPUDPSubscriberEndpoint*>(
-                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
-        _subscriberEndpointCount++;
+                                dynamic_cast<SOMEIPUDPSubscriberEndpoint*>(
+                                        addSubscriberEndpointModule(
+                                                "soa4core.endpoints.subscriber.someip.udp.SOMEIPUDPSubscriberEndpoint"));
         // 3. Set up its parameters and gate sizes as needed;
         string localAddr = subscriberConnector->getAddress().str();
         someipUdpMcastEndpoint->par("localAddress").setStringValue(localAddr);
@@ -353,13 +350,11 @@ SubscriberEndpointBase* SomeIpManager::createSomeIpUDPMcastSubscriberEndpoint(
 
     if(csi_someip){
         // 1. Find the factory object;
-        cModuleType * moduleType = cModuleType::get(
-                    "soa4core.endpoints.subscriber.someip.udp.SOMEIPUDPMcastSubscriberEndpoint");
         // 2. Create the module;
         SOMEIPUDPMcastSubscriberEndpoint* someipUdpMcastEndpoint =
-                            dynamic_cast<SOMEIPUDPMcastSubscriberEndpoint*>(
-                                    moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount + 1, _subscriberEndpointCount));
-        _subscriberEndpointCount++;
+                                dynamic_cast<SOMEIPUDPMcastSubscriberEndpoint*>(
+                                        addSubscriberEndpointModule(
+                                                "soa4core.endpoints.subscriber.someip.udp.SOMEIPUDPMcastSubscriberEndpoint"));
         // 3. Set up its parameters and gate sizes as needed;
         string localAddr = subscriberConnector->getAddress().str();
         someipUdpMcastEndpoint->par("localAddress").setStringValue(localAddr);
@@ -383,13 +378,11 @@ SubscriberEndpointBase* SomeIpManager::createSomeIpUDPMcastSubscriberEndpoint(
 PublisherEndpointBase* SomeIpManager::createSomeIpTCPPublisherEndpoint(
         PublisherConnector* publisherConnector) {
     // 1. Find the factory object;
-    cModuleType * moduleType = cModuleType::get(
-                "soa4core.endpoints.publisher.someip.tcp.SOMEIPTCPPublisherEndpoint");
     // 2. Create the module;
     SOMEIPTCPPublisherEndpoint* someipTcpEndpoint =
                         dynamic_cast<SOMEIPTCPPublisherEndpoint*>(
-                                moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
-    _publisherEndpointCount++;
+                            addPublisherEndpointModule(
+                                "soa4core.endpoints.publisher.someip.tcp.SOMEIPTCPPublisherEndpoint"));
     Publisher* publisherApplication = nullptr;
     if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
         throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
@@ -411,15 +404,10 @@ PublisherEndpointBase* SomeIpManager::createSomeIpTCPPublisherEndpoint(
 
 PublisherEndpointBase* SomeIpManager::createSomeIpUDPPublisherEndpoint(
         PublisherConnector* publisherConnector) {
-
     // 1. Find the factory object;
-    cModuleType * moduleType = cModuleType::get(
-                "soa4core.endpoints.publisher.someip.udp.SOMEIPUDPPublisherEndpoint");
     // 2. Create the module;
     SOMEIPUDPPublisherEndpoint* someipUdpEndpoint =
-                        dynamic_cast<SOMEIPUDPPublisherEndpoint*>(
-                                moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
-    _publisherEndpointCount++;
+                        dynamic_cast<SOMEIPUDPPublisherEndpoint*>(addPublisherEndpointModule("soa4core.endpoints.publisher.someip.udp.SOMEIPUDPPublisherEndpoint"));
     Publisher* publisherApplication = nullptr;
     if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
         throw cRuntimeError("The publisher application is expected to be of the type Publisher.");
@@ -448,8 +436,8 @@ PublisherEndpointBase* SomeIpManager::createSomeIpUDPMcastPublisherEndpoint(
     // 2. Create the module;
     SOMEIPUDPMcastPublisherEndpoint* someipUdpMcastEndpoint =
                         dynamic_cast<SOMEIPUDPMcastPublisherEndpoint*>(
-                                moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount + 1, _publisherEndpointCount));
-    _publisherEndpointCount++;
+                            addPublisherEndpointModule(
+                                "soa4core.endpoints.publisher.someip.udp.SOMEIPUDPMcastPublisherEndpoint"));
     Publisher* publisherApplication = nullptr;
     if (!(publisherApplication = dynamic_cast<Publisher*>(publisherConnector->getApplication()))) {
         throw cRuntimeError("The publisher application is expected to be of the type Publisher.");

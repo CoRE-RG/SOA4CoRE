@@ -37,7 +37,7 @@ simple TCPSubscriberEndpoint extends STDSubscriberEndpointBase
     	qos = default("STD_TCP");
         
         // Remote IP address for TCP socket
-        string remoteAddress;
+        string remoteAddress @mutable;
         // Remote port for TCP socket
-        int remotePort;
+        int remotePort @mutable;
 }

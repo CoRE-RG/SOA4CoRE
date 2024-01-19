@@ -35,8 +35,8 @@ simple STDPublisherEndpointBase extends PublisherEndpointBase
         endpointPath = default("STDPublisher");
     
         // Local ip address for socket
-        string localAddress;
+        string localAddress @mutable;
     
         // Local port for socket
-        int localPort;
+        int localPort @mutable;
 }

@@ -5,7 +5,7 @@ SOA4CoRE provides service-oriented middleware components, service applications a
 <img src="/doc/images/soa4core.png" alt="SOA4CoRE Environment" width="75%">
 
 ## News
-* Switch to OMNeT++ 5.5.1 and INET 3.6.6
+* Switch to OMNeT++ 6.0.2 and INET 3.8.3
 * Continuous integration is now enabled.
 * Model release including service-oriented middleware components, service applications and service endpoints for avb, tcp and udp. 
 * Name changed from SOQoSMW to SOA4CoRE.
@@ -18,11 +18,11 @@ If you would like to reference this project please use the following [publicatio
 
 
 ## Quick Start
-1. Download OMNeT++ 5.5.1
-    * [https://omnetpp.org/download/old](https://omnetpp.org/download/old)
+1. Download OMNeT++ 6.0.2
+    * [https://omnetpp.org/download](https://omnetpp.org/download)
 2. Install OMNeT++
     * [https://doc.omnetpp.org/omnetpp/InstallGuide.pdf](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf)
-3. Get INET framework 3.6.6
+3. Get INET framework 3.8.3
     * [https://inet.omnetpp.org/Download.html](https://inet.omnetpp.org/Download.html)
 4. Install CoRE plugins (optional)
     * OMNEST/OMNeT++ -> Help -> Install New Software...
@@ -49,8 +49,8 @@ The build state of the master branch is monitored:
 <table>
   <tr>
     <th></th>
-    <th>Ubuntu 18.04</th>
-    <th>Windows 10</th>
+    <th>Ubuntu 22.04</th>
+    <th>Windows 11</th>
   </tr>
   <tr>
     <td>Building</td>

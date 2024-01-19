@@ -35,15 +35,15 @@ simple AVBPublisherEndpoint extends RTPublisherEndpointBase
         @class(SOA4CoRE::AVBPublisherEndpoint);
 
         // ID of the AVB Stream
-        int streamID = default(0);     
+        int streamID @mutable = default(0);     
         // Stream Reservation Class of the AVB Stream
-        string srClass = default("A");
+        string srClass @mutable = default("A");
         // Number of frames per interval
-        int intervalFrames = default(1);        
+        int intervalFrames @mutable = default(1);        
         // VLAN identifier of the AVB Stream
-        int vlan_id = default(2);
+        int vlan_id @mutable = default(2);
         // Priority code point of the AVB Stream
-        int pcp = default(-1); // -1 = use srClass default priority
+        int pcp @mutable = default(-1); // -1 = use srClass default priority
         // payload size to calculate reserved bandwidth
-        int payload @unit(Byte) = default(46Byte);
+        int payload @unit(Byte) @mutable = default(46Byte);
 }
