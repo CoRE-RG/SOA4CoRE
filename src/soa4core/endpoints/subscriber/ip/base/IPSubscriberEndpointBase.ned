@@ -35,7 +35,7 @@ simple IPSubscriberEndpointBase extends SubscriberEndpointBase
         endpointPath = default("IPSubscriber");
     
         // Local IP address for socket
-        string localAddress;
+        string localAddress @mutable;
         // Local port for socket
-        int localPort;
+        int localPort @mutable;
 }

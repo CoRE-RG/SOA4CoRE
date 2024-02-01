@@ -5,7 +5,7 @@ SOA4CoRE provides service-oriented middleware components, service applications a
 <img src="/doc/images/soa4core.png" alt="SOA4CoRE Environment" width="75%">
 
 ## News
-* Switch to OMNeT++ 5.5.1 and INET 3.6.6
+* Switch to OMNeT++ 6.0.2 and INET 3.8.3
 * Continuous integration is now enabled.
 * Model release including service-oriented middleware components, service applications and service endpoints for avb, tcp and udp. 
 * Name changed from SOQoSMW to SOA4CoRE.
@@ -18,22 +18,16 @@ If you would like to reference this project please use the following [publicatio
 
 
 ## Quick Start
-1. Download OMNeT++ 5.5.1
-    * [https://omnetpp.org/download/old](https://omnetpp.org/download/old)
+1. Download OMNeT++ 6.0.2
+    * [https://omnetpp.org/download](https://omnetpp.org/download)
 2. Install OMNeT++
     * [https://doc.omnetpp.org/omnetpp/InstallGuide.pdf](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf)
-3. Get INET framework 3.6.6
+3. Get INET framework 3.8.3
     * [https://inet.omnetpp.org/Download.html](https://inet.omnetpp.org/Download.html)
-4. Install CoRE plugins (optional)
-    * OMNEST/OMNeT++ -> Help -> Install New Software...
-    * URL `http://sim.core-rg.de/updates/`
-    * Check [Abstract Network Description Language] | [CoRE Simulation Model Installer] | [Gantt Chart Timing Analyzer]
-5. Get CoRE frameworks (GitHub or CoRE Simulation Model Installer)
-    * GitHub: Clone frameworks and import it in OMNEST/OMNeT++
-    * CoRE Simulation Model Installer: OMNEST/OMNeT++ -> Help -> Install CoRE Simulation Models...
-6. Get SOA4CoRE framework (GitHub)
-	* GitHub: Clone framework and import it in OMNEST/OMNeT++
-7. Working with the framework
+    * Disable the feature 'visualization' and all dependent features (causes build issues)
+4. Get CoRE framework
+    * GitHub: Clone [CoRE4INET](https://github.com/CoRE-RG/CoRE4INET), [FiCo4OMNeT](https://github.com/CoRE-RG/FiCo4OMNeT), [SignalsAndGateways](https://github.com/CoRE-RG/SignalsAndGateways), and this repository and import them in OMNEST/OMNeT++
+5. Working with the framework
     * See the documentation in [doc/](/doc)
     * Start the examples in the framework
 
@@ -49,18 +43,18 @@ The build state of the master branch is monitored:
 <table>
   <tr>
     <th></th>
-    <th>Ubuntu 18.04</th>
-    <th>Windows 10</th>
+    <th>Ubuntu 22.04</th>
+    <th>Windows 11</th>
   </tr>
   <tr>
     <td>Building</td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE/Nodes=Ubuntu_18.04"></td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE/Nodes=Windows_10"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE/Nodes=Ubuntu_22.04"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE/Nodes=Windows_11"></td>
   </tr>
   <tr>
     <td>Tests</td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE_tests/Nodes=Ubuntu_18.04"></td>
-    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE_tests/Nodes=Windows_10"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE_tests/Nodes=Ubuntu_22.04"></td>
+    <td><img src="https://jenkins.core-rg.de/buildStatus/icon?job=SOA4CoRE/SOA4CoRE_tests/Nodes=Windows_11"></td>
   </tr>
 </table>
 

@@ -1,4 +1,4 @@
 # WARNINGS_ERROR=1 
 # for -Werror 
  
-MSGCOPTS += --msg4 
+MSGCOPTS += -I. 

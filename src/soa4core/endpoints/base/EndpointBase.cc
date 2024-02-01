@@ -29,7 +29,8 @@ const char EndpointBase::TRANSPORT_OUT_GATE_NAME[] = "transportOut";
 const char EndpointBase::TRANSPORT_MIDDLEWARE_IN_GATE_NAME[] = "tpEndpointsIn";
 const char EndpointBase::TRANSPORT_MIDDLEWARE_OUT_GATE_NAME[] = "tpEndpointsOut";
 
-void EndpointBase::initialize() {
+void EndpointBase::initialize()
+{
     ProcessingTimeSimulation::initialize();
     handleParameterChange(nullptr);
     //nothing to do
@@ -39,11 +40,13 @@ void EndpointBase::initialize() {
     emit(this->_creationTimeSignal, this->_creationTime);
 }
 
-simtime_t EndpointBase::getCreationTime() {
+simtime_t EndpointBase::getCreationTime()
+{
     return this->_creationTime;
 }
 
-void EndpointBase::processScheduledMessage(cMessage* msg) {
+void EndpointBase::processScheduledMessage(cMessage* msg)
+{
     if (msg->arrivedOn(CONNECTOR_IN_GATE_NAME)) {
         // from connector
         handleConnectorIn(msg);
@@ -56,7 +59,8 @@ void EndpointBase::processScheduledMessage(cMessage* msg) {
     }
 }
 
-void EndpointBase::handleParameterChange(const char* parname) {
+void EndpointBase::handleParameterChange(const char* parname)
+{
     ProcessingTimeSimulation::handleParameterChange(parname);
 
     if (!parname || !strcmp(parname, "qos")) {
@@ -86,7 +90,8 @@ void EndpointBase::handleParameterChange(const char* parname) {
 }
 
 void EndpointBase::connectToTransportGate(cModule* tpModule, const char* tpInGateName,
-        const char* tpOutGateName) {
+        const char* tpOutGateName)
+{
     // get or create gates in transport module
     cGate* tpInGate = tpModule->getOrCreateFirstUnconnectedGate(tpInGateName, 0,
             false, true);
@@ -96,16 +101,15 @@ void EndpointBase::connectToTransportGate(cModule* tpModule, const char* tpInGat
     cModule* middleware = this->getParentModule();
     if (!middleware->hasGate(TRANSPORT_MIDDLEWARE_IN_GATE_NAME)
             && !middleware->hasGate(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME)) {
-        middleware->addGate(TRANSPORT_MIDDLEWARE_IN_GATE_NAME, cGate::INPUT,
-                true);
-        middleware->addGate(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, cGate::OUTPUT,
-                true);
+        // empty gate vectors are now static inside the middleware as this dynamic creation causes errors with omnetpp 6 during network taredown
+        middleware->addGateVector(TRANSPORT_MIDDLEWARE_IN_GATE_NAME, cGate::INPUT,1);
+        middleware->addGateVector(TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, cGate::OUTPUT,1);
     }
     // get or create gates in middleware compound module
     cGate* middlewareInGate = middleware->getOrCreateFirstUnconnectedGate(
-            TRANSPORT_MIDDLEWARE_IN_GATE_NAME, 0, true, true);
+            TRANSPORT_MIDDLEWARE_IN_GATE_NAME, 0, false, true);
     cGate* middlewareOutGate = middleware->getOrCreateFirstUnconnectedGate(
-            TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, 0, true, true);
+            TRANSPORT_MIDDLEWARE_OUT_GATE_NAME, 0, false, true);
     // connect gates endpoit <--> middleware <--> transport
     this->gate(TRANSPORT_OUT_GATE_NAME)->connectTo(middlewareOutGate);
     middlewareOutGate->connectTo(tpInGate);

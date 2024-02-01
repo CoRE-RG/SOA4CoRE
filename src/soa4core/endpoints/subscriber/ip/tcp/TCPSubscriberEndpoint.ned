@@ -37,7 +37,7 @@ simple TCPSubscriberEndpoint extends IPSubscriberEndpointBase
     	qos = default("IP_TCP");
         
         // Remote IP address for TCP socket
-        string remoteAddress;
+        string remoteAddress @mutable;
         // Remote port for TCP socket
-        int remotePort;
+        int remotePort @mutable;
 }

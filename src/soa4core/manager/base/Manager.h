@@ -158,6 +158,22 @@ protected:
      */
     virtual void discoverService(ServiceIdentifier publisherServiceIdentifier, ServiceBase* subscriberApplication) override;
 
+    /**
+     * @brief Adds a subscriber endpoint module using the omnetpp interface
+     *
+     * @param nedType the ned type of the subscriber endpoint module
+     * @return the subscriber endpoint module
+    */
+    cModule* addSubscriberEndpointModule(const char* nedType);
+
+    /**
+     * @brief Adds a publisher endpoint module using the omnetpp interface
+     *
+     * @param nedType the ned type of the publisher endpoint module
+     * @return the publisher endpoint module
+     */
+    cModule* addPublisherEndpointModule(const char* nedType);
+
 // INTERFACE FUNCTIONS TO BE IMPLEMENTED BY Specific Manager
 
     /**

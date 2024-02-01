@@ -78,7 +78,7 @@ class SomeIpSD : public IServiceDiscovery, public virtual inet::UDPBasicApp, pub
      * @param doneCallback
      * @return true
      */
-    virtual bool handleNodeStart(IDoneCallback *doneCallback) override;
+    virtual bool handleNodeStart(inet::IDoneCallback *doneCallback) override;
 
     /**
      * Set additional socket options

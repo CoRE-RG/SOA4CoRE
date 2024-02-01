@@ -13,9 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-cplusplus {{
-#include "soa4core/messages/someip/SomeIpHeader_m.h"
-}}
+import soa4core.messages.someip.SomeIpHeader;
 
 //
 // @brief The SOME/IP SD entry for the SOME/IP protocol. (see (RS_SOMEIPSD_00001))
@@ -26,8 +24,6 @@ cplusplus {{
 //
 
 namespace SOA4CoRE;
-
-class SomeIpHeader;
 
 //SOME/IP header
 packet SomeIpSDHeader extends SomeIpHeader {

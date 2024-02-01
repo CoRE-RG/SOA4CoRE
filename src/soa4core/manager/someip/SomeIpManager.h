@@ -263,7 +263,7 @@ private:
      * @param qosGroup the QoS group
      * @return the corresponding L4 protocol of the QoS group
      */
-    IPProtocolId getIPProtocolId(QoSGroup qosGroup);
+    inet::IPProtocolId getIPProtocolId(QoSGroup qosGroup);
 
     /**
      * Start the initial wait phase and schedule self message

@@ -3,7 +3,7 @@ INSTALLATION INSTRUCTIONS
 
 PREREQUISITES
 
-You should have a working OMNeT++ installation, version 5.5.1 with INET (v.3.6.6), CoRE4INET, FiCo4OMNeT and SignalsAndGateways installed.
+You should have a working OMNeT++ installation, version 6.0.2 with INET (v.3.8.3), CoRE4INET, FiCo4OMNeT and SignalsAndGateways installed.
 
 General
 -------

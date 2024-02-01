@@ -76,8 +76,6 @@ void TCPPublisherEndpoint::handleTransportIn(cMessage* msg) {
 
         //if not open a new one!
         if (!socket) {
-            emit(_remotesSignal, 1);
-            _isConnected = true;
             // new connection -- create new socket object and server process
             socket = new TCPSocket(msg);
             socket->setOutputGate(gate(TRANSPORT_OUT_GATE_NAME));
@@ -90,6 +88,8 @@ void TCPPublisherEndpoint::handleTransportIn(cMessage* msg) {
                     registerTalker(destAddr);
                 }
             }
+            emit(_remotesSignal, this->size());
+            _isConnected = true;
         }
         socket->processMessage(msg); // invoke callback interface
     }

@@ -82,7 +82,13 @@ PublisherConnector* Manager::createPublisherConnector(Publisher* publisherApplic
     cModuleType *moduleType = cModuleType::get("soa4core.connector.publisher.PublisherConnector");
     // 2. Create the module;
     int vectorsize = _lsr->getPublisherConnectorsCount();
-    PublisherConnector *module = dynamic_cast<PublisherConnector*> (moduleType->create("publisherConnectors", this->getParentModule(), vectorsize + 1, vectorsize));
+    if(this->getParentModule()->hasSubmoduleVector("publisherConnectors"))
+    {
+        this->getParentModule()->setSubmoduleVectorSize("publisherConnectors", vectorsize + 1);
+    } else {
+        this->getParentModule()->addSubmoduleVector("publisherConnectors",1);
+    }
+    PublisherConnector *module = dynamic_cast<PublisherConnector*> (moduleType->create("publisherConnectors", this->getParentModule(),vectorsize));
     // 3. Set up its parameters and gate sizes as needed;
     module->setApplication(publisherApplication);
     module->finalizeParameters();
@@ -133,6 +139,28 @@ void Manager::discoverService(ServiceIdentifier publisherServiceIdentifier, Serv
             "Use other Manager (e.g. QoSManager, SomeIpManager which implements discoverService");
 }
 
+cModule* Manager::addSubscriberEndpointModule(const char *nedType) {
+    cModuleType * moduleType = cModuleType::get(nedType);
+    if(this->getParentModule()->hasSubmoduleVector("subscriberEndpoints"))
+    {
+        this->getParentModule()->setSubmoduleVectorSize("subscriberEndpoints", _subscriberEndpointCount + 1);
+    } else {
+        this->getParentModule()->addSubmoduleVector("subscriberEndpoints",1);
+    }
+    return moduleType->create("subscriberEndpoints", this->getParentModule(), _subscriberEndpointCount++);
+}
+
+cModule* Manager::addPublisherEndpointModule(const char *nedType) {
+    cModuleType * moduleType = cModuleType::get(nedType);
+    if(this->getParentModule()->hasSubmoduleVector("publisherEndpoints"))
+    {
+        this->getParentModule()->setSubmoduleVectorSize("publisherEndpoints", _publisherEndpointCount + 1);
+    } else {
+        this->getParentModule()->addSubmoduleVector("publisherEndpoints",1);
+    }
+    return moduleType->create("publisherEndpoints", this->getParentModule(), _publisherEndpointCount++);
+}
+
 void Manager::addSubscriberServiceToConnector(SubscriberConnector* subscriberConnector, ServiceBase* subscriberApplication) {
     if(!(subscriberConnector->addApplication(subscriberApplication))){
         throw cRuntimeError("This Subscriber service already exists on this host...");
@@ -144,8 +172,14 @@ SubscriberConnector* Manager::createSubscriberConnector(ServiceBase* subscriberA
     // 1. Find the factory object;
     cModuleType *moduleType = cModuleType::get("soa4core.connector.subscriber.SubscriberConnector");
     // 2. Create the module;
-    int vectorsize  = _lsr->getSubscriberConnectorsCount();
-    SubscriberConnector *module = dynamic_cast<SubscriberConnector*> (moduleType->create("subscriberConnectors", this->getParentModule(), vectorsize + 1, vectorsize));
+    int vectorsize = _lsr->getSubscriberConnectorsCount();
+    if(this->getParentModule()->hasSubmoduleVector("subscriberConnectors"))
+    {
+        this->getParentModule()->setSubmoduleVectorSize("subscriberConnectors", vectorsize + 1);
+    } else {
+        this->getParentModule()->addSubmoduleVector("subscriberConnectors",1);
+    }
+    SubscriberConnector *module = dynamic_cast<SubscriberConnector*> (moduleType->create("subscriberConnectors", this->getParentModule(), vectorsize));
     // 3. Set up its parameters and gate sizes as needed;
     module->setAddress(subscriberApplication->getAddress());
     module->setTcpPort(subscriberApplication->getTcpPort());

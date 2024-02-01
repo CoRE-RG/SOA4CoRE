@@ -39,9 +39,9 @@ module Middleware
 {
     parameters:
         string interfaceTableModule;
-        *.interfaceTableModule = interfaceTableModule;
+        *.interfaceTableModule = this.interfaceTableModule;
         string localAddress = default("");
-        *.localAddress = localAddress;
+        *.localAddress = this.localAddress;
         *.smmoduleName = "sm";         // The service manager module name
         *.sdmoduleName = "sd";         // The service discovery module name
         *.qosnpmoduleName = "qosnp";   // The QoS negotiation protocol module name
@@ -59,6 +59,10 @@ module Middleware
         output sdUDPOut;
         //connection for the SOME/IP SD module from udp
         input sdUDPIn;
+        
+        // static transport pass through gates, dynamic creation would throw an error during simulation tare down
+        input tpEndpointsIn[0]; 
+        output tpEndpointsOut[0];
 
     submodules:
         // QoS Negotiation Protocol

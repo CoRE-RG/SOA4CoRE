@@ -23,15 +23,19 @@
 // @author Timo Haeckel and Mehmet Mueller for HAW Hamburg
 //
 
+//import soa4core.qosmanagement.negotiation.datatypes.EndpointDescription;
+
 cplusplus {{
 #include "soa4core/qosmanagement/negotiation/datatypes/EndpointDescription.h"
-
-#define SOA4CORE sizeof(int) + 2*sizeof(EndpointDescription)
 }}
 
-class noncobject EndpointDescription;
-
 namespace SOA4CoRE;
+
+class EndpointDescription {
+    @existingClass;
+    @opaque;
+    @descriptor(false);
+}
 
 enum MiddlewareProtocols {
     QOSNEGOTIATIONPROTOCOL = 0;

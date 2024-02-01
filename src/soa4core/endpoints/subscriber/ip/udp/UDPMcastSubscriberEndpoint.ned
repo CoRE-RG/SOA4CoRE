@@ -37,7 +37,7 @@ simple UDPMcastSubscriberEndpoint extends UDPSubscriberEndpoint
     	qos = default("IP_UDP_MCAST");
     
         // Mcast IP address for UDP socket
-        string mcastDestAddress;
+        string mcastDestAddress @mutable;
         // Mcast port for UDP socket
-        int mcastDestPort;
+        int mcastDestPort @mutable;
 }

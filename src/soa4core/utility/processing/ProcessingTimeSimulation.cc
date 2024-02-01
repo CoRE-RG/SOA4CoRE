@@ -33,6 +33,8 @@ void ProcessingTimeSimulation::initialize()
 {
     _queueSize = registerSignal("queueSize");
     _waitingTime = registerSignal("waitingTime");
+    _processingTime = par("processingTime");
+    _allowParallelProcessing = par("allowParallelProcessing");
     _busy = false;
 }
 

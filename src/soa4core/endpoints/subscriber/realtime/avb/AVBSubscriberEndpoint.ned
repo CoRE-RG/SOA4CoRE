@@ -35,13 +35,13 @@ simple AVBSubscriberEndpoint extends RTSubscriberEndpointBase
         @class(SOA4CoRE::AVBSubscriberEndpoint);
         
         //Interval in which a subscription is updated
-        double updateInterval @unit("s") = default(6s);
+        double updateInterval @unit("s") @mutable = default(6s);
         //Interval in which a subscription is reregistered after a registration failed
-        double retryInterval @unit("s") = default(1s);
+        double retryInterval @unit("s") @mutable = default(1s);
         // ID of the AVB Stream
-        int streamID = default(0);
+        int streamID @mutable = default(0);
         // VLAN identifier of the AVB Stream
-        int vlan_id = default(2);
+        int vlan_id @mutable = default(2);
     gates:
         // Gate for incoming AVB frames
         input AVBin @directIn @label(AVBFrame);

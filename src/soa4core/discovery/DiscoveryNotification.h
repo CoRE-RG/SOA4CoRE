@@ -19,6 +19,8 @@
 //INET
 #include <inet/networklayer/common/L3Address.h>
 
+using namespace omnetpp;
+
 namespace SOA4CoRE {
 
 /**

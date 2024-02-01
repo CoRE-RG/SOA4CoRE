@@ -124,30 +124,28 @@ void AVBPublisherEndpoint::handleParameterChange(const char* parname) {
 
 void AVBPublisherEndpoint::receiveSignal(__attribute__((unused))   cComponent *src,
         simsignal_t id, cObject *obj, __attribute__((unused))   cObject *details) {
+    auto numListeners = _srpTable->getListenersForStreamId(_streamID, _vlanID).size();
     if (id == NF_AVB_LISTENER_REGISTERED || id == NF_AVB_LISTENER_UPDATED)
     {
         SRPTable::ListenerEntry *lentry = dynamic_cast<SRPTable::ListenerEntry*>(obj);
-
         //If talker for the desired stream, register Listener
         if (lentry && lentry->streamId == _streamID && lentry->vlan_id == _vlanID)
         {
             EV_INFO << _endpointPath << ": Listener for stream " << lentry->streamId << " registered!" << std::endl;
-
-            emit(_remotesSignal,1);
-
+            emit(_remotesSignal, numListeners);
             _isConnected = true;
         }
     }
     else if (id == NF_AVB_LISTENER_REGISTRATION_TIMEOUT || id == NF_AVB_LISTENER_UNREGISTERED)
     {
         SRPTable::ListenerEntry *lentry = dynamic_cast<SRPTable::ListenerEntry*>(obj);
-
         //If talker for the desired stream, unregister Listener
         if (lentry && lentry->streamId == _streamID && lentry->vlan_id == _vlanID)
         {
+            emit(_remotesSignal, numListeners);
             EV_INFO << _endpointPath << ": Listener Removed at stream " << _streamID << endl;
             //check whether there are listeners left
-            if (_srpTable->getListenersForStreamId(_streamID, _vlanID).size() == 0)
+            if ( numListeners == 0)
             {
                 EV_DEBUG << _endpointPath << ": No more Listeners Registered for " << _streamID << "!" << std::endl;
                 _isConnected = false;

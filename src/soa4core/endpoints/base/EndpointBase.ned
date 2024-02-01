@@ -35,7 +35,7 @@ simple EndpointBase extends ProcessingTimeSimulation like IEndpoint
         string qos = default("");  
         
      	// The name of the endpoint as a path (e.g. "Reifendruck/links").
-    	string endpointPath = default("");
+    	string endpointPath @mutable = default("");
     	
     	processingTime = default(0s);
         allowParallelProcessing = default(true);
