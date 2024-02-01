@@ -126,7 +126,7 @@ packet IEEE8021QConfigurationOption extends ConfigurationOption {
 packet RessourceConfigurationOption extends ConfigurationOption {
     byteLength = 12; // 4 from base base + padding to 32 bit.
     uint16_t maxPayload; // the maximum payload. The layer 1 frame size depends on the used endpoint protocol stack
-    double minInterval @unit(s); // the minimum interval between two frames of this streams
+    double minInterval; // the minimum interval between two frames of this streams
     //NOTE: for simplicity we use a double here based on seconds in a real protocol this will probably be represented by a uint32_t in us, for example.
 }
 
@@ -134,6 +134,6 @@ packet RessourceConfigurationOption extends ConfigurationOption {
 // to be attached in offer or subscribe messages
 packet RealTimeConfigurationOption extends ConfigurationOption {
     byteLength = 8; // 4 from base base + padding to 32 bit.
-    double deadline @unit(s); // the maximum tolerated latency for packets of this service 
+    double deadline; // the maximum tolerated latency for packets of this service 
     //NOTE: for simplicity we use a double here based on seconds in a real protocol this will probably be represented by a uint32_t in us, for example.
 }

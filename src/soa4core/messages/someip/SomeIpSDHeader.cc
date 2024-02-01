@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream& os, const IPv4EndpointOption& endpoint)
     os << "IPv4EndpointOption {";
     os << " IP=" << endpoint.getIpv4Address().str();
     os << ", port=" << endpoint.getPort();
-    os << ", protocol=" << (uint32) endpoint.getL4Protocol();
+    os << ", protocol=" << endpoint.getL4Protocol();
     os << " } ";
     return os;
 }

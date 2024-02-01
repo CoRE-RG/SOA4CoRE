@@ -36,10 +36,4 @@ simple TCPPublisherEndpoint extends IPPublisherEndpointBase
     	qos = default("IP_TCP");
         // The endpoint path or name
         endpointPath = default("IP_TCP");
-    
-        // Local ip address for socket
-        string localAddress @mutable;
-    
-        // Local port for socket
-        int localPort @mutable;
 }
