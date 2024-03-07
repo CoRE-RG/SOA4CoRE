@@ -20,6 +20,7 @@
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpHeader_m.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
+#include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/connector/publisher/PublisherConnector.h"
 #include "soa4core/utility/comfortFunctions.h"
 
@@ -41,11 +42,17 @@ ConnectionSpecificInformation* SOMEIPUDPMcastPublisherEndpoint::getConnectionSpe
 
 void SOMEIPUDPMcastPublisherEndpoint::publish(cPacket* msg) {
     if(_isConnected) { // && _remotes.size()>0) { // TODO check if there are still remotes interested.
-        uint16_t serviceID = atoi(msg->getName());
+        uint16_t serviceID = getServiceId();
         cPacket* someipPacket = SOMEIPPublisherEndpointBase::createSOMEIPPacket(serviceID, msg->dup());
-        if (SomeIpHeader* someipheader = dynamic_cast<SomeIpHeader*>(someipPacket)){
+        if (*(msg->getName())) // check if empty
+        {
+            someipPacket->setName(msg->getName());
+        }
+        if (SomeIpHeader* someipheader = dynamic_cast<SomeIpHeader*>(someipPacket))
+        {
             _serverSocket.sendTo(someipheader, L3Address(_mcastDestAddress.c_str()), _mcastDestPort);
-        } else {
+        } else
+        {
             throw cRuntimeError("Expected SomeIpHeader");
         }
     }
@@ -64,5 +71,8 @@ uint64_t SOMEIPUDPMcastPublisherEndpoint::createStreamId(
     return buildStreamIDForService(app->getServiceId(), app->getInstanceId(), destAddress);
 }
 
+uint16_t SOMEIPUDPMcastPublisherEndpoint::getServiceId() {
+    return this->getPublisherConnector()->getApplication()->getServiceId();
+}
 
 } /*end namespace SOA4CoRE*/

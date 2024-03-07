@@ -68,7 +68,7 @@ public:
      * Returns the service ID
      * @return the service ID
      */
-    int getServiceId();
+    int getServiceId() const;
 
     /**
      * Returns the IP address

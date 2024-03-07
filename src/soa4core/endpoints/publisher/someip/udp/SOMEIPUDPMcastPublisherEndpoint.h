@@ -70,6 +70,8 @@ protected:
      */
     virtual uint64_t createStreamId(inet::IPv4Address destAddress) override;
 
+    virtual uint16_t getServiceId() override;
+
 private:
 
 /**

@@ -61,6 +61,12 @@ protected:
             uint16_t sessionID = SESSION_ID, uint8_t protocolVersion = SOA4CoRE::ProtocolVersion::PV_1,
             uint8_t interfaceVersion = SOA4CoRE::InterfaceVersion::IV_1, uint8_t messageType = SOA4CoRE::MessageType::REQUEST,
             uint8_t returnCode = SOA4CoRE::ReturnCode::E_OK);
+
+    virtual std::string getMessageName() {
+        return "SOME/IP Service " + std::to_string(getServiceId());
+    }
+
+    virtual uint16_t getServiceId() = 0;
 private:
 /**
  * Member variables

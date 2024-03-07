@@ -73,7 +73,7 @@ public:
      *
      * @return the publisher application of this connector.
      */
-    ServiceBase* getApplication();
+    ServiceBase* getApplication() const;
 
     /**
      * Returns the endpoints on which the Publisher publishes

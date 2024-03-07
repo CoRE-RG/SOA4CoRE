@@ -76,7 +76,7 @@ std::string ServiceBase::getServiceName() {
     return this->_serviceName;
 }
 
-int ServiceBase::getServiceId() {
+int ServiceBase::getServiceId() const{
     return this->_serviceId;
 }
 

@@ -186,7 +186,11 @@ void Publisher::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage()
             && (strcmp(msg->getName(), SEND_MSG_NAME) == 0)) {
         if (_connector) {
-            cPacket *payloadPacket = new cPacket(std::to_string(_serviceId).c_str());
+            cPacket *payloadPacket = new cPacket();
+            if(!_serviceName.empty())
+            {
+                payloadPacket->setName(_serviceName.c_str());
+            }
             payloadPacket->setTimestamp();
             payloadPacket->setByteLength(
                     static_cast<int64_t>(getPayloadBytes()));

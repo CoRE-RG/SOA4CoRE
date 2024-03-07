@@ -88,7 +88,7 @@ void PublisherConnector::setApplication(ServiceBase* publisherApplication) {
     _publisherApplication = publisherApplication;
 }
 
-ServiceBase* PublisherConnector::getApplication() {
+ServiceBase* PublisherConnector::getApplication() const{
     return _publisherApplication;
 }
 

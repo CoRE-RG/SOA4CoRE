@@ -17,6 +17,7 @@
 //AUTO-GENERATED MESSAGES
 #include "soa4core/messages/someip/SomeIpHeader_m.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
+#include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/connector/publisher/PublisherConnector.h"
 #include "soa4core/utility/comfortFunctions.h"
 
@@ -33,8 +34,12 @@ ConnectionSpecificInformation* SOMEIPTCPPublisherEndpoint::getConnectionSpecific
 
 void SOMEIPTCPPublisherEndpoint::publish(cPacket* msg) {
     if(_isConnected) {
-        uint16_t serviceID = atoi(msg->getName());
+        uint16_t serviceID = getServiceId();
         cPacket* someipPacket = SOMEIPPublisherEndpointBase::createSOMEIPPacket(serviceID, msg->dup());
+        if (*(msg->getName())) // check if empty
+        {
+            someipPacket->setName(msg->getName());
+        }
         if (SomeIpHeader* someipheader = dynamic_cast<SomeIpHeader*>(someipPacket)){
             for (auto iter = socketMap.begin(); iter != socketMap.end(); iter++) {
                 iter->second->send(someipheader->dup());
@@ -59,5 +64,8 @@ uint64_t SOMEIPTCPPublisherEndpoint::createStreamId(
     return buildStreamIDForService(app->getServiceId(), app->getInstanceId(), destAddress);
 }
 
+uint16_t SOMEIPTCPPublisherEndpoint::getServiceId() {
+    return this->getPublisherConnector()->getApplication()->getServiceId();
+}
 
 } /*end namespace SOA4CoRE*/

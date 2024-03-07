@@ -17,6 +17,7 @@
 #include "soa4core/messages/someip/SomeIpHeader_m.h"
 #include "soa4core/applications/publisher/base/Publisher.h"
 #include "soa4core/connector/publisher/PublisherConnector.h"
+#include "soa4core/applications/base/ServiceBase.h"
 #include "soa4core/utility/comfortFunctions.h"
 
 namespace SOA4CoRE {
@@ -32,8 +33,12 @@ ConnectionSpecificInformation* SOMEIPUDPPublisherEndpoint::getConnectionSpecific
 
 void SOMEIPUDPPublisherEndpoint::publish(cPacket* msg) {
     if(_isConnected) {
-        uint16_t serviceID = atoi(msg->getName());
+        uint16_t serviceID = getServiceId();
         cPacket* someipPacket = SOMEIPPublisherEndpointBase::createSOMEIPPacket(serviceID, msg->dup());
+        if (*(msg->getName())) // check if empty
+        {
+            someipPacket->setName(msg->getName());
+        }
         if (SomeIpHeader* someipheader = dynamic_cast<SomeIpHeader*>(someipPacket)){
             for(auto pair = _remotes.begin(); pair != _remotes.end(); pair++){
                 _serverSocket.sendTo(someipheader->dup(), pair->first, pair->second);
@@ -58,5 +63,8 @@ uint64_t SOMEIPUDPPublisherEndpoint::createStreamId(
     return buildStreamIDForService(app->getServiceId(), app->getInstanceId(), destAddress);
 }
 
+uint16_t SOMEIPUDPPublisherEndpoint::getServiceId() {
+    return this->getPublisherConnector()->getApplication()->getServiceId();
+}
 
 } /* end namespace SOA4CoRE */

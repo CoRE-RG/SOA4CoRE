@@ -49,8 +49,7 @@ cPacket* SOMEIPPublisherEndpointBase::createSOMEIPPacket(uint16_t serviceID, cPa
     //The return code
     someipheader->setReturnCode(returnCode);
     someipheader->encapsulate(payload);
-    std::string name = "SOME/IP Service " + std::to_string(serviceID);
-    someipheader->setName(name.c_str());
+    someipheader->setName(getMessageName().c_str());
     return someipheader;
 }
 
