@@ -26,7 +26,7 @@ std::ostream& operator<<(std::ostream& os, const IPv4EndpointOption& endpoint)
     os << "IPv4EndpointOption {";
     os << " IP=" << endpoint.getIpv4Address().str();
     os << ", port=" << endpoint.getPort();
-    os << ", protocol=" << endpoint.getL4Protocol();
+    os << ", protocol=" << int(endpoint.getL4Protocol());
     os << " } ";
     return os;
 }
@@ -35,7 +35,7 @@ std::ostream& operator<<(std::ostream& os, const IEEE8021QConfigurationOption& c
 {
     os << "IEEE8021QConfigurationOption {";
     os << " pcp=" << config.getPcp();
-    os << ", vlan_id=" << config.getVlan_id();
+    os << ", vlan_id=" << int(config.getVlan_id());
     os << " } ";
     return os;
 }
