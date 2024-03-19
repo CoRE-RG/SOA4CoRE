@@ -174,6 +174,25 @@ void Publisher::handleStart() {
     scheduleNextMessage();
 }
 
+void Publisher::sendMessage() {
+    if (_connector) {
+        cPacket *payloadPacket = new cPacket();
+        if(!_serviceName.empty())
+        {
+            payloadPacket->setName(_serviceName.c_str());
+        }
+        payloadPacket->setTimestamp();
+        payloadPacket->setByteLength(
+                static_cast<int64_t>(getPayloadBytes()));
+        sendDirect(payloadPacket, _connector->gate("applicationIn"));
+        EV_DEBUG << _serviceName << ": Message Published." << endl;
+
+        emit(this->_msgSentSignal,payloadPacket);
+    } else {
+        throw cRuntimeError("No Publisher Registered for this app.");
+    }
+}
+
 void Publisher::scheduleNextMessage() {
     //schedule next send event
     double interval = CoRE4INET::parameterDoubleCheckRange(par("interval"), 0, SIMTIME_MAX.dbl());
@@ -185,29 +204,13 @@ void Publisher::handleMessage(cMessage *msg) {
 
     if (msg->isSelfMessage()
             && (strcmp(msg->getName(), SEND_MSG_NAME) == 0)) {
-        if (_connector) {
-            cPacket *payloadPacket = new cPacket();
-            if(!_serviceName.empty())
-            {
-                payloadPacket->setName(_serviceName.c_str());
-            }
-            payloadPacket->setTimestamp();
-            payloadPacket->setByteLength(
-                    static_cast<int64_t>(getPayloadBytes()));
-            sendDirect(payloadPacket, _connector->gate("applicationIn"));
-            EV_DEBUG << _serviceName << ": Message Published." << endl;
-
-            //schedule next send event
-            scheduleNextMessage();
-            emit(this->_msgSentSignal,payloadPacket);
-        } else {
-            throw cRuntimeError("No Publisher Registered for this app.");
-        }
+        sendMessage();
+        //schedule next send event
+        scheduleNextMessage();
         delete msg;
     } else {
         ServiceBase::handleMessage(msg);
     }
-
 }
 
 void Publisher::printQoS() {

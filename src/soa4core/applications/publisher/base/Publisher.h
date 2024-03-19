@@ -91,7 +91,7 @@ public:
      * Returns the minimum interval between two consecutive frames
      * @return the interval in seconds
      */
-    double getIntervalMin();
+    virtual double getIntervalMin();
 
     /**
      * Returns the vlan id
@@ -156,6 +156,11 @@ protected:
      * Creates and registers this Publisher
      */
     virtual void handleStart() override;
+
+    /**
+     * Create a payload packet and send it to the connector.
+     */
+    virtual void sendMessage();
 
     /**
      * Schedules the next message to be published
