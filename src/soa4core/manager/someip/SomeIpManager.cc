@@ -308,6 +308,7 @@ void SomeIpManager::discoverService(ServiceIdentifier publisherServiceIdentifier
         if(!sub) {
             throw cRuntimeError("No subscriber was created...");
         }
+        delete csi;
         return;
     }
     if(_subscriptions.count(serviceId)) {
