@@ -46,6 +46,22 @@ public:
      */
     QoSGroup getQoSGroup();
 
+    /**
+     * Returns the multicast destination address
+     * @return the multicast destination address
+     */
+    const std::string getMcastDestAddr() const {
+        return _mcastDestAddr;
+    }
+
+    /**
+     * Returns the multicast destination port
+     * @return the multicast destination port
+     */
+    int getMcastDestPort() const {
+        return _mcastDestPort;
+    }
+
 protected:
     /**
      * Initialization of the module. Sends activator message
@@ -86,6 +102,16 @@ protected:
      * Caches the required QoS type
      */
     QoSGroup _qosGroup;
+
+    /**
+     * Caches the multicast IP destination address.
+     */
+    std::string _mcastDestAddr;
+
+    /**
+     * Caches the multicast destination UDP port.
+     */
+    int _mcastDestPort;
 
     /**
      * Signal that is emitted every time a frame was sent.

@@ -100,6 +100,10 @@ double ServiceBase::getDeadline() {
     return _deadline;
 }
 
+bool ServiceBase::isStatic() const {
+    return _static;
+}
+
 void ServiceBase::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "applicationUDPPort")) {
         _udpPort = par("applicationUDPPort");
@@ -143,6 +147,10 @@ void ServiceBase::handleParameterChange(const char* parname) {
 
     if (!parname || !strcmp(parname, "deadline")) {
         this->_deadline = par("deadline").doubleValue();
+    }
+
+    if (!parname || !strcmp(parname, "isStatic")) {
+        this->_static = par("isStatic").boolValue();
     }
 }
 

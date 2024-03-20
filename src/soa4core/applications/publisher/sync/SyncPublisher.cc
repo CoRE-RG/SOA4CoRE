@@ -59,11 +59,11 @@ void SyncPublisher::handleParameterChange(const char* parname)
 }
 
 void SyncPublisher::scheduleNextMessage() {
-    if(this->event) {
+    if(this->event != nullptr) {
        event->setNext_cycle(true);
     }
     else {
-        SchedulerActionTimeEvent *event = new SchedulerActionTimeEvent("API Scheduler Task Event", ACTION_TIME_EVENT);
+        event = new SchedulerActionTimeEvent("API Scheduler Task Event", ACTION_TIME_EVENT);
         event->setAction_time(static_cast<uint32_t>(ceil(this->actionTime / getOscillator()->getPreciseTick())));
         event->setDestinationGate(this->gate("schedulerIn"));
         if (event->getAction_time() >= getPeriod()->getCycleTicks())

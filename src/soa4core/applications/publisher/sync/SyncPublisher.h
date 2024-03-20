@@ -103,7 +103,7 @@ private:
     /**
      * Cached scheduler event to be reused
      */
-    CoRE4INET::SchedulerActionTimeEvent *event;
+    CoRE4INET::SchedulerActionTimeEvent *event = nullptr;
 };
 
 } /* end namespace SOA4CoRE */

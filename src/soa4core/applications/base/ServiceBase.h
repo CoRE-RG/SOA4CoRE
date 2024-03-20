@@ -100,6 +100,12 @@ public:
      */
     double getDeadline();
 
+    /**
+     * Returns if this is a static service without discovery
+     * @return true if static
+     */
+    bool isStatic() const;
+
 protected:
     /**
      * Initialization of the module.
@@ -190,6 +196,11 @@ protected:
      * Caches the deadline parameter
      */
     double _deadline;
+
+    /**
+     * Caches if this is a static publisher that shall not be advertised.
+     */
+    bool _static;
 
 private:
 };

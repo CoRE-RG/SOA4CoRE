@@ -88,7 +88,12 @@ void Subscriber::handleParameterChange(const char* parname)
         } else {
             throw cRuntimeError("Unknown QoS");
         }
-
+    }
+    if (!parname || !strcmp(parname, "mcastDestAddress")) {
+        _mcastDestAddr = par("mcastDestAddress").stringValue();
+    }
+    if (!parname || !strcmp(parname, "mcastDestPort")) {
+        _mcastDestPort = par("mcastDestPort");
     }
 }
 

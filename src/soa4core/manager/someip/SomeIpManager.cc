@@ -94,37 +94,69 @@ PublisherConnector* SomeIpManager::registerPublisherService(ServiceBase* publish
     Enter_Method_Silent();
     // intercept connector to register service in the offer table and start offering it
     if(publisherConnector) {
-        if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication())) {
-            int serviceId = publisher->getServiceId();
-            int instanceId = publisher->getInstanceId();
-            //check if already exists
-            if(_offers.count(serviceId)) {
-                if(_offers[serviceId].count(instanceId)) {
-                    throw cRuntimeError("Service already in offer map. This should never happen!");
+        if(Publisher* publisher = dynamic_cast<Publisher*>(publisherConnector->getApplication()))
+        {
+            if(publisher->isStatic()) {
+                if(publisher->getQoSGroups().empty() || publisher->getQoSGroups().find(QoSGroup::SOMEIP_UDP_MCAST) == publisher->getQoSGroups().end())
+                {
+                    throw cRuntimeError("Static endpoint only supported for SOMEIP_UDP_MCAST ...");
                 }
-            } else {
-                _offers[serviceId] = OfferInstanceStateMap();
+                SOMEIPUDPMcastPublisherEndpoint* publisherEndpoint =
+                        dynamic_cast<SOMEIPUDPMcastPublisherEndpoint*>(
+                                createOrFindPublisherEndpoint(publisher->getServiceId(),QoSGroup::SOMEIP_UDP_MCAST)
+                                );
+                if(!publisherEndpoint) {
+                    throw cRuntimeError("No SOME/IP UDP Mcast Publisher was created.");
+                }
+                CSI_SOMEIP_UDP* csi_udp_someip = new CSI_SOMEIP_UDP();
+                auto mcastAddr = IPv4Address(publisher->getMcastDestAddr().c_str());
+                auto mcastPort = publisher->getMcastDestPort();
+                if (!(mcastPort > 0 && mcastAddr.isMulticast()))
+                {
+                    throw cRuntimeError("No mcast information set for publisher");
+                }
+                csi_udp_someip->setAddress(publisher->getMcastDestAddr().c_str());
+                csi_udp_someip->setPort(publisher->getMcastDestPort());
+                publisherEndpoint->addRemote(csi_udp_someip);
+                delete csi_udp_someip;
             }
-            // create offer state
-            OfferState* offerState = new OfferState();
-            offerState->serviceOffering = SomeIpDiscoveryNotification(publisher->getServiceId(),
-                    IPv4Address::UNSPECIFIED_ADDRESS,
-                    publisher->getInstanceId(),
-                    publisher->getQoSGroups(),
-                    QoSGroup::UNDEFINED,
-                    publisher->getTcpPort(),
-                    publisher->getUdpPort(),
-                    L3Address(publisher->getMcastDestAddr().c_str()),
-                    publisher->getMcastDestPort(),
-                    publisher->getPayloadMax(),
-                    publisher->getIntervalMin(),
-                    publisher->getVlanId(),
-                    publisher->getPcp(),
-                    publisher->getDeadline()
-            );
-            _offers[serviceId][instanceId] = offerState;
-            // start wait phase
-            startInitialWaitPhase(offerState);
+            else
+            {
+                int serviceId = publisher->getServiceId();
+                int instanceId = publisher->getInstanceId();
+                //check if already exists
+                if(_offers.count(serviceId))
+                {
+                    if(_offers[serviceId].count(instanceId))
+                    {
+                        throw cRuntimeError("Service already in offer map. This should never happen!");
+                    }
+                }
+                else
+                {
+                    _offers[serviceId] = OfferInstanceStateMap();
+                }
+                // create offer state
+                OfferState* offerState = new OfferState();
+                offerState->serviceOffering = SomeIpDiscoveryNotification(publisher->getServiceId(),
+                        IPv4Address::UNSPECIFIED_ADDRESS,
+                        publisher->getInstanceId(),
+                        publisher->getQoSGroups(),
+                        QoSGroup::UNDEFINED,
+                        publisher->getTcpPort(),
+                        publisher->getUdpPort(),
+                        L3Address(publisher->getMcastDestAddr().c_str()),
+                        publisher->getMcastDestPort(),
+                        publisher->getPayloadMax(),
+                        publisher->getIntervalMin(),
+                        publisher->getVlanId(),
+                        publisher->getPcp(),
+                        publisher->getDeadline()
+                );
+                _offers[serviceId][instanceId] = offerState;
+                // start wait phase
+                startInitialWaitPhase(offerState);
+            }
         }
     }
     return publisherConnector;
@@ -254,6 +286,30 @@ void SomeIpManager::discoverService(ServiceIdentifier publisherServiceIdentifier
     auto serviceId = publisherServiceIdentifier.getServiceId();
     auto instanceId = publisherServiceIdentifier.getInstanceId();
     QoSGroup qosGroup = subscriberApplication_->getQoSGroup();
+    if (subscriberApplication_->isStatic())
+    {
+        if (qosGroup != QoSGroup::SOMEIP_UDP_MCAST)
+        {
+            throw cRuntimeError("Static endpoint only supported for SOMEIP_UDP_MCAST ...");
+        }
+        // no discovery needed, everything should be known.
+        CSI_SOMEIP_UDP_MCAST* csi = new CSI_SOMEIP_UDP_MCAST();
+        auto mcastAddr = IPv4Address(subscriberApplication_->getMcastDestAddr().c_str());
+        auto mcastPort = subscriberApplication_->getMcastDestPort();
+        if (!(mcastPort > 0 && mcastAddr.isMulticast()))
+        {
+            throw cRuntimeError("No mcast information set for subscriber");
+        }
+        csi->setAddress(subscriberApplication_->getAddress().str().c_str());
+        csi->setPort(subscriberApplication_->getUdpPort());
+        csi->setDestAddress(subscriberApplication_->getMcastDestAddr().c_str());
+        csi->setDestPort(subscriberApplication_->getMcastDestPort());
+        SubscriberEndpointBase* sub = createOrFindSubscriberEndpoint(serviceId, csi);
+        if(!sub) {
+            throw cRuntimeError("No subscriber was created...");
+        }
+        return;
+    }
     if(_subscriptions.count(serviceId)) {
         if(_subscriptions[serviceId].count(qosGroup)) {
             if(_subscriptions[serviceId][qosGroup].count(instanceId)) {
