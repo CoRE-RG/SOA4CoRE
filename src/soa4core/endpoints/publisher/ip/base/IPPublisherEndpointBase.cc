@@ -97,6 +97,37 @@ void IPPublisherEndpointBase::handleParameterChange(const char* parname)
     {
         _advertiseStreamRegistration = par("advertiseStreamRegistration").boolValue();
     }
+    if (!parname || !strcmp(parname, "streamIntervalAsCMI"))
+    {
+        _streamIntervalAsCMI = this->par("streamIntervalAsCMI");
+    }
+    if (!parname || !strcmp(parname, "pcpCMI"))
+    {
+        if (!_streamIntervalAsCMI)
+        {
+            cValueMap* pcpCMI = dynamic_cast<cValueMap*>(this->par("pcpCMI").objectValue());
+            if(!pcpCMI) {
+                throw cRuntimeError("CMIs for PCPs have not been specified.");
+            }
+            for (auto it : pcpCMI->getFields())
+            {
+                int pcp = atoi(it.first.c_str());
+                double cmi = it.second.doubleValueInUnit("s");
+                if (cmi > 0)
+                {
+                    pcpCMIs[pcp] = cmi;
+                }
+            }
+        }
+    }
+}
+
+bool IPPublisherEndpointBase::requiresReservation()
+{
+    Publisher* app = dynamic_cast<Publisher*>(_publisherConnector->getApplication());
+    return has8021QInformation()
+            && _registerStream
+            && (_streamIntervalAsCMI || (pcpCMIs.find(_pcp) != pcpCMIs.end()));
 }
 
 void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
@@ -112,12 +143,25 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     if(!app) {
         throw cRuntimeError("Publisher could not be resolved.");
     }
+    double interval;
+    if (_streamIntervalAsCMI)
+    {
+        interval = app->getIntervalMin();
+    }
+    else {
+        auto cmiIt = pcpCMIs.find(_pcp);
+        if(cmiIt == pcpCMIs.end())
+        {
+            throw cRuntimeError("CMI for PCP %d unknown", app->getPcp());
+        }
+        interval = cmiIt->second;
+    }
     SR_CLASS srclass = SR_CLASS::A;
     int fullL2FrameSize = calculateL2Framesize(app->getPayloadMax());
-    int normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, app->getIntervalMin(), srclass, false);
+    int normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, false);
     if(normalizedFramesize < 0) {
         srclass = SR_CLASS::B;
-        normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, app->getIntervalMin(), srclass, true);
+        normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, true);
     }
     // -- not unique if multiple instances of a service exist and are subscribed by the same unicast destination
     // uint64_t streamId = buildStreamIDForService(serviceId, mac_dest)

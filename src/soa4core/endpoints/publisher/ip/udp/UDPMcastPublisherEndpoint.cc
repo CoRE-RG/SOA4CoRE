@@ -82,7 +82,7 @@ void UDPMcastPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformati
         // install a traffic filter in the network layer to add the qtag
         auto destAddr = ipaddress.toIPv4();
         createAndInstallFilter(destAddr, _localPort, _mcastDestPort);
-        if(this->_registerStream) {
+        if(this->requiresReservation()) {
             registerTalker(destAddr);
         }
     }

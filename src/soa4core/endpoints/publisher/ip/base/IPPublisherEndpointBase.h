@@ -63,6 +63,12 @@ protected:
     }
 
     /**
+     * Check if this service endpoint requires bandwidth reservation
+     * @return true if a reservation is required
+     */
+    bool requiresReservation();
+
+    /**
      * Registers the given talker at the SRTable
      * @param destAddr the destination IP (can be multicast and unicast)
      */
@@ -180,7 +186,17 @@ protected:
     CoRE4INET::IPv4oREBase* _networkLayer;
 
     /**
-     *
+     * Cached parameter of the stream interval should be used as CMI instead of SRClass.
+     */
+    bool _streamIntervalAsCMI;
+
+    /**
+     * CMIs set for the vlan pcps used for bandwidth reservation.
+     */
+    std::map<int, double> pcpCMIs;
+
+    /**
+     * Arp module of the node.
      */
     inet::IARP* _arp = nullptr;
 private:

@@ -45,4 +45,11 @@ simple IPPublisherEndpointBase extends PublisherEndpointBase
         bool registerStream = default(false) @mutable; // if true, register stream at SRTable
         // Indicator if outgoing streams should be advertised to other nodes after SR
         bool advertiseStreamRegistration = default(false) @mutable; // if true, advertise stream registration
+        bool streamIntervalAsCMI = default(false);  // calculate IdleSlope based on stream interval instead of CMI
+        											// the framesize will be "normalized" for the ratio of the interval / CMI of the priority 
+        // the class measurement interval for the 802.1Q priorities
+        // the key must be the pcp index (usually 0 - 7), see example below.  
+        // A CMI <= 0 will not allow stream reservation in this priority.
+        // Pcps that are unspecified will also not allow stream reservation.         
+        object pcpCMI = default({3: 0s, 4: 0s, 5: 250us, 6: 125us, 7: 0s});
 }

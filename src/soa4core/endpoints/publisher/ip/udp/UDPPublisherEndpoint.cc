@@ -88,7 +88,7 @@ void UDPPublisherEndpoint::checkAndCreateFilter(ConnectionSpecificInformation* c
             // install a traffic filter in the network layer to add the qtag
             auto destAddr = ipaddress.toIPv4();
             createAndInstallFilter(destAddr, _localPort, csiUdp->getPort());
-            if(this->_registerStream) {
+            if(this->requiresReservation()) {
                 registerTalker(destAddr);
             }
         }

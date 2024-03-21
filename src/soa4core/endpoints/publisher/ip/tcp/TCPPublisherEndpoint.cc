@@ -84,7 +84,7 @@ void TCPPublisherEndpoint::handleTransportIn(cMessage* msg) {
                 // install a traffic filter in the network layer to add the qtag
                 auto destAddr = socket->getRemoteAddress().toIPv4();
                 createAndInstallFilter(destAddr, _localPort, socket->getRemotePort());
-                if(this->_registerStream) {
+                if(this->requiresReservation()) {
                     registerTalker(destAddr);
                 }
             }
