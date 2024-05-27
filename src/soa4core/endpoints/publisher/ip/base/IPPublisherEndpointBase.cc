@@ -143,10 +143,16 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     if(!app) {
         throw cRuntimeError("Publisher could not be resolved.");
     }
-    double interval;
+    // -- not unique if multiple instances of a service exist and are subscribed by the same unicast destination
+    // uint64_t streamId = buildStreamIDForService(serviceId, mac_dest)
+    uint64_t streamId = createStreamId(destAddress);
+    int fullL2FrameSize = calculateL2Framesize(app->getPayloadMax());
     if (_streamIntervalAsCMI)
     {
-        interval = app->getIntervalMin();
+        double interval = app->getIntervalMin();
+        srpTable->updateTalkerWithStreamId( streamId, this, macAddress,
+                                            SR_CLASS::A, (uint16_t) fullL2FrameSize, 1, _vlanID,
+                                            _pcp, !_advertiseStreamRegistration, interval);
     }
     else {
         auto cmiIt = pcpCMIs.find(_pcp);
@@ -154,21 +160,18 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
         {
             throw cRuntimeError("CMI for PCP %d unknown", app->getPcp());
         }
-        interval = cmiIt->second;
+        double interval = cmiIt->second;
+
+        SR_CLASS srclass = SR_CLASS::A;
+        int normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, false);
+        if(normalizedFramesize < 0) {
+            srclass = SR_CLASS::B;
+            normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, true);
+        }
+        srpTable->updateTalkerWithStreamId( streamId, this, macAddress,
+                                            srclass, (uint16_t) normalizedFramesize, 1, _vlanID,
+                                            _pcp, !_advertiseStreamRegistration);
     }
-    SR_CLASS srclass = SR_CLASS::A;
-    int fullL2FrameSize = calculateL2Framesize(app->getPayloadMax());
-    int normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, false);
-    if(normalizedFramesize < 0) {
-        srclass = SR_CLASS::B;
-        normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, true);
-    }
-    // -- not unique if multiple instances of a service exist and are subscribed by the same unicast destination
-    // uint64_t streamId = buildStreamIDForService(serviceId, mac_dest)
-    uint64_t streamId = createStreamId(destAddress);
-    srpTable->updateTalkerWithStreamId( streamId, this, macAddress, 
-                                        srclass, (uint16_t) normalizedFramesize, 1, _vlanID,
-                                        _pcp, !_advertiseStreamRegistration);
     if(srpTable->getListenersForStreamId(streamId, _vlanID).empty()){
         //add a listener
         cModule* listener = app->getParentModule()->getSubmodule("eth", 0);
