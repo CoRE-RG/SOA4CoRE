@@ -151,7 +151,8 @@ PublisherConnector* SomeIpManager::registerPublisherService(ServiceBase* publish
                         publisher->getIntervalMin(),
                         publisher->getVlanId(),
                         publisher->getPcp(),
-                        publisher->getDeadline()
+                        publisher->getDeadline(),
+                        publisher->getPreventReservation()
                 );
                 _offers[serviceId][instanceId] = offerState;
                 // start wait phase

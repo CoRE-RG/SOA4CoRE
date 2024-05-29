@@ -31,10 +31,10 @@ SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, L3Addres
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
                                                          std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
                                                          L3Address mcastDestAddr, int mcastDestPort,
-                                                         size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline) :
+                                                         size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline, bool preventReservation) :
                                 DiscoveryNotification(serviceId, address), _instanceId(instanceId), _qosGroups(qosGroups), _qosGroup(qosGroup),
                                 _tcpPort(tcpPort), _udpPort(udpPort), _mcastDestAddr(mcastDestAddr), _mcastDestPort(mcastDestPort),
-                                _payloadMax(framesizeMax), _intervalMin(intervalMin), _vlan_id(vlan_id), _pcp(pcp), _deadline(deadline) {
+                                _payloadMax(framesizeMax), _intervalMin(intervalMin), _vlan_id(vlan_id), _pcp(pcp), _deadline(deadline), _preventReservation(preventReservation) {
 }
 
 SomeIpDiscoveryNotification::SomeIpDiscoveryNotification() :
@@ -176,6 +176,13 @@ int SomeIpDiscoveryNotification::getVlanId() const {
 
 void SomeIpDiscoveryNotification::setVlanId(int vlanId) {
     _vlan_id = vlanId;
+}
+
+bool SomeIpDiscoveryNotification::getPreventReservation() const {
+    return _preventReservation;
+}
+void SomeIpDiscoveryNotification::setPreventReservation(bool preventReservation) {
+    _preventReservation = preventReservation;
 }
 
 bool SomeIpDiscoveryNotification::updateFromEndpointOption(

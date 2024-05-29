@@ -129,6 +129,9 @@ void Publisher::handleParameterChange(const char* parname) {
     if (!parname || !strcmp(parname, "mcastDestPort")) {
         _mcastDestPort = par("mcastDestPort");
     }
+    if (!parname || !strcmp(parname, "preventReservation")) {
+        _preventReservation = par("preventReservation");
+    }
 
     if (!parname || !strcmp(parname, "qosGroups")) {
         std::set<std::string> qosGroups;

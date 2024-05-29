@@ -153,32 +153,35 @@ void SomeIpSD::offer(SomeIpDiscoveryNotification* notification) {
             IPv4EndpointOption *ipv4EndpointOption = createIpv4Endpoint(notification,qosGroup);
             someIpSDHeader->encapOption(ipv4EndpointOption);
         }
-        if (_includeIEEE8021QConfig
-                && notification->getPcp() >= 0
-                && notification->getVlanId() >= 0)
+        if (!notification->getPreventReservation())
         {
-            IEEE8021QConfigurationOption* qconfig = new IEEE8021QConfigurationOption();
-            qconfig->setVlan_id(notification->getVlanId());
-            qconfig->setPcp(notification->getPcp());
-            someIpSDHeader->encapOption(qconfig);
-            offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
-        }
-        if (_includeRessourceConfig
-                && notification->getIntervalMin() > 0)
-        {
-            RessourceConfigurationOption* resconfig = new RessourceConfigurationOption();
-            resconfig->setMaxPayload(notification->getPayloadMax());
-            resconfig->setMinInterval(notification->getIntervalMin());
-            someIpSDHeader->encapOption(resconfig);
-            offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
-        }
-        if (_includeRealTimeConfig
-                && notification->getDeadline() > 0)
-        {
-            RealTimeConfigurationOption* rtconfig = new RealTimeConfigurationOption();
-            rtconfig->setDeadline(notification->getDeadline());
-            someIpSDHeader->encapOption(rtconfig);
-            offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
+            if (_includeIEEE8021QConfig
+                    && notification->getPcp() >= 0
+                    && notification->getVlanId() >= 0)
+            {
+                IEEE8021QConfigurationOption* qconfig = new IEEE8021QConfigurationOption();
+                qconfig->setVlan_id(notification->getVlanId());
+                qconfig->setPcp(notification->getPcp());
+                someIpSDHeader->encapOption(qconfig);
+                offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
+            }
+            if (_includeRessourceConfig
+                    && notification->getIntervalMin() > 0)
+            {
+                RessourceConfigurationOption* resconfig = new RessourceConfigurationOption();
+                resconfig->setMaxPayload(notification->getPayloadMax());
+                resconfig->setMinInterval(notification->getIntervalMin());
+                someIpSDHeader->encapOption(resconfig);
+                offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
+            }
+            if (_includeRealTimeConfig
+                    && notification->getDeadline() > 0)
+            {
+                RealTimeConfigurationOption* rtconfig = new RealTimeConfigurationOption();
+                rtconfig->setDeadline(notification->getDeadline());
+                someIpSDHeader->encapOption(rtconfig);
+                offerEntry->setNum1stOptions(offerEntry->getNum1stOptions() + 1);
+            }
         }
     } else {
         offerEntry->setNum1stOptions(QOS_NP_OPTIONS_COUNT);

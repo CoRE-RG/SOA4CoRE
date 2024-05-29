@@ -70,11 +70,12 @@ public:
      * @param vlan_id the vlan id of this service
      * @param pcp the vlan pcp of this service
      * @param deadline the deadline for messages
+     * @param preventReservation prevents resource allocation within offer messages
      */
     SomeIpDiscoveryNotification(int serviceId, inet::L3Address address, uint16_t instanceId,
                                                              std::set<QoSGroup> qosGroups, QoSGroup qosGroup, int tcpPort, int udpPort,
                                                              inet::L3Address mcastDestAddr, int mcastDestPort,
-                                                             size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline);
+                                                             size_t framesizeMax, double intervalMin, int vlan_id, int pcp, double deadline, bool preventReservation = false);
     /**
      * Default Constructor. Set all values manually!
      */
@@ -175,6 +176,8 @@ public:
     void setPcp(int pcp);
     int getVlanId() const;
     void setVlanId(int vlanId);
+    bool getPreventReservation() const;
+    void setPreventReservation(bool preventReservation);
 
 protected:
 private:
@@ -243,6 +246,11 @@ protected:
      * Deadline for messages used for RealTimeConfigurationOption
      */
     double _deadline = 0;
+
+    /**
+     * Enforce excluding the reservation (q config, required resources, etc) in the offer.
+     */
+    bool _preventReservation = false;
 private:
 
 };

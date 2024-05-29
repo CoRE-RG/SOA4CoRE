@@ -124,11 +124,23 @@ protected:
     inet::MACAddress resolveDestMacAddress(inet::IPv4Address destAddress);
 
     /**
-     * Calculate the layer 1 frame size for the given payload adding all known headers.
+     * Calculate the layer 2 frame size for the given payload adding all known headers.
      * @param payload
      * @return The sum of all header bytes and the payload.
      */
     virtual uint16_t calculateL2Framesize(uint16_t payload);
+
+    /**
+     * Calculate the number of bytes of the header.
+     * @return The sum of all header bytes.
+     */
+    virtual size_t getHeaderBytes();
+
+    /**
+     * Get the Max Physical Frame Size object
+     * @return size_t 
+     */
+    size_t getMaxPhysicalFrameSize();
 
     /**
      * Creates a unique stream ID for the endpoint used for stream reservation

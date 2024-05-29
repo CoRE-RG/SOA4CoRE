@@ -125,6 +125,14 @@ public:
         return _mcastDestPort;
     }
 
+    /**
+     * Returns the prevent reservation flag
+     * @return the prevent reservation flag
+     */
+    bool getPreventReservation() const {
+        return _preventReservation;
+    }
+
 protected:
     /**
      * Initialization of the module. Sends activator message
@@ -232,6 +240,11 @@ protected:
      * Caches the multicast destination UDP port.
      */
     int _mcastDestPort;
+
+    /**
+     * Should the publisher prevent reservation of the stream
+     */
+    bool _preventReservation;
 
 private:
     /**

@@ -126,7 +126,7 @@ bool IPPublisherEndpointBase::requiresReservation()
 {
     Publisher* app = dynamic_cast<Publisher*>(_publisherConnector->getApplication());
     return has8021QInformation()
-            && _registerStream
+            && _registerStream && !app->getPreventReservation()
             && (_streamIntervalAsCMI || (pcpCMIs.find(_pcp) != pcpCMIs.end()));
 }
 
@@ -146,13 +146,26 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     // -- not unique if multiple instances of a service exist and are subscribed by the same unicast destination
     // uint64_t streamId = buildStreamIDForService(serviceId, mac_dest)
     uint64_t streamId = createStreamId(destAddress);
-    int fullL2FrameSize = calculateL2Framesize(app->getPayloadMax());
+    int numFrames = 1;
+    size_t payload = app->getPayloadMax();
+    size_t maxPayload = getMaxPhysicalFrameSize() - getHeaderBytes();
+    size_t avgPayload = payload;
+    if(payload > maxPayload)
+    {
+        numFrames = ceil(payload / (maxPayload));
+        avgPayload = payload / numFrames;
+        // TODO add parameter to control whether avg or max payload should be used
+        payload = maxPayload;
+    }
+    int fullL2FrameSize = calculateL2Framesize(avgPayload);
+    double interval = -1;
+    SR_CLASS srclass = SR_CLASS::A;
+    int normalizedFramesize = fullL2FrameSize;
     if (_streamIntervalAsCMI)
     {
-        double interval = app->getIntervalMin();
-        srpTable->updateTalkerWithStreamId( streamId, this, macAddress,
-                                            SR_CLASS::A, (uint16_t) fullL2FrameSize, 1, _vlanID,
-                                            _pcp, !_advertiseStreamRegistration, interval);
+        // TODO check whether we should use the avg payload and interval or the max payload and min interval
+        // interval = (app->getIntervalMin() + app->getIntervalMax()) / 2.0;
+        interval = app->getIntervalMin();
     }
     else {
         auto cmiIt = pcpCMIs.find(_pcp);
@@ -160,18 +173,15 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
         {
             throw cRuntimeError("CMI for PCP %d unknown", app->getPcp());
         }
-        double interval = cmiIt->second;
-
-        SR_CLASS srclass = SR_CLASS::A;
-        int normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, false);
+        normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, cmiIt->second, srclass, false);
         if(normalizedFramesize < 0) {
             srclass = SR_CLASS::B;
-            normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, interval, srclass, true);
+            normalizedFramesize = normalizeFramesizeForCMI(fullL2FrameSize, cmiIt->second, srclass, true);
         }
-        srpTable->updateTalkerWithStreamId( streamId, this, macAddress,
-                                            srclass, (uint16_t) normalizedFramesize, 1, _vlanID,
-                                            _pcp, !_advertiseStreamRegistration);
     }
+    srpTable->updateTalkerWithStreamId( streamId, this, macAddress,
+                                        srclass, (uint16_t) normalizedFramesize, numFrames, _vlanID,
+                                        _pcp, !_advertiseStreamRegistration, interval);
     if(srpTable->getListenersForStreamId(streamId, _vlanID).empty()){
         //add a listener
         cModule* listener = app->getParentModule()->getSubmodule("eth", 0);
@@ -185,12 +195,26 @@ void IPPublisherEndpointBase::registerTalker(IPv4Address& destAddress)
     }
 }
 
-uint16_t IPPublisherEndpointBase::calculateL2Framesize(uint16_t payload) {
+uint16_t IPPublisherEndpointBase::calculateL2Framesize(uint16_t payload) 
+{
+    return getHeaderBytes() + payload;
+}
+
+size_t IPPublisherEndpointBase::getHeaderBytes() 
+{
     uint16_t addQTagBytes = ETHER_8021Q_TAG_BYTES;
     if(!has8021QInformation()) {
         addQTagBytes = 0;
     }
-    return ETHER_MAC_FRAME_BYTES + addQTagBytes + IP_HEADER_BYTES + payload;
+    return ETHER_MAC_FRAME_BYTES + addQTagBytes + IP_HEADER_BYTES;
+}
+
+size_t IPPublisherEndpointBase::getMaxPhysicalFrameSize() 
+{
+    if(has8021QInformation()) {
+        return MAX_ETHERNET_FRAME_BYTES;
+    }
+    return MAX_ETHERNET_FRAME_BYTES - ETHER_8021Q_TAG_BYTES;
 }
 
 uint64_t IPPublisherEndpointBase::createStreamId(

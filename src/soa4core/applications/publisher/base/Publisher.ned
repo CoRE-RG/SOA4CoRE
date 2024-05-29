@@ -53,15 +53,8 @@ simple Publisher extends ServiceBase
         string mcastDestAddress = default(""); // Requires a valid IP Mcast address (prefix 224/4), format "XXX.XXX.XXX.XXX", if empty no mcast is supported by publisher 
         // Multicast destination port for UDP mcast
         int mcastDestPort = default(-1); // Requires a valid UDP port, if -1 no udp mcast is supported by publisher 
-        
-        @signal[payloadSignal];
-        
-        //Signal emitted when a message is published
-        @signal[msgSent](type=omnetpp::cMessage);
-        //Statistic of the amount of packets that were sent by the publisher
-        @statistic[msgCount](title="Sent Packets"; source=msgSent; record=count; unit=packets);
-        //Statistic of the amount of bytes that were sent by the publisher
-        @statistic[msgBytes](title="Sent Bytes"; source=msgSent; unit=B; record="sum(packetBytes)","vector(packetBytes)", "histogram(packetBytes)?","floatingIntervalSumVector(packetBytes)?"; interpolationmode=none); //possible parameter e.g.: **.floatingintervalvectorrecorder-measure-interval = 20ms for floatingIntervalRecorders
+
+        bool preventReservation = default(false); // Prevents the endpoint from reserving resources for the stream
     
         //Offered instance id, must not be 0 or 0xFFFF, default is 1
         instanceID = default(0x0001);
@@ -71,5 +64,13 @@ simple Publisher extends ServiceBase
     	
     	//The QoS types this application can serve (one space separated)
     	string qosGroups = default("");
-    
+        
+        @signal[payloadSignal];
+        
+        //Signal emitted when a message is published
+        @signal[msgSent](type=omnetpp::cMessage);
+        //Statistic of the amount of packets that were sent by the publisher
+        @statistic[msgCount](title="Sent Packets"; source=msgSent; record=count; unit=packets);
+        //Statistic of the amount of bytes that were sent by the publisher
+        @statistic[msgBytes](title="Sent Bytes"; source=msgSent; unit=B; record="sum(packetBytes)","vector(packetBytes)", "histogram(packetBytes)?","floatingIntervalSumVector(packetBytes)?"; interpolationmode=none); //possible parameter e.g.: **.floatingintervalvectorrecorder-measure-interval = 20ms for floatingIntervalRecorders
 }

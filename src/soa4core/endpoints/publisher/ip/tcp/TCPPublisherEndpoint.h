@@ -78,11 +78,10 @@ protected:
     virtual void publish(cPacket* msg) override;
 
     /**
-     * Calculate the layer 1 frame size for the given payload adding all known headers.
-     * @param payload
-     * @return The sum of all header bytes and the payload.
+     * Calculate the number of bytes of the header.
+     * @return The sum of all header bytes.
      */
-    virtual uint16_t calculateL2Framesize(uint16_t payload) override;
+    virtual size_t getHeaderBytes() override;
 
 private:
 
