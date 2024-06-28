@@ -50,7 +50,7 @@ SomeIpDiscoveryNotification::SomeIpDiscoveryNotification(const SomeIpDiscoveryNo
     _qosGroups(someIpDiscoveryNotification._qosGroups), _qosGroup(someIpDiscoveryNotification._qosGroup), _tcpPort(someIpDiscoveryNotification._tcpPort),
     _udpPort(someIpDiscoveryNotification._udpPort), _mcastDestAddr(someIpDiscoveryNotification._mcastDestAddr), _mcastDestPort(someIpDiscoveryNotification._mcastDestPort),
     _payloadMax(someIpDiscoveryNotification._payloadMax), _intervalMin(someIpDiscoveryNotification._intervalMin), _vlan_id(someIpDiscoveryNotification._vlan_id),
-    _pcp(someIpDiscoveryNotification._pcp), _deadline(someIpDiscoveryNotification._deadline) {
+    _pcp(someIpDiscoveryNotification._pcp), _deadline(someIpDiscoveryNotification._deadline), _preventReservation(someIpDiscoveryNotification._preventReservation){
 }
 
 SomeIpDiscoveryNotification& SomeIpDiscoveryNotification::operator=(const SomeIpDiscoveryNotification& other) {
@@ -68,6 +68,7 @@ SomeIpDiscoveryNotification& SomeIpDiscoveryNotification::operator=(const SomeIp
     _vlan_id = other._vlan_id;
     _pcp = other._pcp;
     _deadline = other._deadline;
+    _preventReservation = other._preventReservation;
     return *this;
 }
 
