@@ -42,6 +42,9 @@ Publisher::Publisher() {
 }
 
 Publisher::~Publisher() {
+    if(_sendMsgTimer != nullptr) {
+        delete _sendMsgTimer;
+    }
 }
 
 size_t Publisher::getPayloadBytes() {
@@ -174,8 +177,14 @@ void Publisher::handleStart() {
     }
 
     //schedule next send event
-    this->_sendMsgTimer = new cMessage(SEND_MSG_NAME);
+    if(this->_sendMsgTimer == nullptr) {
+        this->_sendMsgTimer = new cMessage(SEND_MSG_NAME);
+    }
     scheduleNextMessage();
+}
+
+void Publisher::handleStop() {
+    this->cancelEvent(_sendMsgTimer);
 }
 
 void Publisher::sendMessage() {

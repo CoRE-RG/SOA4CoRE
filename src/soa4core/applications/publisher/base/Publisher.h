@@ -166,6 +166,12 @@ protected:
     virtual void handleStart() override;
 
     /**
+     * Interface method to handle service shut down of publisher/subscriber
+     * Cancels publisher registration
+     */
+    virtual void handleStop() override;
+
+    /**
      * Create a payload packet and send it to the connector.
      */
     virtual void sendMessage();
@@ -257,7 +263,7 @@ private:
      */
     std::set<QoSGroup> _qosGroups;
 
-    cMessage* _sendMsgTimer;
+    cMessage* _sendMsgTimer = nullptr;
 };
 
 } /* end namespace SOA4CoRE */
