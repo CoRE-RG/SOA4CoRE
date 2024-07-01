@@ -43,6 +43,7 @@ Publisher::Publisher() {
 
 Publisher::~Publisher() {
     if(_sendMsgTimer != nullptr) {
+        this->cancelEvent(_sendMsgTimer);
         delete _sendMsgTimer;
     }
 }
