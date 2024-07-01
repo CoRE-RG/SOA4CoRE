@@ -209,8 +209,8 @@ void Publisher::sendMessage() {
 void Publisher::scheduleNextMessage() {
     this->cancelEvent(_sendMsgTimer);
     //schedule next send event
-    scheduleAt(simTime() + (this->_interval / this->_intervalFrames),
-            _sendMsgTimer);
+    double interval = CoRE4INET::parameterDoubleCheckRange(par("interval"), 0, SIMTIME_MAX.dbl());
+    scheduleAt(simTime() + (interval / this->_intervalFrames), _sendMsgTimer);
 }
 
 void Publisher::handleMessage(cMessage *msg) {
