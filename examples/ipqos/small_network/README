@@ -1,0 +1,19 @@
+Demonstrates a small network which neogtiates QoS over the SOME/IP layer
+
+- This small network consists of the hosts: N[0-3], and CT[0-1]
+
+- three switches connect the hosts
+
+- configurations are extended with multiple types of traffics (configs Z_[...]), which are then combined into the scenarios
+	- SOMEIP_UDP_MCAST[_CT, _Q, _CT_Q, _Q_Sync]
+	- SOMEIP_UDP[_CT, _Q, _CT_Q]
+	- SOMEIP_TCP[_CT, _Q, _CT_Q]
+	- SOMEIP_MIXED[_CT, _Q, _CT_Q]
+	
+- During SOME/IP discovery and subscription, deadlines and TSN 802.1Q options will be exchanged	
+	
+- The IP stack on the host will be configured to accomodate for the QoS and TSN prioritis
+
+- After the service discovery and QoS reservation publishers send messages to their subscribers
+
+- Cross traffic can be added to validate QoS behavior 
