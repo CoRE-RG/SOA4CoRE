@@ -4,12 +4,10 @@ SOA4CoRE provides service-oriented middleware components, service applications a
 
 <img src="/doc/images/soa4core.png" alt="SOA4CoRE Environment" width="75%">
 
-## News
-* Switch to OMNeT++ 6.0.2 and INET 3.8.3
-* Continuous integration is now enabled.
-* Model release including service-oriented middleware components, service applications and service endpoints for avb, tcp and udp. 
-* Name changed from SOQoSMW to SOA4CoRE.
-* Model extended to support AUTOSAR SOME/IP with Service Discovery and SOME/IP service endpoints.
+## Features
+* service-oriented middleware components, service applications and service endpoints for avb, tcp and udp
+* Name changed from SOQoSMW to SOA4CoRE
+* Model extended to support AUTOSAR SOME/IP with Service Discovery and SOME/IP service endpoints
 
 ## References
 If you would like to reference this project please use the following [publication](https://doi.org/10.29007/w71t):
